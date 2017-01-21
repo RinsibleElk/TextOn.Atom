@@ -1,0 +1,74 @@
+{
+    "name": "texton",
+    "scopeName": "source.texton",
+    "fileTypes": [
+        "texton"
+    ],
+    "foldingStartMarker": "",
+    "foldingStopMarker": "",
+    "patterns": [
+        {
+            "name": "comment.texton",
+            "match": "//.*$"
+        },
+        {
+            "name": "keyword.var.texton",
+            "match": "^var "
+        },
+        {
+            "name": "meta.preprocessor.include.texton",
+            "match": "^#include"
+        },
+        {
+          "name": "variable.parameter.texton",
+          "match": "\\$[A-Za-z][A-Za-z0-9_]*"
+        },
+        {
+            "name": "string.quoted.double.texton",
+            "begin": "(?=[^\\\\])(\")",
+            "end": "(\")",
+            "beginCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.begin.texton"
+                }
+            },
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.definition.string.end.texton"
+                }
+            },
+            "patterns": [
+                {
+                    "name": "punctuation.separator.string.ignore-eol.texton",
+                    "match": "\\\\$[ \\t]*"
+                },
+                {
+                    "name": "constant.character.string.escape.texton",
+                    "match": "\\\\([\\\\''ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8})"
+                },
+                {
+                    "name": "invalid.illegal.character.string.texton",
+                    "match": "\\\\(?![\\\\''ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8})."
+                }
+            ]
+        },
+        {
+          "name": "keyword.func.texton",
+          "match": "^@func"
+        },
+        {
+          "name": "keyword.seq.texton",
+          "match": "^\\s*@seq"
+        },
+        {
+          "name": "keyword.choice.texton",
+          "match": "^\\s*@choice"
+        },
+        {
+          "name": "support.function.texton",
+          "match": "[A-Za-z][A-Za-z0-9_]*\\(\\)"
+        }
+    ],
+    "repository": {
+    }
+}
