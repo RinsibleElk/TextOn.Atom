@@ -1,0 +1,13 @@
+#include "cities.texton"
+
+// This is a comment.
+
+// Every full TextOn script must have a main function.
+@func main()
+{
+  @seq {
+    Hello world.
+    You live in {$City|a city in $Country}.
+    We are in $City which is in $Country.
+  }
+}
