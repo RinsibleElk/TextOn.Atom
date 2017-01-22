@@ -24,6 +24,10 @@
             "match": "^#include\\s+"
         },
         {
+          "name": "keyword.break.texton",
+          "match": "^\\s*@break\\s*$"
+        },
+        {
           "name": "variable.parameter.texton",
           "match": "\\$[A-Za-z][A-Za-z0-9_]*"
         },
