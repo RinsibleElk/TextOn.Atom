@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Preprocessor.fs" />
+    <Compile Include="CommentStripper.fs" />
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />
   </ItemGroup>
