@@ -3,7 +3,7 @@
 // This is a comment.
 
 // Here's a function I can call from within the main.
-@func guyStuff()
+@func @guyStuff()
 {
   @choice {
     Blah.
@@ -12,12 +12,12 @@
 }
 
 // Every full TextOn script must have a main function.
-@func main()
+@func @main()
 {
   @seq {
     You are a bloke. [%Gender = "Male"]
     You live in {$City|a city in $Country}.
     We are in $City which is in $Country.
-    guyStuff() [%Gender = "Male"]
+    @guyStuff() [%Gender = "Male"]
   }
 }
