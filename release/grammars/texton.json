@@ -78,7 +78,7 @@
         },
         {
           "name": "keyword.choice.operator.texton",
-          "match": "[\\{\\}|]"
+          "match": "(\\{|\\}|\\||&&)"
         }
     ],
     "repository": {

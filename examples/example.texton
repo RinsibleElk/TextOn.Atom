@@ -4,12 +4,9 @@
 // This is a comment.
 
 // Here's a function I can call from within the main.
-@func ukSpecificStuff()
+@func guyStuff()
 {
-  @choice {
-    Some statement about the U.K.
-    Or some other stuff, maybe pertaining to $City.
-  }
+  Blah.
 }
 
 // Every full TextOn script must have a main function.
@@ -19,6 +16,6 @@
     You are a bloke. [%Gender = "Male"]
     You live in {$City|a city in $Country}.
     We are in $City which is in $Country.
-    ukSpecificStuff() [$Country = "U.K."]
+    guyStuff() [%Gender = "Male"]
   }
 }
