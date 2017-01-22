@@ -13,15 +13,23 @@
         },
         {
             "name": "keyword.var.texton",
-            "match": "^var "
+            "match": "^var\\s+"
         },
         {
-            "name": "meta.preprocessor.include.texton",
-            "match": "^#include"
+            "name": "keyword.att.texton",
+            "match": "^att\\s+"
+        },
+        {
+            "name": "keyword.include.texton",
+            "match": "^#include\\s+"
         },
         {
           "name": "variable.parameter.texton",
           "match": "\\$[A-Za-z][A-Za-z0-9_]*"
+        },
+        {
+          "name": "entity.other.attribute-name.texton",
+          "match": "\\%[A-Za-z][A-Za-z0-9_]*"
         },
         {
             "name": "string.quoted.double.texton",

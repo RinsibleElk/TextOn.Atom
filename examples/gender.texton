@@ -1,0 +1,10 @@
+att %Gender =
+  [
+    "Male",
+    "Female"
+  ]
+att %Pronoun =
+  [
+    "He" (%Gender = "Male"),
+    "She" (%Gender = "Female")
+  ]
