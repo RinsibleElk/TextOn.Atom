@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom", "TextOn.Atom.fsproj", "{7105FABA-8E4C-4943-B1A7-35F55BE69003}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom", "src\TextOn.Atom.fsproj", "{7105FABA-8E4C-4943-B1A7-35F55BE69003}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
