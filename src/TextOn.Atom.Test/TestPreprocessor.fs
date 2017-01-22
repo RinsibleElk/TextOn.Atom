@@ -12,7 +12,8 @@ let alwaysFailFileResolver _ _ = None
 let exampleFileName = "example.texton"
 
 let test f s e =
-    let r = Preprocessor.preprocess f exampleFileName None s
+    let r = Preprocessor.preprocess f exampleFileName None s |> Seq.toList
+    let e = e |> Seq.toList
     let firstFailingLine =
         List.zip
             (r |> List.truncate (e |> List.length))
@@ -25,7 +26,7 @@ let test f s e =
         failwithf "The lists didn't match - first failing line was: %s" firstFailingLine.Value
 
 let gender =
-    [
+    seq [
         "@att %Gender ="
         "  ["
         "    \"Male\","
@@ -38,7 +39,7 @@ let gender =
         "  ]"
     ]
 let example =
-    [
+    seq [
         "// Here's a function I can call from within the main."
         "@func @guyStuff()"
         "{"
@@ -66,7 +67,7 @@ let ``Preprocessor with nothing to do``() =
 let ``Preprocessor with no includes``() =
     let expected =
         example
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -76,17 +77,20 @@ let ``Preprocessor with no includes``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 1
-        |> List.map (snd >> Option.get)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
     test alwaysFailFileResolver example expected
 
 [<Test>]
 let ``Preprocessor with single successful include``() =
-    let source = "#include \"gender.texton\"" :: example
+    let source =
+        seq {
+            yield "#include \"gender.texton\""
+            yield! example }
     let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
     let expectedGender =
         gender
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -96,11 +100,11 @@ let ``Preprocessor with single successful include``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 1
-        |> List.map (snd >> Option.get)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
     let expected =
         source
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -110,18 +114,22 @@ let ``Preprocessor with single successful include``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 2
-        |> List.map (snd >> Option.get)
-        |> fun l -> expectedGender @ l
+        |> Seq.skip 2
+        |> Seq.map (snd >> Option.get)
+        |> Seq.append expectedGender
     test fileResolver source expected
 
 [<Test>]
 let ``Preprocessor with double successful include``() =
-    let source = "#include \"gender.texton\"" :: ("#include \"gender.texton\"" :: example)
+    let source =
+        seq {
+            yield "#include \"gender.texton\""
+            yield "#include \"gender.texton\""
+            yield! example }
     let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
     let expectedGender =
         gender
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -131,8 +139,8 @@ let ``Preprocessor with double successful include``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 1
-        |> List.map (snd >> Option.get)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
     let expectedWarning = {
         TopLevelFileLineNumber = 2
         CurrentFileLineNumber = 2
@@ -143,7 +151,7 @@ let ``Preprocessor with double successful include``() =
             WarningText = "Already included: gender.texton" } }
     let expected =
         source
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -153,14 +161,21 @@ let ``Preprocessor with double successful include``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 3
-        |> List.map (snd >> Option.get)
-        |> fun l -> expectedGender @ (expectedWarning ::l)
+        |> Seq.skip 3
+        |> Seq.map (snd >> Option.get)
+        |> fun l ->
+            seq {
+                yield! expectedGender
+                yield expectedWarning
+                yield! l }
     test fileResolver source expected
 
 [<Test>]
 let ``Preprocessor with single failed include``() =
-    let source = "#include \"gender.texton\"" :: example
+    let source =
+        seq {
+            yield "#include \"gender.texton\""
+            yield! example }
     let expectedError = {
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
@@ -171,7 +186,7 @@ let ``Preprocessor with single failed include``() =
             ErrorText = "Unable to resolve file: gender.texton" } }
     let expected =
         source
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -181,25 +196,31 @@ let ``Preprocessor with single failed include``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 2
-        |> List.map (snd >> Option.get)
-        |> fun l -> expectedError :: l
+        |> Seq.skip 2
+        |> Seq.map (snd >> Option.get)
+        |> fun l ->
+            seq {
+                yield expectedError
+                yield! l }
     test alwaysFailFileResolver source expected
 
 [<Test>]
 let ``Preprocessor with unrecognised directive``() =
-    let source = "#whatever \"Something\"  15" :: example
+    let source =
+        seq {
+            yield "#whatever \"Something\"  15"
+            yield! example }
     let expectedError = {
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
         CurrentFile = exampleFileName
-        Contents =   Error {
+        Contents = Error {
             StartLocation = 1
             EndLocation = 25
             ErrorText = "Not a valid #include directive: #whatever \"Something\"  15" } }
     let expected =
         source
-        |> List.scan
+        |> Seq.scan
             (fun (ln,output) line ->
                 (ln + 1),
                     Some {
@@ -209,7 +230,10 @@ let ``Preprocessor with unrecognised directive``() =
                         Contents = Line line
                     })
             (1,None)
-        |> List.skip 2
-        |> List.map (snd >> Option.get)
-        |> fun l -> expectedError :: l
+        |> Seq.skip 2
+        |> Seq.map (snd >> Option.get)
+        |> fun l ->
+            seq {
+                yield expectedError
+                yield! l }
     test alwaysFailFileResolver source expected

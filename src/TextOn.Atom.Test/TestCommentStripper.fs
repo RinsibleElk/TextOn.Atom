@@ -8,7 +8,7 @@ open Swensen.Unquote
 open TextOn.Atom
 
 let test s e =
-    let r = CommentStripper.stripComments s
+    let r = CommentStripper.stripComments s |> Seq.toList
     let firstFailingLine =
         List.zip
             (r |> List.truncate (e |> List.length))

@@ -4,7 +4,7 @@ open System.Text.RegularExpressions
 open System.IO
 
 /// Service to resolve a file. Can be used in testing to not actually bother having real files lying around.
-type PreprocessorFileResolver = string -> string option -> (string * string option * string list) option
+type PreprocessorFileResolver = string -> string option -> (string * string option * string seq) option
 
 // Loop through lines
 // If line contains a #include
@@ -46,10 +46,11 @@ module Preprocessor =
         member __.Add s = includedFiles <- includedFiles |> Set.add s
 
     /// Perform the preprocessing.
-    let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string option) (includedFilesContainer:IncludedFilesContainer) (lines:string list) =
-        match lines with
-        | [] -> Seq.empty
-        | line::remaining ->
+    let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string option) (includedFilesContainer:IncludedFilesContainer) (lines:string seq) =
+        if lines |> Seq.isEmpty then Seq.empty
+        else
+            let line = lines |> Seq.head
+            let remaining = lines |> Seq.skip 1
             seq {
                 if (not (line.StartsWith("#"))) then
                     yield {
@@ -104,10 +105,10 @@ module Preprocessor =
                     FileInfo(Path.Combine(directory.Value, fileUnresolved))
                 else
                     FileInfo(fileUnresolved)
-            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadAllLines |> List.ofArray)
+            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadLines)
             else None)
 
     /// Perform the preprocess.
     let preprocess fileResolver fileName currentDirectory lines =
         preprocessInner true 1 1 fileName fileResolver currentDirectory (IncludedFilesContainer()) lines
-        |> List.ofSeq
+        |> Seq.cache

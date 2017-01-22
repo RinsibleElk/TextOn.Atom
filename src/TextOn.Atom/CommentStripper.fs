@@ -9,9 +9,9 @@ module CommentStripper =
     let private commentLineRegex = Regex(@"^\s*(//.*)?$")
 
     /// Strip out all comment and blank lines from the preprocessed source.
-    let stripComments (lines:PreprocessedSourceLine list) : PreprocessedSourceLine list =
+    let stripComments (lines:PreprocessedSourceLine seq) : PreprocessedSourceLine seq =
         lines
-        |> List.filter
+        |> Seq.filter
             (fun line ->
                 let content = line.Contents
                 match content with
