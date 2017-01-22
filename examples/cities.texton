@@ -7,7 +7,7 @@ var $Country =
 var $City =
   "Which city are you writing about?",
   [
-    "London" ($Country = "U.K."),
+    "London" [$Country = "U.K."],
     "Paris",
     *
   ]

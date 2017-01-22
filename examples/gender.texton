@@ -5,6 +5,6 @@ att %Gender =
   ]
 att %Pronoun =
   [
-    "He" (%Gender = "Male"),
-    "She" (%Gender = "Female")
+    "He" [%Gender = "Male"],
+    "She" [%Gender = "Female"]
   ]

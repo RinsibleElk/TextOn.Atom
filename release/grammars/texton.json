@@ -75,6 +75,10 @@
         {
           "name": "support.function.texton",
           "match": "[A-Za-z][A-Za-z0-9_]*\\(\\)"
+        },
+        {
+          "name": "keyword.choice.operator.texton",
+          "match": "[\\{\\}|]"
         }
     ],
     "repository": {

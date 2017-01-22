@@ -1,6 +1,15 @@
 open System.Text.RegularExpressions
 let s =
-  "var $Country =\n  \"Which country are you writing about?\",\n  [\n    *\n  ]";
+  "Something or other {choice 1|choice 2}";
 let re =
-  new Regex("^(var)\\s+\\$[A-Za-z][A-Za-z0-9_]*\\s*=\\s*(\".*\")\\s*,\\s*(\\[\\s*\\*\\s*\\])")
-re.Match(s)
+  new Regex("(\\{).*(\\})")
+let m = re.Match(s)
+m.Success |> printfn "%A"
+m.Groups
+|> fun a ->
+    [ 0 .. (a.Count - 1) ]
+    |> Seq.map (fun i -> a.[i])
+|> Seq.iter
+    (fun cap ->
+        cap |> printfn "%A")
+
