@@ -12,15 +12,20 @@ type PreprocessorFileResolver = string -> string option -> (string * string opti
 // - If include is valid but file doesn't exist, output a preprocessor error, and continue.
 // - If include is valid and file exists, but file has already been included, output a preprocessor warning, and continue.
 // - Preprocess the inner and splice it in.
-type PreprocessorError = string
-type PreprocessorWarning = string
-type PreprocessorSuccess = string
+type PreprocessorError = {
+    StartLocation : int
+    EndLocation : int
+    ErrorText : string }
+type PreprocessorWarning = {
+    StartLocation : int
+    EndLocation : int
+    WarningText : string }
 
-/// 
+/// A preprocessed line, decorated with error/warning details.
 type PreprocessedLine =
     | Error of PreprocessorError
     | Warning of PreprocessorWarning
-    | Line of PreprocessorSuccess
+    | Line of string
 
 /// Representation of the source file, post the preprocessing phase.
 type PreprocessedSourceLine = {
@@ -59,7 +64,10 @@ module Preprocessor =
                             TopLevelFileLineNumber = topLevelFileLineNumber
                             CurrentFileLineNumber = currentFileLineNumber
                             CurrentFile = currentFile
-                            Contents = Error (line |> sprintf "Not a valid #include directive: %s") }
+                            Contents = Error {
+                                StartLocation = 1
+                                EndLocation = line.Length
+                                ErrorText = (line |> sprintf "Not a valid #include directive: %s") } }
                     else
                         let includeFileUnresolved = includeMatch.Groups.[1].Value
                         let resolvedFile = fileResolver includeFileUnresolved currentDirectory
@@ -68,7 +76,10 @@ module Preprocessor =
                                 TopLevelFileLineNumber = topLevelFileLineNumber
                                 CurrentFileLineNumber = currentFileLineNumber
                                 CurrentFile = currentFile
-                                Contents = Error (includeFileUnresolved |> sprintf "Unable to resolve file: %s") }
+                                Contents = Error {
+                                    StartLocation = 10
+                                    EndLocation = line.Length
+                                    ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
                         else
                             let (includeFileResolved, includeDirectory, includeLines) = resolvedFile |> Option.get
                             if includedFilesContainer.AlreadyIncluded includeFileResolved then
@@ -76,7 +87,10 @@ module Preprocessor =
                                     TopLevelFileLineNumber = topLevelFileLineNumber
                                     CurrentFileLineNumber = currentFileLineNumber
                                     CurrentFile = currentFile
-                                    Contents = Warning (includeFileResolved |> sprintf "Already included: %s") }
+                                    Contents = Warning {
+                                        StartLocation = 10
+                                        EndLocation = line.Length
+                                        WarningText = (includeFileResolved |> sprintf "Already included: %s") } }
                             else
                                 includedFilesContainer.Add includeFileResolved
                                 yield! preprocessInner false topLevelFileLineNumber 1 includeFileResolved fileResolver includeDirectory includedFilesContainer includeLines

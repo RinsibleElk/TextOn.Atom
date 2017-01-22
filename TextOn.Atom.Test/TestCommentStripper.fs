@@ -76,8 +76,14 @@ let ``CommentStripper with lines``() =
 let ``CommentStripper with errors and warnings``() =
     let input =
         [
-            Error("Some error")
-            Warning("Some warning")
+            Error {
+                StartLocation = 1
+                EndLocation = 15
+                ErrorText = "Some error" }
+            Warning {
+                StartLocation = 1
+                EndLocation = 15
+                WarningText = "Some warning" }
         ]
         |> List.scan
             (fun (ln,_) line ->

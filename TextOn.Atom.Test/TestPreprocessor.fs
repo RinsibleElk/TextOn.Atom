@@ -137,7 +137,10 @@ let ``Preprocessor with double successful include``() =
         TopLevelFileLineNumber = 2
         CurrentFileLineNumber = 2
         CurrentFile = exampleFileName
-        Contents = Warning "Already included: gender.texton" }
+        Contents = Warning {
+            StartLocation = 10
+            EndLocation = 24
+            WarningText = "Already included: gender.texton" } }
     let expected =
         source
         |> List.scan
@@ -162,7 +165,10 @@ let ``Preprocessor with single failed include``() =
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
         CurrentFile = exampleFileName
-        Contents = Error "Unable to resolve file: gender.texton" }
+        Contents = Error {
+            StartLocation = 10
+            EndLocation = 24
+            ErrorText = "Unable to resolve file: gender.texton" } }
     let expected =
         source
         |> List.scan

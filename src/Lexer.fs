@@ -14,4 +14,4 @@ type TokenizedSourceLine = {
 [<RequireQualifiedAccess>]
 module Lexer =
     let private lexLine (preprocessedSourceLine:PreprocessedSourceLine) : TokenizedSourceLine =
-        { Contents = PreprocessorError "" }
+        failwith ""
