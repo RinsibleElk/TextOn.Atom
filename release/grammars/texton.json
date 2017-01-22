@@ -13,11 +13,11 @@
         },
         {
             "name": "keyword.var.texton",
-            "match": "^var\\s+"
+            "match": "^@var\\s+"
         },
         {
             "name": "keyword.att.texton",
-            "match": "^att\\s+"
+            "match": "^@att\\s+"
         },
         {
             "name": "keyword.include.texton",
@@ -62,7 +62,7 @@
         },
         {
           "name": "keyword.func.texton",
-          "match": "^@func"
+          "match": "^@func\\s+"
         },
         {
           "name": "keyword.seq.texton",

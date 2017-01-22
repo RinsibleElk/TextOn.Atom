@@ -1,11 +1,11 @@
-var $Country =
+@var $Country =
   "Which country are you writing about?",
   [
     "U.K.",
     "Germany",
     *
   ]
-var $City =
+@var $City =
   "Which city are you writing about?",
   [
     "London" [$Country = "U.K."],

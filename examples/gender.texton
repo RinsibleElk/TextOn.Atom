@@ -1,9 +1,9 @@
-att %Gender =
+@att %Gender =
   [
     "Male",
     "Female"
   ]
-att %Pronoun =
+@att %Pronoun =
   [
     "He" [%Gender = "Male"],
     "She" [%Gender = "Female"]

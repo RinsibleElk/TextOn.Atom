@@ -6,7 +6,10 @@
 // Here's a function I can call from within the main.
 @func guyStuff()
 {
-  Blah.
+  @choice {
+    Blah.
+    Whatever.
+  }
 }
 
 // Every full TextOn script must have a main function.
