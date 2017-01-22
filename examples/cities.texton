@@ -1,4 +1,3 @@
-// Automatically do the recursive check on the preprocessor?
 #include "gender.texton"
 
 @var $Country
