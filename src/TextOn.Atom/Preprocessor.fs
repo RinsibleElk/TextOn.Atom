@@ -77,7 +77,7 @@ module Preprocessor =
                                 CurrentFileLineNumber = currentFileLineNumber
                                 CurrentFile = currentFile
                                 Contents = Error {
-                                    StartLocation = 10
+                                    StartLocation = 1 + line.IndexOf("\"")
                                     EndLocation = line.Length
                                     ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
                         else
@@ -88,7 +88,7 @@ module Preprocessor =
                                     CurrentFileLineNumber = currentFileLineNumber
                                     CurrentFile = currentFile
                                     Contents = Warning {
-                                        StartLocation = 10
+                                        StartLocation = 1 + line.IndexOf("\"")
                                         EndLocation = line.Length
                                         WarningText = (includeFileResolved |> sprintf "Already included: %s") } }
                             else

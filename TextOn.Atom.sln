@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom", "src\TextOn.Atom.fsproj", "{7105FABA-8E4C-4943-B1A7-35F55BE69003}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom", "src\TextOn.Atom\TextOn.Atom.fsproj", "{7105FABA-8E4C-4943-B1A7-35F55BE69003}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.Test", "TextOn.Atom.Test\TextOn.Atom.Test.fsproj", "{D900CC98-CCCA-435E-B8C5-E38155E39DC5}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.Test", "src\TextOn.Atom.Test\TextOn.Atom.Test.fsproj", "{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{7105FABA-8E4C-4943-B1A7-35F55BE69003}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7105FABA-8E4C-4943-B1A7-35F55BE69003}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7105FABA-8E4C-4943-B1A7-35F55BE69003}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D900CC98-CCCA-435E-B8C5-E38155E39DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D900CC98-CCCA-435E-B8C5-E38155E39DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D900CC98-CCCA-435E-B8C5-E38155E39DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D900CC98-CCCA-435E-B8C5-E38155E39DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
