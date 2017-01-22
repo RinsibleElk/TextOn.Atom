@@ -81,7 +81,7 @@ let ``Preprocessor with no includes``() =
     test alwaysFailFileResolver example expected
 
 [<Test>]
-let ``Preprocess with single successful include``() =
+let ``Preprocessor with single successful include``() =
     let source = "#include \"gender.texton\"" :: example
     let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
     let expectedGender =
@@ -116,7 +116,7 @@ let ``Preprocess with single successful include``() =
     test fileResolver source expected
 
 [<Test>]
-let ``Preprocess with double successful include``() =
+let ``Preprocessor with double successful include``() =
     let source = "#include \"gender.texton\"" :: ("#include \"gender.texton\"" :: example)
     let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
     let expectedGender =
@@ -154,3 +154,28 @@ let ``Preprocess with double successful include``() =
         |> List.map (snd >> Option.get)
         |> fun l -> expectedGender @ (expectedWarning ::l)
     test fileResolver source expected
+
+[<Test>]
+let ``Preprocessor with single failed include``() =
+    let source = "#include \"gender.texton\"" :: example
+    let expectedError = {
+        TopLevelFileLineNumber = 1
+        CurrentFileLineNumber = 1
+        CurrentFile = exampleFileName
+        Contents = Error "Unable to resolve file: gender.texton" }
+    let expected =
+        source
+        |> List.scan
+            (fun (ln,output) line ->
+                (ln + 1),
+                    Some {
+                        TopLevelFileLineNumber = ln
+                        CurrentFileLineNumber = ln
+                        CurrentFile = exampleFileName
+                        Contents = Line line
+                    })
+            (1,None)
+        |> List.skip 2
+        |> List.map (snd >> Option.get)
+        |> fun l -> expectedError :: l
+    test alwaysFailFileResolver source expected

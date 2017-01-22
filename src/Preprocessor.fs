@@ -2,6 +2,7 @@
 
 open System.Text.RegularExpressions
 open System.IO
+
 /// Service to resolve a file. Can be used in testing to not actually bother having real files lying around.
 type PreprocessorFileResolver = string -> string option -> (string * string option * string list) option
 
@@ -11,17 +12,18 @@ type PreprocessorFileResolver = string -> string option -> (string * string opti
 // - If include is valid but file doesn't exist, output a preprocessor error, and continue.
 // - If include is valid and file exists, but file has already been included, output a preprocessor warning, and continue.
 // - Preprocess the inner and splice it in.
-
 type PreprocessorError = string
 type PreprocessorWarning = string
 type PreprocessorSuccess = string
 
+/// 
 type PreprocessedLine =
     | Error of PreprocessorError
     | Warning of PreprocessorWarning
     | Line of PreprocessorSuccess
 
-type PreprocessedOutput = {
+/// Representation of the source file, post the preprocessing phase.
+type PreprocessedSourceLine = {
     TopLevelFileLineNumber : int
     CurrentFileLineNumber : int
     CurrentFile : string

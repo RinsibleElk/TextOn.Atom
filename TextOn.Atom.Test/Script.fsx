@@ -10,3 +10,5 @@ open System.IO
 let dir = @"D:\NodeJs\TextOn.Atom\examples"
 let file = Path.Combine(dir, "example.texton")
 let lines = Preprocessor.preprocess Preprocessor.realFileResolver file (Some dir) (file |> File.ReadAllLines |> List.ofArray)
+
+
