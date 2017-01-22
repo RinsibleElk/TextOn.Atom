@@ -71,3 +71,24 @@ let ``CommentStripper with lines``() =
         |> List.map snd
         |> Preprocessor.preprocess alwaysFailFileResolver exampleFileName None
     test input expected
+
+[<Test>]
+let ``CommentStripper with errors and warnings``() =
+    let input =
+        [
+            Error("Some error")
+            Warning("Some warning")
+        ]
+        |> List.scan
+            (fun (ln,_) line ->
+                (ln + 1,
+                    Some
+                        {
+                            TopLevelFileLineNumber = ln
+                            CurrentFileLineNumber = ln
+                            CurrentFile = exampleFileName
+                            Contents = line }))
+            (1, None)
+        |> List.skip 1
+        |> List.map (snd >> Option.get)
+    test input input

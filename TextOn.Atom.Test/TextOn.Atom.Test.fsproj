@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="TestPreprocessor.fs" />
     <Compile Include="TestCommentStripper.fs" />
+    <Compile Include="TestLexer.fs" />
     <None Include="Script.fsx" />
     <None Include="packages.config" />
     <None Include="App.config" />
