@@ -185,3 +185,31 @@ let ``Preprocessor with single failed include``() =
         |> List.map (snd >> Option.get)
         |> fun l -> expectedError :: l
     test alwaysFailFileResolver source expected
+
+[<Test>]
+let ``Preprocessor with unrecognised directive``() =
+    let source = "#whatever \"Something\"  15" :: example
+    let expectedError = {
+        TopLevelFileLineNumber = 1
+        CurrentFileLineNumber = 1
+        CurrentFile = exampleFileName
+        Contents =   Error {
+            StartLocation = 1
+            EndLocation = 25
+            ErrorText = "Not a valid #include directive: #whatever \"Something\"  15" } }
+    let expected =
+        source
+        |> List.scan
+            (fun (ln,output) line ->
+                (ln + 1),
+                    Some {
+                        TopLevelFileLineNumber = ln
+                        CurrentFileLineNumber = ln
+                        CurrentFile = exampleFileName
+                        Contents = Line line
+                    })
+            (1,None)
+        |> List.skip 2
+        |> List.map (snd >> Option.get)
+        |> fun l -> expectedError :: l
+    test alwaysFailFileResolver source expected
