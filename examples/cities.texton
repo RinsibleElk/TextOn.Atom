@@ -12,6 +12,6 @@
   {
     "London" [$Country = "U.K."]
     "Berlin" [$Country = "Germany" && %Gender = "Male"]
-    "Paris"
+    "Paris" [$Country <> "Germany" && $Country <> "U.K."]
     *
   }
