@@ -86,6 +86,7 @@
     <Compile Include="TestPreprocessor.fs" />
     <Compile Include="TestCommentStripper.fs" />
     <Compile Include="TestLineCategorizer.fs" />
+    <Compile Include="TestVariableLineTokenizer.fs" />
     <None Include="packages.config" />
     <None Include="App.config" />
   </ItemGroup>
