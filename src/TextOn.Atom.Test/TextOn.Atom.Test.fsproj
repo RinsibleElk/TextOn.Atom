@@ -87,6 +87,7 @@
     <Compile Include="TestCommentStripper.fs" />
     <None Include="packages.config" />
     <None Include="App.config" />
+    <Compile Include="TestLineCategorizer.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsCheck">
