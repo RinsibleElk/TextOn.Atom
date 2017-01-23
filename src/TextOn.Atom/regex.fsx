@@ -1,47 +1,16 @@
 #I __SOURCE_DIRECTORY__
 #r "bin/Debug/TextOn.Atom.exe"
 open TextOn.Atom
+open System.IO
 
-let a =
-    {
-        Category = PreprocessorError
-        Index = 0
-        File = "example.texton"
-        StartLine = 1
-        EndLine = 1
-        Lines =
-            Seq.singleton
-                {
-                    TopLevelFileLineNumber = 1
-                    CurrentFileLineNumber = 1
-                    CurrentFile = "example.texton"
-                    Contents =
-                        Error {
-                            StartLocation = 1
-                            EndLocation = 5
-                            ErrorText = "Some error text" }
-            }
-    }
-let b =
-    {
-        Category = PreprocessorError
-        Index = 0
-        File = "example.texton"
-        StartLine = 1
-        EndLine = 1
-        Lines =
-            Seq.singleton
-                {
-                    TopLevelFileLineNumber = 1
-                    CurrentFileLineNumber = 1
-                    CurrentFile = "example.texton"
-                    Contents =
-                        Error {
-                            StartLocation = 1
-                            EndLocation = 5
-                            ErrorText = "Some error text" }
-            }
-    }
-
+let categorized =
+    @"D:\NodeJs\TextOn.Atom\examples\example.texton"
+    |> File.ReadLines
+    |> Preprocessor.preprocess Preprocessor.realFileResolver @"D:\NodeJs\TextOn.Atom\examples\example.texton" (Some @"D:\NodeJs\TextOn.Atom\examples")
+    |> CommentStripper.stripComments
+    |> LineCategorizer.categorize
+categorized
+|> Seq.map (fun x -> (x.Category, x.Index, (x.Lines |> Seq.head |> fun a -> a.Contents)))
+|> Seq.iter (printfn "%A")
 
 

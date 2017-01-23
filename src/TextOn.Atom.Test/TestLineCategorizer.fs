@@ -112,7 +112,7 @@ let ``Categorize preprocessor warning``() =
             }
         ]
 
-let mainFunction =
+let funcDefinition =
     [
         "@func @main()"
         "{"
@@ -127,9 +127,9 @@ let mainFunction =
     ]
 
 [<Test>]
-let ``Categorize a single main function``() =
-    let mainFunctionLines =
-        mainFunction
+let ``Categorize a single function definition``() =
+    let funcDefinitionLines =
+        funcDefinition
         |> Seq.scan
             (fun (ln,_) line ->
                 (ln,
@@ -142,9 +142,9 @@ let ``Categorize a single main function``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
-    let firstLine, lastLine = mainFunctionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    let firstLine, lastLine = funcDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        mainFunctionLines
+        funcDefinitionLines
         [
             {
                 Category = FuncDefinition
@@ -152,14 +152,14 @@ let ``Categorize a single main function``() =
                 File = "example.texton"
                 StartLine = firstLine
                 EndLine = lastLine
-                Lines = mainFunctionLines
+                Lines = funcDefinitionLines
             }
         ]
 
 [<Test>]
-let ``Categorize two functions``() =
-    let mainFunctionLines1 =
-        mainFunction
+let ``Categorize two function definitions``() =
+    let funcDefinitionLines1 =
+        funcDefinition
         |> Seq.scan
             (fun (ln,_) line ->
                 (ln,
@@ -172,9 +172,9 @@ let ``Categorize two functions``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
-    let firstLine1, lastLine1 = mainFunctionLines1 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
-    let mainFunctionLines2 =
-        mainFunction
+    let firstLine1, lastLine1 = funcDefinitionLines1 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    let funcDefinitionLines2 =
+        funcDefinition
         |> Seq.scan
             (fun (ln,_) line ->
                 (ln,
@@ -187,9 +187,9 @@ let ``Categorize two functions``() =
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
-    let firstLine2, lastLine2 = mainFunctionLines2 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    let firstLine2, lastLine2 = funcDefinitionLines2 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append mainFunctionLines1 mainFunctionLines2)
+        (Seq.append funcDefinitionLines1 funcDefinitionLines2)
         [
             {
                 Category = FuncDefinition
@@ -197,7 +197,7 @@ let ``Categorize two functions``() =
                 File = "example.texton"
                 StartLine = firstLine1
                 EndLine = lastLine1
-                Lines = mainFunctionLines1
+                Lines = funcDefinitionLines1
             }
             {
                 Category = FuncDefinition
@@ -205,7 +205,7 @@ let ``Categorize two functions``() =
                 File = "example.texton"
                 StartLine = firstLine2
                 EndLine = lastLine2
-                Lines = mainFunctionLines2
+                Lines = funcDefinitionLines2
             }
         ]
 
@@ -395,3 +395,61 @@ let ``Categorize two attribute definitions``() =
                 Lines = attDefinitionLines2
             }
         ]
+
+[<Test>]
+let ``Categorize a whole single file``() =
+    let parse firstLine x =
+        let s =
+            x
+            |> Seq.scan
+                (fun (ln,_) line ->
+                    (ln,
+                        Some
+                            {
+                                TopLevelFileLineNumber = ln
+                                CurrentFileLineNumber = ln
+                                CurrentFile = exampleFileName
+                                Contents = Line(line) }))
+                (firstLine,None)
+            |> Seq.skip 1
+            |> Seq.map (snd >> Option.get)
+        let firstLine, lastLine = s |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+        s, firstLine, lastLine
+    let preprocessedLines =
+        [
+            (AttDefinition, attDefinition)
+            (VarDefinition, varDefinition)
+            (FuncDefinition, funcDefinition)
+            (AttDefinition, attDefinition)
+            (VarDefinition, varDefinition)
+            (FuncDefinition, funcDefinition)
+        ]
+        |> Seq.scan
+            (fun (firstLine,_) (category, lines) ->
+                let (s, firstLine, lastLine) = parse firstLine lines
+                ((lastLine + 1), Some (s, firstLine, lastLine, category)))
+            (1, None)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
+    let input =
+        preprocessedLines
+        |> Seq.collect (fun (a,_,_,_) -> a)
+    let expected =
+        preprocessedLines
+        |> Seq.scan
+            (fun (index,_) (a,b,c,d) ->
+                ((index + 1),
+                    Some
+                        {
+                            Category = d
+                            Index = index
+                            File = exampleFileName
+                            StartLine = b
+                            EndLine = c
+                            Lines = a
+                        }))
+            (0,None)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
+        |> List.ofSeq
+    test input expected
