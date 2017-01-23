@@ -8,7 +8,14 @@ open Swensen.Unquote
 
 open TextOn.Atom
 
-let test source expected received =
+let test lines =
+    let received =
+        lines
+        |> Seq.map (fst >> AttributeLineTokenizer.tokenizeLine >> List.ofSeq)
+    let expected =
+        lines
+        |> Seq.map snd
+    let source = lines |> Seq.map fst
     Seq.zip3
         source
         expected
@@ -37,11 +44,12 @@ let ``Correctly formatted attribute definition``() =
             ("    \"Female\"", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "Female"}])
             ("  }", [{StartIndex = 3;EndIndex = 3;Token = CloseCurly}])
         ]
-    let tokens =
-        lines
-        |> Seq.map (fst >> AttributeLineTokenizer.tokenizeLine >> List.ofSeq)
-    let expected =
-        lines
-        |> Seq.map snd
-    test (lines |> Seq.map fst) expected tokens
+    test lines
 
+[<Test>]
+let ``Quoted string with escaped quotation marks in it``() =
+    let lines =
+        [
+            ("    \"This string has a \\\"quote\\\" in it.  \"", [{StartIndex = 5;EndIndex = 42;Token = QuotedString "This string has a \"quote\" in it.  "}])
+        ]
+    test lines
