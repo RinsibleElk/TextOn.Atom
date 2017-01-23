@@ -9,7 +9,7 @@
     "patterns": [
         {
             "name": "comment.texton",
-            "match": "^//.*$"
+            "match": "//.*$"
         },
         {
             "name": "keyword.var.texton",
