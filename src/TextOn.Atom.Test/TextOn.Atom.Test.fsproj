@@ -89,6 +89,7 @@
     <Compile Include="TestVariableLineTokenizer.fs" />
     <None Include="packages.config" />
     <None Include="App.config" />
+    <Compile Include="TestAttributeLineTokenizer.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsCheck">

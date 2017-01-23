@@ -47,3 +47,17 @@ let ``Correctly formatted variable definition``() =
         lines
         |> Seq.map snd
     test (lines |> Seq.map fst) expected tokens
+
+[<Test>]
+let ``Bad variable lines``() =
+    let lines =
+        [
+            ("    \"London", [{StartIndex = 1;EndIndex = 11;Token = Unrecognised}])
+        ]
+    let tokens =
+        lines
+        |> Seq.map (fst >> VariableLineTokenizer.tokenizeLine >> List.ofSeq)
+    let expected =
+        lines
+        |> Seq.map snd
+    test (lines |> Seq.map fst) expected tokens

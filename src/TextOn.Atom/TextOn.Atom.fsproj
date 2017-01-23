@@ -63,6 +63,7 @@
     <Compile Include="Preprocessor.fs" />
     <Compile Include="CommentStripper.fs" />
     <Compile Include="LineCategorizer.fs" />
+    <Compile Include="Tokens.fs" />
     <Compile Include="DefinitionLineTokenizer.fs" />
     <Compile Include="VariableLineTokenizer.fs" />
     <Compile Include="AttributeLineTokenizer.fs" />

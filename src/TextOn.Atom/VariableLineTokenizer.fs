@@ -3,31 +3,6 @@
 open System
 open System.Text.RegularExpressions
 
-type VariableLineToken =
-    | Var
-    | VariableName of string
-    | OpenBrace
-    | CloseBrace
-    | OpenCurly
-    | CloseCurly
-    | AttributeName of string
-    | OpenBracket
-    | CloseBracket
-    | QuotedString of string
-    | Or
-    | And
-    | Equals
-    | NotEquals
-    | Star
-    | Unrecognised
-
-type AttributedVariableLineToken =
-    {
-        StartIndex : int
-        EndIndex : int
-        Token : VariableLineToken
-    }
-
 [<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a variable definition and tokenize it.
 module VariableLineTokenizer =
