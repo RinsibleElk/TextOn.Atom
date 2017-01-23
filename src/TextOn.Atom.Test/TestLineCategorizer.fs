@@ -29,6 +29,7 @@ let test s e =
         |> Option.map (fun (r,e) -> sprintf "\n%A\n\n!=\n\n%A" e r)
         |> Option.iter (fun s -> failwithf "The lists didn't match - first failing line was: %s" s)
 let exampleFileName = "example.texton"
+let exampleFileName2 = "example2.texton"
 
 [<Test>]
 let ``Categorize empty file``() =
@@ -55,7 +56,7 @@ let ``Categorize preprocessor error``() =
             {
                 Category = PreprocessorError
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = 1
                 EndLine = 1
                 Lines =
@@ -63,7 +64,7 @@ let ``Categorize preprocessor error``() =
                         {
                             TopLevelFileLineNumber = 1
                             CurrentFileLineNumber = 1
-                            CurrentFile = "example.texton"
+                            CurrentFile = exampleFileName
                             Contents =
                                 Error {
                                     StartLocation = 1
@@ -94,7 +95,7 @@ let ``Categorize preprocessor warning``() =
             {
                 Category = PreprocessorWarning
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = 1
                 EndLine = 1
                 Lines =
@@ -102,7 +103,7 @@ let ``Categorize preprocessor warning``() =
                         {
                             TopLevelFileLineNumber = 1
                             CurrentFileLineNumber = 1
-                            CurrentFile = "example.texton"
+                            CurrentFile = exampleFileName
                             Contents =
                                 Warning {
                                     StartLocation = 1
@@ -149,7 +150,7 @@ let ``Categorize a single function definition``() =
             {
                 Category = FuncDefinition
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine
                 EndLine = lastLine
                 Lines = funcDefinitionLines
@@ -194,7 +195,7 @@ let ``Categorize two function definitions``() =
             {
                 Category = FuncDefinition
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine1
                 EndLine = lastLine1
                 Lines = funcDefinitionLines1
@@ -202,7 +203,7 @@ let ``Categorize two function definitions``() =
             {
                 Category = FuncDefinition
                 Index = 1
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine2
                 EndLine = lastLine2
                 Lines = funcDefinitionLines2
@@ -244,7 +245,7 @@ let ``Categorize a single variable definition``() =
             {
                 Category = VarDefinition
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine
                 EndLine = lastLine
                 Lines = varDefinitionLines
@@ -289,7 +290,7 @@ let ``Categorize two variable definitions``() =
             {
                 Category = VarDefinition
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine1
                 EndLine = lastLine1
                 Lines = varDefinitionLines1
@@ -297,7 +298,7 @@ let ``Categorize two variable definitions``() =
             {
                 Category = VarDefinition
                 Index = 1
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine2
                 EndLine = lastLine2
                 Lines = varDefinitionLines2
@@ -336,7 +337,7 @@ let ``Categorize a single attribute definition``() =
             {
                 Category = AttDefinition
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine
                 EndLine = lastLine
                 Lines = attDefinitionLines
@@ -381,7 +382,7 @@ let ``Categorize two attribute definitions``() =
             {
                 Category = AttDefinition
                 Index = 0
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine1
                 EndLine = lastLine1
                 Lines = attDefinitionLines1
@@ -389,7 +390,7 @@ let ``Categorize two attribute definitions``() =
             {
                 Category = AttDefinition
                 Index = 1
-                File = "example.texton"
+                File = exampleFileName
                 StartLine = firstLine2
                 EndLine = lastLine2
                 Lines = attDefinitionLines2
@@ -453,3 +454,201 @@ let ``Categorize a whole single file``() =
         |> Seq.map (snd >> Option.get)
         |> List.ofSeq
     test input expected
+
+[<Test>]
+let ``Unrecognised then function definition``() =
+    let unrecognisedLines =
+        [
+            (1, "hello")
+            (2, "world")
+        ]
+        |> Seq.map
+            (fun (ln, line) ->
+                {   TopLevelFileLineNumber = ln
+                    CurrentFileLineNumber = ln
+                    CurrentFile = exampleFileName
+                    Contents = Line(line) })
+    let funcDefinitionLines =
+        funcDefinition
+        |> Seq.scan
+            (fun (ln,_) line ->
+                (ln,
+                    Some
+                        {
+                            TopLevelFileLineNumber = ln
+                            CurrentFileLineNumber = ln
+                            CurrentFile = exampleFileName
+                            Contents = Line(line) }))
+            (3,None)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
+    let firstLine, lastLine = funcDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    test
+        (Seq.append unrecognisedLines funcDefinitionLines)
+        [
+            {
+                Category = CategorizationError
+                Index = 0
+                File = exampleFileName
+                StartLine = 1
+                EndLine = 2
+                Lines = unrecognisedLines
+            }
+            {
+                Category = FuncDefinition
+                Index = 1
+                File = exampleFileName
+                StartLine = firstLine
+                EndLine = lastLine
+                Lines = funcDefinitionLines
+            }
+        ]
+
+[<Test>]
+let ``Unrecognised then variable definition``() =
+    let unrecognisedLines =
+        [
+            (1, "hello")
+            (2, "world")
+        ]
+        |> Seq.map
+            (fun (ln, line) ->
+                {   TopLevelFileLineNumber = ln
+                    CurrentFileLineNumber = ln
+                    CurrentFile = exampleFileName
+                    Contents = Line(line) })
+    let varDefinitionLines =
+        varDefinition
+        |> Seq.scan
+            (fun (ln,_) line ->
+                (ln,
+                    Some
+                        {
+                            TopLevelFileLineNumber = ln
+                            CurrentFileLineNumber = ln
+                            CurrentFile = exampleFileName
+                            Contents = Line(line) }))
+            (3,None)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
+    let firstLine, lastLine = varDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    test
+        (Seq.append unrecognisedLines varDefinitionLines)
+        [
+            {
+                Category = CategorizationError
+                Index = 0
+                File = exampleFileName
+                StartLine = 1
+                EndLine = 2
+                Lines = unrecognisedLines
+            }
+            {
+                Category = VarDefinition
+                Index = 1
+                File = exampleFileName
+                StartLine = firstLine
+                EndLine = lastLine
+                Lines = varDefinitionLines
+            }
+        ]
+
+[<Test>]
+let ``Unrecognised then attribute definition``() =
+    let unrecognisedLines =
+        [
+            (1, "hello")
+            (2, "world")
+        ]
+        |> Seq.map
+            (fun (ln, line) ->
+                {   TopLevelFileLineNumber = ln
+                    CurrentFileLineNumber = ln
+                    CurrentFile = exampleFileName
+                    Contents = Line(line) })
+    let attDefinitionLines =
+        attDefinition
+        |> Seq.scan
+            (fun (ln,_) line ->
+                (ln,
+                    Some
+                        {
+                            TopLevelFileLineNumber = ln
+                            CurrentFileLineNumber = ln
+                            CurrentFile = exampleFileName
+                            Contents = Line(line) }))
+            (3,None)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
+    let firstLine, lastLine = attDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    test
+        (Seq.append unrecognisedLines attDefinitionLines)
+        [
+            {
+                Category = CategorizationError
+                Index = 0
+                File = exampleFileName
+                StartLine = 1
+                EndLine = 2
+                Lines = unrecognisedLines
+            }
+            {
+                Category = AttDefinition
+                Index = 1
+                File = exampleFileName
+                StartLine = firstLine
+                EndLine = lastLine
+                Lines = attDefinitionLines
+            }
+        ]
+
+[<Test>]
+let ``Unrecognised new file``() =
+    let attDefinitionLines =
+        attDefinition
+        |> Seq.scan
+            (fun (ln,_) line ->
+                (ln,
+                    Some
+                        {
+                            TopLevelFileLineNumber = ln
+                            CurrentFileLineNumber = ln
+                            CurrentFile = exampleFileName
+                            Contents = Line(line) }))
+            (1,None)
+        |> Seq.skip 1
+        |> Seq.map (snd >> Option.get)
+    let firstLine, lastLine = attDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
+    let unrecognisedLines =
+        [
+            (2, "hello")
+            (3, "world")
+        ]
+        |> Seq.map
+            (fun (ln, line) ->
+                {   TopLevelFileLineNumber = ln
+                    CurrentFileLineNumber = ln
+                    CurrentFile = exampleFileName2
+                    Contents = Line(line) })
+    test
+        (Seq.append attDefinitionLines unrecognisedLines)
+        [
+            {
+                Category = AttDefinition
+                Index = 0
+                File = exampleFileName
+                StartLine = firstLine
+                EndLine = lastLine
+                Lines = attDefinitionLines
+            }
+            {
+                Category = CategorizationError
+                Index = 1
+                File = exampleFileName2
+                StartLine = 2
+                EndLine = 3
+                Lines = unrecognisedLines
+            }
+        ]
+
+
