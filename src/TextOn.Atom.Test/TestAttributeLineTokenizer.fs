@@ -47,9 +47,10 @@ let ``Correctly formatted attribute definition``() =
     test lines
 
 [<Test>]
-let ``Quoted string with escaped quotation marks in it``() =
+let ``Quoted string with escaped characters in it``() =
     let lines =
         [
             ("    \"This string has a \\\"quote\\\" in it.  \"", [{StartIndex = 5;EndIndex = 42;Token = QuotedString "This string has a \"quote\" in it.  "}])
+            ("    \"This string has a \\\\ in it.  \"", [{StartIndex = 5;EndIndex = 35;Token = QuotedString "This string has a \\ in it.  "}])
         ]
     test lines
