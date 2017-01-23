@@ -16,6 +16,14 @@
             "match": "^@var\\s+"
         },
         {
+            "name": "invalid.illegal.character.string.texton",
+            "match": "[^\\\\]@(var|func|att)\\s+"
+        },
+        {
+            "name": "invalid.illegal.character.string.texton",
+            "match": "[^\\\\]#include\\s+"
+        },
+        {
             "name": "keyword.att.texton",
             "match": "^@att\\s+"
         },
