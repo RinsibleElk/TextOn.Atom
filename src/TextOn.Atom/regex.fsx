@@ -22,3 +22,10 @@ let tokens =
     lines
     |> Seq.collect VariableLineTokenizer.tokenizeLine
 tokens |> Seq.iter (fun x -> printfn "%A" x.Token)
+
+let normalString = "Hello"
+let specialString = "Héllo"
+let withNumbersString = "Hello_$9"
+let re = Regex("^\w+$", RegexOptions.CultureInvariant)
+re.Match(withNumbersString)
+

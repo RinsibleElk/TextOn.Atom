@@ -49,6 +49,27 @@ let ``Correctly formatted variable definition``() =
     test (lines |> Seq.map fst) expected tokens
 
 [<Test>]
+let ``Correctly formatted variable definition with funky characters``() =
+    let lines =
+        [
+            ("@var $Cîty", [{StartIndex = 1;EndIndex = 4;Token = Var};{StartIndex = 6;EndIndex = 10;Token = VariableName "Cîty"}])
+            ("  \"Which city áre you writing about?\"", [{StartIndex = 3;EndIndex = 37;Token = QuotedString "Which city áre you writing about?"}])
+            ("  {", [{StartIndex = 3;EndIndex = 3;Token = OpenCurly}])
+            ("    \"London\" [$Cöuntry = \"U.K.\"]", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "London"};{StartIndex = 14;EndIndex = 14;Token = OpenBrace};{StartIndex = 15;EndIndex = 22;Token = VariableName("Cöuntry")};{StartIndex = 24;EndIndex = 24;Token = Equals};{StartIndex = 26;EndIndex = 31;Token = QuotedString "U.K."};{StartIndex = 32;EndIndex = 32;Token = CloseBrace}])
+            ("    \"Berlin\" [$Country = \"Germany\" || %Gønder = \"Male\"]", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "Berlin"};{StartIndex = 14;EndIndex = 14;Token = OpenBrace};{StartIndex = 15;EndIndex = 22;Token = VariableName("Country")};{StartIndex = 24;EndIndex = 24;Token = Equals};{StartIndex = 26;EndIndex = 34;Token = QuotedString "Germany"};{StartIndex = 36;EndIndex = 37;Token = Or};{StartIndex = 39;EndIndex = 45;Token=AttributeName("Gønder")};{StartIndex = 47;EndIndex = 47;Token = Equals};{StartIndex = 49;EndIndex = 54;Token = QuotedString "Male"};{StartIndex = 55;EndIndex = 55;Token = CloseBrace}])
+            ("    \"Paris\" [$Country <> \"Germany\" && $Country <> \"U.K.\"]", [{StartIndex = 5;EndIndex = 11;Token = QuotedString "Paris"};{StartIndex = 13;EndIndex = 13;Token = OpenBrace};{StartIndex = 14;EndIndex = 21;Token = VariableName("Country")};{StartIndex = 23;EndIndex = 24;Token = NotEquals};{StartIndex = 26;EndIndex = 34;Token = QuotedString "Germany"};{StartIndex = 36;EndIndex = 37;Token = And};{StartIndex = 39;EndIndex = 46;Token=VariableName("Country")};{StartIndex = 48;EndIndex = 49;Token = NotEquals};{StartIndex = 51;EndIndex = 56;Token = QuotedString "U.K."};{StartIndex = 57;EndIndex = 57;Token = CloseBrace}])
+            ("    *", [{StartIndex = 5;EndIndex = 5;Token = Star}])
+            ("  }", [{StartIndex = 3;EndIndex = 3;Token = CloseCurly}])
+        ]
+    let tokens =
+        lines
+        |> Seq.map (fst >> VariableLineTokenizer.tokenizeLine >> List.ofSeq)
+    let expected =
+        lines
+        |> Seq.map snd
+    test (lines |> Seq.map fst) expected tokens
+
+[<Test>]
 let ``Bad variable lines``() =
     let lines =
         [
