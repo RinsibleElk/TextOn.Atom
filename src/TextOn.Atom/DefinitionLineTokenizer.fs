@@ -44,7 +44,7 @@ module DefinitionLineTokenizer =
         if line.Length = 0 then Seq.empty
         else
             // Find the first character that is one of the special characters I know about.
-            let firstIndex = line.IndexOfAny([|'\\';'$';'@';'{';'|';'}'|])
+            let firstIndex = line.IndexOfAny([|'\\';'$';'@';'{';'|';'}';'#'|])
             if firstIndex < 0 then
                 Seq.singleton {StartIndex = n + 1;EndIndex = n + line.Length;Token = RawText(line)}
             else if firstIndex = 0 && line.Length = 1 then
