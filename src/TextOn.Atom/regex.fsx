@@ -1,6 +1,7 @@
 #I __SOURCE_DIRECTORY__
 #r "bin/Debug/TextOn.Atom.exe"
 open TextOn.Atom
+open System
 open System.IO
 open System.Text.RegularExpressions
 
@@ -48,7 +49,10 @@ let stripTrailingWhitespace l =
     "  }"
     "}"
 ]
-|> List.map DefinitionLineTokenizer.tokenizeLine
+|> Seq.map (fun a -> (a, DefinitionLineTokenizer.tokenizeLine a))
+|> Seq.iter
+    (fun (x,y) ->
+        printfn "(\"%s\", [%s])" x (String.Join("; ", (y |> Seq.map (fun z -> sprintf "{StartIndex = %d;EndIndex = %d;Token = %A}" z.StartIndex z.EndIndex z.Token)))))
 
 
 

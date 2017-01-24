@@ -7,7 +7,7 @@ type Token =
     | Var
     | Func
     | Break
-    | Seq
+    | Sequential
     | Choice
     | VariableName of string
     | OpenBrace

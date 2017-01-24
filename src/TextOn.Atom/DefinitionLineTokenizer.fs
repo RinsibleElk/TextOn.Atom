@@ -88,12 +88,12 @@ module DefinitionLineTokenizer =
                 | "func"
                 | "att" -> InvalidReservedToken name
                 | "break" -> Break
-                | "seq" -> Seq
+                | "seq" -> Sequential
                 | "choice" -> Choice
                 | _ -> FunctionName name
-            let attributedToken = {StartIndex = n + 1;EndIndex = n + name.Length;Token = token}
+            let attributedToken = {StartIndex = n + 1;EndIndex = n + 1 + name.Length;Token = token}
             if strippedFuncInvocationMatch.Groups.[3].Success then
-                let index = n + name.Length + strippedFuncInvocationMatch.Groups.[2].Length + 1
+                let index = n + 1 + name.Length + strippedFuncInvocationMatch.Groups.[2].Length + 1
                 seq [attributedToken;{StartIndex = index;EndIndex = index;Token = OpenCurly}]
             else
                 Seq.singleton attributedToken
@@ -145,6 +145,6 @@ module DefinitionLineTokenizer =
                         else
                             tokenizeMain unescapedOpenBraceMatch.Groups.[1].Length unescapedOpenBraceMatch.Groups.[2].Value
             else
-                failwith "I honestly don't know how this can fail."
-
+                // I think this can probably only fail if the line is only a backslash?
+                Seq.singleton {StartIndex = 1;EndIndex = line.Length; Token = InvalidUnrecognised}
 
