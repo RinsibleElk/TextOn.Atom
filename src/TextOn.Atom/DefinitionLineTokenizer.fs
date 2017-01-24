@@ -6,5 +6,42 @@ open System.Text.RegularExpressions
 [<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a function definition and tokenize it.
 module DefinitionLineTokenizer =
-    // The tokens to find are '{', '|', '}', '[', ']', '=', '"', '@', '%', '/'. Escape character is '\'.
-    let tokenize () = ()
+    let private conditionMatches =
+        [
+            (Regex("^(\\s*)%([A-Za-z][A-Za-z0-9_]*)(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = AttributeName(m.Groups.[2].Value) }))
+            (Regex("^(\\s*)\\[(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenBrace }))
+            (Regex("^(\\s*)\\](\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseBrace }))
+            (Regex("^(\\s*)\\((\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenBracket }))
+            (Regex("^(\\s*)\\)(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseBracket }))
+            (Regex("^(\\s*)&&(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = And }))
+            (Regex("^(\\s*)\\|\\|(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = Or }))
+            (Regex("^(\\s*)=(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = Equals }))
+            (Regex("^(\\s*)\\*(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = Star }))
+            (Regex("^(\\s*)<>(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = NotEquals }))
+            (Regex("^(\\s*)\"(([^\\\"\\\\]+|\\\\\\\"|\\\\\\\\)*)\"(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 + m.Groups.[2].Length ; Token = QuotedString(m.Groups.[2].Value.Replace("\\\\", "\\").Replace("\\\"", "\"")) }))
+        ]
+    let rec private tokenizeConditionInner n line =
+        conditionMatches
+        |> Seq.choose
+            (fun (re, c) ->
+                let m = re.Match(line)
+                if m.Success |> not then None
+                else Some (m.Length, (c n m)))
+        |> Seq.tryFind (fun _ -> true)
+        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = Unrecognised })
+        |> fun (l, t) ->
+            seq {
+                yield t
+                if l < line.Length then yield! (tokenizeConditionInner (n + l) (line.Substring(l))) }
+    let private funcDefinitionRegex = Regex("^@func\s+")
+    let private funcNameRegex = Regex("^(\\s*)@([A-Za-z][A-Za-z0-9_]*)(\\s*|$)")
+    let private openCurlyRegex = Regex("^(\\s*)\\{(\\s*|$)")
+    let private closeCurlyRegex = Regex("^(\\s*)\\}(\\s*|$)")
+    let tokenizeLine (line:string) =
+        let funcDefinitionMatch = funcDefinitionRegex.Match(line)
+        if funcDefinitionMatch.Success then
+            ()
+        else
+            ()
+
+
