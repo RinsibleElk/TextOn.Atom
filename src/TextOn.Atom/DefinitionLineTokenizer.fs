@@ -40,6 +40,7 @@ module DefinitionLineTokenizer =
     let private openCurlyRegex = Regex("^(\\s*)\\{(\\s*|$)")
     let private closeCurlyRegex = Regex("^(\\s*)\\}(\\s*|$)")
     let private unescapedOpenBraceRegex = Regex("^(\\s*)(([^\[\\\\]+|\\\\\[|\\\\\\\\)*)(\[.*)?$")
+    // OPS don't forget @seq, @break, @choice, @funcName, etc....
     let tokenizeLine (line:string) =
         let funcDefinitionMatch = funcDefinitionRegex.Match(line)
         if funcDefinitionMatch.Success then
@@ -48,13 +49,22 @@ module DefinitionLineTokenizer =
             // Find the first unescaped '['.
             let unescapedOpenBraceMatch = unescapedOpenBraceRegex.Match(line)
             if unescapedOpenBraceMatch.Success then
-                let main = tokenizeMainInner unescapedOpenBraceMatch.Groups.[0].Length unescapedOpenBraceMatch.Groups.[0].Value
-                let condition =
-                    if unescapedOpenBraceMatch.Groups.[2].Success then
-                        tokenizeConditionInner (unescapedOpenBraceMatch.Groups.[0].Length + unescapedOpenBraceMatch.Groups.[1].Length) unescapedOpenBraceMatch.Groups.[2].Value
+                if unescapedOpenBraceMatch.Groups.[2].Success then
+                    let main = tokenizeMainInner unescapedOpenBraceMatch.Groups.[0].Length unescapedOpenBraceMatch.Groups.[0].Value
+                    let condition = tokenizeConditionInner (unescapedOpenBraceMatch.Groups.[0].Length + unescapedOpenBraceMatch.Groups.[1].Length) unescapedOpenBraceMatch.Groups.[2].Value
+                    Seq.append main condition
+                else
+                    let openCurlyMatch = openCurlyRegex.Match(line)
+                    if openCurlyMatch.Success then
+                        let index = openCurlyMatch.Groups.[1].Length + 1
+                        Seq.singleton {StartIndex = index;EndIndex = index;Token = OpenCurly}
                     else
-                        Seq.empty
-                Seq.append main condition
+                        let closeCurlyMatch = closeCurlyRegex.Match(line)
+                        if closeCurlyMatch.Success then
+                            let index = closeCurlyMatch.Groups.[1].Length + 1
+                            Seq.singleton {StartIndex = index;EndIndex = index;Token = CloseCurly}
+                        else
+                            tokenizeMainInner unescapedOpenBraceMatch.Groups.[0].Length unescapedOpenBraceMatch.Groups.[0].Value
             else
                 failwith "I honestly don't know how this can fail."
 
