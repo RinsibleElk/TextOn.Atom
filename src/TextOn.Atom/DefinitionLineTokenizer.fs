@@ -33,15 +33,29 @@ module DefinitionLineTokenizer =
             seq {
                 yield t
                 if l < line.Length then yield! (tokenizeConditionInner (n + l) (line.Substring(l))) }
+    let rec private tokenizeMainInner n line : AttributedToken seq =
+        failwith ""
     let private funcDefinitionRegex = Regex("^@func\s+")
     let private funcNameRegex = Regex("^(\\s*)@([A-Za-z][A-Za-z0-9_]*)(\\s*|$)")
     let private openCurlyRegex = Regex("^(\\s*)\\{(\\s*|$)")
     let private closeCurlyRegex = Regex("^(\\s*)\\}(\\s*|$)")
+    let private unescapedOpenBraceRegex = Regex("^(\\s*)(([^\[\\\\]+|\\\\\[|\\\\\\\\)*)(\[.*)?$")
     let tokenizeLine (line:string) =
         let funcDefinitionMatch = funcDefinitionRegex.Match(line)
         if funcDefinitionMatch.Success then
-            ()
+            failwith ""
         else
-            ()
+            // Find the first unescaped '['.
+            let unescapedOpenBraceMatch = unescapedOpenBraceRegex.Match(line)
+            if unescapedOpenBraceMatch.Success then
+                let main = tokenizeMainInner unescapedOpenBraceMatch.Groups.[0].Length unescapedOpenBraceMatch.Groups.[0].Value
+                let condition =
+                    if unescapedOpenBraceMatch.Groups.[2].Success then
+                        tokenizeConditionInner (unescapedOpenBraceMatch.Groups.[0].Length + unescapedOpenBraceMatch.Groups.[1].Length) unescapedOpenBraceMatch.Groups.[2].Value
+                    else
+                        Seq.empty
+                Seq.append main condition
+            else
+                failwith "I honestly don't know how this can fail."
 
 
