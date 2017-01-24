@@ -30,7 +30,7 @@ module AttributeLineTokenizer =
                 if m.Success |> not then None
                 else Some (m.Length, (c n m)))
         |> Seq.tryFind (fun _ -> true)
-        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = Unrecognised })
+        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised })
         |> fun (l, t) ->
             seq {
                 yield t

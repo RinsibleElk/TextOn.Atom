@@ -29,3 +29,26 @@ let withNumbersString = "Hello_$9"
 let re = Regex("^\w+$", RegexOptions.CultureInvariant)
 re.Match(withNumbersString)
 
+let trailingWhitespaceRegex = Regex(@"^(.*?)\s+$")
+let stripTrailingWhitespace l =
+    let m = trailingWhitespaceRegex.Match(l)
+    if m.Success then m.Groups.[1].Value
+    else l
+
+
+[
+    "@func @main"
+    "{"
+    "  @seq {"
+    "    You are a bloke. [%Gender = \"Male\"]"
+    "    You live in {$City|a city in $Country}."
+    "    We are in $City which is in $Country."
+    "    @break"
+    "    @guyStuff [%Gender = \"Male\"]"
+    "  }"
+    "}"
+]
+|> List.map DefinitionLineTokenizer.tokenizeLine
+
+
+

@@ -5,6 +5,10 @@ open System
 type Token =
     | Att
     | Var
+    | Func
+    | Break
+    | Seq
+    | Choice
     | VariableName of string
     | OpenBrace
     | CloseBrace
@@ -19,7 +23,11 @@ type Token =
     | Equals
     | NotEquals
     | Star
-    | Unrecognised
+    | InvalidUnrecognised
+    | ChoiceSeparator
+    | RawText of string
+    | InvalidReservedToken of string
+    | FunctionName of string
 
 type AttributedToken =
     {
