@@ -34,3 +34,4 @@ let ``Invalid - only an escape character``() =
     let expected = [{StartIndex=1;EndIndex=1;Token=InvalidUnrecognised}]
     if result <> expected then
         failwithf "Didn't get expected result %A\n\n<>\n\n%A" expected result
+
