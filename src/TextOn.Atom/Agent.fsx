@@ -39,7 +39,6 @@ module Agent =
                         | Quit -> return ()
                         | NewData a ->
                             b <- Some a
-                            printfn "%A" a
                             return! loop()
                         | Fetch(reply) ->
                             reply.Reply(b)
@@ -47,18 +46,30 @@ module Agent =
                 loop())
     let fetch (agent:Agent<_,_>) =
         agent.PostAndReply(Fetch)
-
+module Async =
+    let map f a =
+        async {
+            let! a = a
+            return f a }
 let output = Agent.make()
-let tokenizer = output |> Agent.map (Seq.map Tokenizer.tokenize)
-let categorizer = tokenizer |> Agent.map LineCategorizer.categorize
-let commentStripper = categorizer |> Agent.map CommentStripper.stripComments
-let preprocessor = commentStripper |> Agent.map (fun (a,b,c:string seq) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c)
-let start (f:FileInfo) =
-    let directory = f.Directory.FullName |> Some
-    let file = f.Name
-    let lines = f.FullName |> File.ReadAllLines |> Seq.ofArray
-    preprocessor.Post(NewData(file, directory, lines))
-start (FileInfo(@"D:\NodeJs\TextOn.Atom\examples\example.texton"))
-let result =
+let tokenizer =
     output
-    |> Agent.fetch
+    |> Agent.map
+        (fun s ->
+            async {
+                let! s = s
+                return! s |> Seq.map (fun x -> async { return Tokenizer.tokenize x }) |> Async.Parallel })
+let categorizer = tokenizer |> Agent.map (Async.map LineCategorizer.categorize)
+let commentStripper = categorizer |> Agent.map (Async.map CommentStripper.stripComments)
+let preprocessor = commentStripper |> Agent.map (Async.map (fun (a,b,c:string seq) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c))
+let start (f:FileInfo) =
+    async {
+        let directory = f.Directory.FullName |> Some
+        let file = f.Name
+        let lines = f.FullName |> File.ReadAllLines |> Seq.ofArray
+        return (file, directory, lines) }
+    |> NewData
+    |> preprocessor.Post
+start (FileInfo(@"D:\NodeJs\TextOn.Atom\examples\example.texton"))
+async { return! output |> Agent.fetch |> Option.get } |> Async.RunSynchronously
+
