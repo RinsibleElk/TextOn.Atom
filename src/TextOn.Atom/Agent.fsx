@@ -6,12 +6,12 @@ open System.Text.RegularExpressions
 
 type Message<'a,'b> =
     | Quit
-    | NewData of 'a
+    | NewData of 'a Async
     | Fetch of 'b option AsyncReplyChannel
 type Agent<'a,'b> = Message<'a,'b> MailboxProcessor
 [<RequireQualifiedAccess>]
 module Agent =
-    let map (f:'a -> 'b) (next:Agent<'b,'c>) =
+    let map (f:'a Async -> 'b Async) (next:Agent<'b,'c>) =
         Agent.Start
             (fun inbox ->
                 let mutable b = None
@@ -21,8 +21,8 @@ module Agent =
                         match msg with
                         | Quit -> return ()
                         | NewData a ->
-                            b <- Some (f a)
-                            next.Post(NewData(b.Value))
+                            b <- Some (f a |> Async.RunSynchronously)
+                            next.Post(NewData(async { return b.Value }))
                             return! loop()
                         | Fetch(reply) ->
                             reply.Reply(b)
