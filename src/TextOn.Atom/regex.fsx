@@ -17,9 +17,6 @@ let makeSync categorized =
             | PreprocessorError -> None
             | PreprocessorWarning -> None
             | CategorizationError -> None)
-    |> Seq.collect (Option.get)
-    |> Seq.concat
-    |> Seq.iter ignore
 let makeAsync categorized =
     categorized
     |> Seq.map
@@ -33,18 +30,15 @@ let makeAsync categorized =
             | CategorizationError -> async { return None })
     |> Async.Parallel
     |> Async.RunSynchronously
-    |> Seq.collect (Option.get)
-    |> Seq.concat
-    |> Seq.iter ignore
 
 let stopwatch = new System.Diagnostics.Stopwatch()
 stopwatch.Start()
 // Jonas: here's the pipeline so far. I want to test this with more complex examples like the original ones, once we've converted.
 let file = FileInfo(@"D:\NodeJs\TextOn.Atom\examples\example.texton")
-let preprocessed = Preprocessor.preprocess Preprocessor.realFileResolver file.Name (Some file.Directory.FullName) (file.FullName |> File.ReadLines)
+let preprocessed = Preprocessor.preprocess Preprocessor.realFileResolver file.Name (Some file.Directory.FullName) (file.FullName |> File.ReadAllLines |> Seq.ofArray)
 let stripped = CommentStripper.stripComments preprocessed
 let categorized = stripped |> LineCategorizer.categorize
-makeAsync categorized
+let tokenized = makeAsync categorized
 stopwatch.Stop()
 stopwatch.ElapsedMilliseconds
 

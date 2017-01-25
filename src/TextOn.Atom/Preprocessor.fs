@@ -105,7 +105,7 @@ module Preprocessor =
                     FileInfo(Path.Combine(directory.Value, fileUnresolved))
                 else
                     FileInfo(fileUnresolved)
-            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadLines)
+            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadAllLines |> Seq.ofArray)
             else None)
 
     /// Perform the preprocess.
