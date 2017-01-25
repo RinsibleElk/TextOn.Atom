@@ -59,6 +59,6 @@ let start (f:FileInfo) =
     let lines = f.FullName |> File.ReadAllLines |> Seq.ofArray
     preprocessor.Post(NewData(file, directory, lines))
 start (FileInfo(@"D:\NodeJs\TextOn.Atom\examples\example.texton"))
-
 let result =
     output
+    |> Agent.fetch
