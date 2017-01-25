@@ -34,7 +34,7 @@ module DefinitionLineTokenizer =
                 if m.Success |> not then None
                 else Some (m.Length, (c n m)))
         |> Seq.tryFind (fun _ -> true)
-        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised })
+        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised line })
         |> fun (l, t) ->
             seq {
                 yield t
@@ -53,7 +53,7 @@ module DefinitionLineTokenizer =
                     | '{' -> OpenCurly
                     | '|' -> ChoiceSeparator
                     | '}' -> CloseCurly
-                    | _ -> InvalidUnrecognised
+                    | _ -> InvalidUnrecognised (line.[0].ToString())
                 Seq.singleton {StartIndex = n + 1;EndIndex = n + 1;Token = token}
             else
                 let output, toRemove =
@@ -65,11 +65,11 @@ module DefinitionLineTokenizer =
                         | '$' ->
                             let funcAtStartMatch = funcAtStartRegex.Match(line)
                             if funcAtStartMatch.Success then {StartIndex = n + 1;EndIndex = n + funcAtStartMatch.Length;Token = VariableName(funcAtStartMatch.Groups.[1].Value)}, funcAtStartMatch.Length
-                            else {StartIndex = n + 1;EndIndex = n + 1;Token = InvalidUnrecognised}, 1
+                            else {StartIndex = n + 1;EndIndex = n + 1;Token = InvalidUnrecognised (line.[0].ToString()) }, 1
                         | '\\' ->
                             {StartIndex = n + 1;EndIndex = n + 2;Token = RawText(line.[1].ToString())}, 2
                         | _ ->
-                            {StartIndex = n + 1;EndIndex = n + 2;Token = InvalidUnrecognised}, 1
+                            {StartIndex = n + 1;EndIndex = n + 1;Token = InvalidUnrecognised (line.[0].ToString())}, 1
                     else
                         {StartIndex = n + 1;EndIndex = n + firstIndex;Token = RawText(line.Substring(0, firstIndex))}, firstIndex
                 seq {
@@ -121,7 +121,7 @@ module DefinitionLineTokenizer =
                         Seq.empty
                 seq { yield funcDefinitionToken; yield funcNameToken; yield! openCurlyToken }
             else
-                let unrecognisedToken = {StartIndex = 6;EndIndex = line.Length;Token = InvalidUnrecognised}
+                let unrecognisedToken = {StartIndex = funcDefinitionMatch.Length + 1;EndIndex = line.Length;Token = InvalidUnrecognised (line.Substring(funcDefinitionMatch.Length + 1)) }
                 seq {
                     yield funcDefinitionToken
                     yield unrecognisedToken }
@@ -147,5 +147,5 @@ module DefinitionLineTokenizer =
                             tokenizeMain unescapedOpenBraceMatch.Groups.[1].Length unescapedOpenBraceMatch.Groups.[2].Value
             else
                 // I think this can probably only fail if the line is only a backslash?
-                Seq.singleton {StartIndex = 1;EndIndex = line.Length; Token = InvalidUnrecognised}
+                Seq.singleton {StartIndex = 1;EndIndex = line.Length; Token = InvalidUnrecognised line }
 

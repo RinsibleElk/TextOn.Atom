@@ -32,7 +32,7 @@ module VariableLineTokenizer =
                 if m.Success |> not then None
                 else Some (m.Length, (c n m)))
         |> Seq.tryFind (fun _ -> true)
-        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised })
+        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised line })
         |> fun (l, t) ->
             seq {
                 yield t

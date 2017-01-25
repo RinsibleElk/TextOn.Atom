@@ -23,7 +23,7 @@ type Token =
     | Equals
     | NotEquals
     | Star
-    | InvalidUnrecognised
+    | InvalidUnrecognised of string
     | ChoiceSeparator
     | RawText of string
     | InvalidReservedToken of string

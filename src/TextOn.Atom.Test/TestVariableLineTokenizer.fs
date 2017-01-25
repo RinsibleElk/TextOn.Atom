@@ -73,7 +73,7 @@ let ``Correctly formatted variable definition with funky characters``() =
 let ``Bad variable lines``() =
     let lines =
         [
-            ("    \"London", [{StartIndex = 1;EndIndex = 11;Token = InvalidUnrecognised}])
+            ("    \"London", [{StartIndex = 1;EndIndex = 11;Token = InvalidUnrecognised "    \"London"}])
         ]
     let tokens =
         lines

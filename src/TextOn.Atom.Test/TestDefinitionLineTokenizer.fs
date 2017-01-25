@@ -31,7 +31,7 @@ let ``Valid full function``() =
 [<Test>]
 let ``Invalid - only an escape character``() =
     let result = DefinitionLineTokenizer.tokenizeLine "\\" |> Seq.toList
-    let expected = [{StartIndex=1;EndIndex=1;Token=InvalidUnrecognised}]
+    let expected = [{StartIndex=1;EndIndex=1;Token=InvalidUnrecognised "\\" }]
     if result <> expected then
         failwithf "Didn't get expected result %A\n\n<>\n\n%A" expected result
 
