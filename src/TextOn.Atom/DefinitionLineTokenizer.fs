@@ -104,6 +104,7 @@ module DefinitionLineTokenizer =
     let private closeCurlyRegex = Regex("^(\\s*)\\}\\s*$")
     let private unescapedOpenBraceRegex = Regex("^(\\s*)(([^\[\\\\]+|\\\\\[|\\\\\\\\)*)(\[.*)?$")
     let private funcNameRegex = Regex("^@(\w+)(\s*)(\{)?\s*$")
+    /// Tokenize a single line of source that has been categorized to lie within a function definition.
     let tokenizeLine (line:string) =
         let funcDefinitionMatch = funcDefinitionRegex.Match(line)
         if funcDefinitionMatch.Success then
