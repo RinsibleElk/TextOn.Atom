@@ -45,6 +45,8 @@ module Agent =
                             reply.Reply(b)
                             return! loop() }
                 loop())
+    let fetch (agent:Agent<_,_>) =
+        agent.PostAndReply(Fetch)
 
 let output = Agent.make()
 let tokenizer = output |> Agent.map (Seq.map Tokenizer.tokenize)
@@ -58,3 +60,5 @@ let start (f:FileInfo) =
     preprocessor.Post(NewData(file, directory, lines))
 start (FileInfo(@"D:\NodeJs\TextOn.Atom\examples\example.texton"))
 
+let result =
+    output
