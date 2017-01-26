@@ -69,6 +69,7 @@
     <Compile Include="AttributeLineTokenizer.fs" />
     <Compile Include="Tokenizer.fs" />
     <Compile Include="Condition.fs" />
+    <Compile Include="Generator.fs" />
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />
     <None Include="Agent.fsx" />
