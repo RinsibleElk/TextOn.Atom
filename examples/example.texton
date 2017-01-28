@@ -16,8 +16,8 @@
 {
   @seq {
     You are a bloke. [%Gender = "Male"]
-    You live in {$City|a city in $Country}.
-    We are in $City which is in $Country.
+    You live in {$City|a {city|metropolitan area|town} in $Country}.
+    $City is in $Country.
     @break
     @guyStuff [%Gender = "Male"]
   }

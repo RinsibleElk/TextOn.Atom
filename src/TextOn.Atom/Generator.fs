@@ -43,3 +43,7 @@ type GeneratorInputs = {
     /// Variable values.
     Variables : StringNameValuePair list }
 
+[<RequireQualifiedAccess>]
+module Generator =
+    let generate inputs compiledTemplate =
+        ()
