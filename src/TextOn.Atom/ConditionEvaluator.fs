@@ -13,7 +13,7 @@ type Condition =
 
 /// Resolve a condition from a cache of values.
 [<RequireQualifiedAccess>]
-module ConditionResolver =
+module ConditionEvaluator =
     /// Resolve a condition's value.
     let rec resolve (cache:Map<int, string>) condition : bool =
         match condition with

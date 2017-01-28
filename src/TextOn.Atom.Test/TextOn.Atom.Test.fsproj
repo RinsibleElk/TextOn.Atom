@@ -89,7 +89,7 @@
     <Compile Include="TestDefinitionLineTokenizer.fs" />
     <Compile Include="TestVariableLineTokenizer.fs" />
     <Compile Include="TestAttributeLineTokenizer.fs" />
-    <Compile Include="TestConditionResolver.fs" />
+    <Compile Include="TestConditionEvaluator.fs" />
     <None Include="packages.config" />
     <None Include="App.config" />
   </ItemGroup>
