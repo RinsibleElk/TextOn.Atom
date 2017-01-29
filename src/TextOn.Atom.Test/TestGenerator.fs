@@ -257,3 +257,29 @@ let ``Test variable replacement``() =
                     Value = countryText }
             |] }
     test <@ expected = output @>
+
+let makeNoVariablesInputWithSeed seed = {
+    RandomSeed = seed
+    Config = {  NumSpacesBetweenSentences = 2
+                NumBlankLinesBetweenParagraphs = 1
+                LineEnding = CRLF }
+    Attributes = []
+    Variables = [] }
+
+[<Test>]
+let ``Test using same seed gets same value``() =
+    let text1 = "Hello world."
+    let text2 = "Hi earth."
+    let node1 = SimpleText text1
+    let node2 = SimpleText text2
+    let node =
+        Choice
+            [|
+                (Sentence(exampleFileName, exampleLineNumber, node1), True)
+                (Sentence(exampleFileName, exampleLineNumber, node2), True)
+            |]
+    let template1 = makeNoVariablesTemplate node
+    let expected = Generator.generate (makeNoVariablesInputWithSeed NoSeed) template1 |> expectSuccess
+    let template2 = makeNoVariablesTemplate node
+    let output = Generator.generate (makeNoVariablesInputWithSeed (SpecificValue expected.LastSeed)) template2 |> expectSuccess
+    test <@ expected = output @>

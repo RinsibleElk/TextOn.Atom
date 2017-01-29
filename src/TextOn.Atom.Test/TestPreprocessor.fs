@@ -237,3 +237,4 @@ let ``Preprocessor with unrecognised directive``() =
                 yield expectedError
                 yield! l }
     test alwaysFailFileResolver source expected
+
