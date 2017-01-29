@@ -25,12 +25,17 @@ let makeNoVariablesTemplate node = {
     Variables = [||]
     Definition = Seq [| (node, True) |] }
 
+let expectSuccess result =
+    match result with
+    | GeneratorError e -> failwithf "Expected success but got error: %s" e
+    | GeneratorSuccess s -> s
+
 [<Test>]
 let ``Test simple text``() =
     let textValue = "Hello world."
     let simpleNode = SimpleText textValue
     let template = makeNoVariablesTemplate (Sentence(exampleFileName, exampleLineNumber, simpleNode))
-    let output = Generator.generate noVariablesInput template
+    let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
         LastSeed = 42
         Text =
@@ -54,7 +59,7 @@ let ``Test choice``() =
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
             |]
     let template = makeNoVariablesTemplate node
-    let output = Generator.generate noVariablesInput template
+    let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
         LastSeed = 42
         Text =
@@ -78,7 +83,7 @@ let ``Test sentence break``() =
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
             |]
     let template = makeNoVariablesTemplate node
-    let output = Generator.generate noVariablesInput template
+    let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
         LastSeed = 42
         Text =
@@ -109,7 +114,7 @@ let ``Test paragraph break``() =
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
             |]
     let template = makeNoVariablesTemplate node
-    let output = Generator.generate noVariablesInput template
+    let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
         LastSeed = 42
         Text =
@@ -135,10 +140,11 @@ let makeSingleAttributeTemplate node = {
                 File = exampleFileName
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
-                Values = [|
-                    { Value = "Male"; Condition = True }
-                    { Value = "Female"; Condition = True }
-                |]
+                Values =
+                    [|
+                        { Value = "Male"; Condition = True }
+                        { Value = "Female"; Condition = True }
+                    |]
             }
         |]
     Variables = [||]
@@ -166,7 +172,7 @@ let ``Test successful condition``() =
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
             |]
     let template = makeSingleAttributeTemplate node
-    let output = Generator.generate (makeSingleAttributeInput "Male") template
+    let output = Generator.generate (makeSingleAttributeInput "Male") template |> expectSuccess
     let expected = {
         LastSeed = 42
         Text =
@@ -197,7 +203,7 @@ let ``Test failed condition``() =
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
             |]
     let template = makeSingleAttributeTemplate node
-    let output = Generator.generate (makeSingleAttributeInput "Male") template
+    let output = Generator.generate (makeSingleAttributeInput "Male") template |> expectSuccess
     let expected = {
         LastSeed = 42
         Text =

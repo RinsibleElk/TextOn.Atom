@@ -57,6 +57,10 @@ type GeneratorOutput = {
     LastSeed : int
     Text : AttributedOutputString[] }
 
+type GeneratorResult =
+    | GeneratorError of string
+    | GeneratorSuccess of GeneratorOutput
+
 [<RequireQualifiedAccess>]
 module Generator =
     let rec private generateSentence (variableValues:Map<int,string>) (random:Random) (node:SimpleCompiledDefinitionNode) =
@@ -93,7 +97,7 @@ module Generator =
             |> Async.Parallel
             |> Async.RunSynchronously
             |> Seq.concat
-    let generate (input:GeneratorInput) (compiledTemplate:CompiledTemplate) : GeneratorOutput =
+    let generate (input:GeneratorInput) (compiledTemplate:CompiledTemplate) : GeneratorResult =
         let randomSeed =
             match input.RandomSeed with
             | SpecificValue seed -> seed
@@ -106,9 +110,9 @@ module Generator =
             let extraAttributes = Set.difference givenAttributes requiredAttributes
             let missingAttributes = Set.difference requiredAttributes givenAttributes
             if extraAttributes |> Set.isEmpty |> not then
-                (Map.empty, Some 1)
+                (Map.empty, Some (sprintf "Unrecognised attribute: %s" (extraAttributes |> Seq.head)))
             else if missingAttributes |> Set.isEmpty |> not then
-                (Map.empty, Some 1)
+                (Map.empty, Some (sprintf "Undefined attribute: %s" (missingAttributes |> Seq.head)))
             else
                 let attributeIndices =
                     compiledTemplate.Attributes
@@ -127,9 +131,9 @@ module Generator =
             let extraVariables = Set.difference givenVariables requiredVariables
             let missingVariables = Set.difference requiredVariables givenVariables
             if extraVariables |> Set.isEmpty |> not then
-                (Map.empty, Some 1)
+                (Map.empty, Some (sprintf "Unrecognised variable: %s" (extraVariables |> Seq.head)))
             else if missingVariables |> Set.isEmpty |> not then
-                (Map.empty, Some 1)
+                (Map.empty, Some (sprintf "Undefined variable: %s" (missingVariables |> Seq.head)))
             else
                 let variableIndices =
                     compiledTemplate.Variables
@@ -141,42 +145,47 @@ module Generator =
                         (fun x -> (variableIndices |> Map.find x.Name), x.Value)
                     |> Map.ofSeq
                 (variableValues, None)
-        let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toArray
-        let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
-        let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
-        let paraBreakText = [ 0 .. input.Config.NumBlankLinesBetweenParagraphs ] |> Seq.map (fun _ -> lineBreakText) |> Seq.fold (+) ""
-        let rec loop previousIsSentence remaining =
-            if remaining |> Seq.isEmpty then Seq.empty
-            else
-                let (newPreviousIsSentence, output) =
-                    match (remaining |> Seq.head) with
-                    | SentenceText(inputFile, inputLineNumber, text) ->
-                        let l =
-                            if previousIsSentence then
-                                seq [
-                                    {   InputFile = null
-                                        InputLineNumber = Int32.MinValue
-                                        Value = sentenceBreakText }
-                                    {
-                                        InputFile = inputFile
-                                        InputLineNumber = inputLineNumber
-                                        Value = text }
-                                ]
-                            else
+        match (attributeError, variableError) with
+        | (Some e, _)
+        | (_, Some e) -> GeneratorError e
+        | _ ->
+            let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toArray
+            let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
+            let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
+            let paraBreakText = [ 0 .. input.Config.NumBlankLinesBetweenParagraphs ] |> Seq.map (fun _ -> lineBreakText) |> Seq.fold (+) ""
+            let rec loop previousIsSentence remaining =
+                if remaining |> Seq.isEmpty then Seq.empty
+                else
+                    let (newPreviousIsSentence, output) =
+                        match (remaining |> Seq.head) with
+                        | SentenceText(inputFile, inputLineNumber, text) ->
+                            let l =
+                                if previousIsSentence then
+                                    seq [
+                                        {   InputFile = null
+                                            InputLineNumber = Int32.MinValue
+                                            Value = sentenceBreakText }
+                                        {
+                                            InputFile = inputFile
+                                            InputLineNumber = inputLineNumber
+                                            Value = text }
+                                    ]
+                                else
+                                    Seq.singleton
+                                        {
+                                            InputFile = inputFile
+                                            InputLineNumber = inputLineNumber
+                                            Value = text }
+                            (true, l)
+                        | ParaBreak(inputFile, inputLineNumber) ->
+                            (false,
                                 Seq.singleton
-                                    {
-                                        InputFile = inputFile
+                                    {   InputFile = inputFile
                                         InputLineNumber = inputLineNumber
-                                        Value = text }
-                        (true, l)
-                    | ParaBreak(inputFile, inputLineNumber) ->
-                        (false,
-                            Seq.singleton
-                                {   InputFile = inputFile
-                                    InputLineNumber = inputLineNumber
-                                    Value = paraBreakText })
-                seq {
-                    yield! output
-                    yield! loop newPreviousIsSentence (remaining |> Seq.tail) }
-        {   LastSeed    = randomSeed
-            Text        = loop false output |> Seq.toArray }
+                                        Value = paraBreakText })
+                    seq {
+                        yield! output
+                        yield! loop newPreviousIsSentence (remaining |> Seq.tail) }
+            GeneratorSuccess
+                {   LastSeed    = randomSeed
+                    Text        = loop false output |> Seq.toArray }
