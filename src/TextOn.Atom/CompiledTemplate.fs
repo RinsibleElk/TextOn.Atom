@@ -2,6 +2,7 @@
 
 type CompiledTemplate =
     {
-        Attributes : Map<string, int>
-        Variables : Map<string, int>
+        Attributes : CompiledAttributeDefinition[]
+        Variables : CompiledVariableDefinition[]
+        Definition : CompiledDefinitionNode
     }

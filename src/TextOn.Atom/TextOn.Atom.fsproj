@@ -70,8 +70,10 @@
     <Compile Include="Tokenizer.fs" />
     <Compile Include="ConditionEvaluator.fs" />
     <Compile Include="VariableConditionEvaluator.fs" />
-    <Compile Include="CompiledTemplate.fs" />
     <Compile Include="CompiledAttributeDefinition.fs" />
+    <Compile Include="CompiledVariableDefinition.fs" />
+    <Compile Include="CompiledDefinitionNode.fs" />
+    <Compile Include="CompiledTemplate.fs" />
     <Compile Include="Generator.fs" />
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />
