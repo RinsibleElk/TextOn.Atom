@@ -214,3 +214,46 @@ let ``Test failed condition``() =
             |] }
     test <@ expected = output @>
 
+let makeSingleVariableTemplate node = {
+    Attributes = [||]
+    Variables =
+        [|
+            {
+                Name = "Country"
+                Index = 0
+                File = exampleFileName
+                StartLine = exampleLineNumber
+                EndLine = exampleLineNumber
+                PermitsFreeValue = true
+                Values =
+                    [|
+                        { Value = "U.K."; Condition = VarTrue }
+                        { Value = "Germany"; Condition = VarTrue }
+                    |]
+            }
+        |]
+    Definition = Seq [| (node, True) |] }
+
+let makeSingleVariableInput country = {
+    RandomSeed = SpecificValue(42)
+    Config = {  NumSpacesBetweenSentences = 2
+                NumBlankLinesBetweenParagraphs = 1
+                LineEnding = CRLF }
+    Attributes = []
+    Variables = [{Name = "Country";Value = country}] }
+
+[<Test>]
+let ``Test variable replacement``() =
+    let node = Sentence(exampleFileName, exampleLineNumber, VariableValue 0)
+    let template = makeSingleVariableTemplate node
+    let countryText = "U.K."
+    let output = Generator.generate (makeSingleVariableInput countryText) template |> expectSuccess
+    let expected = {
+        LastSeed = 42
+        Text =
+            [|
+                {   InputFile = exampleFileName
+                    InputLineNumber = exampleLineNumber
+                    Value = countryText }
+            |] }
+    test <@ expected = output @>
