@@ -36,6 +36,12 @@ type AttributedToken =
         Token : Token
     }
 
+type AttributedTokenizedLine =
+    {
+        LineNumber : int
+        Tokens : AttributedToken list
+    }
+
 type CategorizedAttributedTokenSet =
     {
         Category : Category
@@ -43,5 +49,5 @@ type CategorizedAttributedTokenSet =
         File : string
         StartLine : int
         EndLine : int
-        Tokens : AttributedToken seq
+        Tokens : AttributedTokenizedLine list
     }
