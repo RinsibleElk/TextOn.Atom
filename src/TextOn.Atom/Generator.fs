@@ -89,8 +89,7 @@ module Generator =
             |> Array.map
                 (fun (node, _) ->
                     let random = Random(random.Next())
-                    async {
-                        return (generateInner attributeValues variableValues random node) })
+                    async { return (generateInner attributeValues variableValues random node) })
             |> Async.Parallel
             |> Async.RunSynchronously
             |> Seq.concat
@@ -100,8 +99,48 @@ module Generator =
             | SpecificValue seed -> seed
             | NoSeed -> Random().Next()
         let random = Random(randomSeed)
-        let attributeValues = Map.empty
-        let variableValues = Map.empty
+        let attributeValues, attributeError =
+            // Need to do a check that the user has provided values for all attribute values.
+            let requiredAttributes = compiledTemplate.Attributes |> Array.map (fun x -> x.Name) |> Set.ofArray
+            let givenAttributes = input.Attributes |> List.map (fun x -> x.Name) |> Set.ofList
+            let extraAttributes = Set.difference givenAttributes requiredAttributes
+            let missingAttributes = Set.difference requiredAttributes givenAttributes
+            if extraAttributes |> Set.isEmpty |> not then
+                (Map.empty, Some 1)
+            else if missingAttributes |> Set.isEmpty |> not then
+                (Map.empty, Some 1)
+            else
+                let attributeIndices =
+                    compiledTemplate.Attributes
+                    |> Array.map (fun x -> x.Name, x.Index)
+                    |> Map.ofArray
+                let attributeValues =
+                    input.Attributes
+                    |> List.map
+                        (fun x -> (attributeIndices |> Map.find x.Name), x.Value)
+                    |> Map.ofSeq
+                (attributeValues, None)
+        let variableValues, variableError =
+            // Need to do a check that the user has provided values for all variable values.
+            let requiredVariables = compiledTemplate.Variables |> Array.map (fun x -> x.Name) |> Set.ofArray
+            let givenVariables = input.Variables |> List.map (fun x -> x.Name) |> Set.ofList
+            let extraVariables = Set.difference givenVariables requiredVariables
+            let missingVariables = Set.difference requiredVariables givenVariables
+            if extraVariables |> Set.isEmpty |> not then
+                (Map.empty, Some 1)
+            else if missingVariables |> Set.isEmpty |> not then
+                (Map.empty, Some 1)
+            else
+                let variableIndices =
+                    compiledTemplate.Variables
+                    |> Array.map (fun x -> x.Name, x.Index)
+                    |> Map.ofArray
+                let variableValues =
+                    input.Variables
+                    |> List.map
+                        (fun x -> (variableIndices |> Map.find x.Name), x.Value)
+                    |> Map.ofSeq
+                (variableValues, None)
         let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toArray
         let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
         let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
