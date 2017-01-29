@@ -10,9 +10,6 @@ type Message<'a,'b> =
     | NewData of 'a
     | Fetch of 'b option AsyncReplyChannel
 type Agent<'a,'b> = Message<'a,'b> MailboxProcessor
-type EitherOr<'a,'b> =
-    | Either of 'a
-    | Or of 'b
 [<RequireQualifiedAccess>]
 module Agent =
     let map (f:'a -> 'b) (node:Agent<_,'a>) =
@@ -43,8 +40,8 @@ module Agent =
         node.Post(Connect(NewData >> agent.Post))
         agent
     let map2 (f:'a -> 'b -> 'c) (node1:Agent<_,'a>) (node2:Agent<_,'b>) =
-        let nodeA = node1 |> map Either
-        let nodeB = node2 |> map Or
+        let nodeA = node1 |> map Choice1Of2
+        let nodeB = node2 |> map Choice2Of2
         let agent =
             Agent.Start
                 (fun inbox ->
@@ -62,12 +59,12 @@ module Agent =
                                 return! loop()
                             | NewData data ->
                                 match data with
-                                | Either x ->
+                                | Choice1Of2 x ->
                                     a <- Some x
                                     if b.IsSome then
                                         c <- Some (f x b.Value)
                                         listeners |> List.iter (fun f -> f c.Value)
-                                | Or x ->
+                                | Choice2Of2 x ->
                                     b <- Some x
                                     if a.IsSome then
                                         c <- Some (f a.Value x)
@@ -130,6 +127,4 @@ let result          =
     tokenizer
     |> Agent.fetch
     |> Option.get
-    |> Seq.collect Option.get
-    |> Seq.concat
 
