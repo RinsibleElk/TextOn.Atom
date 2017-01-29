@@ -8,7 +8,7 @@ open Swensen.Unquote
 
 open TextOn.Atom
 
-let test s e =
+let test s (e:CategorizedLines list) =
     let r = LineCategorizer.categorize s |> Seq.toList
     let rLen = r |> List.length
     let eLen = e |> List.length

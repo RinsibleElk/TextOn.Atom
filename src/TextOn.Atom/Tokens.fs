@@ -36,3 +36,12 @@ type AttributedToken =
         Token : Token
     }
 
+type CategorizedAttributedTokenSet =
+    {
+        Category : Category
+        Index : int
+        File : string
+        StartLine : int
+        EndLine : int
+        Tokens : AttributedToken seq
+    }
