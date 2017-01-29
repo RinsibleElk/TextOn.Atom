@@ -64,3 +64,64 @@ let ``Test choice``() =
                     Value = text2 }
             |] }
     test <@ expected = output @>
+
+[<Test>]
+let ``Test sentence break``() =
+    let text1 = "Hello world."
+    let text2 = "Hi earth."
+    let node1 = SimpleText text1
+    let node2 = SimpleText text2
+    let node =
+        Seq
+            [|
+                (Sentence(exampleFileName, exampleLineNumber, node1), True)
+                (Sentence(exampleFileName, exampleLineNumber, node2), True)
+            |]
+    let template = makeNoVariablesTemplate node
+    let output = Generator.generate noVariablesInput template
+    let expected = {
+        LastSeed = 42
+        Text =
+            [|
+                {   InputFile = exampleFileName
+                    InputLineNumber = exampleLineNumber
+                    Value = text1 }
+                {   InputFile = null
+                    InputLineNumber = Int32.MinValue
+                    Value = "  " }
+                {   InputFile = exampleFileName
+                    InputLineNumber = exampleLineNumber
+                    Value = text2 }
+            |] }
+    test <@ expected = output @>
+
+[<Test>]
+let ``Test paragraph break``() =
+    let text1 = "Hello world."
+    let text2 = "Hi earth."
+    let node1 = SimpleText text1
+    let node2 = SimpleText text2
+    let node =
+        Seq
+            [|
+                (Sentence(exampleFileName, exampleLineNumber, node1), True)
+                (ParagraphBreak(exampleFileName, exampleLineNumber), True)
+                (Sentence(exampleFileName, exampleLineNumber, node2), True)
+            |]
+    let template = makeNoVariablesTemplate node
+    let output = Generator.generate noVariablesInput template
+    let expected = {
+        LastSeed = 42
+        Text =
+            [|
+                {   InputFile = exampleFileName
+                    InputLineNumber = exampleLineNumber
+                    Value = text1 }
+                {   InputFile = exampleFileName
+                    InputLineNumber = exampleLineNumber
+                    Value = "\r\n\r\n" }
+                {   InputFile = exampleFileName
+                    InputLineNumber = exampleLineNumber
+                    Value = text2 }
+            |] }
+    test <@ expected = output @>
