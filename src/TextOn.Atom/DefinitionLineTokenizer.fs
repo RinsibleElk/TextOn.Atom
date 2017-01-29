@@ -9,17 +9,17 @@ module DefinitionLineTokenizer =
     // OPS This is surely horrendous perf wise?
     let private conditionMatches =
         [
-            (Regex("^(\\s*)%(\w+)(\\s*|$)", RegexOptions.CultureInvariant), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = AttributeName(m.Groups.[2].Value) }))
-            (Regex("^(\\s*)\\[(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenBrace }))
-            (Regex("^(\\s*)\\](\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseBrace }))
-            (Regex("^(\\s*)\\((\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenBracket }))
-            (Regex("^(\\s*)\\)(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseBracket }))
-            (Regex("^(\\s*)&&(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = And }))
-            (Regex("^(\\s*)\\|\\|(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = Or }))
-            (Regex("^(\\s*)=(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = Equals }))
-            (Regex("^(\\s*)\\*(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = Star }))
-            (Regex("^(\\s*)<>(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = NotEquals }))
-            (Regex("^(\\s*)\"(([^\\\"\\\\]+|\\\\\\\"|\\\\\\\\)*)\"(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 + m.Groups.[2].Length ; Token = QuotedString(m.Groups.[2].Value.Replace("\\\\", "\\").Replace("\\\"", "\"")) }))
+            (Regex("^(\\s*)%(\w+)(\\s*|$)", RegexOptions.CultureInvariant), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = AttributeName(m.Groups.[2].Value) }))
+            (Regex("^(\\s*)\\[(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = OpenBrace }))
+            (Regex("^(\\s*)\\](\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = CloseBrace }))
+            (Regex("^(\\s*)\\((\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = OpenBracket }))
+            (Regex("^(\\s*)\\)(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = CloseBracket }))
+            (Regex("^(\\s*)&&(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = And }))
+            (Regex("^(\\s*)\\|\\|(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = Or }))
+            (Regex("^(\\s*)=(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = Equals }))
+            (Regex("^(\\s*)\\*(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = Star }))
+            (Regex("^(\\s*)<>(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = NotEquals }))
+            (Regex("^(\\s*)\"(([^\\\"\\\\]+|\\\\\\\"|\\\\\\\\)*)\"(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 + m.Groups.[2].Length ; Token = QuotedString(m.Groups.[2].Value.Replace("\\\\", "\\").Replace("\\\"", "\"")) }))
         ]
     let private trailingWhitespaceRegex = Regex(@"^(.*?)\s+$")
     let private stripTrailingWhitespace l =
@@ -34,7 +34,7 @@ module DefinitionLineTokenizer =
                 if m.Success |> not then None
                 else Some (m.Length, (c n m)))
         |> Seq.tryFind (fun _ -> true)
-        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised line })
+        |> defaultArg <| (line.Length, { TokenStartLocation = n + 1 ; TokenEndLocation = n + line.Length ; Token = InvalidUnrecognised line })
         |> fun (l, t) ->
             seq {
                 yield t
@@ -46,7 +46,7 @@ module DefinitionLineTokenizer =
             // Find the first character that is one of the special characters I know about.
             let firstIndex = line.IndexOfAny([|'\\';'$';'@';'{';'|';'}';'#'|])
             if firstIndex < 0 then
-                Seq.singleton {StartIndex = n + 1;EndIndex = n + line.Length;Token = RawText(line)}
+                Seq.singleton {TokenStartLocation = n + 1;TokenEndLocation = n + line.Length;Token = RawText(line)}
             else if firstIndex = 0 && line.Length = 1 then
                 let token =
                     match line.[0] with
@@ -54,24 +54,24 @@ module DefinitionLineTokenizer =
                     | '|' -> ChoiceSeparator
                     | '}' -> CloseCurly
                     | _ -> InvalidUnrecognised (line.[0].ToString())
-                Seq.singleton {StartIndex = n + 1;EndIndex = n + 1;Token = token}
+                Seq.singleton {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = token}
             else
                 let output, toRemove =
                     if firstIndex = 0 then
                         match line.[0] with
-                        | '{' -> {StartIndex = n + 1;EndIndex = n + 1;Token = OpenCurly}, 1
-                        | '}' -> {StartIndex = n + 1;EndIndex = n + 1;Token = CloseCurly}, 1
-                        | '|' -> {StartIndex = n + 1;EndIndex = n + 1;Token = ChoiceSeparator}, 1
+                        | '{' -> {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = OpenCurly}, 1
+                        | '}' -> {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = CloseCurly}, 1
+                        | '|' -> {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = ChoiceSeparator}, 1
                         | '$' ->
                             let funcAtStartMatch = funcAtStartRegex.Match(line)
-                            if funcAtStartMatch.Success then {StartIndex = n + 1;EndIndex = n + funcAtStartMatch.Length;Token = VariableName(funcAtStartMatch.Groups.[1].Value)}, funcAtStartMatch.Length
-                            else {StartIndex = n + 1;EndIndex = n + 1;Token = InvalidUnrecognised (line.[0].ToString()) }, 1
+                            if funcAtStartMatch.Success then {TokenStartLocation = n + 1;TokenEndLocation = n + funcAtStartMatch.Length;Token = VariableName(funcAtStartMatch.Groups.[1].Value)}, funcAtStartMatch.Length
+                            else {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = InvalidUnrecognised (line.[0].ToString()) }, 1
                         | '\\' ->
-                            {StartIndex = n + 1;EndIndex = n + 2;Token = RawText(line.[1].ToString())}, 2
+                            {TokenStartLocation = n + 1;TokenEndLocation = n + 2;Token = RawText(line.[1].ToString())}, 2
                         | _ ->
-                            {StartIndex = n + 1;EndIndex = n + 1;Token = InvalidUnrecognised (line.[0].ToString())}, 1
+                            {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = InvalidUnrecognised (line.[0].ToString())}, 1
                     else
-                        {StartIndex = n + 1;EndIndex = n + firstIndex;Token = RawText(line.Substring(0, firstIndex))}, firstIndex
+                        {TokenStartLocation = n + 1;TokenEndLocation = n + firstIndex;Token = RawText(line.Substring(0, firstIndex))}, firstIndex
                 seq {
                     yield output
                     yield! (tokenizeMainInner (n + toRemove) (line.Substring(toRemove))) }
@@ -91,10 +91,10 @@ module DefinitionLineTokenizer =
                 | "seq" -> Sequential
                 | "choice" -> Choice
                 | _ -> FunctionName name
-            let attributedToken = {StartIndex = n + 1;EndIndex = n + 1 + name.Length;Token = token}
+            let attributedToken = {TokenStartLocation = n + 1;TokenEndLocation = n + 1 + name.Length;Token = token}
             if strippedFuncInvocationMatch.Groups.[3].Success then
                 let index = n + 1 + name.Length + strippedFuncInvocationMatch.Groups.[2].Length + 1
-                seq [attributedToken;{StartIndex = index;EndIndex = index;Token = OpenCurly}]
+                seq [attributedToken;{TokenStartLocation = index;TokenEndLocation = index;Token = OpenCurly}]
             else
                 Seq.singleton attributedToken
         else
@@ -108,20 +108,20 @@ module DefinitionLineTokenizer =
     let tokenizeLine (line:string) =
         let funcDefinitionMatch = funcDefinitionRegex.Match(line)
         if funcDefinitionMatch.Success then
-            let funcDefinitionToken = {StartIndex = 1;EndIndex = 5;Token = Func}
+            let funcDefinitionToken = {TokenStartLocation = 1;TokenEndLocation = 5;Token = Func}
             let funcNameMatch = funcNameRegex.Match(line.Substring(funcDefinitionMatch.Length))
             if funcNameMatch.Success then
                 let funcName = funcNameMatch.Groups.[1].Value
-                let funcNameToken = {StartIndex = funcDefinitionMatch.Length + 1;EndIndex = funcDefinitionMatch.Length + funcNameMatch.Length;Token = (match funcName with | "break" | "var" | "att" | "func" | "seq" | "choice" -> InvalidReservedToken(funcName) | _ -> FunctionName(funcName))}
+                let funcNameToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = funcDefinitionMatch.Length + funcNameMatch.Length;Token = (match funcName with | "break" | "var" | "att" | "func" | "seq" | "choice" -> InvalidReservedToken(funcName) | _ -> FunctionName(funcName))}
                 let openCurlyToken =
                     if funcNameMatch.Groups.[3].Success then
                         let index = funcDefinitionMatch.Length + funcNameMatch.Groups.[1].Length + funcNameMatch.Groups.[2].Length + 1
-                        Seq.singleton {StartIndex = index;EndIndex = index;Token = OpenCurly}
+                        Seq.singleton {TokenStartLocation = index;TokenEndLocation = index;Token = OpenCurly}
                     else
                         Seq.empty
                 seq { yield funcDefinitionToken; yield funcNameToken; yield! openCurlyToken }
             else
-                let unrecognisedToken = {StartIndex = funcDefinitionMatch.Length + 1;EndIndex = line.Length;Token = InvalidUnrecognised (line.Substring(funcDefinitionMatch.Length + 1)) }
+                let unrecognisedToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = line.Length;Token = InvalidUnrecognised (line.Substring(funcDefinitionMatch.Length + 1)) }
                 seq {
                     yield funcDefinitionToken
                     yield unrecognisedToken }
@@ -137,15 +137,15 @@ module DefinitionLineTokenizer =
                     let openCurlyMatch = openCurlyRegex.Match(line)
                     if openCurlyMatch.Success then
                         let index = openCurlyMatch.Groups.[1].Length + 1
-                        Seq.singleton {StartIndex = index;EndIndex = index;Token = OpenCurly}
+                        Seq.singleton {TokenStartLocation = index;TokenEndLocation = index;Token = OpenCurly}
                     else
                         let closeCurlyMatch = closeCurlyRegex.Match(line)
                         if closeCurlyMatch.Success then
                             let index = closeCurlyMatch.Groups.[1].Length + 1
-                            Seq.singleton {StartIndex = index;EndIndex = index;Token = CloseCurly}
+                            Seq.singleton {TokenStartLocation = index;TokenEndLocation = index;Token = CloseCurly}
                         else
                             tokenizeMain unescapedOpenBraceMatch.Groups.[1].Length unescapedOpenBraceMatch.Groups.[2].Value
             else
                 // I think this can probably only fail if the line is only a backslash?
-                Seq.singleton {StartIndex = 1;EndIndex = line.Length; Token = InvalidUnrecognised line }
+                Seq.singleton {TokenStartLocation = 1;TokenEndLocation = line.Length; Token = InvalidUnrecognised line }
 

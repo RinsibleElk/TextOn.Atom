@@ -8,21 +8,21 @@ open System.Text.RegularExpressions
 module VariableLineTokenizer =
     let private matches =
         [
-            (Regex("^(@var)\\s+"), (fun n (m:Match) -> { StartIndex = n + 1 ; EndIndex = n + 4 ; Token = Var }))
-            (Regex("^(\\s*)\\$(\w+)(\\s*|$)", RegexOptions.CultureInvariant), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = VariableName(m.Groups.[2].Value) }))
-            (Regex("^(\\s*)%(\w+)(\\s*|$)", RegexOptions.CultureInvariant), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = AttributeName(m.Groups.[2].Value) }))
-            (Regex("^(\\s*)\\{(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenCurly }))
-            (Regex("^(\\s*)\\}(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseCurly }))
-            (Regex("^(\\s*)\\[(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenBrace }))
-            (Regex("^(\\s*)\\](\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseBrace }))
-            (Regex("^(\\s*)\\((\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = OpenBracket }))
-            (Regex("^(\\s*)\\)(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = CloseBracket }))
-            (Regex("^(\\s*)&&(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = And }))
-            (Regex("^(\\s*)\\|\\|(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = Or }))
-            (Regex("^(\\s*)=(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = Equals }))
-            (Regex("^(\\s*)\\*(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 1 ; Token = Star }))
-            (Regex("^(\\s*)<>(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 ; Token = NotEquals }))
-            (Regex("^(\\s*)\"(([^\\\"\\\\]+|\\\\\\\"|\\\\\\\\)*)\"(\\s*|$)"), (fun n (m:Match) -> { StartIndex = n + m.Groups.[1].Length + 1 ; EndIndex = n + m.Groups.[1].Length + 2 + m.Groups.[2].Length ; Token = QuotedString(m.Groups.[2].Value.Replace("\\\\", "\\").Replace("\\\"", "\"")) }))
+            (Regex("^(@var)\\s+"), (fun n (m:Match) -> { TokenStartLocation = n + 1 ; TokenEndLocation = n + 4 ; Token = Var }))
+            (Regex("^(\\s*)\\$(\w+)(\\s*|$)", RegexOptions.CultureInvariant), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = VariableName(m.Groups.[2].Value) }))
+            (Regex("^(\\s*)%(\w+)(\\s*|$)", RegexOptions.CultureInvariant), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 + m.Groups.[2].Length ; Token = AttributeName(m.Groups.[2].Value) }))
+            (Regex("^(\\s*)\\{(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = OpenCurly }))
+            (Regex("^(\\s*)\\}(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = CloseCurly }))
+            (Regex("^(\\s*)\\[(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = OpenBrace }))
+            (Regex("^(\\s*)\\](\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = CloseBrace }))
+            (Regex("^(\\s*)\\((\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = OpenBracket }))
+            (Regex("^(\\s*)\\)(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = CloseBracket }))
+            (Regex("^(\\s*)&&(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = And }))
+            (Regex("^(\\s*)\\|\\|(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = Or }))
+            (Regex("^(\\s*)=(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = Equals }))
+            (Regex("^(\\s*)\\*(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = Star }))
+            (Regex("^(\\s*)<>(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = NotEquals }))
+            (Regex("^(\\s*)\"(([^\\\"\\\\]+|\\\\\\\"|\\\\\\\\)*)\"(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 + m.Groups.[2].Length ; Token = QuotedString(m.Groups.[2].Value.Replace("\\\\", "\\").Replace("\\\"", "\"")) }))
         ]
     let rec private tokenizeLineInner n line =
         matches
@@ -32,7 +32,7 @@ module VariableLineTokenizer =
                 if m.Success |> not then None
                 else Some (m.Length, (c n m)))
         |> Seq.tryFind (fun _ -> true)
-        |> defaultArg <| (line.Length, { StartIndex = n + 1 ; EndIndex = n + line.Length ; Token = InvalidUnrecognised line })
+        |> defaultArg <| (line.Length, { TokenStartLocation = n + 1 ; TokenEndLocation = n + line.Length ; Token = InvalidUnrecognised line })
         |> fun (l, t) ->
             seq {
                 yield t

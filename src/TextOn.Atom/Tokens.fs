@@ -31,7 +31,8 @@ type Token =
 
 type AttributedToken =
     {
-        StartIndex : int
-        EndIndex : int
+        TokenStartLocation : int
+        TokenEndLocation : int
         Token : Token
     }
+

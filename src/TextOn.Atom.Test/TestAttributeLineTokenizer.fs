@@ -38,11 +38,11 @@ let test lines =
 let ``Correctly formatted attribute definition``() =
     let lines =
         [
-            ("@att %Gender", [{StartIndex = 1;EndIndex = 4;Token = Att};{StartIndex = 6;EndIndex = 12;Token = AttributeName "Gender"}])
-            ("  {", [{StartIndex = 3;EndIndex = 3;Token = OpenCurly}])
-            ("    \"Male\"", [{StartIndex = 5;EndIndex = 10;Token = QuotedString "Male"}])
-            ("    \"Female\"", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "Female"}])
-            ("  }", [{StartIndex = 3;EndIndex = 3;Token = CloseCurly}])
+            ("@att %Gender", [{TokenStartLocation = 1;TokenEndLocation = 4;Token = Att};{TokenStartLocation = 6;TokenEndLocation = 12;Token = AttributeName "Gender"}])
+            ("  {", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = OpenCurly}])
+            ("    \"Male\"", [{TokenStartLocation = 5;TokenEndLocation = 10;Token = QuotedString "Male"}])
+            ("    \"Female\"", [{TokenStartLocation = 5;TokenEndLocation = 12;Token = QuotedString "Female"}])
+            ("  }", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = CloseCurly}])
         ]
     test lines
 
@@ -50,7 +50,7 @@ let ``Correctly formatted attribute definition``() =
 let ``Quoted string with escaped characters in it``() =
     let lines =
         [
-            ("    \"This string has a \\\"quote\\\" in it.  \"", [{StartIndex = 5;EndIndex = 42;Token = QuotedString "This string has a \"quote\" in it.  "}])
-            ("    \"This string has a \\\\ in it.  \"", [{StartIndex = 5;EndIndex = 35;Token = QuotedString "This string has a \\ in it.  "}])
+            ("    \"This string has a \\\"quote\\\" in it.  \"", [{TokenStartLocation = 5;TokenEndLocation = 42;Token = QuotedString "This string has a \"quote\" in it.  "}])
+            ("    \"This string has a \\\\ in it.  \"", [{TokenStartLocation = 5;TokenEndLocation = 35;Token = QuotedString "This string has a \\ in it.  "}])
         ]
     test lines

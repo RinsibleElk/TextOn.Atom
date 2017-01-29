@@ -31,14 +31,14 @@ let test source expected received =
 let ``Correctly formatted variable definition``() =
     let lines =
         [
-            ("@var $City", [{StartIndex = 1;EndIndex = 4;Token = Var};{StartIndex = 6;EndIndex = 10;Token = VariableName "City"}])
-            ("  \"Which city are you writing about?\"", [{StartIndex = 3;EndIndex = 37;Token = QuotedString "Which city are you writing about?"}])
-            ("  {", [{StartIndex = 3;EndIndex = 3;Token = OpenCurly}])
-            ("    \"London\" [$Country = \"U.K.\"]", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "London"};{StartIndex = 14;EndIndex = 14;Token = OpenBrace};{StartIndex = 15;EndIndex = 22;Token = VariableName("Country")};{StartIndex = 24;EndIndex = 24;Token = Equals};{StartIndex = 26;EndIndex = 31;Token = QuotedString "U.K."};{StartIndex = 32;EndIndex = 32;Token = CloseBrace}])
-            ("    \"Berlin\" [$Country = \"Germany\" || %Gender = \"Male\"]", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "Berlin"};{StartIndex = 14;EndIndex = 14;Token = OpenBrace};{StartIndex = 15;EndIndex = 22;Token = VariableName("Country")};{StartIndex = 24;EndIndex = 24;Token = Equals};{StartIndex = 26;EndIndex = 34;Token = QuotedString "Germany"};{StartIndex = 36;EndIndex = 37;Token = Or};{StartIndex = 39;EndIndex = 45;Token=AttributeName("Gender")};{StartIndex = 47;EndIndex = 47;Token = Equals};{StartIndex = 49;EndIndex = 54;Token = QuotedString "Male"};{StartIndex = 55;EndIndex = 55;Token = CloseBrace}])
-            ("    \"Paris\" [$Country <> \"Germany\" && $Country <> \"U.K.\"]", [{StartIndex = 5;EndIndex = 11;Token = QuotedString "Paris"};{StartIndex = 13;EndIndex = 13;Token = OpenBrace};{StartIndex = 14;EndIndex = 21;Token = VariableName("Country")};{StartIndex = 23;EndIndex = 24;Token = NotEquals};{StartIndex = 26;EndIndex = 34;Token = QuotedString "Germany"};{StartIndex = 36;EndIndex = 37;Token = And};{StartIndex = 39;EndIndex = 46;Token=VariableName("Country")};{StartIndex = 48;EndIndex = 49;Token = NotEquals};{StartIndex = 51;EndIndex = 56;Token = QuotedString "U.K."};{StartIndex = 57;EndIndex = 57;Token = CloseBrace}])
-            ("    *", [{StartIndex = 5;EndIndex = 5;Token = Star}])
-            ("  }", [{StartIndex = 3;EndIndex = 3;Token = CloseCurly}])
+            ("@var $City", [{TokenStartLocation = 1;TokenEndLocation = 4;Token = Var};{TokenStartLocation = 6;TokenEndLocation = 10;Token = VariableName "City"}])
+            ("  \"Which city are you writing about?\"", [{TokenStartLocation = 3;TokenEndLocation = 37;Token = QuotedString "Which city are you writing about?"}])
+            ("  {", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = OpenCurly}])
+            ("    \"London\" [$Country = \"U.K.\"]", [{TokenStartLocation = 5;TokenEndLocation = 12;Token = QuotedString "London"};{TokenStartLocation = 14;TokenEndLocation = 14;Token = OpenBrace};{TokenStartLocation = 15;TokenEndLocation = 22;Token = VariableName("Country")};{TokenStartLocation = 24;TokenEndLocation = 24;Token = Equals};{TokenStartLocation = 26;TokenEndLocation = 31;Token = QuotedString "U.K."};{TokenStartLocation = 32;TokenEndLocation = 32;Token = CloseBrace}])
+            ("    \"Berlin\" [$Country = \"Germany\" || %Gender = \"Male\"]", [{TokenStartLocation = 5;TokenEndLocation = 12;Token = QuotedString "Berlin"};{TokenStartLocation = 14;TokenEndLocation = 14;Token = OpenBrace};{TokenStartLocation = 15;TokenEndLocation = 22;Token = VariableName("Country")};{TokenStartLocation = 24;TokenEndLocation = 24;Token = Equals};{TokenStartLocation = 26;TokenEndLocation = 34;Token = QuotedString "Germany"};{TokenStartLocation = 36;TokenEndLocation = 37;Token = Or};{TokenStartLocation = 39;TokenEndLocation = 45;Token=AttributeName("Gender")};{TokenStartLocation = 47;TokenEndLocation = 47;Token = Equals};{TokenStartLocation = 49;TokenEndLocation = 54;Token = QuotedString "Male"};{TokenStartLocation = 55;TokenEndLocation = 55;Token = CloseBrace}])
+            ("    \"Paris\" [$Country <> \"Germany\" && $Country <> \"U.K.\"]", [{TokenStartLocation = 5;TokenEndLocation = 11;Token = QuotedString "Paris"};{TokenStartLocation = 13;TokenEndLocation = 13;Token = OpenBrace};{TokenStartLocation = 14;TokenEndLocation = 21;Token = VariableName("Country")};{TokenStartLocation = 23;TokenEndLocation = 24;Token = NotEquals};{TokenStartLocation = 26;TokenEndLocation = 34;Token = QuotedString "Germany"};{TokenStartLocation = 36;TokenEndLocation = 37;Token = And};{TokenStartLocation = 39;TokenEndLocation = 46;Token=VariableName("Country")};{TokenStartLocation = 48;TokenEndLocation = 49;Token = NotEquals};{TokenStartLocation = 51;TokenEndLocation = 56;Token = QuotedString "U.K."};{TokenStartLocation = 57;TokenEndLocation = 57;Token = CloseBrace}])
+            ("    *", [{TokenStartLocation = 5;TokenEndLocation = 5;Token = Star}])
+            ("  }", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = CloseCurly}])
         ]
     let tokens =
         lines
@@ -52,14 +52,14 @@ let ``Correctly formatted variable definition``() =
 let ``Correctly formatted variable definition with funky characters``() =
     let lines =
         [
-            ("@var $Cîty", [{StartIndex = 1;EndIndex = 4;Token = Var};{StartIndex = 6;EndIndex = 10;Token = VariableName "Cîty"}])
-            ("  \"Which city áre you writing about?\"", [{StartIndex = 3;EndIndex = 37;Token = QuotedString "Which city áre you writing about?"}])
-            ("  {", [{StartIndex = 3;EndIndex = 3;Token = OpenCurly}])
-            ("    \"London\" [$Cöuntry = \"U.K.\"]", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "London"};{StartIndex = 14;EndIndex = 14;Token = OpenBrace};{StartIndex = 15;EndIndex = 22;Token = VariableName("Cöuntry")};{StartIndex = 24;EndIndex = 24;Token = Equals};{StartIndex = 26;EndIndex = 31;Token = QuotedString "U.K."};{StartIndex = 32;EndIndex = 32;Token = CloseBrace}])
-            ("    \"Berlin\" [$Country = \"Germany\" || %Gønder = \"Male\"]", [{StartIndex = 5;EndIndex = 12;Token = QuotedString "Berlin"};{StartIndex = 14;EndIndex = 14;Token = OpenBrace};{StartIndex = 15;EndIndex = 22;Token = VariableName("Country")};{StartIndex = 24;EndIndex = 24;Token = Equals};{StartIndex = 26;EndIndex = 34;Token = QuotedString "Germany"};{StartIndex = 36;EndIndex = 37;Token = Or};{StartIndex = 39;EndIndex = 45;Token=AttributeName("Gønder")};{StartIndex = 47;EndIndex = 47;Token = Equals};{StartIndex = 49;EndIndex = 54;Token = QuotedString "Male"};{StartIndex = 55;EndIndex = 55;Token = CloseBrace}])
-            ("    \"Paris\" [$Country <> \"Germany\" && $Country <> \"U.K.\"]", [{StartIndex = 5;EndIndex = 11;Token = QuotedString "Paris"};{StartIndex = 13;EndIndex = 13;Token = OpenBrace};{StartIndex = 14;EndIndex = 21;Token = VariableName("Country")};{StartIndex = 23;EndIndex = 24;Token = NotEquals};{StartIndex = 26;EndIndex = 34;Token = QuotedString "Germany"};{StartIndex = 36;EndIndex = 37;Token = And};{StartIndex = 39;EndIndex = 46;Token=VariableName("Country")};{StartIndex = 48;EndIndex = 49;Token = NotEquals};{StartIndex = 51;EndIndex = 56;Token = QuotedString "U.K."};{StartIndex = 57;EndIndex = 57;Token = CloseBrace}])
-            ("    *", [{StartIndex = 5;EndIndex = 5;Token = Star}])
-            ("  }", [{StartIndex = 3;EndIndex = 3;Token = CloseCurly}])
+            ("@var $Cîty", [{TokenStartLocation = 1;TokenEndLocation = 4;Token = Var};{TokenStartLocation = 6;TokenEndLocation = 10;Token = VariableName "Cîty"}])
+            ("  \"Which city áre you writing about?\"", [{TokenStartLocation = 3;TokenEndLocation = 37;Token = QuotedString "Which city áre you writing about?"}])
+            ("  {", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = OpenCurly}])
+            ("    \"London\" [$Cöuntry = \"U.K.\"]", [{TokenStartLocation = 5;TokenEndLocation = 12;Token = QuotedString "London"};{TokenStartLocation = 14;TokenEndLocation = 14;Token = OpenBrace};{TokenStartLocation = 15;TokenEndLocation = 22;Token = VariableName("Cöuntry")};{TokenStartLocation = 24;TokenEndLocation = 24;Token = Equals};{TokenStartLocation = 26;TokenEndLocation = 31;Token = QuotedString "U.K."};{TokenStartLocation = 32;TokenEndLocation = 32;Token = CloseBrace}])
+            ("    \"Berlin\" [$Country = \"Germany\" || %Gønder = \"Male\"]", [{TokenStartLocation = 5;TokenEndLocation = 12;Token = QuotedString "Berlin"};{TokenStartLocation = 14;TokenEndLocation = 14;Token = OpenBrace};{TokenStartLocation = 15;TokenEndLocation = 22;Token = VariableName("Country")};{TokenStartLocation = 24;TokenEndLocation = 24;Token = Equals};{TokenStartLocation = 26;TokenEndLocation = 34;Token = QuotedString "Germany"};{TokenStartLocation = 36;TokenEndLocation = 37;Token = Or};{TokenStartLocation = 39;TokenEndLocation = 45;Token=AttributeName("Gønder")};{TokenStartLocation = 47;TokenEndLocation = 47;Token = Equals};{TokenStartLocation = 49;TokenEndLocation = 54;Token = QuotedString "Male"};{TokenStartLocation = 55;TokenEndLocation = 55;Token = CloseBrace}])
+            ("    \"Paris\" [$Country <> \"Germany\" && $Country <> \"U.K.\"]", [{TokenStartLocation = 5;TokenEndLocation = 11;Token = QuotedString "Paris"};{TokenStartLocation = 13;TokenEndLocation = 13;Token = OpenBrace};{TokenStartLocation = 14;TokenEndLocation = 21;Token = VariableName("Country")};{TokenStartLocation = 23;TokenEndLocation = 24;Token = NotEquals};{TokenStartLocation = 26;TokenEndLocation = 34;Token = QuotedString "Germany"};{TokenStartLocation = 36;TokenEndLocation = 37;Token = And};{TokenStartLocation = 39;TokenEndLocation = 46;Token=VariableName("Country")};{TokenStartLocation = 48;TokenEndLocation = 49;Token = NotEquals};{TokenStartLocation = 51;TokenEndLocation = 56;Token = QuotedString "U.K."};{TokenStartLocation = 57;TokenEndLocation = 57;Token = CloseBrace}])
+            ("    *", [{TokenStartLocation = 5;TokenEndLocation = 5;Token = Star}])
+            ("  }", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = CloseCurly}])
         ]
     let tokens =
         lines
@@ -73,7 +73,7 @@ let ``Correctly formatted variable definition with funky characters``() =
 let ``Bad variable lines``() =
     let lines =
         [
-            ("    \"London", [{StartIndex = 1;EndIndex = 11;Token = InvalidUnrecognised "    \"London"}])
+            ("    \"London", [{TokenStartLocation = 1;TokenEndLocation = 11;Token = InvalidUnrecognised "    \"London"}])
         ]
     let tokens =
         lines
