@@ -20,16 +20,35 @@ type ParsedCondition =
     | ParsedAreEqual of ParsedAttributeName * string
     | ParsedAreNotEqual of ParsedAttributeName * string
 
+type ParseError = {
+    LineNumber : int
+    StartLocation : int
+    EndLocation : int
+    ErrorText : string }
+
 type ParsedNode =
-    | ParsedSentence of ParsedSentenceNode * ParsedCondition
-    | ParsedFunctionInvocation of ParsedFunctionName * ParsedCondition
-    | ParsedSeq of ParsedNode[] * ParsedCondition
-    | ParsedChoice of ParsedNode[] * ParsedCondition
-    | ParsedParagraphBreak of ParsedCondition
+    | ParsedSentence of int * ParsedSentenceNode * ParsedCondition
+    | ParsedFunctionInvocation of int * ParsedFunctionName * ParsedCondition
+    | ParsedSeq of int * ParsedNode[] * ParsedCondition
+    | ParsedChoice of int * ParsedNode[] * ParsedCondition
+    | ParsedParagraphBreak of int * ParsedCondition
+    | ParseErrors of ParseError[]
+
+type ParsedFunctionDefinition = {
+    File : string
+    StartLine : int
+    EndLine : int
+    Index : int
+    HasErrors : bool
+    Name : ParsedFunctionName
+    Tree : ParsedNode }
 
 [<RequireQualifiedAccess>]
 module FunctionParser =
-    /// Parse the CategorizedAttributedTokenSet for a function definition into a tree.
-    let parseFunction (tokenSet:CategorizedAttributedTokenSet) =
-
+    let rec private parseFunctionInner (tokens:AttributedTokenizedLine[]) =
         ()
+
+    /// Parse the CategorizedAttributedTokenSet for a function definition into a tree.
+    let parseFunction (tokenSet:CategorizedAttributedTokenSet) : ParsedFunctionDefinition =
+
+        failwith ""
