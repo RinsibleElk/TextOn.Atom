@@ -60,7 +60,7 @@ let ``CommentStripper with lines``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line line})))
+                            Contents = PreprocessorLine line})))
             (1, None)
         |> List.skip 1
         |> List.map (snd >> Option.get)
@@ -76,11 +76,11 @@ let ``CommentStripper with lines``() =
 let ``CommentStripper with errors and warnings``() =
     let input =
         [
-            Error {
+            PreprocessorError {
                 StartLocation = 1
                 EndLocation = 15
                 ErrorText = "Some error" }
-            Warning {
+            PreprocessorWarning {
                 StartLocation = 1
                 EndLocation = 15
                 WarningText = "Some warning" }

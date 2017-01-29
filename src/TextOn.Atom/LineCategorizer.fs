@@ -5,11 +5,11 @@ open System.Text.RegularExpressions
 
 /// The output for the LineCategorizer.
 type Category =
-    | FuncDefinition
-    | VarDefinition
-    | AttDefinition
-    | PreprocessorError
-    | PreprocessorWarning
+    | CategorizedFuncDefinition
+    | CategorizedVarDefinition
+    | CategorizedAttDefinition
+    | CategorizedPreprocessorError
+    | CategorizedPreprocessorWarning
     | CategorizationError
 
 /// Meta data for a section of code.
@@ -48,14 +48,14 @@ module LineCategorizer =
             let (nextState, output) =
                 // If the line is a preprocessor error or warning then the current state is immediately terminated.
                 match line.Contents with
-                | Warning(_)
-                | Error(_) ->
+                | PreprocessorWarning(_)
+                | PreprocessorError(_) ->
                     match state with
                     | Root(nextIndex) ->
                         (Root(nextIndex + 1),
                             Some
                                 (Seq.singleton
-                                    {   Category = match line.Contents with | Warning(_) -> PreprocessorWarning | _ -> PreprocessorError
+                                    {   Category = match line.Contents with | PreprocessorWarning(_) -> CategorizedPreprocessorWarning | _ -> CategorizedPreprocessorError
                                         Index = nextIndex
                                         File = line.CurrentFile
                                         StartLine = line.CurrentFileLineNumber
@@ -71,21 +71,21 @@ module LineCategorizer =
                                         StartLine = startLine
                                         EndLine = endLine
                                         Lines = preprocessedSourceLines }
-                                    {   Category = match line.Contents with | Warning(_) -> PreprocessorWarning | _ -> PreprocessorError
+                                    {   Category = match line.Contents with | PreprocessorWarning(_) -> CategorizedPreprocessorWarning | _ -> CategorizedPreprocessorError
                                         Index = nextIndex + 1
                                         File = line.CurrentFile
                                         StartLine = line.CurrentFileLineNumber
                                         EndLine = line.CurrentFileLineNumber
                                         Lines = Seq.singleton line } ]))
-                | Line(text) ->
+                | PreprocessorLine(text) ->
                     // Whatever state we're in, we're looking for one of the root definitions above.
                     let funcMatch = funcDefinitionRegex.Match(text)
                     if (funcMatch.Success) then
                         match state with
                         | Root(nextIndex) ->
-                            (Context(FuncDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line), None)
+                            (Context(CategorizedFuncDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line), None)
                         | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
-                            (Context(FuncDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line),
+                            (Context(CategorizedFuncDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line),
                                 Some
                                     (Seq.singleton
                                         {   Category = category
@@ -99,9 +99,9 @@ module LineCategorizer =
                         if (varMatch.Success) then
                             match state with
                             | Root(nextIndex) ->
-                                (Context(VarDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line), None)
+                                (Context(CategorizedVarDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line), None)
                             | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
-                                (Context(VarDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line),
+                                (Context(CategorizedVarDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line),
                                     Some
                                         (Seq.singleton
                                             {   Category = category
@@ -115,9 +115,9 @@ module LineCategorizer =
                             if (attMatch.Success) then
                                 match state with
                                 | Root(nextIndex) ->
-                                    (Context(AttDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line), None)
+                                    (Context(CategorizedAttDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line), None)
                                 | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
-                                    (Context(AttDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line),
+                                    (Context(CategorizedAttDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, Seq.singleton line),
                                         Some
                                             (Seq.singleton
                                                 {   Category = category

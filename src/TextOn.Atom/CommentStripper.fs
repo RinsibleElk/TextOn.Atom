@@ -15,5 +15,5 @@ module CommentStripper =
             (fun line ->
                 let content = line.Contents
                 match content with
-                | Line line -> (not (commentLineRegex.IsMatch(line)))
+                | PreprocessorLine line -> (not (commentLineRegex.IsMatch(line)))
                 | _ -> true)

@@ -44,7 +44,7 @@ let ``Categorize preprocessor error``() =
                 CurrentFileLineNumber = 1
                 CurrentFile = exampleFileName
                 Contents =
-                    Error
+                    PreprocessorError
                         {
                             StartLocation = 1
                             EndLocation = 5
@@ -54,7 +54,7 @@ let ``Categorize preprocessor error``() =
         ]
         [
             {
-                Category = PreprocessorError
+                Category = CategorizedPreprocessorError
                 Index = 0
                 File = exampleFileName
                 StartLine = 1
@@ -66,7 +66,7 @@ let ``Categorize preprocessor error``() =
                             CurrentFileLineNumber = 1
                             CurrentFile = exampleFileName
                             Contents =
-                                Error {
+                                PreprocessorError {
                                     StartLocation = 1
                                     EndLocation = 5
                                     ErrorText = "Some error text" }
@@ -83,7 +83,7 @@ let ``Categorize preprocessor warning``() =
                 CurrentFileLineNumber = 1
                 CurrentFile = exampleFileName
                 Contents =
-                    Warning
+                    PreprocessorWarning
                         {
                             StartLocation = 1
                             EndLocation = 5
@@ -93,7 +93,7 @@ let ``Categorize preprocessor warning``() =
         ]
         [
             {
-                Category = PreprocessorWarning
+                Category = CategorizedPreprocessorWarning
                 Index = 0
                 File = exampleFileName
                 StartLine = 1
@@ -105,7 +105,7 @@ let ``Categorize preprocessor warning``() =
                             CurrentFileLineNumber = 1
                             CurrentFile = exampleFileName
                             Contents =
-                                Warning {
+                                PreprocessorWarning {
                                     StartLocation = 1
                                     EndLocation = 5
                                     WarningText = "Some warning text" }
@@ -139,7 +139,7 @@ let ``Categorize a single function definition``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -148,7 +148,7 @@ let ``Categorize a single function definition``() =
         funcDefinitionLines
         [
             {
-                Category = FuncDefinition
+                Category = CategorizedFuncDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine
@@ -169,7 +169,7 @@ let ``Categorize two function definitions``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -184,7 +184,7 @@ let ``Categorize two function definitions``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -193,7 +193,7 @@ let ``Categorize two function definitions``() =
         (Seq.append funcDefinitionLines1 funcDefinitionLines2)
         [
             {
-                Category = FuncDefinition
+                Category = CategorizedFuncDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine1
@@ -201,7 +201,7 @@ let ``Categorize two function definitions``() =
                 Lines = funcDefinitionLines1
             }
             {
-                Category = FuncDefinition
+                Category = CategorizedFuncDefinition
                 Index = 1
                 File = exampleFileName
                 StartLine = firstLine2
@@ -234,7 +234,7 @@ let ``Categorize a single variable definition``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -243,7 +243,7 @@ let ``Categorize a single variable definition``() =
         varDefinitionLines
         [
             {
-                Category = VarDefinition
+                Category = CategorizedVarDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine
@@ -264,7 +264,7 @@ let ``Categorize two variable definitions``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -279,7 +279,7 @@ let ``Categorize two variable definitions``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -288,7 +288,7 @@ let ``Categorize two variable definitions``() =
         (Seq.append varDefinitionLines1 varDefinitionLines2)
         [
             {
-                Category = VarDefinition
+                Category = CategorizedVarDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine1
@@ -296,7 +296,7 @@ let ``Categorize two variable definitions``() =
                 Lines = varDefinitionLines1
             }
             {
-                Category = VarDefinition
+                Category = CategorizedVarDefinition
                 Index = 1
                 File = exampleFileName
                 StartLine = firstLine2
@@ -326,7 +326,7 @@ let ``Categorize a single attribute definition``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -335,7 +335,7 @@ let ``Categorize a single attribute definition``() =
         attDefinitionLines
         [
             {
-                Category = AttDefinition
+                Category = CategorizedAttDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine
@@ -356,7 +356,7 @@ let ``Categorize two attribute definitions``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -371,7 +371,7 @@ let ``Categorize two attribute definitions``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -380,7 +380,7 @@ let ``Categorize two attribute definitions``() =
         (Seq.append attDefinitionLines1 attDefinitionLines2)
         [
             {
-                Category = AttDefinition
+                Category = CategorizedAttDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine1
@@ -388,7 +388,7 @@ let ``Categorize two attribute definitions``() =
                 Lines = attDefinitionLines1
             }
             {
-                Category = AttDefinition
+                Category = CategorizedAttDefinition
                 Index = 1
                 File = exampleFileName
                 StartLine = firstLine2
@@ -410,7 +410,7 @@ let ``Categorize a whole single file``() =
                                 TopLevelFileLineNumber = ln
                                 CurrentFileLineNumber = ln
                                 CurrentFile = exampleFileName
-                                Contents = Line(line) }))
+                                Contents = PreprocessorLine(line) }))
                 (firstLine,None)
             |> Seq.skip 1
             |> Seq.map (snd >> Option.get)
@@ -418,12 +418,12 @@ let ``Categorize a whole single file``() =
         s, firstLine, lastLine
     let preprocessedLines =
         [
-            (AttDefinition, attDefinition)
-            (VarDefinition, varDefinition)
-            (FuncDefinition, funcDefinition)
-            (AttDefinition, attDefinition)
-            (VarDefinition, varDefinition)
-            (FuncDefinition, funcDefinition)
+            (CategorizedAttDefinition, attDefinition)
+            (CategorizedVarDefinition, varDefinition)
+            (CategorizedFuncDefinition, funcDefinition)
+            (CategorizedAttDefinition, attDefinition)
+            (CategorizedVarDefinition, varDefinition)
+            (CategorizedFuncDefinition, funcDefinition)
         ]
         |> Seq.scan
             (fun (firstLine,_) (category, lines) ->
@@ -467,7 +467,7 @@ let ``Unrecognised then function definition``() =
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
                     CurrentFile = exampleFileName
-                    Contents = Line(line) })
+                    Contents = PreprocessorLine(line) })
     let funcDefinitionLines =
         funcDefinition
         |> Seq.scan
@@ -478,7 +478,7 @@ let ``Unrecognised then function definition``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (3,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -495,7 +495,7 @@ let ``Unrecognised then function definition``() =
                 Lines = unrecognisedLines
             }
             {
-                Category = FuncDefinition
+                Category = CategorizedFuncDefinition
                 Index = 1
                 File = exampleFileName
                 StartLine = firstLine
@@ -516,7 +516,7 @@ let ``Unrecognised then variable definition``() =
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
                     CurrentFile = exampleFileName
-                    Contents = Line(line) })
+                    Contents = PreprocessorLine(line) })
     let varDefinitionLines =
         varDefinition
         |> Seq.scan
@@ -527,7 +527,7 @@ let ``Unrecognised then variable definition``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (3,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -544,7 +544,7 @@ let ``Unrecognised then variable definition``() =
                 Lines = unrecognisedLines
             }
             {
-                Category = VarDefinition
+                Category = CategorizedVarDefinition
                 Index = 1
                 File = exampleFileName
                 StartLine = firstLine
@@ -565,7 +565,7 @@ let ``Unrecognised then attribute definition``() =
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
                     CurrentFile = exampleFileName
-                    Contents = Line(line) })
+                    Contents = PreprocessorLine(line) })
     let attDefinitionLines =
         attDefinition
         |> Seq.scan
@@ -576,7 +576,7 @@ let ``Unrecognised then attribute definition``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (3,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -593,7 +593,7 @@ let ``Unrecognised then attribute definition``() =
                 Lines = unrecognisedLines
             }
             {
-                Category = AttDefinition
+                Category = CategorizedAttDefinition
                 Index = 1
                 File = exampleFileName
                 StartLine = firstLine
@@ -614,7 +614,7 @@ let ``Unrecognised new file``() =
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = Line(line) }))
+                            Contents = PreprocessorLine(line) }))
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
@@ -629,12 +629,12 @@ let ``Unrecognised new file``() =
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
                     CurrentFile = exampleFileName2
-                    Contents = Line(line) })
+                    Contents = PreprocessorLine(line) })
     test
         (Seq.append attDefinitionLines unrecognisedLines)
         [
             {
-                Category = AttDefinition
+                Category = CategorizedAttDefinition
                 Index = 0
                 File = exampleFileName
                 StartLine = firstLine

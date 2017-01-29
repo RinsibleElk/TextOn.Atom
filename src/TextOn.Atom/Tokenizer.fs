@@ -9,9 +9,9 @@ module Tokenizer =
     /// Do the context-specific tokenization.
     let tokenize group =
         match group.Category with
-        | FuncDefinition -> Some (group.Lines |> Seq.map (fun line -> match line.Contents with | Line line -> DefinitionLineTokenizer.tokenizeLine line | _ -> failwith ""))
-        | VarDefinition -> Some (group.Lines |> Seq.map (fun line -> match line.Contents with | Line line -> VariableLineTokenizer.tokenizeLine line | _ -> failwith ""))
-        | AttDefinition -> Some (group.Lines |> Seq.map (fun line -> match line.Contents with | Line line -> AttributeLineTokenizer.tokenizeLine line | _ -> failwith ""))
-        | PreprocessorError -> None
-        | PreprocessorWarning -> None
+        | CategorizedFuncDefinition -> Some (group.Lines |> Seq.map (fun line -> match line.Contents with | PreprocessorLine line -> DefinitionLineTokenizer.tokenizeLine line | _ -> failwith ""))
+        | CategorizedVarDefinition -> Some (group.Lines |> Seq.map (fun line -> match line.Contents with | PreprocessorLine line -> VariableLineTokenizer.tokenizeLine line | _ -> failwith ""))
+        | CategorizedAttDefinition -> Some (group.Lines |> Seq.map (fun line -> match line.Contents with | PreprocessorLine line -> AttributeLineTokenizer.tokenizeLine line | _ -> failwith ""))
+        | CategorizedPreprocessorError -> None
+        | CategorizedPreprocessorWarning -> None
         | CategorizationError -> None

@@ -23,9 +23,9 @@ type PreprocessorWarning = {
 
 /// A preprocessed line, decorated with error/warning details.
 type PreprocessedLine =
-    | Error of PreprocessorError
-    | Warning of PreprocessorWarning
-    | Line of string
+    | PreprocessorError of PreprocessorError
+    | PreprocessorWarning of PreprocessorWarning
+    | PreprocessorLine of string
 
 /// Representation of the source file, post the preprocessing phase.
 type PreprocessedSourceLine = {
@@ -57,7 +57,7 @@ module Preprocessor =
                         TopLevelFileLineNumber = topLevelFileLineNumber
                         CurrentFileLineNumber = currentFileLineNumber
                         CurrentFile = currentFile
-                        Contents = Line line }
+                        Contents = PreprocessorLine line }
                 else
                     let includeMatch = includeRegex.Match(line)
                     if (not (includeMatch.Success)) then
@@ -65,7 +65,7 @@ module Preprocessor =
                             TopLevelFileLineNumber = topLevelFileLineNumber
                             CurrentFileLineNumber = currentFileLineNumber
                             CurrentFile = currentFile
-                            Contents = Error {
+                            Contents = PreprocessorError {
                                 StartLocation = 1
                                 EndLocation = line.Length
                                 ErrorText = (line |> sprintf "Not a valid #include directive: %s") } }
@@ -77,7 +77,7 @@ module Preprocessor =
                                 TopLevelFileLineNumber = topLevelFileLineNumber
                                 CurrentFileLineNumber = currentFileLineNumber
                                 CurrentFile = currentFile
-                                Contents = Error {
+                                Contents = PreprocessorError {
                                     StartLocation = 1 + line.IndexOf("\"")
                                     EndLocation = line.Length
                                     ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
@@ -88,7 +88,7 @@ module Preprocessor =
                                     TopLevelFileLineNumber = topLevelFileLineNumber
                                     CurrentFileLineNumber = currentFileLineNumber
                                     CurrentFile = currentFile
-                                    Contents = Warning {
+                                    Contents = PreprocessorWarning {
                                         StartLocation = 1 + line.IndexOf("\"")
                                         EndLocation = line.Length
                                         WarningText = (includeFileResolved |> sprintf "Already included: %s") } }

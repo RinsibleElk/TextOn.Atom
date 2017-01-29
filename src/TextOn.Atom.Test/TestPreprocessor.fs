@@ -74,7 +74,7 @@ let ``Preprocessor with no includes``() =
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
                         CurrentFile = exampleFileName
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 1
@@ -97,7 +97,7 @@ let ``Preprocessor with single successful include``() =
                         TopLevelFileLineNumber = 1
                         CurrentFileLineNumber = ln
                         CurrentFile = "gender.texton"
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 1
@@ -111,7 +111,7 @@ let ``Preprocessor with single successful include``() =
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
                         CurrentFile = exampleFileName
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 2
@@ -136,7 +136,7 @@ let ``Preprocessor with double successful include``() =
                         TopLevelFileLineNumber = 1
                         CurrentFileLineNumber = ln
                         CurrentFile = "gender.texton"
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 1
@@ -145,7 +145,7 @@ let ``Preprocessor with double successful include``() =
         TopLevelFileLineNumber = 2
         CurrentFileLineNumber = 2
         CurrentFile = exampleFileName
-        Contents = Warning {
+        Contents = PreprocessorWarning {
             StartLocation = 10
             EndLocation = 24
             WarningText = "Already included: gender.texton" } }
@@ -158,7 +158,7 @@ let ``Preprocessor with double successful include``() =
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
                         CurrentFile = exampleFileName
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 3
@@ -180,7 +180,7 @@ let ``Preprocessor with single failed include``() =
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
         CurrentFile = exampleFileName
-        Contents = Error {
+        Contents = PreprocessorError {
             StartLocation = 10
             EndLocation = 24
             ErrorText = "Unable to resolve file: gender.texton" } }
@@ -193,7 +193,7 @@ let ``Preprocessor with single failed include``() =
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
                         CurrentFile = exampleFileName
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 2
@@ -214,7 +214,7 @@ let ``Preprocessor with unrecognised directive``() =
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
         CurrentFile = exampleFileName
-        Contents = Error {
+        Contents = PreprocessorError {
             StartLocation = 1
             EndLocation = 25
             ErrorText = "Not a valid #include directive: #whatever \"Something\"  15" } }
@@ -227,7 +227,7 @@ let ``Preprocessor with unrecognised directive``() =
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
                         CurrentFile = exampleFileName
-                        Contents = Line line
+                        Contents = PreprocessorLine line
                     })
             (1,None)
         |> Seq.skip 2
