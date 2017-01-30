@@ -39,7 +39,7 @@ module internal FunctionLineTokenizer =
             seq {
                 yield t
                 if l < line.Length then yield! (tokenizeConditionInner (n + l) (line.Substring(l))) }
-    let private funcAtStartRegex = Regex(@"^\$(\w+)", RegexOptions.CultureInvariant)
+    let private varAtStartRegex = Regex(@"^\$(\w+)", RegexOptions.CultureInvariant)
     let rec private tokenizeMainInner n (line:string) : AttributedToken seq =
         if line.Length = 0 then Seq.empty
         else
@@ -63,8 +63,8 @@ module internal FunctionLineTokenizer =
                         | '}' -> {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = CloseCurly}, 1
                         | '|' -> {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = ChoiceSeparator}, 1
                         | '$' ->
-                            let funcAtStartMatch = funcAtStartRegex.Match(line)
-                            if funcAtStartMatch.Success then {TokenStartLocation = n + 1;TokenEndLocation = n + funcAtStartMatch.Length;Token = VariableName(funcAtStartMatch.Groups.[1].Value)}, funcAtStartMatch.Length
+                            let varAtStartMatch = varAtStartRegex.Match(line)
+                            if varAtStartMatch.Success then {TokenStartLocation = n + 1;TokenEndLocation = n + varAtStartMatch.Length;Token = VariableName(varAtStartMatch.Groups.[1].Value)}, varAtStartMatch.Length
                             else {TokenStartLocation = n + 1;TokenEndLocation = n + 1;Token = InvalidUnrecognised (line.[0].ToString()) }, 1
                         | '\\' ->
                             {TokenStartLocation = n + 1;TokenEndLocation = n + 2;Token = RawText(line.[1].ToString())}, 2

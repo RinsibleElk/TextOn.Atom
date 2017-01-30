@@ -72,3 +72,6 @@ let rec fixLines funcPrefix functionIndex (lines:string seq) =
         |> fun outputLines -> File.WriteAllLines(Path.Combine(@"D:\NodeJs\TextOn.Atom\examples\original", funcPrefix + ".texton"), outputLines))
 
 
+
+
+
