@@ -1,4 +1,4 @@
-﻿module TextOn.Atom.Test.TestDefinitionLineTokenizer
+﻿module TextOn.Atom.Test.TestFunctionLineTokenizer
 
 open System
 open FsUnit
