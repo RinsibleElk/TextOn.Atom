@@ -37,11 +37,11 @@
         },
         {
           "name": "variable.parameter.texton",
-          "match": "\\$[A-Za-z][A-Za-z0-9_]*"
+          "match": "\\$\\w+"
         },
         {
           "name": "entity.other.attribute-name.texton",
-          "match": "\\%[A-Za-z][A-Za-z0-9_]*"
+          "match": "\\%\\w+"
         },
         {
             "name": "string.quoted.double.texton",
@@ -86,7 +86,7 @@
         },
         {
           "name": "support.function.texton",
-          "match": "\\s*@[A-Za-z][A-Za-z0-9_]*[\\s$]"
+          "match": "\\s*@\\w+[\\s$]"
         },
         {
           "name": "keyword.choice.operator.texton",
