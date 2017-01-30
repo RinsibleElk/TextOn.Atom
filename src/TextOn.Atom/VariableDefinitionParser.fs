@@ -1,5 +1,5 @@
 ﻿namespace TextOn.Atom
 
-module internal AttributeDefinitionParser =
+module internal VariableDefinitionParser =
     let private a = 1
 
