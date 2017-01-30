@@ -16,7 +16,7 @@ module Tokenizer =
                     (fun line ->
                         {
                             LineNumber = line.CurrentFileLineNumber
-                            Tokens = match line.Contents with | PreprocessorLine line -> DefinitionLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized func definition %A" line.Contents
+                            Tokens = match line.Contents with | PreprocessorLine line -> FunctionLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized func definition %A" line.Contents
                         })
                 |> Seq.toList
             | CategorizedVarDefinition ->

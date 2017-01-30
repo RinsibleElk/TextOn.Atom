@@ -44,7 +44,7 @@ type ParsedFunctionDefinition = {
     Tree : ParsedNode }
 
 [<RequireQualifiedAccess>]
-module FunctionParser =
+module internal FunctionDefinitionParser =
     let rec private parseFunctionInner (tokens:AttributedTokenizedLine[]) =
         ()
 

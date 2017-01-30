@@ -5,7 +5,7 @@ open System.Text.RegularExpressions
 
 [<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a variable definition and tokenize it.
-module VariableLineTokenizer =
+module internal VariableLineTokenizer =
     let private matches =
         [
             (Regex("^(@var)\\s+"), (fun n (m:Match) -> { TokenStartLocation = n + 1 ; TokenEndLocation = n + 4 ; Token = Var }))

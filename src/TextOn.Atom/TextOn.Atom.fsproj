@@ -60,15 +60,18 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Preprocessor.fs" />
     <Compile Include="CommentStripper.fs" />
     <Compile Include="LineCategorizer.fs" />
     <Compile Include="Tokens.fs" />
-    <Compile Include="DefinitionLineTokenizer.fs" />
+    <Compile Include="FunctionLineTokenizer.fs" />
     <Compile Include="VariableLineTokenizer.fs" />
     <Compile Include="AttributeLineTokenizer.fs" />
     <Compile Include="Tokenizer.fs" />
-    <Compile Include="FunctionParser.fs" />
+    <Compile Include="FunctionDefinitionParser.fs" />
+    <Compile Include="AttributeDefinitionParser.fs" />
+    <Compile Include="Parser.fs" />
     <Compile Include="ConditionEvaluator.fs" />
     <Compile Include="VariableConditionEvaluator.fs" />
     <Compile Include="CompiledAttributeDefinition.fs" />

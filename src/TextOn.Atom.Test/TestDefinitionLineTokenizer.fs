@@ -24,13 +24,13 @@ let ``Valid full function``() =
     ]
     |> Seq.iter
         (fun (line,expected) ->
-            let result = DefinitionLineTokenizer.tokenizeLine line |> Seq.toList
+            let result = FunctionLineTokenizer.tokenizeLine line |> Seq.toList
             if (result <> expected) then
                 failwithf "Didn't get expected result %A\n\n<>\n\n%A" expected result)
 
 [<Test>]
 let ``Invalid - only an escape character``() =
-    let result = DefinitionLineTokenizer.tokenizeLine "\\" |> Seq.toList
+    let result = FunctionLineTokenizer.tokenizeLine "\\" |> Seq.toList
     let expected = [{TokenStartLocation=1;TokenEndLocation=1;Token=InvalidUnrecognised "\\" }]
     if result <> expected then
         failwithf "Didn't get expected result %A\n\n<>\n\n%A" expected result
