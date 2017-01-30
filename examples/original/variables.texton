@@ -1,0 +1,17 @@
+@var $City
+  "Which city?"
+  [
+    *
+  ]
+
+@var $P2
+  "Which district?"
+  [
+    *
+  ]
+
+@var $P3
+  "Which car brand?"
+  [
+    *
+  ]
