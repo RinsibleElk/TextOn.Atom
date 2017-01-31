@@ -20,6 +20,17 @@ type ParsedCondition =
     | ParsedAreEqual of ParsedAttributeName * string
     | ParsedAreNotEqual of ParsedAttributeName * string
 
+type ParsedAttributeOrVariableName =
+    | ParsedAttribute of ParsedAttributeName
+    | ParsedVariable of ParsedVariableName
+
+type ParsedVariableCondition =
+    | ParsedVariableUnconditional
+    | ParsedVariableOr of ParsedVariableCondition * ParsedVariableCondition
+    | ParsedVariableAnd of ParsedVariableCondition * ParsedVariableCondition
+    | ParsedVariableAreEqual of ParsedAttributeOrVariableName * string
+    | ParsedVariableAreNotEqual of ParsedAttributeOrVariableName * string
+
 type ParseError = {
     LineNumber : int
     StartLocation : int
@@ -45,6 +56,9 @@ type ParsedFunctionDefinition = {
 
 [<RequireQualifiedAccess>]
 module internal FunctionDefinitionParser =
+    let private parseFunctionLine (tokens:AttributedToken list) =
+        failwith ""
+
     let rec private parseFunctionInner (tokens:AttributedTokenizedLine[]) =
         ()
 
