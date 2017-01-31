@@ -1,3 +1,5 @@
+#include "variables.texton"
+
 @func @stycke20160914_0
   {
     {Letar|söker} du efter en {prisvärd|central|centralt belägen} biluthyrning i $MÄRKE?

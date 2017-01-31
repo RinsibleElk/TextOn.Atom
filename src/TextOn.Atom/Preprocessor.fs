@@ -10,21 +10,16 @@ type PreprocessorFileResolver = string -> string option -> (string * string opti
 // If line contains a #include
 // - If include is invalid (no file specified), output a preprocessor error, and continue.
 // - If include is valid but file doesn't exist, output a preprocessor error, and continue.
-// - If include is valid and file exists, but file has already been included, output a preprocessor warning, and continue.
+// - If include is valid and file exists, but file has already been included, ignore it and continue.
 // - Preprocess the inner and splice it in.
 type PreprocessorError = {
     StartLocation : int
     EndLocation : int
     ErrorText : string }
-type PreprocessorWarning = {
-    StartLocation : int
-    EndLocation : int
-    WarningText : string }
 
 /// A preprocessed line, decorated with error/warning details.
 type PreprocessedLine =
     | PreprocessorError of PreprocessorError
-    | PreprocessorWarning of PreprocessorWarning
     | PreprocessorLine of string
 
 /// Representation of the source file, post the preprocessing phase.
@@ -82,16 +77,7 @@ module Preprocessor =
                                     ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
                         else
                             let (includeFileResolved, includeDirectory, includeLines) = resolvedFile |> Option.get
-                            if includedFilesContainer.AlreadyIncluded includeFileResolved then
-                                yield {
-                                    TopLevelFileLineNumber = topLevelFileLineNumber
-                                    CurrentFileLineNumber = currentFileLineNumber
-                                    CurrentFile = currentFile
-                                    Contents = PreprocessorWarning {
-                                        StartLocation = 1 + line.IndexOf("\"")
-                                        EndLocation = line.Length
-                                        WarningText = (includeFileResolved |> sprintf "Already included: %s") } }
-                            else
+                            if (not (includedFilesContainer.AlreadyIncluded includeFileResolved)) then
                                 includedFilesContainer.Add includeFileResolved
                                 yield! preprocessInner false topLevelFileLineNumber 1 includeFileResolved fileResolver includeDirectory includedFilesContainer includeLines
                 yield! (preprocessInner inTopLevelFile (if inTopLevelFile then (topLevelFileLineNumber + 1) else topLevelFileLineNumber) (currentFileLineNumber + 1) currentFile fileResolver currentDirectory includedFilesContainer remaining) }

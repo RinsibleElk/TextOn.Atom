@@ -1,3 +1,5 @@
+#include "variables.texton"
+
 @func @stycke20160823_0
   {
     När du ska hyra bil i $MÄRKE gör du det snabbt och enkelt via oss på Sixt.

@@ -9,7 +9,6 @@ type Category =
     | CategorizedVarDefinition
     | CategorizedAttDefinition
     | CategorizedPreprocessorError
-    | CategorizedPreprocessorWarning
     | CategorizationError
 
 /// Meta data for a section of code.
@@ -47,14 +46,13 @@ module LineCategorizer =
             let (nextState, output) =
                 // If the line is a preprocessor error or warning then the current state is immediately terminated.
                 match line.Contents with
-                | PreprocessorWarning(_)
                 | PreprocessorError(_) ->
                     match state with
                     | Root(nextIndex) ->
                         (Root(nextIndex + 1),
                             Some
                                 (Seq.singleton
-                                    {   Category = match line.Contents with | PreprocessorWarning(_) -> CategorizedPreprocessorWarning | _ -> CategorizedPreprocessorError
+                                    {   Category = CategorizedPreprocessorError
                                         Index = nextIndex
                                         File = line.CurrentFile
                                         StartLine = line.CurrentFileLineNumber
@@ -70,7 +68,7 @@ module LineCategorizer =
                                         StartLine = startLine
                                         EndLine = endLine
                                         Lines = preprocessedSourceLines }
-                                    {   Category = match line.Contents with | PreprocessorWarning(_) -> CategorizedPreprocessorWarning | _ -> CategorizedPreprocessorError
+                                    {   Category = CategorizedPreprocessorError
                                         Index = nextIndex + 1
                                         File = line.CurrentFile
                                         StartLine = line.CurrentFileLineNumber

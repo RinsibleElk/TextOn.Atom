@@ -56,6 +56,8 @@ type ParsedFunctionDefinition = {
 
 [<RequireQualifiedAccess>]
 module internal FunctionDefinitionParser =
+    type private FunctionDefinitionParserState =
+        | AwaitingFunc
     let private parseFunctionLine (tokens:AttributedToken list) =
         failwith ""
 

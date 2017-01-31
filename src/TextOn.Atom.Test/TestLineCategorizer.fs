@@ -74,45 +74,6 @@ let ``Categorize preprocessor error``() =
             }
         ]
 
-[<Test>]
-let ``Categorize preprocessor warning``() =
-    test
-        [
-            {
-                TopLevelFileLineNumber = 1
-                CurrentFileLineNumber = 1
-                CurrentFile = exampleFileName
-                Contents =
-                    PreprocessorWarning
-                        {
-                            StartLocation = 1
-                            EndLocation = 5
-                            WarningText = "Some warning text"
-                        }
-            }
-        ]
-        [
-            {
-                Category = CategorizedPreprocessorWarning
-                Index = 0
-                File = exampleFileName
-                StartLine = 1
-                EndLine = 1
-                Lines =
-                    List.singleton
-                        {
-                            TopLevelFileLineNumber = 1
-                            CurrentFileLineNumber = 1
-                            CurrentFile = exampleFileName
-                            Contents =
-                                PreprocessorWarning {
-                                    StartLocation = 1
-                                    EndLocation = 5
-                                    WarningText = "Some warning text" }
-                    }
-            }
-        ]
-
 let funcDefinition =
     [
         "@func @main()"

@@ -1,3 +1,5 @@
+#include "variables.texton"
+
 @func @stycke20160829_0
   {
     {Letar|söker} du efter en hyrbil i $MÄRKE?
@@ -126,7 +128,5 @@
       @stycke20160829_13
       @stycke20160829_14
       @stycke20160829_15
-      @stycke20160829_16
-      @stycke20160829_17
     }
   }

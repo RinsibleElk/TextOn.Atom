@@ -73,17 +73,13 @@ let ``CommentStripper with lines``() =
     test input expected
 
 [<Test>]
-let ``CommentStripper with errors and warnings``() =
+let ``CommentStripper with error``() =
     let input =
         [
             PreprocessorError {
                 StartLocation = 1
                 EndLocation = 15
                 ErrorText = "Some error" }
-            PreprocessorWarning {
-                StartLocation = 1
-                EndLocation = 15
-                WarningText = "Some warning" }
         ]
         |> List.scan
             (fun (ln,_) line ->

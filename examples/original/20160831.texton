@@ -1,3 +1,5 @@
+#include "variables.texton"
+
 @func @stycke20160831_0
   {
     Vill du boka en hyrbil i $MÄRKE?

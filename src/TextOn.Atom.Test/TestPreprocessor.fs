@@ -146,14 +146,6 @@ let ``Preprocessor with double successful include``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
-    let expectedWarning = {
-        TopLevelFileLineNumber = 2
-        CurrentFileLineNumber = 2
-        CurrentFile = exampleFileName
-        Contents = PreprocessorWarning {
-            StartLocation = 10
-            EndLocation = 24
-            WarningText = "Already included: gender.texton" } }
     let expected =
         source
         |> Seq.scan
@@ -171,7 +163,6 @@ let ``Preprocessor with double successful include``() =
         |> fun l ->
             seq {
                 yield! expectedGender
-                yield expectedWarning
                 yield! l }
         |> Seq.toList
     test fileResolver source expected
