@@ -113,47 +113,28 @@ let source          = Agent.source()
 let preprocessor    = source |> Agent.map (fun (a,b,c:string seq) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c)
 let stripper        = preprocessor |> Agent.map CommentStripper.stripComments
 let categorizer     = stripper |> Agent.map LineCategorizer.categorize
-let tokenizer       = categorizer |> Agent.map (fun s -> s |> Seq.map (fun x -> async { return Tokenizer.tokenize x }) |> Async.Parallel |> Async.RunSynchronously)
+let tokenizer       =
+    categorizer
+    |> Agent.map
+        (fun s ->
+            s
+            |> Seq.map (Tokenizer.tokenize)
+            |> Seq.toArray)
 
 // Example data.
 let f               = FileInfo(@"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton")
 let directory       = f.Directory.FullName |> Some
 let file            = f.Name
 let lines           = f.FullName |> File.ReadAllLines |> Seq.ofArray
-let stopwatch = System.Diagnostics.Stopwatch()
-categorizer.Post(
+let mutable count   = 0
+let stopwatch       = System.Diagnostics.Stopwatch()
+tokenizer.Post(
     Connect
-        (fun _ ->
+        (fun s ->
             stopwatch.Stop()
-            printfn "Done"))
+            count <- count + 1
+            printfn "Done %A for %d" (stopwatch.Elapsed) count))
 stopwatch.Start()
 source |> Agent.post (file,directory,lines)
-
-
-
-// Retrieve result.
-let result          =
-    tokenizer
-    |> Agent.fetch
-    |> Option.get
-
-result
-|> Seq.filter (fun x -> x.Category = CategorizedFuncDefinition)
-|> Seq.collect
-    (fun x ->
-        x.Tokens |> Seq.map (fun y -> y.Tokens |> Seq.map (fun t -> t.Token)))
-|> Seq.concat
-|> Seq.map
-    (fun x ->
-        match x with
-        | Func -> Choice1Of2 1
-        | FunctionName _ -> Choice1Of2 2
-        | OpenCurly -> Choice1Of2 3
-        | CloseCurly -> Choice1Of2 4
-        | RawText _ -> Choice1Of2 5
-        | ChoiceSeparator -> Choice1Of2 6
-        | VariableName _ -> Choice1Of2 7
-        | _ -> Choice2Of2 x)
-|> Seq.iter (printfn "%A")
 
 

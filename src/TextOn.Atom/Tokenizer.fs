@@ -14,29 +14,41 @@ module Tokenizer =
                 group.Lines
                 |> Seq.map
                     (fun line ->
-                        {
-                            LineNumber = line.CurrentFileLineNumber
-                            Tokens = match line.Contents with | PreprocessorLine line -> FunctionLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized func definition %A" line.Contents
-                        })
-                |> Seq.toList
+                        async {
+                            return
+                                {
+                                    LineNumber = line.CurrentFileLineNumber
+                                    Tokens = match line.Contents with | PreprocessorLine line -> FunctionLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized func definition %A" line.Contents
+                                } })
+                |> Async.Parallel
+                |> Async.RunSynchronously
+                |> List.ofArray
             | CategorizedVarDefinition ->
                 group.Lines
                 |> Seq.map
                     (fun line ->
-                        {
-                            LineNumber = line.CurrentFileLineNumber
-                            Tokens = match line.Contents with | PreprocessorLine line -> VariableLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized variable definition %A" line.Contents
-                        })
-                |> Seq.toList
+                        async {
+                            return
+                                {
+                                    LineNumber = line.CurrentFileLineNumber
+                                    Tokens = match line.Contents with | PreprocessorLine line -> VariableLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized variable definition %A" line.Contents
+                                } })
+                |> Async.Parallel
+                |> Async.RunSynchronously
+                |> List.ofArray
             | CategorizedAttDefinition ->
                 group.Lines
                 |> Seq.map
                     (fun line ->
-                        {
-                            LineNumber = line.CurrentFileLineNumber
-                            Tokens = match line.Contents with | PreprocessorLine line -> AttributeLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized attribute definition %A" line.Contents
-                        })
-                |> Seq.toList
+                        async {
+                            return
+                                {
+                                    LineNumber = line.CurrentFileLineNumber
+                                    Tokens = match line.Contents with | PreprocessorLine line -> AttributeLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized attribute definition %A" line.Contents
+                                } })
+                |> Async.Parallel
+                |> Async.RunSynchronously
+                |> List.ofArray
             | _ -> []
         {
             Category = group.Category
