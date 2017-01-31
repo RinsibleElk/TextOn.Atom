@@ -1,7 +1,7 @@
 ﻿namespace TextOn.Atom
 
 type ParsedVariableSuggestedValue = {
-     }
+    Value : string }
 
 type ParsedVariableDefinition = {
     File : string
