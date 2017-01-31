@@ -109,17 +109,24 @@ module Agent =
         agent.Post(NewData(data))
 
 // Set up pipeline.
+let time f (li,a) =
+    let sw = System.Diagnostics.Stopwatch()
+    sw.Start()
+    let r = f a
+    sw.Stop()
+    (sw.Elapsed :: li, r)
 let source          = Agent.source()
-let preprocessor    = source |> Agent.map (fun (a,b,c) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c)
-let stripper        = preprocessor |> Agent.map CommentStripper.stripComments
-let categorizer     = stripper |> Agent.map LineCategorizer.categorize
+let preprocessor    = source |> Agent.map (time (fun (a,b,c) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c))
+let stripper        = preprocessor |> Agent.map (time CommentStripper.stripComments)
+let categorizer     = stripper |> Agent.map (time LineCategorizer.categorize)
 let tokenizer       =
     categorizer
     |> Agent.map
-        (fun s ->
-            s
-            |> Seq.map (Tokenizer.tokenize)
-            |> Seq.toArray)
+        (time
+            (fun s ->
+                s
+                |> Seq.map (Tokenizer.tokenize)
+                |> Seq.toArray))
 
 // Example data.
 let filename =
@@ -137,11 +144,14 @@ let mutable count   = 0
 let stopwatch       = System.Diagnostics.Stopwatch()
 tokenizer.Post(
     Connect
-        (fun s ->
+        (fun (li,_) ->
             stopwatch.Stop()
             count <- count + 1
-            printfn "Done %A for %d" (stopwatch.Elapsed) count))
+            printfn "Done %A for %d" (stopwatch.Elapsed) count
+            li
+            |> List.rev
+            |> List.iter (printfn "%A")))
 stopwatch.Start()
-source |> Agent.post (file,directory,lines)
+source |> Agent.post ([], (file,directory,lines))
 
 
