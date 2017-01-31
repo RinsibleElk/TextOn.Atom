@@ -60,7 +60,7 @@ let ``Categorize preprocessor error``() =
                 StartLine = 1
                 EndLine = 1
                 Lines =
-                    Seq.singleton
+                    List.singleton
                         {
                             TopLevelFileLineNumber = 1
                             CurrentFileLineNumber = 1
@@ -99,7 +99,7 @@ let ``Categorize preprocessor warning``() =
                 StartLine = 1
                 EndLine = 1
                 Lines =
-                    Seq.singleton
+                    List.singleton
                         {
                             TopLevelFileLineNumber = 1
                             CurrentFileLineNumber = 1
@@ -457,7 +457,7 @@ let ``Categorize a whole single file``() =
                             File = exampleFileName
                             StartLine = b
                             EndLine = c
-                            Lines = a
+                            Lines = a |> Seq.toList
                         }))
             (0,None)
         |> Seq.skip 1
