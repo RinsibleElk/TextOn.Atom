@@ -122,7 +122,14 @@ let tokenizer       =
             |> Seq.toArray)
 
 // Example data.
-let f               = FileInfo(@"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton")
+let filename =
+    [
+        @"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton"
+        @"/Users/Oliver/Projects/TextOn.Atom/TextOn.Atom/examples/original/sixt.texton"
+    ]
+    |> List.tryFind File.Exists
+    |> Option.get
+let f               = FileInfo(filename)
 let directory       = f.Directory.FullName |> Some
 let file            = f.Name
 let lines           = f.FullName |> File.ReadAllLines |> List.ofArray
