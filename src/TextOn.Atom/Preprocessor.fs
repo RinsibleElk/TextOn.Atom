@@ -4,7 +4,7 @@ open System.Text.RegularExpressions
 open System.IO
 
 /// Service to resolve a file. Can be used in testing to not actually bother having real files lying around.
-type PreprocessorFileResolver = string -> string option -> (string * string option * string seq) option
+type PreprocessorFileResolver = string -> string option -> (string * string option * string list) option
 
 // Loop through lines
 // If line contains a #include
@@ -105,10 +105,10 @@ module Preprocessor =
                     FileInfo(Path.Combine(directory.Value, fileUnresolved))
                 else
                     FileInfo(fileUnresolved)
-            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadAllLines |> Seq.ofArray)
+            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadAllLines |> List.ofArray)
             else None)
 
     /// Perform the preprocess.
-    let preprocess fileResolver fileName currentDirectory lines =
+    let preprocess fileResolver fileName currentDirectory (lines:string list) =
         preprocessInner true 1 1 fileName fileResolver currentDirectory (IncludedFilesContainer()) lines
-        |> Seq.cache
+        |> Seq.toList

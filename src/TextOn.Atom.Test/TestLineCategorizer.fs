@@ -143,6 +143,7 @@ let ``Categorize a single function definition``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine, lastLine = funcDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
         funcDefinitionLines
@@ -173,6 +174,7 @@ let ``Categorize two function definitions``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine1, lastLine1 = funcDefinitionLines1 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     let funcDefinitionLines2 =
         funcDefinition
@@ -188,9 +190,10 @@ let ``Categorize two function definitions``() =
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine2, lastLine2 = funcDefinitionLines2 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append funcDefinitionLines1 funcDefinitionLines2)
+        (List.append funcDefinitionLines1 funcDefinitionLines2)
         [
             {
                 Category = CategorizedFuncDefinition
@@ -238,6 +241,7 @@ let ``Categorize a single variable definition``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine, lastLine = varDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
         varDefinitionLines
@@ -268,6 +272,7 @@ let ``Categorize two variable definitions``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine1, lastLine1 = varDefinitionLines1 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     let varDefinitionLines2 =
         varDefinition
@@ -283,9 +288,10 @@ let ``Categorize two variable definitions``() =
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine2, lastLine2 = varDefinitionLines2 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append varDefinitionLines1 varDefinitionLines2)
+        (List.append varDefinitionLines1 varDefinitionLines2)
         [
             {
                 Category = CategorizedVarDefinition
@@ -330,6 +336,7 @@ let ``Categorize a single attribute definition``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine, lastLine = attDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
         attDefinitionLines
@@ -360,6 +367,7 @@ let ``Categorize two attribute definitions``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine1, lastLine1 = attDefinitionLines1 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     let attDefinitionLines2 =
         attDefinition
@@ -375,9 +383,10 @@ let ``Categorize two attribute definitions``() =
             ((lastLine1 + 1),None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let firstLine2, lastLine2 = attDefinitionLines2 |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append attDefinitionLines1 attDefinitionLines2)
+        (List.append attDefinitionLines1 attDefinitionLines2)
         [
             {
                 Category = CategorizedAttDefinition
@@ -435,6 +444,7 @@ let ``Categorize a whole single file``() =
     let input =
         preprocessedLines
         |> Seq.collect (fun (a,_,_,_) -> a)
+        |> Seq.toList
     let expected =
         preprocessedLines
         |> Seq.scan
@@ -462,7 +472,7 @@ let ``Unrecognised then function definition``() =
             (1, "hello")
             (2, "world")
         ]
-        |> Seq.map
+        |> List.map
             (fun (ln, line) ->
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
@@ -470,7 +480,7 @@ let ``Unrecognised then function definition``() =
                     Contents = PreprocessorLine(line) })
     let funcDefinitionLines =
         funcDefinition
-        |> Seq.scan
+        |> List.scan
             (fun (ln,_) line ->
                 (ln,
                     Some
@@ -480,11 +490,11 @@ let ``Unrecognised then function definition``() =
                             CurrentFile = exampleFileName
                             Contents = PreprocessorLine(line) }))
             (3,None)
-        |> Seq.skip 1
-        |> Seq.map (snd >> Option.get)
+        |> List.skip 1
+        |> List.map (snd >> Option.get)
     let firstLine, lastLine = funcDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append unrecognisedLines funcDefinitionLines)
+        (List.append unrecognisedLines funcDefinitionLines)
         [
             {
                 Category = CategorizationError
@@ -511,7 +521,7 @@ let ``Unrecognised then variable definition``() =
             (1, "hello")
             (2, "world")
         ]
-        |> Seq.map
+        |> List.map
             (fun (ln, line) ->
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
@@ -519,7 +529,7 @@ let ``Unrecognised then variable definition``() =
                     Contents = PreprocessorLine(line) })
     let varDefinitionLines =
         varDefinition
-        |> Seq.scan
+        |> List.scan
             (fun (ln,_) line ->
                 (ln,
                     Some
@@ -529,11 +539,11 @@ let ``Unrecognised then variable definition``() =
                             CurrentFile = exampleFileName
                             Contents = PreprocessorLine(line) }))
             (3,None)
-        |> Seq.skip 1
-        |> Seq.map (snd >> Option.get)
+        |> List.skip 1
+        |> List.map (snd >> Option.get)
     let firstLine, lastLine = varDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append unrecognisedLines varDefinitionLines)
+        (List.append unrecognisedLines varDefinitionLines)
         [
             {
                 Category = CategorizationError
@@ -560,7 +570,7 @@ let ``Unrecognised then attribute definition``() =
             (1, "hello")
             (2, "world")
         ]
-        |> Seq.map
+        |> List.map
             (fun (ln, line) ->
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
@@ -568,7 +578,7 @@ let ``Unrecognised then attribute definition``() =
                     Contents = PreprocessorLine(line) })
     let attDefinitionLines =
         attDefinition
-        |> Seq.scan
+        |> List.scan
             (fun (ln,_) line ->
                 (ln,
                     Some
@@ -578,11 +588,11 @@ let ``Unrecognised then attribute definition``() =
                             CurrentFile = exampleFileName
                             Contents = PreprocessorLine(line) }))
             (3,None)
-        |> Seq.skip 1
-        |> Seq.map (snd >> Option.get)
+        |> List.skip 1
+        |> List.map (snd >> Option.get)
     let firstLine, lastLine = attDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     test
-        (Seq.append unrecognisedLines attDefinitionLines)
+        (List.append unrecognisedLines attDefinitionLines)
         [
             {
                 Category = CategorizationError
@@ -606,7 +616,7 @@ let ``Unrecognised then attribute definition``() =
 let ``Unrecognised new file``() =
     let attDefinitionLines =
         attDefinition
-        |> Seq.scan
+        |> List.scan
             (fun (ln,_) line ->
                 (ln,
                     Some
@@ -616,22 +626,22 @@ let ``Unrecognised new file``() =
                             CurrentFile = exampleFileName
                             Contents = PreprocessorLine(line) }))
             (1,None)
-        |> Seq.skip 1
-        |> Seq.map (snd >> Option.get)
+        |> List.skip 1
+        |> List.map (snd >> Option.get)
     let firstLine, lastLine = attDefinitionLines |> Seq.fold (fun (mn,mx) l -> (min mn l.CurrentFileLineNumber, max mx l.CurrentFileLineNumber)) (Int32.MaxValue, Int32.MinValue)
     let unrecognisedLines =
         [
             (2, "hello")
             (3, "world")
         ]
-        |> Seq.map
+        |> List.map
             (fun (ln, line) ->
                 {   TopLevelFileLineNumber = ln
                     CurrentFileLineNumber = ln
                     CurrentFile = exampleFileName2
                     Contents = PreprocessorLine(line) })
     test
-        (Seq.append attDefinitionLines unrecognisedLines)
+        (List.append attDefinitionLines unrecognisedLines)
         [
             {
                 Category = CategorizedAttDefinition

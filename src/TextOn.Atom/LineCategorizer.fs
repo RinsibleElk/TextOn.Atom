@@ -31,7 +31,8 @@ module LineCategorizer =
         | Root of int
         | Context of Category * int * string * int * int * PreprocessedSourceLine seq
     let rec private categorizeInner state lines : CategorizedLines seq =
-        if lines |> Seq.isEmpty then
+        match lines with
+        | [] ->
             match state with
             | Root(_) -> Seq.empty
             | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
@@ -42,9 +43,7 @@ module LineCategorizer =
                         StartLine = startLine
                         EndLine = endLine
                         Lines = preprocessedSourceLines }
-        else
-            let line : PreprocessedSourceLine = lines |> Seq.head
-            let remaining = lines |> Seq.tail
+        | line::remaining ->
             let (nextState, output) =
                 // If the line is a preprocessor error or warning then the current state is immediately terminated.
                 match line.Contents with
@@ -150,4 +149,4 @@ module LineCategorizer =
                 yield! (categorizeInner nextState remaining) }
 
     /// Categorize output from the comment stripper into sections for (potentially parallelized) context-specific tokenization and compilation.
-    let categorize lines = categorizeInner (Root(0)) lines |> Seq.cache
+    let categorize lines = categorizeInner (Root(0)) lines |> Seq.toList

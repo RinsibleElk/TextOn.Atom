@@ -110,7 +110,7 @@ module Agent =
 
 // Set up pipeline.
 let source          = Agent.source()
-let preprocessor    = source |> Agent.map (fun (a,b,c:string seq) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c)
+let preprocessor    = source |> Agent.map (fun (a,b,c) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c)
 let stripper        = preprocessor |> Agent.map CommentStripper.stripComments
 let categorizer     = stripper |> Agent.map LineCategorizer.categorize
 let tokenizer       =
@@ -125,7 +125,7 @@ let tokenizer       =
 let f               = FileInfo(@"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton")
 let directory       = f.Directory.FullName |> Some
 let file            = f.Name
-let lines           = f.FullName |> File.ReadAllLines |> Seq.ofArray
+let lines           = f.FullName |> File.ReadAllLines |> List.ofArray
 let mutable count   = 0
 let stopwatch       = System.Diagnostics.Stopwatch()
 tokenizer.Post(

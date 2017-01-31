@@ -26,7 +26,7 @@ let test f s e =
         failwithf "The lists didn't match - first failing line was: %s" firstFailingLine.Value
 
 let gender =
-    seq [
+    [
         "@att %Gender ="
         "  ["
         "    \"Male\","
@@ -39,7 +39,7 @@ let gender =
         "  ]"
     ]
 let example =
-    seq [
+    [
         "// Here's a function I can call from within the main."
         "@func @guyStuff()"
         "{"
@@ -79,6 +79,7 @@ let ``Preprocessor with no includes``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     test alwaysFailFileResolver example expected
 
 [<Test>]
@@ -87,6 +88,7 @@ let ``Preprocessor with single successful include``() =
         seq {
             yield "#include \"gender.texton\""
             yield! example }
+        |> Seq.toList
     let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
     let expectedGender =
         gender
@@ -102,6 +104,7 @@ let ``Preprocessor with single successful include``() =
             (1,None)
         |> Seq.skip 1
         |> Seq.map (snd >> Option.get)
+        |> Seq.toList
     let expected =
         source
         |> Seq.scan
@@ -117,6 +120,7 @@ let ``Preprocessor with single successful include``() =
         |> Seq.skip 2
         |> Seq.map (snd >> Option.get)
         |> Seq.append expectedGender
+        |> Seq.toList
     test fileResolver source expected
 
 [<Test>]
@@ -126,6 +130,7 @@ let ``Preprocessor with double successful include``() =
             yield "#include \"gender.texton\""
             yield "#include \"gender.texton\""
             yield! example }
+        |> Seq.toList
     let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
     let expectedGender =
         gender
@@ -168,6 +173,7 @@ let ``Preprocessor with double successful include``() =
                 yield! expectedGender
                 yield expectedWarning
                 yield! l }
+        |> Seq.toList
     test fileResolver source expected
 
 [<Test>]
@@ -176,6 +182,7 @@ let ``Preprocessor with single failed include``() =
         seq {
             yield "#include \"gender.texton\""
             yield! example }
+        |> Seq.toList
     let expectedError = {
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
@@ -202,6 +209,7 @@ let ``Preprocessor with single failed include``() =
             seq {
                 yield expectedError
                 yield! l }
+        |> Seq.toList
     test alwaysFailFileResolver source expected
 
 [<Test>]
@@ -210,6 +218,7 @@ let ``Preprocessor with unrecognised directive``() =
         seq {
             yield "#whatever \"Something\"  15"
             yield! example }
+        |> Seq.toList
     let expectedError = {
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
@@ -236,5 +245,6 @@ let ``Preprocessor with unrecognised directive``() =
             seq {
                 yield expectedError
                 yield! l }
+        |> Seq.toList
     test alwaysFailFileResolver source expected
 
