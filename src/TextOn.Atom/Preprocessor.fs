@@ -46,11 +46,10 @@ module Preprocessor =
         member __.Add s = includedFiles <- includedFiles |> Set.add s
 
     /// Perform the preprocessing.
-    let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string option) (includedFilesContainer:IncludedFilesContainer) (lines:string seq) =
-        if lines |> Seq.isEmpty then Seq.empty
-        else
-            let line = lines |> Seq.head
-            let remaining = lines |> Seq.skip 1
+    let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string option) (includedFilesContainer:IncludedFilesContainer) (lines:string list) =
+        match lines with
+        | [] -> Seq.empty
+        | line::remaining ->
             seq {
                 if (not (line.StartsWith("#"))) then
                     yield {
