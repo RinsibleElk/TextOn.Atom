@@ -3,14 +3,16 @@
 open System
 open System.Text.RegularExpressions
 
-type ParsedAttributeName = string
+type ParsedAttributeOrVariable =
+    | ParsedAttribute of string
+    | ParsedVariable of string
 
 type ParsedCondition =
     | ParsedUnconditional
     | ParsedOr of ParsedCondition * ParsedCondition
     | ParsedAnd of ParsedCondition * ParsedCondition
-    | ParsedAreEqual of ParsedAttributeName * string
-    | ParsedAreNotEqual of ParsedAttributeName * string
+    | ParsedAreEqual of ParsedAttributeOrVariable * string
+    | ParsedAreNotEqual of ParsedAttributeOrVariable * string
     | ParsedConditionError of string
 
 type ConditionParseResults = {
@@ -19,7 +21,7 @@ type ConditionParseResults = {
 
 [<RequireQualifiedAccess>]
 module ConditionParser =
-    let rec private parseConditionInner conditionTokens =
+    let rec private parseConditionInner variablesAreAllowed conditionTokens =
         if conditionTokens |> List.isEmpty then
             { HasErrors = true; Condition = ParsedConditionError "Invalid empty condition" }
         else
@@ -38,8 +40,8 @@ module ConditionParser =
                 |> List.tryFind (fun (a, _, ao) -> a = 0 && ao.Value.Token = And)
             if rootAnd |> Option.isSome then
                 let (_, index, _) = rootAnd.Value
-                let left = parseConditionInner (conditionTokens |> List.take index)
-                let right = parseConditionInner (conditionTokens |> List.skip (index + 1))
+                let left = parseConditionInner variablesAreAllowed (conditionTokens |> List.take index)
+                let right = parseConditionInner variablesAreAllowed (conditionTokens |> List.skip (index + 1))
                 { HasErrors = left.HasErrors || right.HasErrors; Condition = ParsedAnd(left.Condition, right.Condition) }
             else
                 let rootOr =
@@ -47,27 +49,37 @@ module ConditionParser =
                     |> List.tryFind (fun (a, _, ao) -> a = 0 && ao.Value.Token = Or)
                 if rootOr |> Option.isSome then
                     let (_, index, _) = rootOr.Value
-                    let left = parseConditionInner (conditionTokens |> List.take index)
-                    let right = parseConditionInner (conditionTokens |> List.skip (index + 1))
+                    let left = parseConditionInner variablesAreAllowed (conditionTokens |> List.take index)
+                    let right = parseConditionInner variablesAreAllowed (conditionTokens |> List.skip (index + 1))
                     { HasErrors = left.HasErrors || right.HasErrors; Condition = ParsedOr(left.Condition, right.Condition) }
                 else
                     if conditionTokens.Length = 3 then
                         match (conditionTokens.[0].Token, conditionTokens.[1].Token, conditionTokens.[2].Token) with
                         | (AttributeName name, Equals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreEqual(name, value) }
+                            { HasErrors = false; Condition = ParsedAreEqual(ParsedAttribute name, value) }
                         | (AttributeName name, NotEquals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreNotEqual(name, value) }
+                            { HasErrors = false; Condition = ParsedAreNotEqual(ParsedAttribute name, value) }
+                        | (VariableName name, Equals, QuotedString value) ->
+                            if variablesAreAllowed then
+                                { HasErrors = false; Condition = ParsedAreEqual(ParsedVariable name, value) }
+                            else
+                                { HasErrors = true; Condition = ParsedConditionError "Invalid reference to variable in attribute-based condition" }
+                        | (VariableName name, NotEquals, QuotedString value) ->
+                            if variablesAreAllowed then
+                                { HasErrors = false; Condition = ParsedAreNotEqual(ParsedVariable name, value) }
+                            else
+                                { HasErrors = true; Condition = ParsedConditionError "Invalid reference to variable in attribute-based condition" }
                         | _ ->
                             { HasErrors = true; Condition = ParsedConditionError "Invalid condition" }
                     else if (conditionTokens.[0].Token <> OpenBracket) || (conditionTokens.[conditionTokens.Length - 1].Token <> CloseBracket) then
                         { HasErrors = true; Condition = ParsedConditionError "Invalid condition" }
                     else
-                        parseConditionInner (conditionTokens |> List.skip 1 |> List.take (conditionTokens.Length - 2))
+                        parseConditionInner variablesAreAllowed (conditionTokens |> List.skip 1 |> List.take (conditionTokens.Length - 2))
 
-    /// Parse a condition (on attribute only).
-    let parseCondition (conditionTokens:AttributedToken list) =
+    /// Parse a condition.
+    let parseCondition variablesAreAllowed (conditionTokens:AttributedToken list) =
         // It is known that the first is an OpenBrace. If the last is not a CloseBrace, it's an error.
         if conditionTokens.[conditionTokens.Length - 1].Token <> CloseBrace then { HasErrors = true; Condition = ParsedConditionError "Invalid condition" }
-        else parseConditionInner (conditionTokens |> List.skip 1 |> List.take (conditionTokens.Length - 2))
+        else parseConditionInner variablesAreAllowed (conditionTokens |> List.skip 1 |> List.take (conditionTokens.Length - 2))
 
 

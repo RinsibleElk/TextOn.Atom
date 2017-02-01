@@ -12,18 +12,6 @@ type ParsedSentenceNode =
     | ParsedSimpleChoice of ParsedSentenceNode[]
     | ParsedSimpleSeq of ParsedSentenceNode[]
 
-type ParsedAttributeOrVariableName =
-    | ParsedAttribute of ParsedAttributeName
-    | ParsedVariable of ParsedVariableName
-
-type ParsedVariableCondition =
-    | ParsedVariableUnconditional
-    | ParsedVariableOr of ParsedVariableCondition * ParsedVariableCondition
-    | ParsedVariableAnd of ParsedVariableCondition * ParsedVariableCondition
-    | ParsedVariableAreEqual of ParsedAttributeOrVariableName * string
-    | ParsedVariableAreNotEqual of ParsedAttributeOrVariableName * string
-    | ParsedVariableConditionError of string
-
 type ParseError = {
     LineNumber : int
     StartLocation : int
