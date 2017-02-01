@@ -3,7 +3,6 @@
 open System
 open System.Text.RegularExpressions
 
-type ParsedAttributeName = string
 type ParsedVariableName = string
 type ParsedFunctionName = string
 
@@ -12,13 +11,6 @@ type ParsedSentenceNode =
     | ParsedVariable of ParsedVariableName
     | ParsedSimpleChoice of ParsedSentenceNode[]
     | ParsedSimpleSeq of ParsedSentenceNode[]
-
-type ParsedCondition =
-    | ParsedUnconditional
-    | ParsedOr of ParsedCondition * ParsedCondition
-    | ParsedAnd of ParsedCondition * ParsedCondition
-    | ParsedAreEqual of ParsedAttributeName * string
-    | ParsedAreNotEqual of ParsedAttributeName * string
 
 type ParsedAttributeOrVariableName =
     | ParsedAttribute of ParsedAttributeName
@@ -30,6 +22,7 @@ type ParsedVariableCondition =
     | ParsedVariableAnd of ParsedVariableCondition * ParsedVariableCondition
     | ParsedVariableAreEqual of ParsedAttributeOrVariableName * string
     | ParsedVariableAreNotEqual of ParsedAttributeOrVariableName * string
+    | ParsedVariableConditionError of string
 
 type ParseError = {
     LineNumber : int
@@ -56,9 +49,8 @@ type ParsedFunctionDefinition = {
 
 [<RequireQualifiedAccess>]
 module internal FunctionDefinitionParser =
-    type private FunctionDefinitionParserState =
-        | AwaitingFunc
-    let private parseFunctionLine (tokens:AttributedToken list) =
+
+    let rec private parseFunctionLine pushNode (tokens:AttributedToken list) =
         failwith ""
 
     let rec private parseFunctionInner (tokens:AttributedTokenizedLine[]) =

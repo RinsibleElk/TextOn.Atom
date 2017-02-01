@@ -89,6 +89,7 @@
     <Compile Include="TestFunctionLineTokenizer.fs" />
     <Compile Include="TestVariableLineTokenizer.fs" />
     <Compile Include="TestAttributeLineTokenizer.fs" />
+    <Compile Include="TestConditionParser.fs" />
     <Compile Include="TestConditionEvaluator.fs" />
     <Compile Include="TestVariableConditionEvaluator.fs" />
     <Compile Include="TestGenerator.fs" />

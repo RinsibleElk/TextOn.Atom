@@ -29,12 +29,10 @@ type Token =
     | InvalidReservedToken of string
     | FunctionName of string
 
-type AttributedToken =
-    {
-        TokenStartLocation : int
-        TokenEndLocation : int
-        Token : Token
-    }
+type AttributedToken = {
+    TokenStartLocation : int
+    TokenEndLocation : int
+    Token : Token }
 
 type AttributedTokenizedLine =
     {
