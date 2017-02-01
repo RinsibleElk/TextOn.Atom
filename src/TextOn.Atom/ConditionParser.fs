@@ -81,7 +81,7 @@ module ConditionParser =
                                     (match left.Condition with | ParsedConditionError(errors) -> errors | _ -> [||])
                                     (match right.Condition with | ParsedConditionError(errors) -> errors | _ -> [||]))
                         else
-                            ParsedAnd(left.Condition, right.Condition)
+                            ParsedOr(left.Condition, right.Condition)
                     {   HasErrors = hasErrors
                         Condition = condition }
                 else
