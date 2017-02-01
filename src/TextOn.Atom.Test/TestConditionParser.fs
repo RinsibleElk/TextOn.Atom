@@ -24,7 +24,7 @@ let ``Test simple equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreEqual(ParsedAttribute "Gender", "Male") }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test simple not equals``() =
@@ -40,7 +40,7 @@ let ``Test simple not equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreNotEqual(ParsedAttribute "Gender", "Male") }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test bracketed equals``() =
@@ -58,7 +58,7 @@ let ``Test bracketed equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreEqual(ParsedAttribute "Gender", "Male") }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test bracketed not equals``() =
@@ -76,7 +76,7 @@ let ``Test bracketed not equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreNotEqual(ParsedAttribute "Gender", "Male") }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test single or``() =
@@ -99,7 +99,7 @@ let ``Test single or``() =
             ParsedOr(
                 ParsedAreEqual(ParsedAttribute "Gender", "Male"),
                 ParsedAreEqual(ParsedAttribute "Gender", "Female")) }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test multiple ors``() =
@@ -134,7 +134,7 @@ let ``Test multiple ors``() =
                     ParsedOr(
                         ParsedAreEqual(ParsedAttribute "Gender", "Attack helicopter"),
                         ParsedAreEqual(ParsedAttribute "Gender", "Other")))) }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test single and``() =
@@ -157,7 +157,7 @@ let ``Test single and``() =
             ParsedAnd(
                 ParsedAreEqual(ParsedAttribute "Gender", "Male"),
                 ParsedAreEqual(ParsedAttribute "Gender", "Female")) }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test multiple ands``() =
@@ -192,7 +192,7 @@ let ``Test multiple ands``() =
                     ParsedAnd(
                         ParsedAreEqual(ParsedAttribute "Gender", "Attack helicopter"),
                         ParsedAreEqual(ParsedAttribute "Gender", "Other")))) }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 // OPS I'm not actually sure this is the correct precedence, but I implemented a precedence anyway, can easily be reversed.
 [<Test>]
@@ -228,7 +228,7 @@ let ``Test and/or precedence``() =
                         ParsedAreEqual (ParsedAttribute "Gender","Female"),
                         ParsedAreEqual (ParsedAttribute "Gender","Attack helicopter")),
                     ParsedAreEqual (ParsedAttribute "Gender","Other"))) }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
 let ``Test brackets``() =
@@ -265,5 +265,5 @@ let ``Test brackets``() =
                         ParsedAreEqual (ParsedAttribute "Gender","Female")),
                     ParsedAreEqual (ParsedAttribute "Gender","Attack helicopter")),
                 ParsedAreEqual (ParsedAttribute "Gender","Other")) }
-    test <@ ConditionParser.parseCondition false tokens = expected @>
+    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
