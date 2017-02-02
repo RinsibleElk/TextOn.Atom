@@ -1,106 +1,136 @@
 #include "variables.texton"
 
-@func @stycke20160831_0
+  @func @stycke20160831_0
   {
-    Vill du boka en hyrbil i $MÄRKE?
-    Söker du en hyrbil i $MÄRKE?
-    Är du på jakt efter en hyrbil i $MÄRKE?
+    @choice {
+      Vill du boka en hyrbil i $MÄRKE?
+      Söker du en hyrbil i $MÄRKE?
+      Är du på jakt efter en hyrbil i $MÄRKE?
+    }
   }
 
-@func @stycke20160831_1
+  @func @stycke20160831_1
   {
-    Mitt i centrum av $MÄRKE, beläget $P2, ligger vårt {kontor|uthyrningskontor}.
-    Mitt i centrum av $MÄRKE, beläget $P2, hittar du vårt {kontor|uthyrningskontor}.
-    Centralt beläget $P2 hittar du vårt {kontor|uthyrningskontor}.
+    @choice {
+      Mitt i centrum av $MÄRKE, beläget $P2, ligger vårt {kontor|uthyrningskontor}.
+      Mitt i centrum av $MÄRKE, beläget $P2, hittar du vårt {kontor|uthyrningskontor}.
+      Centralt beläget $P2 hittar du vårt {kontor|uthyrningskontor}.
+    }
   }
 
-@func @stycke20160831_2
+  @func @stycke20160831_2
   {
-    Bara ett stenkast härifrån {ligger|hittar du|finner du} några av stadens mest kända sevärdheter.
-    Inte långt härifrån {ligger|hittar du|finner du} några av stadens mest kända {sevärdheter|besöksmål|turistmål|attraktioner}.
+    @choice {
+      Bara ett stenkast härifrån {ligger|hittar du|finner du} några av stadens mest kända sevärdheter.
+      Inte långt härifrån {ligger|hittar du|finner du} några av stadens mest kända {sevärdheter|besöksmål|turistmål|attraktioner}.
+    }
   }
 
-@func @stycke20160831_3
+  @func @stycke20160831_3
   {
-    Läget är med andra ord {svårslaget|perfekt} om du {planerar att|ska|vill|önskar} utforska staden med en egen bil.
-    Ett {svårslaget|perfekt} läge om du {planerar att|ska|vill|önskar} utforska staden med en egen bil.
-    Det är svårt att tänka sig ett bättre läge om du {vill|planerar} att utforska {staden|stan} med en egen bil.
+    @choice {
+      Läget är med andra ord {svårslaget|perfekt} om du {planerar att|ska|vill|önskar} utforska staden med en egen bil.
+      Ett {svårslaget|perfekt} läge om du {planerar att|ska|vill|önskar} utforska staden med en egen bil.
+      Det är svårt att tänka sig ett bättre läge om du {vill|planerar} att utforska {staden|stan} med en egen bil.
+    }
   }
 
-@func @stycke20160831_4
+  @func @stycke20160831_4
   {
-    Eller kanske {planerar du|ska du göra|stundar|väntar} en {jobbresa|affärsresa|resa med jobbet|resa i arbetet|resa i arbetets räkning|resa med kollegorna|jobbresa kollegorna|affärsresa med kollegorna?}
+    @choice {
+      Eller kanske {planerar du|ska du göra|stundar|väntar} en {jobbresa|affärsresa|resa med jobbet|resa i arbetet|resa i arbetets räkning|resa med kollegorna|jobbresa kollegorna|affärsresa med kollegorna?}
+    }
   }
 
-@func @stycke20160831_5
+  @func @stycke20160831_5
   {
-    Oavsett vad som för dig hit kan vi på Sixt erbjuda dig som vill hyra bil i $MÄRKE ett {brett|stort} {utbud|urval} av {bilar|bilmodeller}.
-    Oavsett vad anledning till ditt besök är erbjuder vi på Sixt dig som vill hyra bil i $MÄRKE ett {brett|stort} {utbud|urval} av {bilar|bilmodeller}.
-    Oavsett vad som för dig hit kan vi på Sixt erbjuda dig som vill hyra bil i $MÄRKE {bilar|fordon|bilmodeller} i {många|alla} {storleksklasser|prisklasser}.
+    @choice {
+      Oavsett vad som för dig hit kan vi på Sixt erbjuda dig som vill hyra bil i $MÄRKE ett {brett|stort} {utbud|urval} av {bilar|bilmodeller}.
+      Oavsett vad anledning till ditt besök är erbjuder vi på Sixt dig som vill hyra bil i $MÄRKE ett {brett|stort} {utbud|urval} av {bilar|bilmodeller}.
+      Oavsett vad som för dig hit kan vi på Sixt erbjuda dig som vill hyra bil i $MÄRKE {bilar|fordon|bilmodeller} i {många|alla} {storleksklasser|prisklasser}.
+    }
   }
 
-@func @stycke20160831_6
+  @func @stycke20160831_6
   {
-    Dessutom erbjuds du {även|också} möjligheten att lägga till rad {tillvalsfunktioner|tillvalstjänster|tilläggstjänster} på vår biluthyrning i $MÄRKE .
-    Självklart finns erbjuds en rad andra {tjänster|tillvalstjänster|extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar gör {resa|bilfärden} {extra bekväm|bekväm}.
-    Dessutom erbjuds du {även|också} möjligheten att lägga till rad {tillvalsfunktioner|tillvalstjänster|tilläggstjänster} vilka är {utformade|skapade|framtagna} för att skräddarsy din {resa|bilresa} utifrån dina {resbehov|körbehov|bilbehov}.
+    @choice {
+      Dessutom erbjuds du {även|också} möjligheten att lägga till rad {tillvalsfunktioner|tillvalstjänster|tilläggstjänster} på vår biluthyrning i $MÄRKE .
+      Självklart finns erbjuds en rad andra {tjänster|tillvalstjänster|extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar gör {resa|bilfärden} {extra bekväm|bekväm}.
+      Dessutom erbjuds du {även|också} möjligheten att lägga till rad {tillvalsfunktioner|tillvalstjänster|tilläggstjänster} vilka är {utformade|skapade|framtagna} för att skräddarsy din {resa|bilresa} utifrån dina {resbehov|körbehov|bilbehov}.
+    }
   }
 
-@func @stycke20160831_7
+  @func @stycke20160831_7
   {
-    Boka en hyrbil på $MÄRKE och upplev {den flexibilitetet|de valmöjligheter|de möjlilgheter|den bekvämlighet|höga service|höga servicegrad} som vi på Sixt alltid erbjuder våra kunder.
-    Boka en hyrbil på $MÄRKE och ta del av {alla våra|samtliga av våra} {prisvärda|smarta} {paket|erbjudanden}.
+    @choice {
+      Boka en hyrbil på $MÄRKE och upplev {den flexibilitetet|de valmöjligheter|de möjlilgheter|den bekvämlighet|höga service|höga servicegrad} som vi på Sixt alltid erbjuder våra kunder.
+      Boka en hyrbil på $MÄRKE och ta del av {alla våra|samtliga av våra} {prisvärda|smarta} {paket|erbjudanden}.
+    }
   }
 
-@func @stycke20160831_8
+  @func @stycke20160831_8
   {
-    Vilken {typ av|slags} {bil|fordon|bilmodell} passar bäst för dig_din_resa?
+    @choice {
+      Vilken {typ av|slags} {bil|fordon|bilmodell} passar bäst för dig_din_resa?
+    }
   }
 
-@func @stycke20160831_9
+  @func @stycke20160831_9
   {
-    På vår biluthyrning i $MÄRKE hittar du $P3.
+    @choice {
+      På vår biluthyrning i $MÄRKE hittar du $P3.
+    }
   }
 
-@func @stycke20160831_10
+  @func @stycke20160831_10
   {
-    Du gör din bokning enkelt och {bekvämt|smidigt} på vår {hemsida|webbsida|webbplats}.
-    Bokningen gör {bekvämt|smidigt} direkt på vår {hemsida|webbsida|webbplats}.
-    Besök vår {hemsida|webbsida|webb} för att göra en {bokning|reservation}.
+    @choice {
+      Du gör din bokning enkelt och {bekvämt|smidigt} på vår {hemsida|webbsida|webbplats}.
+      Bokningen gör {bekvämt|smidigt} direkt på vår {hemsida|webbsida|webbplats}.
+      Besök vår {hemsida|webbsida|webb} för att göra en {bokning|reservation}.
+    }
   }
 
-@func @stycke20160831_11
+  @func @stycke20160831_11
   {
-    {Här|på webben|i webbokningen|här på webben} kan du självklart även hantera dina olika {tillval|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner}.
-    {Självklart|naturligtvis|givetvis} kan du även hantera dina olika {tillval|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} på {på webben|i webbokningen|här på webben|på vår webbsida|på vår hemsida}.
+    @choice {
+      {Här|på webben|i webbokningen|här på webben} kan du självklart även hantera dina olika {tillval|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner}.
+      {Självklart|naturligtvis|givetvis} kan du även hantera dina olika {tillval|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} på {på webben|i webbokningen|här på webben|på vår webbsida|på vår hemsida}.
+    }
   }
 
-@func @stycke20160831_12
+  @func @stycke20160831_12
   {
-    Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten|lastutrymmet} är {viktig|a och} _o, erbjuder vi till exempel {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar din {resa|bilresa}.
-    Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten} är {viktig|a och} _o, erbjuder vi till exempel {flera|en rad} {tjänster|tillvalstjänster|extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar gör {resa|bilfärden} {extra bekväm|bekväm}.
-    Om du ska hyra bil i $MÄRKE, och även vill reservera {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem} erbjuder vi {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som gör {resa|bilfärden} smidig.
+    @choice {
+      Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten|lastutrymmet} är {viktig|a och} _o, erbjuder vi till exempel {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar din {resa|bilresa}.
+      Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten} är {viktig|a och} _o, erbjuder vi till exempel {flera|en rad} {tjänster|tillvalstjänster|extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar gör {resa|bilfärden} {extra bekväm|bekväm}.
+      Om du ska hyra bil i $MÄRKE, och även vill reservera {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem} erbjuder vi {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som gör {resa|bilfärden} smidig.
+    }
   }
 
-@func @stycke20160831_13
+  @func @stycke20160831_13
   {
-    Sixt är en av världens främsta {biluthyrare|biluthyrare} och vi vet hur viktigt det är att ha flexibilitet under {resan|bilresan}.
-    Sixt är ett av världens främsta biluthryningsföretag och vi vet hur viktigt det är att ha flexibilitet under {resan|bilresan}.
-    Sixt är ett av världens främsta biluthryningsföretag och vi känner väl till betydelsen av flexibilitet under hela {resan|bilresan}.
-    Sixt är en av världens främsta {biluthyrare|biluthyrare} och hos oss {hittar|finner} du alltid en {modell|bilmodell} fordonsmodell anpassad utifrån din {krav|önskemål|resebehov|reseönskemål}.
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} är det alltid dina {krav|önskemål|resebehov|reseönskemål} som står i centrum.
-    Sixt är en av världens främsta {biluthyrare|biluthyrare} och vi vet hur viktigt det är att du som {kund|förare} kan skapa en skräddarsydd lösning som passar just {dig|din resa}.
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} {har din|ges din} resa alltid hög_grad_av flexibilitet
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,}
-    får alltid {många|en rad|ett stort antal} {valmöjligheter|alternativ|hyrbilsmöjligheter} {när|då} du väljer att hyra bil i $MÄRKE.
+    @choice {
+      Sixt är en av världens främsta {biluthyrare|biluthyrare} och vi vet hur viktigt det är att ha flexibilitet under {resan|bilresan}.
+      Sixt är ett av världens främsta biluthryningsföretag och vi vet hur viktigt det är att ha flexibilitet under {resan|bilresan}.
+      Sixt är ett av världens främsta biluthryningsföretag och vi känner väl till betydelsen av flexibilitet under hela {resan|bilresan}.
+      Sixt är en av världens främsta {biluthyrare|biluthyrare} och hos oss {hittar|finner} du alltid en {modell|bilmodell} fordonsmodell anpassad utifrån din {krav|önskemål|resebehov|reseönskemål}.
+      Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} är det alltid dina {krav|önskemål|resebehov|reseönskemål} som står i centrum.
+      Sixt är en av världens främsta {biluthyrare|biluthyrare} och vi vet hur viktigt det är att du som {kund|förare} kan skapa en skräddarsydd lösning som passar just {dig|din resa}.
+      Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} {har din|ges din} resa alltid hög_grad_av flexibilitet
+      Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,}
+      får alltid {många|en rad|ett stort antal} {valmöjligheter|alternativ|hyrbilsmöjligheter} {när|då} du väljer att hyra bil i $MÄRKE.
+    }
   }
 
-@func @stycke20160831_14
+  @func @stycke20160831_14
   {
-    Vårt team på Sixt biluthyrning i $MÄRKE önskar dig välkommen!
-    Teamet på Sixt biluthyrning i $MÄRKE önskar dig välkommen!
-    Sixt team på vår biluthyrning i $MÄRKE önskar dig välkommen!
-    Sixt team på vår biluthyrning i $MÄRKE hälsar dig {välkommen|varmt välkommen!}
+    @choice {
+      Vårt team på Sixt biluthyrning i $MÄRKE önskar dig välkommen!
+      Teamet på Sixt biluthyrning i $MÄRKE önskar dig välkommen!
+      Sixt team på vår biluthyrning i $MÄRKE önskar dig välkommen!
+      Sixt team på vår biluthyrning i $MÄRKE hälsar dig {välkommen|varmt välkommen!}
+    }
   }
 
 @func @text20160831
