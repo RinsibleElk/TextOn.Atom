@@ -125,7 +125,7 @@
 
 @func @text20160914
   {
-    @choice {
+    @seq {
       @stycke20160914_0
       @stycke20160914_1
       @stycke20160914_2

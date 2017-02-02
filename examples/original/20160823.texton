@@ -169,7 +169,7 @@
 
 @func @text20160823
   {
-    @choice {
+    @seq {
       @stycke20160823_0
       @stycke20160823_1
       @stycke20160823_2

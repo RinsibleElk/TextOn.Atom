@@ -143,7 +143,7 @@
 
 @func @text20160829
   {
-    @choice {
+    @seq {
       @stycke20160829_0
       @stycke20160829_1
       @stycke20160829_2
