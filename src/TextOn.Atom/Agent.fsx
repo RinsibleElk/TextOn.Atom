@@ -175,3 +175,10 @@ funcTokens
 |> List.skip 27
 |> parseCondition
 
+let rec listPartition indices li =
+    match indices with
+    | [] -> [li]
+    | h::t -> [(li |> List.take h)]@(listPartition (t |> List.map (fun x -> x - h - 1)) (li |> List.skip (h + 1)))
+
+listPartition [] [0..15]
+

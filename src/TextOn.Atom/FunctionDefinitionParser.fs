@@ -11,13 +11,14 @@ type ParsedSentenceNode =
     | ParsedVariable of ParsedVariableName
     | ParsedSimpleChoice of ParsedSentenceNode[]
     | ParsedSimpleSeq of ParsedSentenceNode[]
+    | ParsedSentenceErrors of ParseError[]
 
 type ParsedNode =
-    | ParsedSentence of int * ParsedSentenceNode * ParsedCondition
-    | ParsedFunctionInvocation of int * ParsedFunctionName * ParsedCondition
-    | ParsedSeq of int * ParsedNode[] * ParsedCondition
-    | ParsedChoice of int * ParsedNode[] * ParsedCondition
-    | ParsedParagraphBreak of int * ParsedCondition
+    | ParsedSentence of ParsedSentenceNode * ParsedCondition
+    | ParsedFunctionInvocation of ParsedFunctionName * ParsedCondition
+    | ParsedSeq of ParsedNode[] * ParsedCondition
+    | ParsedChoice of ParsedNode[] * ParsedCondition
+    | ParsedParagraphBreak of ParsedCondition
     | ParseErrors of ParseError[]
 
 type ParsedFunctionDefinition = {
@@ -31,8 +32,63 @@ type ParsedFunctionDefinition = {
 
 [<RequireQualifiedAccess>]
 module internal FunctionDefinitionParser =
+    let private makeParseError line s e t =
+        {   LineNumber = line
+            StartLocation = s
+            EndLocation = e
+            ErrorText = t }
+    let rec private listPartition indices li =
+        match indices with
+        | [] -> [li]
+        | h::t -> [(li |> List.take h)]@(listPartition (t |> List.map (fun x -> x - h - 1)) (li |> List.skip (h + 1)))
+    let rec private parseSequentialInner line tokens =
+        failwith ""
+    and private parseSentenceInner line (tokens:AttributedToken list) =
+        match tokens with
+        | [] -> ParsedStringValue ""
+        | [s] ->
+            match s.Token with
+            | RawText text -> ParsedStringValue text
+            | VariableName name -> ParsedVariable name
+            | _ -> ParsedSentenceErrors [|(makeParseError line s.TokenStartLocation s.TokenEndLocation "Invalid token")|]
+        | h::t ->
+            // At this point it's either a sequential or a choice.
+            if h.Token = OpenCurly then
+                // Find the matching close curly.
 
-    let rec private parseFunctionLine pushNode (tokens:AttributedToken list) =
+                failwith ""
+            else
+                failwith ""
+    and private parseChoice line (tokens:AttributedToken list) =
+        // Find '|' tokens at curly count 0.
+        let li =
+            tokens
+            |> List.scan
+                (fun (bracketCount,index,_) attToken ->
+                    if attToken.Token = OpenCurly then (bracketCount + 1, index + 1, Some attToken)
+                    else if attToken.Token = CloseCurly then (bracketCount - 1, index + 1, Some attToken)
+                    else (bracketCount, index + 1, Some attToken))
+                (0, -1, None)
+            |> List.skip 1
+        let indices =
+            li
+            |> List.filter (fun (a, _, ao) -> a = 0 && ao.Value.Token = ChoiceSeparator)
+            |> List.map (fun (_, i, _) -> i)
+        listPartition indices tokens
+        |> List.map (parseSentenceInner line)
+        |> Array.ofList
+        |> fun a ->
+            // If there are any errors, then concatenate the errors and return that.
+            a
+            |> Array.choose (function | ParsedSentenceErrors y -> Some y | _ -> None)
+            |> Array.concat
+            |> fun errors ->
+                if errors.Length > 0 then
+                    ParsedSentenceErrors errors
+                else
+                    ParsedSimpleChoice a
+
+    let rec private parseFunctionLine (tokens:AttributedToken list) =
         failwith ""
 
     let rec private parseFunctionInner (tokens:AttributedTokenizedLine[]) =
