@@ -165,9 +165,4 @@ let funcTokens =
     |> LineCategorizer.categorize
     |> List.head
     |> Tokenizer.tokenize
-    |> fun s -> s.Tokens
-    |> List.skip 1
-    |> List.head
-    |> fun t -> t.Tokens
-
 
