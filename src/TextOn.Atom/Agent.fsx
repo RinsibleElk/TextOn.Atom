@@ -154,13 +154,16 @@ tokenizer.Post(
 stopwatch.Start()
 source |> Agent.post ([], (file,directory,lines))
 
-tokenizer
-|> Agent.fetch
-|> Option.get
-|> snd
-|> List.ofArray
-|> List.filter (fun x -> x.Category = Category.CategorizedFuncDefinition)
-|> List.head
-|> Parser.parse
-
+stopwatch.Start()
+let results =
+    tokenizer
+    |> Agent.fetch
+    |> Option.get
+    |> snd
+    |> List.ofArray
+    |> List.filter (fun x -> x.Category = Category.CategorizedFuncDefinition)
+    |> List.map (fun x -> async { return Parser.parse x})
+    |> Async.Parallel
+    |> Async.RunSynchronously
+stopwatch.Stop()
 

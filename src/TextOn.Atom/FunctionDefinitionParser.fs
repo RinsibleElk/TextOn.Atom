@@ -46,7 +46,7 @@ module internal FunctionDefinitionParser =
         | [] ->
             // Success!
             let l = output |> List.length
-            if l = 0 then failwith "Cannot happen"
+            if l = 0 then ParsedStringValue ""
             else if l = 1 then output |> List.head
             else ParsedSimpleSeq (output |> List.rev |> Array.ofList)
         | h::t ->
