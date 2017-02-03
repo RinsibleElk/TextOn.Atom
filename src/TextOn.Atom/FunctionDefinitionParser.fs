@@ -197,7 +197,7 @@ module internal FunctionDefinitionParser =
                                 | OpenCurly -> (bracketCount + 1, false)
                                 | CloseCurly -> (bracketCount - 1, true)
                                 | _ -> (bracketCount, false))
-                            (0, false)
+                            (1, false)
                         |> List.skip 1
                         |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
                     if closeCurlyIndex |> Option.isNone then
@@ -206,15 +206,15 @@ module internal FunctionDefinitionParser =
                         let closeCurlyIndex = closeCurlyIndex.Value
                         let closeCurlyLine = t2 |> List.skip closeCurlyIndex |> List.head
                         if closeCurlyLine.Tokens.Length = 1 then
-                            (closeCurlyIndex, parseSequentialOrChoiceInner (fun a -> makeNode(a, ParsedUnconditional)) [] (t2 |> List.take closeCurlyIndex))
+                            (closeCurlyIndex + 2, parseSequentialOrChoiceInner (fun a -> makeNode(a, ParsedUnconditional)) [] (t2 |> List.take closeCurlyIndex))
                         else if closeCurlyLine.Tokens.[1].Token <> OpenBrace then
                             let attToken = closeCurlyLine.Tokens.[1]
-                            (closeCurlyIndex, ParseErrors([|(makeParseError line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]))
+                            (closeCurlyIndex + 2, ParseErrors([|(makeParseError line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]))
                         else
                             let condition = ConditionParser.parseCondition line.LineNumber false (closeCurlyLine.Tokens |> List.skip 1)
                             match condition.Condition with
                             | ParsedConditionError errors -> (closeCurlyIndex + 1, ParseErrors errors)
-                            | _ -> (closeCurlyIndex, parseSequentialOrChoiceInner (fun a -> makeNode(a, condition.Condition)) [] (t2 |> List.take closeCurlyIndex))
+                            | _ -> (closeCurlyIndex + 2, parseSequentialOrChoiceInner (fun a -> makeNode(a, condition.Condition)) [] (t2 |> List.take closeCurlyIndex))
         else if lineTokens.[1].Token <> OpenCurly then
             (0, ParseErrors([|(makeParseError line.LineNumber lineTokens.[1].TokenStartLocation lineTokens.[1].TokenEndLocation "Invalid token")|]))
         else
@@ -226,7 +226,7 @@ module internal FunctionDefinitionParser =
                         | OpenCurly -> (bracketCount + 1, false)
                         | CloseCurly -> (bracketCount - 1, true)
                         | _ -> (bracketCount, false))
-                    (0, false)
+                    (1, false)
                 |> List.skip 1
                 |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
             if closeCurlyIndex |> Option.isNone then
@@ -235,15 +235,15 @@ module internal FunctionDefinitionParser =
                 let closeCurlyIndex = closeCurlyIndex.Value
                 let closeCurlyLine = remainingLines |> List.skip closeCurlyIndex |> List.head
                 if closeCurlyLine.Tokens.Length = 1 then
-                    (closeCurlyIndex - 1, parseSequentialOrChoiceInner (fun a -> makeNode(a, ParsedUnconditional)) [] (remainingLines |> List.take closeCurlyIndex))
+                    (closeCurlyIndex + 1, parseSequentialOrChoiceInner (fun a -> makeNode(a, ParsedUnconditional)) [] (remainingLines |> List.take closeCurlyIndex))
                 else if closeCurlyLine.Tokens.[1].Token <> OpenBrace then
                     let attToken = closeCurlyLine.Tokens.[1]
-                    (closeCurlyIndex - 1, ParseErrors([|(makeParseError line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]))
+                    (closeCurlyIndex + 1, ParseErrors([|(makeParseError line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]))
                 else
                     let condition = ConditionParser.parseCondition line.LineNumber false (closeCurlyLine.Tokens |> List.skip 1)
                     match condition.Condition with
                     | ParsedConditionError errors -> (closeCurlyIndex + 1, ParseErrors errors)
-                    | _ -> (closeCurlyIndex - 1, parseSequentialOrChoiceInner (fun a -> makeNode(a, condition.Condition)) [] (remainingLines |> List.take closeCurlyIndex))
+                    | _ -> (closeCurlyIndex + 1, parseSequentialOrChoiceInner (fun a -> makeNode(a, condition.Condition)) [] (remainingLines |> List.take closeCurlyIndex))
 
     /// Parse the CategorizedAttributedTokenSet for a function definition into a tree.
     let parseFunction (tokenSet:CategorizedAttributedTokenSet) : ParsedFunctionDefinition =

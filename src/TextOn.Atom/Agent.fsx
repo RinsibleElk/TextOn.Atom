@@ -154,15 +154,13 @@ tokenizer.Post(
 stopwatch.Start()
 source |> Agent.post ([], (file,directory,lines))
 
-let funcTokens =
-    [
-        "@func @main {"
-        "  Hello {world|earth}, {how {is it|are things} going|are you {ok|feeling well} today|what's going on}? [%SomeAttribute = \"Some value\"]"
-        "}"
-    ]
-    |> Preprocessor.preprocess Preprocessor.realFileResolver "" None
-    |> CommentStripper.stripComments
-    |> LineCategorizer.categorize
-    |> List.head
-    |> Tokenizer.tokenize
+tokenizer
+|> Agent.fetch
+|> Option.get
+|> snd
+|> List.ofArray
+|> List.filter (fun x -> x.Category = Category.CategorizedFuncDefinition)
+|> List.head
+|> Parser.parse
+
 
