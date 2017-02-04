@@ -23,6 +23,7 @@ type Token =
     | And
     | Equals
     | NotEquals
+    | InvalidPreprocessorError of string
     | InvalidUnrecognised of string
     | ChoiceSeparator
     | RawText of string

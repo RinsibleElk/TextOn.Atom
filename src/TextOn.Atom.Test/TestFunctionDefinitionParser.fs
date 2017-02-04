@@ -10,6 +10,8 @@ open System.Collections.Generic
 
 open TextOn.Atom
 
+let att n = ParsedAttributeOrVariable.ParsedAttributeName n
+
 [<Test>]
 let ``Test sentence with condition``() =
     let funcTokens =
@@ -174,5 +176,5 @@ let ``Test sentence with condition``() =
                             |]
                         ParsedStringValue "?"
                     |],
-                ParsedAreEqual (ParsedAttribute "SomeAttribute","Some value")) }
+                ParsedAreEqual (att "SomeAttribute","Some value")) }
     test <@ parsedFunc = expected @>

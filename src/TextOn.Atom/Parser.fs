@@ -7,6 +7,7 @@ type ParseResult =
     | ParserErrors of ParseError[]
     | ParsedFunction of ParsedFunctionDefinition
     | ParsedVariable of ParsedVariableDefinition
+    | ParsedAttribute of ParsedAttributeDefinition
 
 type ParsedElement = {
     File : string
@@ -17,7 +18,7 @@ module Parser =
     /// Do the context-specific parse.
     let parse (tokenSet:CategorizedAttributedTokenSet) : ParsedElement =
         match tokenSet.Category with
-        | Category.CategorizedFuncDefinition ->
+        | CategorizedFuncDefinition ->
             let parsedFunc = FunctionDefinitionParser.parseFunctionDefinition tokenSet
             let result =
                 match parsedFunc.Tree with
@@ -25,7 +26,7 @@ module Parser =
                 | _ -> ParsedFunction parsedFunc
             {   File = tokenSet.File
                 Result = result }
-        | Category.CategorizedVarDefinition ->
+        | CategorizedVarDefinition ->
             let parsedVar = VariableDefinitionParser.parseVariableDefinition tokenSet
             let result =
                 match parsedVar.Result with
@@ -33,4 +34,34 @@ module Parser =
                 | _ -> ParsedVariable parsedVar
             {   File = tokenSet.File
                 Result = result }
-        | _ -> failwith ""
+        | CategorizedAttDefinition ->
+            let parsedAtt = AttributeDefinitionParser.parseAttributeDefinition tokenSet
+            let result =
+                match parsedAtt.Result with
+                | ParsedAttributeErrors errors -> ParserErrors errors
+                | _ -> ParsedAttribute parsedAtt
+            {   File = tokenSet.File
+                Result = result }
+        | CategorizedPreprocessorError
+        | CategorizationError ->
+            let parseErrors =
+                tokenSet.Tokens
+                |> List.toArray
+                |> Array.collect
+                    (fun l ->
+                        l.Tokens
+                        |> List.choose
+                            (fun t ->
+                                match t.Token with
+                                | InvalidPreprocessorError(s)
+                                | InvalidUnrecognised(s) ->
+                                    Some
+                                        {   LineNumber = l.LineNumber
+                                            StartLocation = t.TokenStartLocation
+                                            EndLocation = t.TokenEndLocation
+                                            ErrorText = s }
+                                | _ -> None)
+                        |> List.toArray)
+            {   File = tokenSet.File
+                Result =
+                    ParserErrors parseErrors }

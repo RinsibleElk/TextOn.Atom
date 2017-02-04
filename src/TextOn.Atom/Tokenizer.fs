@@ -12,7 +12,7 @@ module Tokenizer =
             match group.Category with
             | CategorizedFuncDefinition ->
                 group.Lines
-                |> Seq.map
+                |> List.map
                     (fun line ->
                         async {
                             return
@@ -25,7 +25,7 @@ module Tokenizer =
                 |> List.ofArray
             | CategorizedVarDefinition ->
                 group.Lines
-                |> Seq.map
+                |> List.map
                     (fun line ->
                         async {
                             return
@@ -38,7 +38,7 @@ module Tokenizer =
                 |> List.ofArray
             | CategorizedAttDefinition ->
                 group.Lines
-                |> Seq.map
+                |> List.map
                     (fun line ->
                         async {
                             return
@@ -49,7 +49,12 @@ module Tokenizer =
                 |> Async.Parallel
                 |> Async.RunSynchronously
                 |> List.ofArray
-            | _ -> []
+            | _ ->
+                group.Lines
+                |> List.map
+                    (fun line ->
+                        {   LineNumber = line.CurrentFileLineNumber
+                            Tokens = [(match line.Contents with | PreprocessorError error -> { TokenStartLocation = error.StartLocation ; TokenEndLocation = error.EndLocation ; Token = InvalidPreprocessorError error.ErrorText } | PreprocessorLine text -> { TokenStartLocation = 1 ; TokenEndLocation = text.Length ; Token = InvalidUnrecognised text })] })
         {
             Category = group.Category
             StartLine = group.StartLine

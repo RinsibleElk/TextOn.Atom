@@ -10,6 +10,9 @@ open System.Collections.Generic
 
 open TextOn.Atom
 
+let att n = ParsedAttributeOrVariable.ParsedAttributeName n
+let var n = ParsedAttributeOrVariable.ParsedVariableName n
+
 [<Test>]
 let ``Test simple equals``() =
     let makeToken s e t = { TokenStartLocation = s ; TokenEndLocation = e ; Token = t }
@@ -23,7 +26,7 @@ let ``Test simple equals``() =
         ]
     let expected = {
         HasErrors = false
-        Condition = ParsedAreEqual(ParsedAttribute "Gender", "Male") }
+        Condition = ParsedAreEqual(att "Gender", "Male") }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -39,7 +42,7 @@ let ``Test simple not equals``() =
         ]
     let expected = {
         HasErrors = false
-        Condition = ParsedAreNotEqual(ParsedAttribute "Gender", "Male") }
+        Condition = ParsedAreNotEqual(att "Gender", "Male") }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -57,7 +60,7 @@ let ``Test bracketed equals``() =
         ]
     let expected = {
         HasErrors = false
-        Condition = ParsedAreEqual(ParsedAttribute "Gender", "Male") }
+        Condition = ParsedAreEqual(att "Gender", "Male") }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -75,7 +78,7 @@ let ``Test bracketed not equals``() =
         ]
     let expected = {
         HasErrors = false
-        Condition = ParsedAreNotEqual(ParsedAttribute "Gender", "Male") }
+        Condition = ParsedAreNotEqual(att "Gender", "Male") }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -97,8 +100,8 @@ let ``Test single or``() =
         HasErrors = false
         Condition =
             ParsedOr(
-                ParsedAreEqual(ParsedAttribute "Gender", "Male"),
-                ParsedAreEqual(ParsedAttribute "Gender", "Female")) }
+                ParsedAreEqual(att "Gender", "Male"),
+                ParsedAreEqual(att "Gender", "Female")) }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -128,12 +131,12 @@ let ``Test multiple ors``() =
         HasErrors = false
         Condition =
             ParsedOr(
-                ParsedAreEqual(ParsedAttribute "Gender", "Male"),
+                ParsedAreEqual(att "Gender", "Male"),
                 ParsedOr(
-                    ParsedAreEqual(ParsedAttribute "Gender", "Female"),
+                    ParsedAreEqual(att "Gender", "Female"),
                     ParsedOr(
-                        ParsedAreEqual(ParsedAttribute "Gender", "Attack helicopter"),
-                        ParsedAreEqual(ParsedAttribute "Gender", "Other")))) }
+                        ParsedAreEqual(att "Gender", "Attack helicopter"),
+                        ParsedAreEqual(att "Gender", "Other")))) }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -155,8 +158,8 @@ let ``Test single and``() =
         HasErrors = false
         Condition =
             ParsedAnd(
-                ParsedAreEqual(ParsedAttribute "Gender", "Male"),
-                ParsedAreEqual(ParsedAttribute "Gender", "Female")) }
+                ParsedAreEqual(att "Gender", "Male"),
+                ParsedAreEqual(att "Gender", "Female")) }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -186,12 +189,12 @@ let ``Test multiple ands``() =
         HasErrors = false
         Condition =
             ParsedAnd(
-                ParsedAreEqual(ParsedAttribute "Gender", "Male"),
+                ParsedAreEqual(att "Gender", "Male"),
                 ParsedAnd(
-                    ParsedAreEqual(ParsedAttribute "Gender", "Female"),
+                    ParsedAreEqual(att "Gender", "Female"),
                     ParsedAnd(
-                        ParsedAreEqual(ParsedAttribute "Gender", "Attack helicopter"),
-                        ParsedAreEqual(ParsedAttribute "Gender", "Other")))) }
+                        ParsedAreEqual(att "Gender", "Attack helicopter"),
+                        ParsedAreEqual(att "Gender", "Other")))) }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 // OPS I'm not actually sure this is the correct precedence, but I implemented a precedence anyway, can easily be reversed.
@@ -222,12 +225,12 @@ let ``Test and/or precedence``() =
         HasErrors = false
         Condition =
             ParsedAnd(
-                ParsedAreEqual (ParsedAttribute "Gender","Male"),
+                ParsedAreEqual (att "Gender","Male"),
                 ParsedAnd(
                     ParsedOr(
-                        ParsedAreEqual (ParsedAttribute "Gender","Female"),
-                        ParsedAreEqual (ParsedAttribute "Gender","Attack helicopter")),
-                    ParsedAreEqual (ParsedAttribute "Gender","Other"))) }
+                        ParsedAreEqual (att "Gender","Female"),
+                        ParsedAreEqual (att "Gender","Attack helicopter")),
+                    ParsedAreEqual (att "Gender","Other"))) }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 
 [<Test>]
@@ -261,9 +264,9 @@ let ``Test brackets``() =
             ParsedAnd(
                 ParsedOr(
                     ParsedAnd(
-                        ParsedAreEqual (ParsedAttribute "Gender","Male"),
-                        ParsedAreEqual (ParsedAttribute "Gender","Female")),
-                    ParsedAreEqual (ParsedAttribute "Gender","Attack helicopter")),
-                ParsedAreEqual (ParsedAttribute "Gender","Other")) }
+                        ParsedAreEqual (att "Gender","Male"),
+                        ParsedAreEqual (att "Gender","Female")),
+                    ParsedAreEqual (att "Gender","Attack helicopter")),
+                ParsedAreEqual (att "Gender","Other")) }
     test <@ ConditionParser.parseCondition 2 false tokens = expected @>
 

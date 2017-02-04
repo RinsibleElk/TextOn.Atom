@@ -4,8 +4,8 @@ open System
 open System.Text.RegularExpressions
 
 type ParsedAttributeOrVariable =
-    | ParsedAttribute of string
-    | ParsedVariable of string
+    | ParsedAttributeName of string
+    | ParsedVariableName of string
 
 type ParseError = {
     LineNumber : int
@@ -88,17 +88,17 @@ module ConditionParser =
                     if conditionTokens.Length = 3 then
                         match (conditionTokens.[0].Token, conditionTokens.[1].Token, conditionTokens.[2].Token) with
                         | (AttributeName name, Equals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreEqual(ParsedAttribute name, value) }
+                            { HasErrors = false; Condition = ParsedAreEqual(ParsedAttributeName name, value) }
                         | (AttributeName name, NotEquals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreNotEqual(ParsedAttribute name, value) }
+                            { HasErrors = false; Condition = ParsedAreNotEqual(ParsedAttributeName name, value) }
                         | (VariableName name, Equals, QuotedString value) ->
                             if variablesAreAllowed then
-                                { HasErrors = false; Condition = ParsedAreEqual(ParsedVariable name, value) }
+                                { HasErrors = false; Condition = ParsedAreEqual(ParsedVariableName name, value) }
                             else
                                 { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
                         | (VariableName name, NotEquals, QuotedString value) ->
                             if variablesAreAllowed then
-                                { HasErrors = false; Condition = ParsedAreNotEqual(ParsedVariable name, value) }
+                                { HasErrors = false; Condition = ParsedAreNotEqual(ParsedVariableName name, value) }
                             else
                                 { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
                         | _ ->
