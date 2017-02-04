@@ -125,8 +125,9 @@ let tokenizer       =
         (time
             (fun s ->
                 s
-                |> Seq.map (Tokenizer.tokenize)
-                |> Seq.toArray))
+                |> List.map (Tokenizer.tokenize)
+                |> List.toArray))
+let parser          = tokenizer |> Agent.map (time (Array.map Parser.parse))
 
 // Example data.
 let filename =
@@ -142,7 +143,7 @@ let file            = f.Name
 let lines           = f.FullName |> File.ReadAllLines |> List.ofArray
 let mutable count   = 0
 let stopwatch       = System.Diagnostics.Stopwatch()
-tokenizer.Post(
+parser.Post(
     Connect
         (fun (li,_) ->
             stopwatch.Stop()
@@ -154,15 +155,9 @@ tokenizer.Post(
 stopwatch.Start()
 source |> Agent.post ([], (file,directory,lines))
 
-stopwatch.Start()
-let results =
-    tokenizer
+let s =
+    parser
     |> Agent.fetch
     |> Option.get
     |> snd
-    |> List.ofArray
-    |> List.filter (fun x -> x.Category = Category.CategorizedFuncDefinition || x.Category = Category.CategorizedVarDefinition)
-    |> List.map (fun x -> async { return Parser.parse x})
-    |> Async.Parallel
-    |> Async.RunSynchronously
-stopwatch.Stop()
+
