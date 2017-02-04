@@ -33,7 +33,11 @@
         },
         {
           "name": "keyword.break.texton",
-          "match": "^\\s*@break\\s*$"
+          "match": "^\\s*@break\\s*"
+        },
+        {
+          "name": "keyword.free.texton",
+          "match": "\\s*@free\\s*"
         },
         {
           "name": "variable.parameter.texton",

@@ -143,7 +143,7 @@ let ``Test sentence with condition``() =
                 ] }
     let parsedFunc =
         funcTokens
-        |> FunctionDefinitionParser.parseFunction
+        |> FunctionDefinitionParser.parseFunctionDefinition
     let expected = {
         File = "main.texton"
         StartLine = 1

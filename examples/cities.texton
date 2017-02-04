@@ -1,17 +1,13 @@
 #include "gender.texton"
 
-@var $Country
-  "Which country are you writing about?"
-  {
-    "U.K."
-    "Germany"
-    *
-  }
-@var $City
-  "Which city are you writing about?"
-  {
-    "London" [$Country = "U.K."]
-    "Berlin" [$Country = "Germany" && %Gender = "Male"]
-    "Paris" [$Country <> "Germany" && $Country <> "U.K."]
-    *
-  }
+@var @free $Country = "Which country are you writing about?"
+{
+  "U.K."
+  "Germany"
+}
+@var @free $City = "Which city are you writing about?"
+{
+  "London" [$Country = "U.K."]
+  "Berlin" [$Country = "Germany" && %Gender = "Male"]
+  "Paris" [$Country <> "Germany" && $Country <> "U.K."]
+}

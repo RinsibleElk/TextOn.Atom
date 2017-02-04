@@ -1,17 +1,5 @@
-@var $City
-  "Which city?"
-  {
-    *
-  }
+@var @free $City = "Which city?"
 
-@var $P2
-  "Which district?"
-  {
-    *
-  }
+@var @free $P2 = "Which district?"
 
-@var $P3
-  "Which car brand?"
-  {
-    *
-  }
+@var @free $P3 = "Which car brand?"

@@ -246,7 +246,7 @@ module internal FunctionDefinitionParser =
                     | _ -> (closeCurlyIndex + 1, parseSequentialOrChoiceInner (fun a -> makeNode(a, condition.Condition)) [] (remainingLines |> List.take closeCurlyIndex))
 
     /// Parse the CategorizedAttributedTokenSet for a function definition into a tree.
-    let parseFunction (tokenSet:CategorizedAttributedTokenSet) : ParsedFunctionDefinition =
+    let parseFunctionDefinition (tokenSet:CategorizedAttributedTokenSet) : ParsedFunctionDefinition =
         let (name, hasErrors, tree) =
             if tokenSet.Tokens.Length = 0 then
                 failwith "Internal error" // Cannot happen due to categorization
