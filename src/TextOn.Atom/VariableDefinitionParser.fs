@@ -30,16 +30,33 @@ module internal VariableDefinitionParser =
             Text = text
             SupportsFreeValue = freeValue
             Result = result }
+    let private makeParseError line startLocation endLocation errorText =
+        {   LineNumber = line
+            StartLocation = startLocation
+            EndLocation = endLocation
+            ErrorText = errorText }
+    let private parseFirstLine (firstLine:AttributedTokenizedLine) =
+        // Basically @var (@free)? $VarName = ("Some text")?
+        let tokens = firstLine.Tokens |> List.map (fun attToken -> attToken.Token)
+        match tokens with
+        | [Var;VariableName name;Equals] -> (name, None, false, None)
+        | [Var;Free;VariableName name;Equals] -> (name, None, true, None)
+        | [Var;VariableName name;Equals;QuotedString text] -> (name, Some text, false, None)
+        | [Var;Free;VariableName name;Equals;QuotedString text] -> (name, Some text, true, None)
+        | _ -> ("<unknown>", None, false, Some "Invalid variable declaration")
+
     /// Parse the CategorizedAttributedTokenSet for a variable definition into a tree.
     let parseVariableDefinition (tokenSet:CategorizedAttributedTokenSet) : ParsedVariableDefinition =
         let lines = tokenSet.Tokens
         match lines with
         | [] -> failwith "Internal error"
         | firstLine::remainingLines ->
-            match firstLine.Tokens with
-            | [varToken;varNameToken] ->
-                match varNameToken.Token with
-                | VariableName varName ->
+            let (name, text, freevalue, error) = parseFirstLine firstLine
+            if error |> Option.isSome then
+                makeVariableDefinition tokenSet name (text |> defaultArg <| "") freevalue (ParsedVariableErrors [|(makeParseError firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) error.Value)|])
+            else
+                if text |> Option.isSome then
+                    // Remaining lines 
                     failwith ""
-                | _ -> failwith ""
-            | _ -> failwith ""
+                else
+                    failwith ""
