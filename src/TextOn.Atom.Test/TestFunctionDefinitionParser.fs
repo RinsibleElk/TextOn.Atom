@@ -145,7 +145,6 @@ let ``Test sentence with condition``() =
         funcTokens
         |> FunctionDefinitionParser.parseFunctionDefinition
     let expected = {
-        File = "main.texton"
         StartLine = 1
         EndLine = 3
         Index = 0

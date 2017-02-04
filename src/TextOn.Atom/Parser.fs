@@ -28,10 +28,9 @@ module Parser =
         | Category.CategorizedVarDefinition ->
             let parsedVar = VariableDefinitionParser.parseVariableDefinition tokenSet
             let result =
-                if parsedVar.HasErrors then
-                    ()
-                else
-                    ()
+                match parsedVar.Result with
+                | ParsedVariableErrors errors -> ParserErrors errors
+                | _ -> ParsedVariable parsedVar
             {   File = tokenSet.File
-                Result = ParsedVariable(parsedVar) }
+                Result = result }
         | _ -> failwith ""

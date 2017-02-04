@@ -22,7 +22,6 @@ type ParsedNode =
     | ParseErrors of ParseError[]
 
 type ParsedFunctionDefinition = {
-    File : string
     StartLine : int
     EndLine : int
     Index : int
@@ -285,8 +284,7 @@ module internal FunctionDefinitionParser =
                             let tree = tokenSet.Tokens |> List.skip 1 |> List.take (tokenSet.Tokens.Length - 2) |> parseSequentialOrChoiceInner (fun a -> ParsedSeq(a, ParsedUnconditional)) []
                             let hasErrors = match tree with | ParseErrors _ -> true | _ -> false
                             (name, hasErrors, tree)
-        {   File = tokenSet.File
-            StartLine = tokenSet.StartLine
+        {   StartLine = tokenSet.StartLine
             EndLine = tokenSet.EndLine
             Index = tokenSet.Index
             HasErrors = hasErrors

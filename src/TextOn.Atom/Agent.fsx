@@ -161,9 +161,8 @@ let results =
     |> Option.get
     |> snd
     |> List.ofArray
-    |> List.filter (fun x -> x.Category = Category.CategorizedFuncDefinition)
+    |> List.filter (fun x -> x.Category = Category.CategorizedFuncDefinition || x.Category = Category.CategorizedVarDefinition)
     |> List.map (fun x -> async { return Parser.parse x})
     |> Async.Parallel
     |> Async.RunSynchronously
 stopwatch.Stop()
-
