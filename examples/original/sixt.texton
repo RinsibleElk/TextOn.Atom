@@ -4,11 +4,11 @@
 #include "20160914.texton"
 
 @func @main
-  {
-    @choice {
-      @text20160823
-      @text20160829
-      @text20160831
-      @text20160914
-    }
+{
+  @choice {
+    @text20160823
+    @text20160829
+    @text20160831
+    @text20160914
   }
+}
