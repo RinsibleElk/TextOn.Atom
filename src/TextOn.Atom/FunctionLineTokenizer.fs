@@ -17,7 +17,6 @@ module internal FunctionLineTokenizer =
             (Regex("^(\\s*)&&(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = And }))
             (Regex("^(\\s*)\\|\\|(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = Or }))
             (Regex("^(\\s*)=(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = Equals }))
-            (Regex("^(\\s*)\\*(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 1 ; Token = Star }))
             (Regex("^(\\s*)<>(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 ; Token = NotEquals }))
             (Regex("^(\\s*)\"(([^\\\"\\\\]+|\\\\\\\"|\\\\\\\\)*)\"(\\s*|$)"), (fun n (m:Match) -> { TokenStartLocation = n + m.Groups.[1].Length + 1 ; TokenEndLocation = n + m.Groups.[1].Length + 2 + m.Groups.[2].Length ; Token = QuotedString(m.Groups.[2].Value.Replace("\\\\", "\\").Replace("\\\"", "\"")) }))
         ]
@@ -86,6 +85,7 @@ module internal FunctionLineTokenizer =
                 match name with
                 | "var"
                 | "func"
+                | "free"
                 | "att" -> InvalidReservedToken name
                 | "break" -> Break
                 | "seq" -> Sequential
@@ -112,7 +112,7 @@ module internal FunctionLineTokenizer =
             let funcNameMatch = funcNameRegex.Match(line.Substring(funcDefinitionMatch.Length))
             if funcNameMatch.Success then
                 let funcName = funcNameMatch.Groups.[1].Value
-                let funcNameToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = funcDefinitionMatch.Length + funcNameMatch.Length;Token = (match funcName with | "break" | "var" | "att" | "func" | "seq" | "choice" -> InvalidReservedToken(funcName) | _ -> FunctionName(funcName))}
+                let funcNameToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = funcDefinitionMatch.Length + funcNameMatch.Length;Token = (match funcName with | "break" | "var" | "att" | "func" | "free" | "seq" | "choice" -> InvalidReservedToken(funcName) | _ -> FunctionName(funcName))}
                 let openCurlyToken =
                     if funcNameMatch.Groups.[3].Success then
                         let index = funcDefinitionMatch.Length + funcNameMatch.Groups.[1].Length + funcNameMatch.Groups.[2].Length + 1

@@ -22,14 +22,14 @@ type ParsedVariableDefinition = {
 module internal VariableDefinitionParser =
     let private makeVariableDefinition (tokenSet:CategorizedAttributedTokenSet) name text freeValue result =
         {   File = tokenSet.File
-            StartLine : int
-            EndLine : int
-            Index : int
-            HasErrors : bool
-            Name : ParsedVariableName
-            Text : string
-            SupportsFreeValue : bool
-            SuggestedValues : ParsedVariableSuggestedValue list }
+            StartLine = tokenSet.StartLine
+            EndLine = tokenSet.EndLine
+            Index = tokenSet.Index
+            HasErrors = match result with | ParsedVariableErrors _ -> true | _ -> false
+            Name = name
+            Text = text
+            SupportsFreeValue = freeValue
+            Result = result }
     /// Parse the CategorizedAttributedTokenSet for a variable definition into a tree.
     let parseVariableDefinition (tokenSet:CategorizedAttributedTokenSet) : ParsedVariableDefinition =
         let lines = tokenSet.Tokens

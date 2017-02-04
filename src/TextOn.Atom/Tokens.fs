@@ -6,6 +6,7 @@ type Token =
     | Att
     | Var
     | Func
+    | Free
     | Break
     | Sequential
     | Choice
@@ -22,7 +23,6 @@ type Token =
     | And
     | Equals
     | NotEquals
-    | Star
     | InvalidUnrecognised of string
     | ChoiceSeparator
     | RawText of string
