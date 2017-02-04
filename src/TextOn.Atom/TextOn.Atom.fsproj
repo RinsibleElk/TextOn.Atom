@@ -80,6 +80,7 @@
     <Compile Include="CompiledVariableDefinition.fs" />
     <Compile Include="CompiledDefinitionNode.fs" />
     <Compile Include="CompiledTemplate.fs" />
+    <Compile Include="Compiler.fs" />
     <Compile Include="Generator.fs" />
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />
