@@ -3,13 +3,13 @@
 open System
 open System.IO
 
-type Template =
+type Interactive =
     {
-        [<ArgDescription("The template file to compile for")>]
+        [<ArgDescription("The template file to compile for.")>]
         Template : string
     }
 type Mode =
-    | Template of Template
+    | Interactive of Interactive
 
 module internal Main =
     [<EntryPoint>]
@@ -18,7 +18,7 @@ module internal Main =
         if (mode |> Option.isNone) then 0
         else
             match mode.Value with
-            | Template (template) ->
+            | Interactive (template) ->
                 let file = template.Template
                 if file |> File.Exists |> not then
                     failwithf "File not found: %s" file

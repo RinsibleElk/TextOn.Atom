@@ -11,9 +11,30 @@ type ArgDescriptionAttribute(description:string) =
 
 [<RequireQualifiedAccess>]
 module ArgParser =
+    type private Primitive =
+        | PrimitiveString
+        | PrimitiveInt
+        | PrimitiveDouble
+        | PrimitiveBool
+        | PrimitiveDateTime
+        | PrimitiveUnion of Type
+        with
+            member this.ToString() =
+                match this with
+                | PrimitiveString -> "String"
+                | PrimitiveInt -> "Int"
+                | PrimitiveBool -> "Bool"
+                | PrimitiveDouble -> "Double"
+                | PrimitiveDateTime -> "DateTime"
+                | PrimitiveUnion(t) ->
+                    t
+                    |> FSharpType.GetUnionCases
+                    |> Array.map (fun case -> case.Name)
+                    |> fun a -> String.Join("/", a)
+
     type private ArgParserTypeInfo =
-        | Required of string * string * Type
-        | Optional of string * string * Type
+        | Required of string * string * Primitive
+        | Optional of string * string * Primitive
         | OptionalBool of string * string
         | Record of Type * (string * ArgParserTypeInfo)[]
         | Union of Type * (string * ArgParserTypeInfo)[]
@@ -22,20 +43,19 @@ module ArgParser =
             member private this.Print(i) =
                 match this with
                 | Required(arg, desc, ty) ->
-                    sprintf "%s%s (%A) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg ty desc
+                    sprintf "%s%s <argument> (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) desc
                 | Optional(arg, desc, ty) ->
-                    sprintf "%s[optional] %s (%A) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg ty desc
+                    sprintf "%s[optional] %s <argument> (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) desc
                 | OptionalBool(arg, desc) ->
-                    sprintf "%s[optional] %s (bool) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg desc
+                    sprintf "%s[optional] %s (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (PrimitiveBool.ToString()) desc
                 | Record(ty, info) ->
                     let s = sprintf "%s{\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " ")))
                     let a =
                         info
                         |> Array.fold
                             (fun a (name, info) ->
-                                let nameLine = sprintf "%s%s:\n" (String.Join("", [1 .. (i + 2)] |> List.toArray |> Array.map (fun _ -> " "))) name
-                                let infoLine = info.Print(i + 4)
-                                (a + nameLine + infoLine))
+                                let infoLine = info.Print(i + 2)
+                                (a + infoLine))
                             ""
                     let e = sprintf "%s}\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " ")))
                     s + a + e
@@ -52,8 +72,8 @@ module ArgParser =
             override this.ToString() = this.Print(0)
 
     type private ArgParserDataInfo =
-        | RequiredData of Type * string option
-        | OptionalData of Type * string option
+        | RequiredData of Primitive * string option
+        | OptionalData of Primitive * string option
         | OptionalBoolData of bool
         | RecordData of Type * ArgParserDataInfo[]
         | UnionData of (UnionCaseInfo * ArgParserDataInfo) option
@@ -98,15 +118,21 @@ module ArgParser =
                         |> defaultArg <| field.Name
                     if ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<_ option> then
                         let genTy = ty.GetGenericArguments().[0]
-                        if genTy = typeof<string> || genTy = typeof<int> || genTy = typeof<double> || genTy = typeof<DateTime> then
-                            (field.Name, Optional((makeName field.Name), description, genTy))
+                        if genTy = typeof<string> then
+                            (field.Name, Optional((makeName field.Name), description, PrimitiveString))
+                        else if genTy = typeof<int> then
+                            (field.Name, Optional((makeName field.Name), description, PrimitiveInt))
+                        else if genTy = typeof<double> then
+                            (field.Name, Optional((makeName field.Name), description, PrimitiveDouble))
+                        else if genTy = typeof<DateTime> then
+                            (field.Name, Optional((makeName field.Name), description, PrimitiveDateTime))
                         else if genTy = typeof<bool> then
                             (field.Name, OptionalBool((makeName field.Name), description))
                         else if genTy |> FSharpType.IsUnion then
                             let cases = FSharpType.GetUnionCases genTy
                             let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
                             if isSimple then
-                                (field.Name, Optional((makeName field.Name), description, genTy))
+                                (field.Name, Optional((makeName field.Name), description, PrimitiveUnion(genTy)))
                             else
                                 (field.Name, Invalid)
                         else
@@ -119,11 +145,19 @@ module ArgParser =
                         let cases = FSharpType.GetUnionCases ty
                         let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
                         if isSimple then
-                            (field.Name, Required((makeName field.Name), description, ty))
+                            (field.Name, Required((makeName field.Name), description, PrimitiveUnion(ty)))
                         else
                             (field.Name, getArgs ty)
-                    else if ty = typeof<string> || ty = typeof<int> || ty = typeof<double> || ty = typeof<DateTime> || ty = typeof<bool> then
-                        (field.Name, Required((makeName field.Name), description, ty))
+                    else if ty = typeof<string> then
+                        (field.Name, Required((makeName field.Name), description, PrimitiveString))
+                    else if ty = typeof<int> then
+                        (field.Name, Required((makeName field.Name), description, PrimitiveInt))
+                    else if ty = typeof<double> then
+                        (field.Name, Required((makeName field.Name), description, PrimitiveDouble))
+                    else if ty = typeof<DateTime> then
+                        (field.Name, Required((makeName field.Name), description, PrimitiveDateTime))
+                    else if ty = typeof<bool> then
+                        (field.Name, Required((makeName field.Name), description, PrimitiveBool))
                     else
                         (field.Name, Invalid))
             |> fun x ->
@@ -185,27 +219,29 @@ module ArgParser =
         | _ -> failwith "Internal error"
 
     let private buildSimple ty s =
-        if ty = typeof<string> then (box s)
-        else if ty = typeof<int> then (box (Int32.Parse s))
-        else if ty = typeof<DateTime> then (box (DateTime.Parse s))
-        else if ty = typeof<bool> then (box (Boolean.Parse s))
-        else if FSharpType.IsUnion ty then
+        match ty with
+        | PrimitiveString -> (box s)
+        | PrimitiveInt -> (box (Int32.Parse s))
+        | PrimitiveDouble -> (box (Double.Parse s))
+        | PrimitiveDateTime -> (box (DateTime.Parse s))
+        | PrimitiveBool -> (box (Boolean.Parse s))
+        | PrimitiveUnion ty ->
             FSharpType.GetUnionCases(ty)
             |> Array.tryFind (fun case -> case.Name = s)
             |> Option.get
             |> box
-        else failwithf "Don't know how to make a %A" ty
 
     let private buildSimpleOptional ty s =
-        if ty = typeof<string> then (box (Some s))
-        else if ty = typeof<int> then (box (Some (Int32.Parse s)))
-        else if ty = typeof<DateTime> then (box (Some (DateTime.Parse s)))
-        else if ty = typeof<bool> then (box (Some (Boolean.Parse s)))
-        else if FSharpType.IsUnion ty then
+        match ty with
+        | PrimitiveString -> (box (Some s))
+        | PrimitiveInt -> (box (Some (Int32.Parse s)))
+        | PrimitiveDateTime -> (box (Some (DateTime.Parse s)))
+        | PrimitiveDouble -> (box (Some (DateTime.Parse s)))
+        | PrimitiveBool -> (box (Some (Boolean.Parse s)))
+        | PrimitiveUnion ty ->
             FSharpType.GetUnionCases(ty)
             |> Array.tryFind (fun case -> case.Name = s)
             |> box
-        else failwithf "Don't know how to make a %A" ty
 
     let rec private buildType data =
         match data with
