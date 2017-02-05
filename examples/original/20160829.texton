@@ -143,22 +143,20 @@
 
 @func @text20160829
 {
-  @seq {
-    @stycke20160829_0
-    @stycke20160829_1
-    @stycke20160829_2
-    @stycke20160829_3
-    @stycke20160829_4
-    @stycke20160829_5
-    @stycke20160829_6
-    @stycke20160829_7
-    @stycke20160829_8
-    @stycke20160829_9
-    @stycke20160829_10
-    @stycke20160829_11
-    @stycke20160829_12
-    @stycke20160829_13
-    @stycke20160829_14
-    @stycke20160829_15
-  }
+  @stycke20160829_0
+  @stycke20160829_1
+  @stycke20160829_2
+  @stycke20160829_3
+  @stycke20160829_4
+  @stycke20160829_5
+  @stycke20160829_6
+  @stycke20160829_7
+  @stycke20160829_8
+  @stycke20160829_9
+  @stycke20160829_10
+  @stycke20160829_11
+  @stycke20160829_12
+  @stycke20160829_13
+  @stycke20160829_14
+  @stycke20160829_15
 }

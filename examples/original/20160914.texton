@@ -122,21 +122,19 @@
 
 @func @text20160914
 {
-  @seq {
-    @stycke20160914_0
-    @stycke20160914_1
-    @stycke20160914_2
-    @stycke20160914_3
-    @stycke20160914_4
-    @stycke20160914_5
-    @stycke20160914_6
-    @stycke20160914_7
-    @stycke20160914_9
-    @stycke20160914_10
-    @stycke20160914_11
-    @stycke20160914_12
-    @stycke20160914_13
-    @stycke20160914_14
-    @stycke20160914_15
-  }
+  @stycke20160914_0
+  @stycke20160914_1
+  @stycke20160914_2
+  @stycke20160914_3
+  @stycke20160914_4
+  @stycke20160914_5
+  @stycke20160914_6
+  @stycke20160914_7
+  @stycke20160914_9
+  @stycke20160914_10
+  @stycke20160914_11
+  @stycke20160914_12
+  @stycke20160914_13
+  @stycke20160914_14
+  @stycke20160914_15
 }
