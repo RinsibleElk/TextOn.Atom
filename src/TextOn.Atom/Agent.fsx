@@ -128,7 +128,7 @@ let tokenizer       =
                 |> List.map (Tokenizer.tokenize)
                 |> List.toArray))
 let parser          = tokenizer |> Agent.map (time (Array.map Parser.parse))
-let compiler        = parser |> Agent.map (time Compiler.compile)
+//let compiler        = parser |> Agent.map (time Compiler.compile)
 
 // Example data.
 let filename =
@@ -144,7 +144,7 @@ let file            = f.Name
 let lines           = f.FullName |> File.ReadAllLines |> List.ofArray
 let mutable count   = 0
 let stopwatch       = System.Diagnostics.Stopwatch()
-compiler.Post(
+parser.Post(
     Connect
         (fun (li,_) ->
             stopwatch.Stop()
@@ -160,5 +160,5 @@ let s =
     parser
     |> Agent.fetch
     |> Option.get
-    |> snd
+    |> fst
 
