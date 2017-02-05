@@ -222,6 +222,7 @@ let makeSingleVariableTemplate node = {
                 Name = "Country"
                 Index = 0
                 File = exampleFileName
+                Text = ""
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
                 PermitsFreeValue = true

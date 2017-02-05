@@ -44,7 +44,7 @@ let ``Test choice parsing``() =
                         Tree =
                             ParsedSeq
                                 [|
-                                    (ParsedSeq
+                                    (ParsedChoice
                                         [|
                                             (ParsedSentence
                                                 (   4,

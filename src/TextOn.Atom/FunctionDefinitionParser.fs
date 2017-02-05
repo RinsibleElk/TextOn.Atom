@@ -151,7 +151,7 @@ module internal FunctionDefinitionParser =
                     let contLines = t |> List.skip toSkip
                     parseSequentialOrChoiceInner file makeNode ((result, condition)::output) contLines
             | Choice ->
-                let (toSkip, result, condition) = findEndOfSeqOrChoice file ParsedSeq line t
+                let (toSkip, result, condition) = findEndOfSeqOrChoice file ParsedChoice line t
                 match result with
                 | ParseErrors _ -> result
                 | _ ->

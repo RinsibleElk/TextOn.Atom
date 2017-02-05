@@ -224,6 +224,7 @@ module Compiler =
                     StartLine = startLine
                     EndLine = endLine
                     PermitsFreeValue = supportsFreeValue
+                    Text = text
                     Values = values
                 }
     let rec private compileInner variableDefinitions attributeDefinitions functionDefinitions errors (elements:ParsedElement list) =

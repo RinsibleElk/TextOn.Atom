@@ -16,5 +16,6 @@ type CompiledVariableDefinition =
         StartLine : int
         EndLine : int
         PermitsFreeValue : bool
+        Text : string
         Values : CompiledVariableValue[]
     }

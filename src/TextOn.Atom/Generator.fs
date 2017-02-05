@@ -72,17 +72,13 @@ module Generator =
             nodes
             |> Array.map (generateSentence variableValues random)
             |> Array.fold (+) ""
-        | SimpleText(s) ->
-            printfn "Text: %s" s
-            s
+        | SimpleText(s) -> s
     let rec private generateInner attributeValues variableValues (random:Random) (node:CompiledDefinitionNode) =
         match node with
         | Sentence(inputFile, inputLineNumber, s) ->
-            printfn "Sentence: %s %d" inputFile inputLineNumber
             Seq.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
         | ParagraphBreak(inputfile, inputLineNumber) -> Seq.singleton (ParaBreak(inputfile, inputLineNumber))
         | Choice(s) ->
-            printfn "Choice"
             let options =
                 s
                 |> Array.choose
@@ -93,7 +89,6 @@ module Generator =
             let index = random.Next(options.Length)
             generateInner attributeValues variableValues random options.[index]
         | Seq(s) ->
-            printfn "Seq"
             s
             |> Array.filter (fun (node, condition) -> ConditionEvaluator.resolve attributeValues condition)
             |> Seq.collect
@@ -152,7 +147,6 @@ module Generator =
         | (Some e, _)
         | (_, Some e) -> GeneratorError e
         | _ ->
-            printfn "At the generate bit"
             let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toList
             let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
             let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
