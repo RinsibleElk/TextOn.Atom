@@ -30,7 +30,13 @@ module internal Main =
                 |> Compiler.compile
             match compilationResult with
             | CompilationFailure errors ->
-                printfn "%A" errors
+                errors
+                |> Array.iter
+                    (function
+                        | GeneralError error ->
+                            eprintfn "%s" error
+                        | ParserError error ->
+                            eprintfn "%s at %s line %d (character %d)" error.ErrorText error.File error.LineNumber error.StartLocation)
                 1
             | CompilationSuccess template ->
                 printfn ""

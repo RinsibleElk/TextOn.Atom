@@ -1,5 +1,16 @@
 @var @free $MÄRKE = "Which city?"
+  {
+    "London"
+    "Berlin"
+  }
 
 @var @free $P2 = "Which district?"
+  {
+    "Enfield" [$MÄRKE = "London"]
+  }
 
 @var @free $P3 = "Which car brand?"
+  {
+    "Ford"
+    "Jaguar"
+  }
