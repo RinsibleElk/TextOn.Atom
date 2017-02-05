@@ -52,7 +52,7 @@ module internal Main =
                             else if values.Length = 1 then m |> Map.add att.Index values.[0]
                             else
                                 let possibilities = String.Join(", ", (values |> Array.truncate 5))
-                                printfn "Provide value for %s (possible values: %s)" att.Name possibilities
+                                printfn "[%s] Please enter a value. (Possible values: %s)" att.Name possibilities
                                 let mutable value = ""
                                 while (values |> Array.contains value |> not) do
                                     value <- Console.ReadLine()
@@ -74,7 +74,7 @@ module internal Main =
                                     printfn "[%s] %s" att.Name att.Text
                                 else
                                     let possibilities = String.Join(", ", (values |> Array.truncate 5))
-                                    printfn "[%s] %s (suggested values: %s)" att.Name att.Text possibilities
+                                    printfn "[%s] %s (Suggested values: %s)" att.Name att.Text possibilities
                                 let mutable value = ""
                                 let mutable validValue = false
                                 while (not validValue) do
