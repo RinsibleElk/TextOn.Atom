@@ -56,7 +56,8 @@ module Parser =
                                 | InvalidPreprocessorError(s)
                                 | InvalidUnrecognised(s) ->
                                     Some
-                                        {   LineNumber = l.LineNumber
+                                        {   File = tokenSet.File
+                                            LineNumber = l.LineNumber
                                             StartLocation = t.TokenStartLocation
                                             EndLocation = t.TokenEndLocation
                                             ErrorText = s }

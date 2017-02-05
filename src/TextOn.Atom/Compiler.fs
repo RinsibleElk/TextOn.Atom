@@ -5,7 +5,7 @@ open System.Text.RegularExpressions
 
 type CompilationError =
     | ParserError of ParseError
-    | CompilerError of string
+    | GeneralError of string
 
 type CompilationResult =
     | CompilationFailure of CompilationError[]
@@ -27,11 +27,23 @@ module Compiler =
                             Definition = mainFunction.Value
                         }
                 else
-                    CompilationFailure([|CompilerError "No main function specified"|])
+                    CompilationFailure([|GeneralError "No main function specified"|])
             | _ ->
-                CompilationFailure (errors |> List.rev |> List.toArray)
+                CompilationFailure (errors |> List.toArray)
         | h::t ->
-            failwith ""
+            let (v,a,f,e) =
+                match h.Result with
+                | ParserErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
+                | ParsedFunction f ->
+                    // Traverse through replacing variable & attribute references and inlining function references.
+                    if f.HasErrors || (errors |> List.isEmpty |> not) then
+                        match f.Tree with
+                        | ParseErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
+                        | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
+                    else
+                        failwith ""
+                | _ -> failwith ""
+            compileInner v a f e t
 
     /// Compile the results of parsing into a tree, with inlined functions, variables and attributes.
     let compile (elements:ParsedElement[]) : CompilationResult =

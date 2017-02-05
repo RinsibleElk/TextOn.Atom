@@ -12,6 +12,7 @@ open TextOn.Atom
 
 let att n = ParsedAttributeOrVariable.ParsedAttributeName n
 let var n = ParsedAttributeOrVariable.ParsedVariableName n
+let exampleFileName = "example.texton"
 
 [<Test>]
 let ``Test simple equals``() =
@@ -27,7 +28,7 @@ let ``Test simple equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreEqual(att "Gender", "Male") }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test simple not equals``() =
@@ -43,7 +44,7 @@ let ``Test simple not equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreNotEqual(att "Gender", "Male") }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test bracketed equals``() =
@@ -61,7 +62,7 @@ let ``Test bracketed equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreEqual(att "Gender", "Male") }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test bracketed not equals``() =
@@ -79,7 +80,7 @@ let ``Test bracketed not equals``() =
     let expected = {
         HasErrors = false
         Condition = ParsedAreNotEqual(att "Gender", "Male") }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test single or``() =
@@ -102,7 +103,7 @@ let ``Test single or``() =
             ParsedOr(
                 ParsedAreEqual(att "Gender", "Male"),
                 ParsedAreEqual(att "Gender", "Female")) }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test multiple ors``() =
@@ -137,7 +138,7 @@ let ``Test multiple ors``() =
                     ParsedOr(
                         ParsedAreEqual(att "Gender", "Attack helicopter"),
                         ParsedAreEqual(att "Gender", "Other")))) }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test single and``() =
@@ -160,7 +161,7 @@ let ``Test single and``() =
             ParsedAnd(
                 ParsedAreEqual(att "Gender", "Male"),
                 ParsedAreEqual(att "Gender", "Female")) }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test multiple ands``() =
@@ -195,7 +196,7 @@ let ``Test multiple ands``() =
                     ParsedAnd(
                         ParsedAreEqual(att "Gender", "Attack helicopter"),
                         ParsedAreEqual(att "Gender", "Other")))) }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 // OPS I'm not actually sure this is the correct precedence, but I implemented a precedence anyway, can easily be reversed.
 [<Test>]
@@ -231,7 +232,7 @@ let ``Test and/or precedence``() =
                         ParsedAreEqual (att "Gender","Female"),
                         ParsedAreEqual (att "Gender","Attack helicopter")),
                     ParsedAreEqual (att "Gender","Other"))) }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test brackets``() =
@@ -268,5 +269,5 @@ let ``Test brackets``() =
                         ParsedAreEqual (att "Gender","Female")),
                     ParsedAreEqual (att "Gender","Attack helicopter")),
                 ParsedAreEqual (att "Gender","Other")) }
-    test <@ ConditionParser.parseCondition 2 false tokens = expected @>
+    test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 

@@ -154,6 +154,7 @@ let ``Test sentence with condition``() =
         Name = "main"
         Tree =
             ParsedSentence(
+                2,
                 ParsedSimpleSeq
                     [|
                         ParsedStringValue "Hello "

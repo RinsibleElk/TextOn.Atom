@@ -31,8 +31,9 @@ module internal VariableDefinitionParser =
             Text = text
             SupportsFreeValue = freeValue
             Result = result }
-    let private makeParseError line startLocation endLocation errorText =
-        {   LineNumber = line
+    let private makeParseError file line startLocation endLocation errorText =
+        {   File = file
+            LineNumber = line
             StartLocation = startLocation
             EndLocation = endLocation
             ErrorText = errorText }
@@ -46,14 +47,14 @@ module internal VariableDefinitionParser =
         | [Var;Free;VariableName name;Equals;QuotedString text] -> (name, Some text, true, None)
         | _ -> ("<unknown>", None, false, Some "Invalid variable declaration")
 
-    let private parseSuggestion (suggestionLine:AttributedTokenizedLine) =
+    let private parseSuggestion file (suggestionLine:AttributedTokenizedLine) =
         let tokens = suggestionLine.Tokens
         match tokens with
         | [] -> failwith "Internal error"
         | [textToken] ->
             match textToken.Token with
             | QuotedString suggestedValue -> ParsedSuggestionSuccess { Value = suggestedValue ; Condition = ParsedUnconditional }
-            | _ -> ParsedSuggestionError [|(makeParseError suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]
+            | _ -> ParsedSuggestionError [|(makeParseError file suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]
         | textToken::conditionTokens ->
             match textToken.Token with
             | QuotedString suggestedValue ->
@@ -62,16 +63,16 @@ module internal VariableDefinitionParser =
                 | h::t ->
                     match h.Token with
                     | OpenBrace ->
-                        let parsedCondition = ConditionParser.parseCondition suggestionLine.LineNumber true conditionTokens
+                        let parsedCondition = ConditionParser.parseCondition file suggestionLine.LineNumber true conditionTokens
                         match parsedCondition.Condition with
                         | ParsedCondition.ParsedConditionError errors -> ParsedSuggestionError errors
                         | _ -> ParsedSuggestionSuccess { Value = suggestedValue ; Condition = parsedCondition.Condition }
                     | _ ->
-                        ParsedSuggestionError [|(makeParseError suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected '['")|]
-            | _ -> ParsedSuggestionError [|(makeParseError suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]
+                        ParsedSuggestionError [|(makeParseError file suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected '['")|]
+            | _ -> ParsedSuggestionError [|(makeParseError file suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]
 
-    let private makeVariableDefinitionWithSuggestions makeVariableDefinition suggestionLines =
-        let suggestedValues = suggestionLines |> List.toArray |> Array.map parseSuggestion
+    let private makeVariableDefinitionWithSuggestions file makeVariableDefinition suggestionLines =
+        let suggestedValues = suggestionLines |> List.toArray |> Array.map (parseSuggestion file)
         let errors = suggestedValues |> Array.collect (function | ParsedSuggestionError errors -> errors | _ -> [||])
         if errors.Length > 0 then
             makeVariableDefinition (ParsedVariableErrors errors)
@@ -86,7 +87,7 @@ module internal VariableDefinitionParser =
         | firstLine::remainingLines ->
             let (name, text, freeValue, error) = parseFirstLine firstLine
             if error |> Option.isSome then
-                makeVariableDefinition tokenSet name (text |> defaultArg <| "") freeValue (ParsedVariableErrors [|(makeParseError firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) error.Value)|])
+                makeVariableDefinition tokenSet name (text |> defaultArg <| "") freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) error.Value)|])
             else
                 if text |> Option.isSome then
                     let text = text.Value
@@ -95,16 +96,16 @@ module internal VariableDefinitionParser =
                     | [] -> makeVariableDefinition tokenSet name text freeValue (ParsedVariableSuccess [||])
                     | h::t ->
                         if h.Tokens.Length > 1 || h.Tokens.[0].Token <> OpenCurly then
-                            makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
+                            makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
                         else
                             let l = t |> List.last
                             if l.Tokens.Length > 1 || l.Tokens.[0].Token <> CloseCurly then
-                                makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
+                                makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
                             else
-                                makeVariableDefinitionWithSuggestions (makeVariableDefinition tokenSet name text freeValue) (t |> List.take (t.Length - 1))
+                                makeVariableDefinitionWithSuggestions tokenSet.File (makeVariableDefinition tokenSet name text freeValue) (t |> List.take (t.Length - 1))
                 else
                     match remainingLines with
-                    | [] -> makeVariableDefinition tokenSet name "" freeValue (ParsedVariableErrors [|(makeParseError firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
+                    | [] -> makeVariableDefinition tokenSet name "" freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
                     | h::t ->
                         match (h.Tokens |> List.map (fun t -> t.Token)) with
                         | [QuotedString text] ->
@@ -114,12 +115,12 @@ module internal VariableDefinitionParser =
                                 makeVariableDefinition tokenSet name text freeValue (ParsedVariableSuccess [||])
                             | h::t ->
                                 if h.Tokens.Length > 1 || h.Tokens.[0].Token <> OpenCurly then
-                                    makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
+                                    makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
                                 else
                                     let l = t |> List.last
                                     if l.Tokens.Length > 1 || l.Tokens.[0].Token <> CloseCurly then
-                                        makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
+                                        makeVariableDefinition tokenSet name text freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
                                     else
-                                        makeVariableDefinitionWithSuggestions (makeVariableDefinition tokenSet name text freeValue) (t |> List.take (t.Length - 1))
+                                        makeVariableDefinitionWithSuggestions tokenSet.File (makeVariableDefinition tokenSet name text freeValue) (t |> List.take (t.Length - 1))
                         | _ ->
-                            makeVariableDefinition tokenSet name "" freeValue (ParsedVariableErrors [|(makeParseError h.LineNumber (h.Tokens.[0].TokenStartLocation) (h.Tokens.[h.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
+                            makeVariableDefinition tokenSet name "" freeValue (ParsedVariableErrors [|(makeParseError tokenSet.File h.LineNumber (h.Tokens.[0].TokenStartLocation) (h.Tokens.[h.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
