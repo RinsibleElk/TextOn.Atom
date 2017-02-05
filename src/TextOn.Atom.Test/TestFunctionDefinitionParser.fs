@@ -180,6 +180,6 @@ let ``Test sentence with condition``() =
                                             |]
                                         ParsedStringValue "?"
                                     |]),
-                        ParsedAreEqual ((att "SomeAttribute"),"Some value"))
+                        ParsedAreEqual (105, 118, (att "SomeAttribute"),"Some value"))
                 |] }
     test <@ parsedFunc = expected @>

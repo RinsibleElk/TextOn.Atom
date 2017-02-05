@@ -18,8 +18,8 @@ type ParsedCondition =
     | ParsedUnconditional
     | ParsedOr of ParsedCondition * ParsedCondition
     | ParsedAnd of ParsedCondition * ParsedCondition
-    | ParsedAreEqual of ParsedAttributeOrVariable * string
-    | ParsedAreNotEqual of ParsedAttributeOrVariable * string
+    | ParsedAreEqual of int * int * ParsedAttributeOrVariable * string
+    | ParsedAreNotEqual of int * int * ParsedAttributeOrVariable * string
     | ParsedConditionError of ParseError[]
 
 type ConditionParseResults = {
@@ -90,17 +90,17 @@ module ConditionParser =
                     if conditionTokens.Length = 3 then
                         match (conditionTokens.[0].Token, conditionTokens.[1].Token, conditionTokens.[2].Token) with
                         | (AttributeName name, Equals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreEqual(ParsedAttributeName name, value) }
+                            { HasErrors = false; Condition = ParsedAreEqual(conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedAttributeName name, value) }
                         | (AttributeName name, NotEquals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreNotEqual(ParsedAttributeName name, value) }
+                            { HasErrors = false; Condition = ParsedAreNotEqual(conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedAttributeName name, value) }
                         | (VariableName name, Equals, QuotedString value) ->
                             if variablesAreAllowed then
-                                { HasErrors = false; Condition = ParsedAreEqual(ParsedVariableName name, value) }
+                                { HasErrors = false; Condition = ParsedAreEqual(conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedVariableName name, value) }
                             else
                                 { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
                         | (VariableName name, NotEquals, QuotedString value) ->
                             if variablesAreAllowed then
-                                { HasErrors = false; Condition = ParsedAreNotEqual(ParsedVariableName name, value) }
+                                { HasErrors = false; Condition = ParsedAreNotEqual(conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedVariableName name, value) }
                             else
                                 { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
                         | _ ->
