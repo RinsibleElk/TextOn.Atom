@@ -19,7 +19,7 @@ module ArgParser =
         | PrimitiveDateTime
         | PrimitiveUnion of Type
         with
-            member this.ToString() =
+            override this.ToString() =
                 match this with
                 | PrimitiveString -> "String"
                 | PrimitiveInt -> "Int"
