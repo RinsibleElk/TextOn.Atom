@@ -156,9 +156,30 @@ compiler.Post(
 stopwatch.Start()
 source |> Agent.post ([], (file,directory,lines))
 
-let s =
+let compilationResult =
     compiler
     |> Agent.fetch
     |> Option.get
     |> snd
-
+let template =
+    match compilationResult with
+    | CompilationSuccess t -> Some t
+    | _ -> None
+let generatorInput = {
+    RandomSeed = NoSeed
+    Config =
+        {   NumSpacesBetweenSentences = 2
+            NumBlankLinesBetweenParagraphs = 1
+            LineEnding = CRLF }
+    Attributes  = []
+    Variables =
+        [
+            { Name = "MÄRKE" ; Value = "London" }
+            { Name = "P2" ; Value = "Enfield" }
+            { Name = "P3" ; Value = "Honda" }
+        ] }
+let text =
+    Generator.generate generatorInput template.Value
+    |> function | GeneratorSuccess output -> output.Text | _ -> failwith ""
+    |> Seq.map (fun t -> t.Value)
+    |> Seq.fold (+) ""

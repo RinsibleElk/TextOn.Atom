@@ -72,31 +72,34 @@ module Generator =
             nodes
             |> Array.map (generateSentence variableValues random)
             |> Array.fold (+) ""
-        | SimpleText(s) -> s
+        | SimpleText(s) ->
+            printfn "Text: %s" s
+            s
     let rec private generateInner attributeValues variableValues (random:Random) (node:CompiledDefinitionNode) =
         match node with
-        | Sentence(inputFile, inputLineNumber, s) -> Seq.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
+        | Sentence(inputFile, inputLineNumber, s) ->
+            printfn "Sentence: %s %d" inputFile inputLineNumber
+            Seq.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
         | ParagraphBreak(inputfile, inputLineNumber) -> Seq.singleton (ParaBreak(inputfile, inputLineNumber))
         | Choice(s) ->
+            printfn "Choice"
             let options =
                 s
                 |> Array.choose
                     (fun (node, condition) ->
                         if ConditionEvaluator.resolve attributeValues condition then Some node
                         else None)
-            if options.Length = 0 then failwith "This cannot happen"
+            if options.Length = 0 then failwith "Internal error"
             let index = random.Next(options.Length)
             generateInner attributeValues variableValues random options.[index]
         | Seq(s) ->
+            printfn "Seq"
             s
             |> Array.filter (fun (node, condition) -> ConditionEvaluator.resolve attributeValues condition)
-            |> Array.map
+            |> Seq.collect
                 (fun (node, _) ->
                     let random = Random(random.Next())
-                    async { return (generateInner attributeValues variableValues random node) })
-            |> Async.Parallel
-            |> Async.RunSynchronously
-            |> Seq.concat
+                    generateInner attributeValues variableValues random node)
     let generate (input:GeneratorInput) (compiledTemplate:CompiledTemplate) : GeneratorResult =
         let randomSeed =
             match input.RandomSeed with
@@ -149,15 +152,17 @@ module Generator =
         | (Some e, _)
         | (_, Some e) -> GeneratorError e
         | _ ->
-            let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toArray
+            printfn "At the generate bit"
+            let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toList
             let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
             let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
             let paraBreakText = [ 0 .. input.Config.NumBlankLinesBetweenParagraphs ] |> Seq.map (fun _ -> lineBreakText) |> Seq.fold (+) ""
             let rec loop previousIsSentence remaining =
-                if remaining |> Seq.isEmpty then Seq.empty
-                else
+                match remaining with
+                | [] -> Seq.empty
+                | h::t ->
                     let (newPreviousIsSentence, output) =
-                        match (remaining |> Seq.head) with
+                        match h with
                         | SentenceText(inputFile, inputLineNumber, text) ->
                             let l =
                                 if previousIsSentence then
@@ -185,7 +190,7 @@ module Generator =
                                         Value = paraBreakText })
                     seq {
                         yield! output
-                        yield! loop newPreviousIsSentence (remaining |> Seq.tail) }
+                        yield! loop newPreviousIsSentence t }
             GeneratorSuccess
                 {   LastSeed    = randomSeed
                     Text        = loop false output |> Seq.toArray }
