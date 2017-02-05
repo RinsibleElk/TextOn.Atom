@@ -172,61 +172,69 @@ module Compiler =
             Result (ParagraphBreak(file, lineNumber))
         | _ -> failwith "Internal error"
     let private compileAttribute (file:string) index startLine endLine name (attributeDefinitions:Map<ParsedAttributeName, CompiledAttributeDefinition>) (parsedAttributeValues:ParsedAttributeValue[]) : CompiledAttributeDefinition ResultOrErrors =
-        let values =
-            parsedAttributeValues
-            |> Array.map
-                (fun value ->
-                    match (compileCondition file attributeDefinitions value.Condition) with
-                    | Errors e -> Errors e
-                    | Result condition -> Result { CompiledAttributeValue.Value = value.Value ; Condition = condition })
-        let errors =
-            values
-            |> Array.choose (function | Errors e -> Some e | _ -> None)
-            |> Array.concat
-        if errors.Length <> 0 then
-            Errors errors
+        let existing = attributeDefinitions |> Map.tryFind name
+        if existing |> Option.isSome then
+            Errors ([|(makeParseError file startLine 1 4 (sprintf "Duplicate definition of attribute %s" name))|])
         else
             let values =
+                parsedAttributeValues
+                |> Array.map
+                    (fun value ->
+                        match (compileCondition file attributeDefinitions value.Condition) with
+                        | Errors e -> Errors e
+                        | Result condition -> Result { CompiledAttributeValue.Value = value.Value ; Condition = condition })
+            let errors =
                 values
-                |> Array.map (function | Result r -> r | _ -> failwith "")
-            Result
-                {
-                    Name = name
-                    Index = index
-                    File = file
-                    StartLine = startLine
-                    EndLine = endLine
-                    Values = values
-                }
+                |> Array.choose (function | Errors e -> Some e | _ -> None)
+                |> Array.concat
+            if errors.Length <> 0 then
+                Errors errors
+            else
+                let values =
+                    values
+                    |> Array.map (function | Result r -> r | _ -> failwith "")
+                Result
+                    {
+                        Name = name
+                        Index = index
+                        File = file
+                        StartLine = startLine
+                        EndLine = endLine
+                        Values = values
+                    }
     let private compileVariable (file:string) index startLine endLine name text supportsFreeValue (variableDefinitions:Map<ParsedVariableName, CompiledVariableDefinition>) (attributeDefinitions:Map<ParsedAttributeName, CompiledAttributeDefinition>) (parsedSuggestedValues:ParsedVariableSuggestedValue[]) : CompiledVariableDefinition ResultOrErrors =
-        let suggestedValues =
-            parsedSuggestedValues
-            |> Array.map
-                (fun suggestedValue ->
-                    match (compileVariableCondition file variableDefinitions attributeDefinitions suggestedValue.Condition) with
-                    | Errors e -> Errors e
-                    | Result condition -> Result { Value = suggestedValue.Value ; Condition = condition })
-        let errors =
-            suggestedValues
-            |> Array.choose (function | Errors e -> Some e | _ -> None)
-            |> Array.concat
-        if errors.Length <> 0 then
-            Errors errors
+        let existing = variableDefinitions |> Map.tryFind name
+        if existing |> Option.isSome then
+            Errors ([|(makeParseError file startLine 1 4 (sprintf "Duplicate definition of variable %s" name))|])
         else
-            let values =
+            let suggestedValues =
+                parsedSuggestedValues
+                |> Array.map
+                    (fun suggestedValue ->
+                        match (compileVariableCondition file variableDefinitions attributeDefinitions suggestedValue.Condition) with
+                        | Errors e -> Errors e
+                        | Result condition -> Result { Value = suggestedValue.Value ; Condition = condition })
+            let errors =
                 suggestedValues
-                |> Array.map (function | Result r -> r | _ -> failwith "")
-            Result
-                {
-                    Name = name
-                    Index = index
-                    File = file
-                    StartLine = startLine
-                    EndLine = endLine
-                    PermitsFreeValue = supportsFreeValue
-                    Text = text
-                    Values = values
-                }
+                |> Array.choose (function | Errors e -> Some e | _ -> None)
+                |> Array.concat
+            if errors.Length <> 0 then
+                Errors errors
+            else
+                let values =
+                    suggestedValues
+                    |> Array.map (function | Result r -> r | _ -> failwith "")
+                Result
+                    {
+                        Name = name
+                        Index = index
+                        File = file
+                        StartLine = startLine
+                        EndLine = endLine
+                        PermitsFreeValue = supportsFreeValue
+                        Text = text
+                        Values = values
+                    }
     let rec private compileInner variableDefinitions attributeDefinitions functionDefinitions errors (elements:ParsedElement list) =
         match elements with
         | [] ->
@@ -255,9 +263,15 @@ module Compiler =
                         | ParseErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
                     else
-                        match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
-                        | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
-                        | Result r -> (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name r), errors)
+                        let existing = functionDefinitions |> Map.tryFind f.Name
+                        if existing.IsSome then
+                            let e =
+                                [|(makeParseError h.File f.StartLine 1 5 (sprintf "Duplicate definition of function %s" f.Name))|]
+                            (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
+                        else
+                            match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
+                            | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
+                            | Result r -> (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name r), errors)
                 | ParsedAttribute a ->
                     // Traverse through replacing variable & attribute references and inlining function references.
                     if a.HasErrors || (errors |> List.isEmpty |> not) then

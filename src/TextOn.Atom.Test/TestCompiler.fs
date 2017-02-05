@@ -188,3 +188,93 @@ let ``End to end test``() =
         |> Compiler.compile
     test <@ compiled = CompilationSuccess expected @>
 
+let compileLines (lines:string) =
+    lines.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
+    |> List.ofArray
+    |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName None
+    |> CommentStripper.stripComments
+    |> LineCategorizer.categorize
+    |> List.map (Tokenizer.tokenize >> Parser.parse)
+    |> List.toArray
+    |> Compiler.compile
+
+[<Test>]
+let ``Declare the same variable twice``() =
+    let lines =
+        "@var @free $VarName = \"Variable one\"
+@var @free $VarName = \"Variable one\"
+@func @main {
+  Hello world.
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationFailure
+            [|
+                ParserError
+                    {
+                        File = exampleFileName
+                        LineNumber = 2
+                        StartLocation = 1
+                        EndLocation = 4
+                        ErrorText = "Duplicate definition of variable VarName"
+                    }
+            |]
+    test <@ result = expected @>
+
+[<Test>]
+let ``Declare the same attribute twice``() =
+    let lines =
+        "@att %AttName
+  {
+    \"Hello\"
+  }
+@att %AttName
+  {
+    \"Hello\"
+  }
+@func @main {
+  Hello world.
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationFailure
+            [|
+                ParserError
+                    {
+                        File = exampleFileName
+                        LineNumber = 5
+                        StartLocation = 1
+                        EndLocation = 4
+                        ErrorText = "Duplicate definition of attribute AttName"
+                    }
+            |]
+    test <@ result = expected @>
+
+[<Test>]
+let ``Declare the same function twice``() =
+    let lines =
+        "@func @FuncName
+  {
+    Hello
+  }
+@func @FuncName
+  {
+    Hello
+  }
+@func @main {
+  Hello world.
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationFailure
+            [|
+                ParserError
+                    {
+                        File = "example.texton"
+                        LineNumber = 5
+                        StartLocation = 1
+                        EndLocation = 5
+                        ErrorText = "Duplicate definition of function FuncName"
+                    }
+            |]
+    test <@ result = expected @>
