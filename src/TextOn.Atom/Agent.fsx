@@ -185,3 +185,4 @@ let text =
     |> function | GeneratorSuccess output -> output.Text | _ -> failwith ""
     |> Seq.map (fun t -> t.Value)
     |> Seq.fold (+) ""
+

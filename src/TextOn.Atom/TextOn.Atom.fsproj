@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="ArgParser.fs" />
     <Compile Include="Preprocessor.fs" />
     <Compile Include="CommentStripper.fs" />
     <Compile Include="LineCategorizer.fs" />

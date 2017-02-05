@@ -19,7 +19,8 @@ let preprocessed = Preprocessor.preprocess Preprocessor.realFileResolver file.Na
 let stripped = CommentStripper.stripComments preprocessed
 let categorized = stripped |> LineCategorizer.categorize
 let tokenized = categorized |> Seq.map (fun a -> async { return Tokenizer.tokenize a }) |> Async.Parallel |> Async.RunSynchronously
-let parser = tokenized |> Array.map Parser.parse
+let parsed = tokenized |> Array.map Parser.parse
+let compiled = parsed |> Compiler.compile
 stopwatch.Stop()
 stopwatch.ElapsedMilliseconds
 
