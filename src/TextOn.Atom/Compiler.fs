@@ -13,6 +13,8 @@ type CompilationResult =
 
 [<RequireQualifiedAccess>]
 module Compiler =
+    let rec private compileFunc file variableDefinitions attributeDefinitions functionDefinitions parsedNode =
+        ()
     let rec private compileInner variableDefinitions attributeDefinitions functionDefinitions errors (elements:ParsedElement list) =
         match elements with
         | [] ->
@@ -41,6 +43,7 @@ module Compiler =
                         | ParseErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
                     else
+                        let x = compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree
                         failwith ""
                 | _ -> failwith ""
             compileInner v a f e t

@@ -153,29 +153,33 @@ let ``Test sentence with condition``() =
         HasErrors = false
         Name = "main"
         Tree =
-            ParsedSentence(
-                2,
-                ParsedSimpleSeq
-                    [|
-                        ParsedStringValue "Hello "
-                        ParsedSimpleChoice [|ParsedStringValue "world"; ParsedStringValue "earth"|]
-                        ParsedStringValue ", "
-                        ParsedSimpleChoice
-                            [|
+            ParsedSeq
+                [|
+                    (   ParsedSentence
+                            (   2,
                                 ParsedSimpleSeq
                                     [|
-                                        ParsedStringValue "how "
-                                        ParsedSimpleChoice [|ParsedStringValue "is it"; ParsedStringValue "are things"|]
-                                        ParsedStringValue " going"
-                                    |]
-                                ParsedSimpleSeq
-                                    [|  ParsedStringValue "are you "
-                                        ParsedSimpleChoice [|ParsedStringValue "ok"; ParsedStringValue "feeling well"|]
-                                        ParsedStringValue " today"
-                                    |]
-                                ParsedStringValue "what's going on"
-                            |]
-                        ParsedStringValue "?"
-                    |],
-                ParsedAreEqual (att "SomeAttribute","Some value")) }
+                                        ParsedStringValue "Hello "
+                                        ParsedSimpleChoice [|ParsedStringValue "world"; ParsedStringValue "earth"|]
+                                        ParsedStringValue ", "
+                                        ParsedSimpleChoice
+                                            [|
+                                                ParsedSimpleSeq
+                                                    [|
+                                                        ParsedStringValue "how "
+                                                        ParsedSimpleChoice [|ParsedStringValue "is it";ParsedStringValue "are things"|]
+                                                        ParsedStringValue " going"
+                                                    |]
+                                                ParsedSimpleSeq
+                                                    [|
+                                                        ParsedStringValue "are you "
+                                                        ParsedSimpleChoice [|ParsedStringValue "ok";ParsedStringValue "feeling well"|]
+                                                        ParsedStringValue " today"
+                                                    |]
+                                                ParsedStringValue "what's going on"
+                                            |]
+                                        ParsedStringValue "?"
+                                    |]),
+                        ParsedAreEqual ((att "SomeAttribute"),"Some value"))
+                |] }
     test <@ parsedFunc = expected @>
