@@ -68,7 +68,7 @@
 
 @func @stycke20160831_8
 {
-  Vilken {typ av|slags} {bil|fordon|bilmodell} passar bäst för dig_din_resa?
+  Vilken {typ av|slags} {bil|fordon|bilmodell} passar bäst för dig din resa?
 }
 
 @func @stycke20160831_9
@@ -96,8 +96,8 @@
 @func @stycke20160831_12
 {
   @choice {
-    Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten|lastutrymmet} är {viktig|a och} _o, erbjuder vi till exempel {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar din {resa|bilresa}.
-    Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten} är {viktig|a och} _o, erbjuder vi till exempel {flera|en rad} {tjänster|tillvalstjänster|extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar gör {resa|bilfärden} {extra bekväm|bekväm}.
+    Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten|lastutrymmet} är {viktig|a och} o, erbjuder vi till exempel {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar din {resa|bilresa}.
+    Om du ska hyra bil i $MÄRKE, och {komforten|körkomforten} är {viktig|a och} o, erbjuder vi till exempel {flera|en rad} {tjänster|tillvalstjänster|extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som underlättar gör {resa|bilfärden} {extra bekväm|bekväm}.
     Om du ska hyra bil i $MÄRKE, och även vill reservera {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem} erbjuder vi {flera|en} rad {tjänster|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} som gör {resa|bilfärden} smidig.
   }
 }
@@ -111,7 +111,7 @@
     Sixt är en av världens främsta {biluthyrare|biluthyrare} och hos oss {hittar|finner} du alltid en {modell|bilmodell} fordonsmodell anpassad utifrån din {krav|önskemål|resebehov|reseönskemål}.
     Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} är det alltid dina {krav|önskemål|resebehov|reseönskemål} som står i centrum.
     Sixt är en av världens främsta {biluthyrare|biluthyrare} och vi vet hur viktigt det är att du som {kund|förare} kan skapa en skräddarsydd lösning som passar just {dig|din resa}.
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} {har din|ges din} resa alltid hög_grad_av flexibilitet
+    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} {har din|ges din} resa alltid hög grad av flexibilitet
     Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,}
     får alltid {många|en rad|ett stort antal} {valmöjligheter|alternativ|hyrbilsmöjligheter} {när|då} du väljer att hyra bil i $MÄRKE.
   }

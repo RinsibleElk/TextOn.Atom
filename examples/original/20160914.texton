@@ -4,8 +4,8 @@
 {
   @choice {
     {Letar|söker} du efter en {prisvärd|central|centralt belägen} biluthyrning i $MÄRKE?
-    Från vår centralt_belägna biluthyrning i $MÄRKE har du nära till det mesta.
-    {Starta|påbörja} din resa från vår centralt_belägna biluthyrning i $MÄRKE.
+    Från vår centralt belägna biluthyrning i $MÄRKE har du nära till det mesta.
+    {Starta|påbörja} din resa från vår centralt belägna biluthyrning i $MÄRKE.
     Att {starta|påbörja} resa på vår biluthyrning i $MÄRKE är ett smart val.
     Låt din resa {börja|starta} på vår biluthyrning i $MÄRKE.
   }
@@ -30,12 +30,12 @@
 
 @func @stycke20160914_3
 {
-  Läget är även {utmärkt|perfekt} för längre {resor|bilresor} som fortsätter vidare utanför_ {staden|utanför stadens gränser|till andra städer i regionen|till andra städer i området|till närliggande städer i regionen|ill närliggande platser i regionen}.
+  Läget är även {utmärkt|perfekt} för längre {resor|bilresor} som fortsätter vidare utanför {staden|utanför stadens gränser|till andra städer i regionen|till andra städer i området|till närliggande städer i regionen|ill närliggande platser i regionen}.
 }
 
 @func @stycke20160914_4
 {
-  Vårt_ {kunniga team|team|Våra medarbetare|våra kunninga medarbetare på plats|våra kunninga medarbetare} hjälper dig att snabbt komma igång med din resa.
+  Vårt {kunniga team|team|Våra medarbetare|våra kunninga medarbetare på plats|våra kunninga medarbetare} hjälper dig att snabbt komma igång med din resa.
 }
 
 @func @stycke20160914_5
@@ -43,8 +43,8 @@
   @choice {
     {Vi|vi på Sixt} erbjuder alla som vill hyra bil i $MÄRKE en lösning av {högsta|förstaklassig|bästa|hög} kvalitet.
     {Vi|vi på Sixt} erbjuder alla som vill hyra bil i $MÄRKE får en lösning {med|som motsvarar} den standard och komfort som du {önskar|vill ha|eftersträvar|efterfrågar}.
-    Vi_på_Sixt strävar alltid efter att {ge|tillhandahålla|erbjuda} dig som vill hyra bil i $MÄRKE en lösning av {högsta|förstaklassig|bästa|hög} kvalitet.
-    Vi_på_Sixt strävar alltid efter att {ge|tillhandahålla|erbjuda} dig som vill hyra bil i $MÄRKE en lösning {med|som motsvarar} den standard och komfort som du {önskar|vill ha|eftersträvar|efterfrågar}.
+    Vi på Sixt strävar alltid efter att {ge|tillhandahålla|erbjuda} dig som vill hyra bil i $MÄRKE en lösning av {högsta|förstaklassig|bästa|hög} kvalitet.
+    Vi på Sixt strävar alltid efter att {ge|tillhandahålla|erbjuda} dig som vill hyra bil i $MÄRKE en lösning {med|som motsvarar} den standard och komfort som du {önskar|vill ha|eftersträvar|efterfrågar}.
   }
 }
 
@@ -68,7 +68,7 @@
 
 @func @stycke20160914_8
 {
-  Vår moderna flotta rymmer..
+  Vår moderna flotta rymmer.
 }
 
 @func @stycke20160914_9
