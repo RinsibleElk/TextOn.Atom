@@ -56,6 +56,7 @@ module internal Main =
                                 let mutable value = ""
                                 while (values |> Array.contains value |> not) do
                                     value <- Console.ReadLine()
+                                printfn ""
                                 m |> Map.add att.Index value)
                         Map.empty
                 let variableValues =
@@ -80,6 +81,7 @@ module internal Main =
                                     value <- Console.ReadLine()
                                     if att.PermitsFreeValue then validValue <- true
                                     else validValue <- (values |> Array.contains value)
+                                printfn ""
                                 m |> Map.add att.Index value)
                         Map.empty
                 let generatorInput = {
@@ -101,4 +103,5 @@ module internal Main =
                 |> Seq.map (fun t -> t.Value)
                 |> Seq.fold (+) ""
                 |> printfn "%s"
+                printfn ""
                 0 // return an integer exit code
