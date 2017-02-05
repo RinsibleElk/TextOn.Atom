@@ -171,7 +171,9 @@ let generatorInput = {
         {   NumSpacesBetweenSentences = 2
             NumBlankLinesBetweenParagraphs = 1
             LineEnding = CRLF }
-    Attributes  = []
+    Attributes  =
+        [
+        ]
     Variables =
         [
             { Name = "MÄRKE" ; Value = "London" }
