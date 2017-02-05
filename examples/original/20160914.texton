@@ -30,16 +30,12 @@
 
 @func @stycke20160914_3
 {
-  @choice {
-    Läget är även {utmärkt|perfekt} för längre {resor|bilresor} som fortsätter vidare utanför_ {staden|utanför stadens gränser|till andra städer i regionen|till andra städer i området|till närliggande städer i regionen|ill närliggande platser i regionen}.
-  }
+  Läget är även {utmärkt|perfekt} för längre {resor|bilresor} som fortsätter vidare utanför_ {staden|utanför stadens gränser|till andra städer i regionen|till andra städer i området|till närliggande städer i regionen|ill närliggande platser i regionen}.
 }
 
 @func @stycke20160914_4
 {
-  @choice {
-    Vårt_ {kunniga team|team|Våra medarbetare|våra kunninga medarbetare på plats|våra kunninga medarbetare} hjälper dig att snabbt komma igång med din resa.
-  }
+  Vårt_ {kunniga team|team|Våra medarbetare|våra kunninga medarbetare på plats|våra kunninga medarbetare} hjälper dig att snabbt komma igång med din resa.
 }
 
 @func @stycke20160914_5
@@ -70,49 +66,37 @@
   }
 }
 
+@func @stycke20160914_8
+{
+  Vår moderna flotta rymmer..
+}
+
 @func @stycke20160914_9
 {
-  @choice {
-    Vår moderna flotta rymmer..
-  }
+  Om du har frågor om att hyra bil i $MÄRKE kan du {givetvis|naturligtvis|självklart} {även|också} {kontakta|höra av dig till} {oss|vårt team|våra medarbetare} direkt.
 }
 
 @func @stycke20160914_10
 {
-  @choice {
-    Om du har frågor om att hyra bil i $MÄRKE kan du {givetvis|naturligtvis|självklart} {även|också} {kontakta|höra av dig till} {oss|vårt team|våra medarbetare} direkt.
-  }
+  Vi hjälper gärna till en hitta en hyrbil i $MÄRKE som passar {just dig|just för dig|just dina resebehov|just dina behov|just dina önskemål}.
 }
 
 @func @stycke20160914_11
 {
-  @choice {
-    Vi hjälper gärna till en hitta en hyrbil i $MÄRKE som passar {just dig|just för dig|just dina resebehov|just dina behov|just dina önskemål}.
-  }
+  Du kan till exempel göra en rad {tillval|tillvalsfunktioner|tillvalstjänster|tilläggstjänster}.
 }
 
 @func @stycke20160914_12
 {
-  @choice {
-    Du kan till exempel göra en rad {tillval|tillvalsfunktioner|tillvalstjänster|tilläggstjänster}.
-  }
+  Kanske har du {särskilda|specifika} {önskemål|krav} då det gäller {komfort|säkerhet|körkomfort} och navigering?
 }
 
 @func @stycke20160914_13
 {
-  @choice {
-    Kanske har du {särskilda|specifika} {önskemål|krav} då det gäller {komfort|säkerhet|körkomfort} och navigering?
-  }
+  Kolla in våra {erbjudanden|paket|paketlösningar} och {skapa|skräddarsy|sätt ihop|sätt samman} en unikt för {dig|din resa|din bilresa}.
 }
 
 @func @stycke20160914_14
-{
-  @choice {
-    Kolla in våra {erbjudanden|paket|paketlösningar} och {skapa|skräddarsy|sätt ihop|sätt samman} en unikt för {dig|din resa|din bilresa}.
-  }
-}
-
-@func @stycke20160914_15
 {
   @choice {
     Valmöjligheterna för dig som {vill|ska} boka en hyrbil i $MÄRKE är många.
@@ -130,11 +114,11 @@
   @stycke20160914_5
   @stycke20160914_6
   @stycke20160914_7
+  @stycke20160914_8
   @stycke20160914_9
   @stycke20160914_10
   @stycke20160914_11
   @stycke20160914_12
   @stycke20160914_13
   @stycke20160914_14
-  @stycke20160914_15
 }

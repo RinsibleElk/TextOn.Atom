@@ -87,9 +87,7 @@
 
 @func @stycke20160823_8
 {
-  @choice {
-    Vi på Sixt erbjuder dig alltid prisvärda {hyrbilslösningar|lösningar} om du söker en hyrbil i $MÄRKE.
-  }
+  Vi på Sixt erbjuder dig alltid prisvärda {hyrbilslösningar|lösningar} om du söker en hyrbil i $MÄRKE.
 }
 
 @func @stycke20160823_9
@@ -145,9 +143,7 @@
 
 @func @stycke20160823_15
 {
-  @choice {
-    Du kan till exempel boka en {barnstol|bilbarnstol,GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem} och {försäkringspaket|extraförare}.
-  }
+  Du kan till exempel boka en {barnstol|bilbarnstol,GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem} och {försäkringspaket|extraförare}.
 }
 
 @func @stycke20160823_16

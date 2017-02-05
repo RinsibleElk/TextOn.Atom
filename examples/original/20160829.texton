@@ -31,37 +31,27 @@
 
 @func @stycke20160829_3
 {
-  @choice {
-    Därför är vi {stolta|glada} att kunna erbjuda ett brett {utbud|urval} av bilar på vår biluthyrning i $MÄRKE.
-  }
+  Därför är vi {stolta|glada} att kunna erbjuda ett brett {utbud|urval} av bilar på vår biluthyrning i $MÄRKE.
 }
 
 @func @stycke20160829_4
 {
-  @choice {
-    När du ska hyra bil i $MÄRKE {kan vi|erbjuder vi} {fordon|bilar|bilmodeller} i alla pris- och storleksklasser.
-  }
+  När du ska hyra bil i $MÄRKE {kan vi|erbjuder vi} {fordon|bilar|bilmodeller} i alla pris- och storleksklasser.
 }
 
 @func @stycke20160829_5
 {
-  @choice {
-    Vår biluthyrning i $MÄRKE är bekvämt belägen $P2.
-  }
+  Vår biluthyrning i $MÄRKE är bekvämt belägen $P2.
 }
 
 @func @stycke20160829_6
 {
-  @choice {
-    Att hyra bil i $MÄRKE är bekvämt och lätt - du hittar all information om våra {fordon|bilar|bilmodeller} på {vår hemsida|webben|på nätet}.
-  }
+  Att hyra bil i $MÄRKE är bekvämt och lätt - du hittar all information om våra {fordon|bilar|bilmodeller} på {vår hemsida|webben|på nätet}.
 }
 
 @func @stycke20160829_7
 {
-  @choice {
-    Du som vill hyra bil i $MÄRKE kan boka en $P3.
-  }
+  Du som vill hyra bil i $MÄRKE kan boka en $P3.
 }
 
 @func @stycke20160829_8
@@ -128,9 +118,7 @@
 
 @func @stycke20160829_14
 {
-  @choice {
-    Vårt centralt belägna {kontor|uthyrningskontor|biluthyrningskontor} är en {bra|perfekt} utgångspunkt och härirfrån tar du dig lätt vidare……
-  }
+  Vårt centralt belägna {kontor|uthyrningskontor|biluthyrningskontor} är en {bra|perfekt} utgångspunkt och härirfrån tar du dig lätt vidare……
 }
 
 @func @stycke20160829_15

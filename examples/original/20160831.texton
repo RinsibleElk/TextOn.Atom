@@ -37,9 +37,7 @@
 
 @func @stycke20160831_4
 {
-  @choice {
-    Eller kanske {planerar du|ska du göra|stundar|väntar} en {jobbresa|affärsresa|resa med jobbet|resa i arbetet|resa i arbetets räkning|resa med kollegorna|jobbresa kollegorna|affärsresa med kollegorna?}
-  }
+  Eller kanske {planerar du|ska du göra|stundar|väntar} en {jobbresa|affärsresa|resa med jobbet|resa i arbetet|resa i arbetets räkning|resa med kollegorna|jobbresa kollegorna|affärsresa med kollegorna?}
 }
 
 @func @stycke20160831_5
@@ -70,16 +68,12 @@
 
 @func @stycke20160831_8
 {
-  @choice {
-    Vilken {typ av|slags} {bil|fordon|bilmodell} passar bäst för dig_din_resa?
-  }
+  Vilken {typ av|slags} {bil|fordon|bilmodell} passar bäst för dig_din_resa?
 }
 
 @func @stycke20160831_9
 {
-  @choice {
-    På vår biluthyrning i $MÄRKE hittar du $P3.
-  }
+  På vår biluthyrning i $MÄRKE hittar du $P3.
 }
 
 @func @stycke20160831_10
