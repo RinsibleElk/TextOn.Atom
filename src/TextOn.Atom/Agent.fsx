@@ -160,5 +160,6 @@ let s =
     parser
     |> Agent.fetch
     |> Option.get
-    |> fst
+    |> snd
 
+s |> Compiler.compile
