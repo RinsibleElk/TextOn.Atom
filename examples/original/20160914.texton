@@ -67,9 +67,6 @@
     {För dig|resenärer} som vill hyra bil i $MÄRKE erbjuds alltid en {rad|mängd} {prisvärda|smarta|förmånliga} erbjudanden.
     {Vi på Sixt|vi} kan erbjuda dig som vill hyra bil i $MÄRKE en {rad|mängd} {prisvärda|smarta|förmånliga} erbjudanden.
     En {rad|mängd} {prisvärda|smarta|förmånliga} erbjudanden erbjuds alltid {för dig|resenärer} som vill hyra bil i $MÄRKE.
-@func @stycke20160914_8
-{
-  @choice {
   }
 }
 
@@ -134,7 +131,6 @@
     @stycke20160914_5
     @stycke20160914_6
     @stycke20160914_7
-    @stycke20160914_8
     @stycke20160914_9
     @stycke20160914_10
     @stycke20160914_11
