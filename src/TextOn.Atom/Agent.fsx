@@ -157,9 +157,28 @@ stopwatch.Start()
 source |> Agent.post ([], (file,directory,lines))
 
 let s =
-    parser
+    tokenizer
     |> Agent.fetch
     |> Option.get
     |> snd
 
-s |> Compiler.compile
+let tokens =
+    @"@func @stycke20160823_6
+{
+  @choice {
+    Oavsett hur du {planerar|lägger} upp din {vistelse|resa} har vi garanterat
+    en hyrbil i $MÄRKE för dig.
+    Alla resor ser olika ut. Oavsett om du är här {för en längre eller kortare tid|för en längre eller kortare period|för en längre eller kortare tidsperiod|för en lång eller kort tid|för en längre eller kortare tid|för en lång eller kort tidsperiod} så har vi en {modell|bilmodell|hyrbilsslösning} för dig.
+    Vi har en bilmodell för alla {slags|typer av} resor. Oavsett om du ska stanna {för en längre eller kortare tid|för en längre eller kortare period|för en längre eller kortare tidsperiod|för en lång eller kort tid|för en längre eller kortare tid|för en lång eller kort tidsperiod} {tar vi fram|hittar vi|finner vi} en lösning för dig.
+    Vi på Sixt kan ta fram en lösning oavsett om du behöver en hyrbil i $MÄRKE för
+    {för en längre eller kortare tid|för en längre eller kortare period|för en längre eller kortare tidsperiod|för en lång eller kort tid|för en längre eller kortare tid|för en lång eller kort tidsperiod}.
+  }
+}"
+    |> fun s -> s.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
+    |> List.ofArray
+    |> Preprocessor.preprocess (fun _ _ -> None) "example.texton" None
+    |> CommentStripper.stripComments
+    |> LineCategorizer.categorize
+    |> List.head
+    |> Tokenizer.tokenize
+    |> Parser.parse

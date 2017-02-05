@@ -92,6 +92,7 @@
     <Compile Include="TestConditionParser.fs" />
     <Compile Include="TestFunctionDefinitionParser.fs" />
     <Compile Include="TestVariableDefinitionParser.fs" />
+    <Compile Include="TestParser.fs" />
     <Compile Include="TestConditionEvaluator.fs" />
     <Compile Include="TestVariableConditionEvaluator.fs" />
     <Compile Include="TestGenerator.fs" />

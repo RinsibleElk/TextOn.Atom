@@ -8,7 +8,7 @@ type ParsedFunctionName = string
 
 type ParsedSentenceNode =
     | ParsedStringValue of string
-    | ParsedVariable of (int * int * ParsedVariableName)
+    | ParsedSimpleVariable of (int * int * ParsedVariableName)
     | ParsedSimpleChoice of ParsedSentenceNode[]
     | ParsedSimpleSeq of ParsedSentenceNode[]
     | ParsedSentenceErrors of ParseError[]
@@ -72,7 +72,7 @@ module internal FunctionDefinitionParser =
                     | ParsedSentenceErrors errors -> parsedChoice
                     | _ -> parseSimpleSequentialInner file line (parsedChoice::output) (t |> List.skip (endIndex.Value + 1))
             | RawText text -> parseSimpleSequentialInner file line ((ParsedStringValue text)::output) t
-            | VariableName name -> parseSimpleSequentialInner file line ((ParsedVariable (h.TokenStartLocation, h.TokenEndLocation, name))::output) t
+            | VariableName name -> parseSimpleSequentialInner file line ((ParsedSimpleVariable (h.TokenStartLocation, h.TokenEndLocation, name))::output) t
             | _ -> ParsedSentenceErrors [|(makeParseError file line h.TokenStartLocation h.TokenEndLocation "Invalid token")|]
     and private parseSimpleChoiceInner file line (tokens:AttributedToken list) =
         // Find '|' tokens at curly count 0.
@@ -191,10 +191,15 @@ module internal FunctionDefinitionParser =
                         t2
                         |> List.scan
                             (fun (bracketCount, isCloseCurly) x ->
-                                match x.Tokens.[0].Token with
-                                | OpenCurly -> (bracketCount + 1, false)
-                                | CloseCurly -> (bracketCount - 1, true)
-                                | _ -> (bracketCount, false))
+                                // To determine if it's an open or close curly, you basically need to say that either the entire line is an open or close curly, or that the entire line is @seq { or @choice {.
+                                if x.Tokens.Length > 2 then (bracketCount, false)
+                                else if x.Tokens.Length = 1 then
+                                    if x.Tokens.[0].Token = OpenCurly then (bracketCount + 1, false)
+                                    else if x.Tokens.[0].Token = CloseCurly then (bracketCount - 1, true)
+                                    else (bracketCount, false)
+                                else if x.Tokens.[0].Token <> Choice && x.Tokens.[0].Token <> Sequential then (bracketCount, false)
+                                else if x.Tokens.[1].Token = OpenCurly then (bracketCount + 1, false)
+                                else (bracketCount, false))
                             (1, false)
                         |> List.skip 1
                         |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
@@ -220,10 +225,15 @@ module internal FunctionDefinitionParser =
                 remainingLines
                 |> List.scan
                     (fun (bracketCount, isCloseCurly) x ->
-                        match x.Tokens.[0].Token with
-                        | OpenCurly -> (bracketCount + 1, false)
-                        | CloseCurly -> (bracketCount - 1, true)
-                        | _ -> (bracketCount, false))
+                        // To determine if it's an open or close curly, you basically need to say that either the entire line is an open or close curly, or that the entire line is @seq { or @choice {.
+                        if x.Tokens.Length > 2 then (bracketCount, false)
+                        else if x.Tokens.Length = 1 then
+                            if x.Tokens.[0].Token = OpenCurly then (bracketCount + 1, false)
+                            else if x.Tokens.[0].Token = CloseCurly then (bracketCount - 1, true)
+                            else (bracketCount, false)
+                        else if x.Tokens.[0].Token <> Choice && x.Tokens.[0].Token <> Sequential then (bracketCount, false)
+                        else if x.Tokens.[1].Token = OpenCurly then (bracketCount + 1, false)
+                        else (bracketCount, false))
                     (1, false)
                 |> List.skip 1
                 |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)

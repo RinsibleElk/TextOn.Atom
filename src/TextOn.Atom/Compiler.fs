@@ -93,7 +93,7 @@ module Compiler =
     let rec private compileSentence file line (variableDefinitions:Map<ParsedVariableName, CompiledVariableDefinition>) sentence =
         match sentence with
         | ParsedStringValue(text) -> Result(SimpleText(text))
-        | ParsedSentenceNode.ParsedVariable(startLocation, endLocation, variableName) ->
+        | ParsedSimpleVariable(startLocation, endLocation, variableName) ->
             let variable = variableDefinitions |> Map.tryFind variableName
             match variable with
             | None -> Errors [|(makeParseError file line startLocation endLocation (sprintf "Undefined variable %s" variableName))|]
@@ -106,7 +106,7 @@ module Compiler =
                 choices
                 |> Array.choose (function | Errors e -> (Some e) | _ -> None)
                 |> Array.concat
-            if errors.Length = 0 then
+            if errors.Length <> 0 then
                 Errors errors
             else
                 Result (SimpleChoice (choices |> Array.map (function | Result r -> r | _ -> failwith "Internal error")))
