@@ -180,5 +180,4 @@ let text =
     |> Seq.map (fun t -> t.Value)
     |> Seq.fold (+) ""
 
-type A = | Abc | Def
-type B = { A : A list }
+

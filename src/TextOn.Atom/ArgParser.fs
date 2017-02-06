@@ -13,7 +13,7 @@ type ArgDescriptionAttribute(description:string) =
     member __.Description = description
 
 /// Base class for arg range.
-[<AbstractClass>]
+[<Sealed>]
 type ArgRangeAttribute(minValue:obj, maxValue:obj) =
     inherit Attribute()
     member __.MinValue = minValue
@@ -90,7 +90,7 @@ module ArgParser =
                                 let minValue = unbox<int>(r.MinValue)
                                 let maxValue = unbox<int>(r.MaxValue)
                                 if minValue > s || maxValue < s then
-                                    Some (sprintf "%s - alue %d is outside range [%d - %d]" n s minValue maxValue)
+                                    Some (sprintf "%s - value %d is outside range [%d - %d]" n s minValue maxValue)
                                 else
                                     None)
                         |> defaultArg <| None
@@ -190,6 +190,13 @@ module ArgParser =
         | RecordData of Type * ArgParserDataInfo[]
         | UnionData of (UnionCaseInfo * ArgParserDataInfo) option
         | InvalidData of string
+        with
+            member this.Errors =
+                match this with
+                | InvalidData e -> Some e
+                | RecordData(_, d) -> Some (String.Join("\n", d |> Array.map (fun a -> a.Errors) |> Array.filter Option.isSome |> Array.map Option.get))
+                | UnionData(o) -> o |> Option.map (fun (_,s) -> s.Errors) |> Option.bind id
+                | _ -> None
     let private makeName (s:string) =
         s.ToCharArray()
         |> Array.mapi (fun i c -> if c >= 'A' && c <= 'Z' then (if i = 0 then "" else "-") + (Char.ToLower(c).ToString()) else c.ToString())
@@ -396,7 +403,7 @@ module ArgParser =
         | InvalidData(s) -> failwith ""
 
     /// Parse command line arguments into a record.
-    let parse<'r>(args) =
+    let parse<'r> args =
         let info = getArgs (typeof<'r>)
         match info with
         | ArgInvalid ->
@@ -410,6 +417,7 @@ module ArgParser =
             else
                 let (args, data) = doParse info args
                 if (not (isFilledIn data)) then
+                    eprintfn "%s" (data.Errors |> Option.get)
                     eprintfn "%s" (info.ToString())
                     None
                 else if args |> Array.isEmpty |> not then
