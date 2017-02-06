@@ -10,6 +10,7 @@ let file =
     [
         @"D:\NodeJs\TextOn.Atom\examples\example.texton"
         @"/Users/Oliver/Projects/TextOn.Atom/TextOn.Atom/examples/example.texton"
+        @"/Users/jonaskiessling/Documents/TextOn.Atom/examples/example.texton"
     ]
     |> List.find File.Exists
     |> FileInfo
