@@ -7,6 +7,12 @@ type Interactive =
     {
         [<ArgDescription("The template file to compile for.")>]
         Template : string
+        [<ArgDescription("Which line ending characters to use.")>]
+        LineEnding : LineEnding option
+        [<ArgDescription("How many spaces between sentences.")>]
+        SentenceSpaces : int option
+        [<ArgDescription("How many lines between paragraphs.")>]
+        ParagraphLines : int option
     }
 type Mode =
     | Interactive of Interactive
@@ -83,9 +89,9 @@ module internal Main =
                 let generatorInput = {
                     RandomSeed = NoSeed
                     Config =
-                        {   NumSpacesBetweenSentences = 2
-                            NumBlankLinesBetweenParagraphs = 1
-                            LineEnding = CRLF }
+                        {   NumSpacesBetweenSentences = (interactive.SentenceSpaces |> defaultArg <| 2)
+                            NumBlankLinesBetweenParagraphs = (interactive.ParagraphLines |> defaultArg <| 1)
+                            LineEnding = (interactive.LineEnding |> defaultArg <| CRLF) }
                     Attributes  =
                         template.Attributes
                         |> List.ofArray

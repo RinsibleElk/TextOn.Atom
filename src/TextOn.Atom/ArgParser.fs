@@ -7,9 +7,18 @@ open FSharp.Quotations
 open FSharp.Quotations.Patterns
 
 /// Add a description to an argument.
+[<Sealed>]
 type ArgDescriptionAttribute(description:string) =
     inherit Attribute()
     member __.Description = description
+
+/// Base class for arg range.
+[<AbstractClass>]
+type ArgRangeAttribute(minValue:obj, maxValue:obj) =
+    inherit Attribute()
+    member __.MinValue = minValue
+    member __.MaxValue = maxValue
+    member __.PrintRange() = sprintf "[%A - %A]" minValue maxValue
 
 module internal ReflectionUtils =
     let rec invokeStatic e t p =
@@ -17,6 +26,14 @@ module internal ReflectionUtils =
         | Patterns.Lambda(_, e) -> invokeStatic e t p
         | Patterns.Call(_, mi, _) -> mi.GetGenericMethodDefinition().MakeGenericMethod(t).Invoke(null, p)
         | _ -> failwith "Dunno"
+    let private boxOption<'t> (t:obj option) =
+        box (t |> Option.map (unbox<'t>))
+    let private boxList<'t> (t:obj list) =
+        box (t |> List.map (unbox<'t>))
+    let boxListGen ty (t:obj list) =
+        invokeStatic <@ boxList @> [|ty|] [|t|]
+    let boxOptionGen ty (t:obj option) =
+        invokeStatic <@ boxOption @> [|ty|] [|t|]
 
 [<RequireQualifiedAccess>]
 module ArgParser =
@@ -25,7 +42,6 @@ module ArgParser =
         | PrimitiveInt
         | PrimitiveDouble
         | PrimitiveBool
-        | PrimitiveDateTime
         | PrimitiveUnion of Type
         with
             override this.ToString() =
@@ -34,17 +50,91 @@ module ArgParser =
                 | PrimitiveInt -> "Int"
                 | PrimitiveBool -> "Bool"
                 | PrimitiveDouble -> "Double"
-                | PrimitiveDateTime -> "DateTime"
                 | PrimitiveUnion(t) ->
                     t
                     |> FSharpType.GetUnionCases
                     |> Array.map (fun case -> case.Name)
                     |> fun a -> String.Join("/", a)
+            member this.ParseAndValidate(r:ArgRangeAttribute option, s) =
+                match this with
+                | PrimitiveString ->
+                    let errorMessage =
+                        r
+                        |> Option.map
+                            (fun r ->
+                                let minValue = unbox<string> r.MinValue
+                                let maxValue = unbox<string> r.MaxValue
+                                if minValue > s || maxValue < s then
+                                    Some (sprintf "Value %s is outside range [%s - %s]" s minValue maxValue)
+                                else
+                                    None)
+                        |> defaultArg <| None
+                    if errorMessage.IsSome then Choice2Of2 errorMessage.Value
+                    else Choice1Of2 (box s)
+                | PrimitiveInt ->
+                    let (ok, v) = Int32.TryParse(s)
+                    if (not ok) then
+                        Choice2Of2 (sprintf "'%s' is not a valid integer" s)
+                    else
+                        let s = v
+                        r
+                        |> Option.map
+                            (fun r ->
+                                let minValue = unbox<int>(r.MinValue)
+                                let maxValue = unbox<int>(r.MaxValue)
+                                if minValue > s || maxValue < s then
+                                    Some (sprintf "Value %d is outside range [%d - %d]" s minValue maxValue)
+                                else
+                                    None)
+                        |> defaultArg <| None
+                        |> function | None -> Choice1Of2 (box v) | Some e -> Choice2Of2 e
+                | PrimitiveBool ->
+                    let (ok, v) = Boolean.TryParse(s)
+                    if (not ok) then
+                        Choice2Of2 (sprintf "'%s' is not a valid bool" s)
+                    else
+                        let s = v
+                        r
+                        |> Option.map
+                            (fun r ->
+                                let minValue = unbox<bool>(r.MinValue)
+                                let maxValue = unbox<bool>(r.MaxValue)
+                                if minValue > s || maxValue < s then
+                                    Some (sprintf "Value %b is outside range [%b - %b]" s minValue maxValue)
+                                else
+                                    None)
+                        |> defaultArg <| None
+                        |> function | None -> Choice1Of2 (box v) | Some e -> Choice2Of2 e
+                | PrimitiveDouble ->
+                    let (ok, v) = Double.TryParse(s)
+                    if (not ok) then
+                        Choice2Of2 (sprintf "'%s' is not a valid double" s)
+                    else
+                        let s = v
+                        r
+                        |> Option.map
+                            (fun r ->
+                                let minValue = unbox<double>(r.MinValue)
+                                let maxValue = unbox<double>(r.MaxValue)
+                                if minValue > s || maxValue < s then
+                                    Some (sprintf "Value %f is outside range [%f - %f]" s minValue maxValue)
+                                else
+                                    None)
+                        |> defaultArg <| None
+                        |> function | None -> Choice1Of2 (box v) | Some e -> Choice2Of2 e
+                | PrimitiveUnion t ->
+                    t
+                    |> FSharpType.GetUnionCases
+                    |> Array.tryFind (fun case -> case.Name = s)
+                    |> Option.map
+                        (fun case ->
+                            Choice1Of2 (FSharpValue.MakeUnion(case, [||])))
+                    |> defaultArg <| Choice2Of2 (sprintf "'%s' is not a valid '%s'" s t.Name)
 
     type private ArgParserTypeInfo =
-        | ArgRequired of string * string * Primitive
-        | ArgOptional of string * string * Primitive
-        | ArgList of string * string * Primitive
+        | ArgRequired of string * string * ArgRangeAttribute option * Primitive
+        | ArgOptional of string * string * ArgRangeAttribute option * Primitive
+        | ArgList of string * string * ArgRangeAttribute option * Primitive
         | ArgOptionalBool of string * string
         | ArgRecord of Type * (string * ArgParserTypeInfo)[]
         | ArgUnion of Type * (string * ArgParserTypeInfo)[]
@@ -52,12 +142,15 @@ module ArgParser =
         with
             member private this.Print(i) =
                 match this with
-                | ArgRequired(arg, desc, ty) ->
-                    sprintf "%s%s <argument> (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) desc
-                | ArgOptional(arg, desc, ty) ->
-                    sprintf "%s[optional] %s <argument> (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) desc
-                | ArgList(arg, desc, ty) ->
-                    sprintf "%s[*] %s <argument> (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) desc
+                | ArgRequired(arg, desc, r, ty) ->
+                    let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
+                    sprintf "%s%s <argument> (%s%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) rangeString desc
+                | ArgOptional(arg, desc, r, ty) ->
+                    let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
+                    sprintf "%s[optional] %s <argument> (%s%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) rangeString desc
+                | ArgList(arg, desc, r, ty) ->
+                    let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
+                    sprintf "%s[*] %s <argument> (%s%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) rangeString desc
                 | ArgOptionalBool(arg, desc) ->
                     sprintf "%s[optional] %s (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (PrimitiveBool.ToString()) desc
                 | ArgRecord(ty, info) ->
@@ -84,12 +177,13 @@ module ArgParser =
             override this.ToString() = this.Print(0)
 
     type private ArgParserDataInfo =
-        | RequiredData of Primitive * string option
-        | OptionalData of Primitive * string option
+        | RequiredData of string * Primitive * string option
+        | OptionalData of string * Primitive * string option
         | ListData of Primitive * string list
         | OptionalBoolData of bool
         | RecordData of Type * ArgParserDataInfo[]
         | UnionData of (UnionCaseInfo * ArgParserDataInfo) option
+        | InvalidData of string
     let private makeName (s:string) =
         s.ToCharArray()
         |> Array.mapi (fun i c -> if c >= 'A' && c <= 'Z' then (if i = 0 then "" else "-") + (Char.ToLower(c).ToString()) else c.ToString())
@@ -102,6 +196,7 @@ module ArgParser =
             |> Array.tryFind (isFilledIn >> not)
             |> Option.isNone
         | UnionData (o) -> o.IsSome
+        | InvalidData(_) -> false
         | _ -> true
     let rec private getArgs (ty:Type) =
         if (FSharpType.IsUnion ty) then
@@ -129,23 +224,25 @@ module ArgParser =
                         |> Seq.tryFind (fun _ -> true)
                         |> Option.map (fun a -> (a :?> ArgDescriptionAttribute).Description)
                         |> defaultArg <| field.Name
+                    let range =
+                        field.GetCustomAttributes(typeof<ArgRangeAttribute>, false)
+                        |> Seq.tryFind (fun _ -> true)
+                        |> Option.map (fun a -> a :?> ArgRangeAttribute)
                     if ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<_ option> then
                         let genTy = ty.GetGenericArguments().[0]
                         if genTy = typeof<string> then
-                            (field.Name, ArgOptional((makeName field.Name), description, PrimitiveString))
+                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveString))
                         else if genTy = typeof<int> then
-                            (field.Name, ArgOptional((makeName field.Name), description, PrimitiveInt))
+                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveInt))
                         else if genTy = typeof<double> then
-                            (field.Name, ArgOptional((makeName field.Name), description, PrimitiveDouble))
-                        else if genTy = typeof<DateTime> then
-                            (field.Name, ArgOptional((makeName field.Name), description, PrimitiveDateTime))
+                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveDouble))
                         else if genTy = typeof<bool> then
                             (field.Name, ArgOptionalBool((makeName field.Name), description))
                         else if genTy |> FSharpType.IsUnion then
                             let cases = FSharpType.GetUnionCases genTy
                             let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
                             if isSimple then
-                                (field.Name, ArgOptional((makeName field.Name), description, PrimitiveUnion(genTy)))
+                                (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveUnion(genTy)))
                             else
                                 (field.Name, ArgInvalid)
                         else
@@ -153,20 +250,18 @@ module ArgParser =
                     else if ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<_ list> then
                         let genTy = ty.GetGenericArguments().[0]
                         if genTy = typeof<string> then
-                            (field.Name, ArgList((makeName field.Name), description, PrimitiveString))
+                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveString))
                         else if genTy = typeof<int> then
-                            (field.Name, ArgList((makeName field.Name), description, PrimitiveInt))
+                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveInt))
                         else if genTy = typeof<double> then
-                            (field.Name, ArgList((makeName field.Name), description, PrimitiveDouble))
-                        else if genTy = typeof<DateTime> then
-                            (field.Name, ArgList((makeName field.Name), description, PrimitiveDateTime))
+                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveDouble))
                         else if genTy = typeof<bool> then
-                            (field.Name, ArgList((makeName field.Name), description, PrimitiveBool))
+                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveBool))
                         else if genTy |> FSharpType.IsUnion then
                             let cases = FSharpType.GetUnionCases genTy
                             let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
                             if isSimple then
-                                (field.Name, ArgList((makeName field.Name), description, PrimitiveUnion(genTy)))
+                                (field.Name, ArgList((makeName field.Name), description, range, PrimitiveUnion(genTy)))
                             else
                                 (field.Name, ArgInvalid)
                         else
@@ -179,19 +274,17 @@ module ArgParser =
                         let cases = FSharpType.GetUnionCases ty
                         let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
                         if isSimple then
-                            (field.Name, ArgRequired((makeName field.Name), description, PrimitiveUnion(ty)))
+                            (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveUnion(ty)))
                         else
                             (field.Name, getArgs ty)
                     else if ty = typeof<string> then
-                        (field.Name, ArgRequired((makeName field.Name), description, PrimitiveString))
+                        (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveString))
                     else if ty = typeof<int> then
-                        (field.Name, ArgRequired((makeName field.Name), description, PrimitiveInt))
+                        (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveInt))
                     else if ty = typeof<double> then
-                        (field.Name, ArgRequired((makeName field.Name), description, PrimitiveDouble))
-                    else if ty = typeof<DateTime> then
-                        (field.Name, ArgRequired((makeName field.Name), description, PrimitiveDateTime))
+                        (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveDouble))
                     else if ty = typeof<bool> then
-                        (field.Name, ArgRequired((makeName field.Name), description, PrimitiveBool))
+                        (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveBool))
                     else
                         (field.Name, ArgInvalid))
             |> fun x ->
@@ -203,25 +296,25 @@ module ArgParser =
 
     let rec private doParse typeInfo (args:string[]) : (string[] * ArgParserDataInfo) =
         match typeInfo with
-        | ArgRequired(matchString, _, ty) ->
+        | ArgRequired(matchString, _, r, ty) ->
             let i = args |> Array.tryFindIndex (fun x -> x = matchString)
             if i |> Option.isNone then
                 (args, RequiredData(ty, None))
             else if i.Value = args.Length - 1 then
-                ((args |> Array.take (args.Length - 1)), RequiredData(ty, None))
+                ((args |> Array.take (args.Length - 1)), InvalidData (sprintf "Missing argument for %s" matchString))
             else
                 let v = args.[i.Value + 1]
                 ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), RequiredData(ty, Some v))
-        | ArgOptional(matchString, _, ty) ->
+        | ArgOptional(matchString, _, r, ty) ->
             let i = args |> Array.tryFindIndex (fun x -> x = matchString)
             if i |> Option.isNone then
                 (args, OptionalData(ty, None))
             else if i.Value = args.Length - 1 then
-                ((args |> Array.take (args.Length - 1)), RequiredData(ty, None)) // cheese alert
+                ((args |> Array.take (args.Length - 1)), InvalidData (sprintf "Missing argument for %s" matchString))
             else
                 let v = args.[i.Value + 1]
                 ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), OptionalData(ty, Some v))
-        | ArgList(matchString, _, ty) ->
+        | ArgList(matchString, _, r, ty) ->
             let mutable li = []
             let mutable anymore = true
             let mutable isvalid = true
@@ -272,58 +365,11 @@ module ArgParser =
                 (args, UnionData(None))
         | ArgInvalid -> failwith "Internal error"
 
-    let private buildSimple ty s =
-        match ty with
-        | PrimitiveString -> (box s)
-        | PrimitiveInt -> (box (Int32.Parse s))
-        | PrimitiveDouble -> (box (Double.Parse s))
-        | PrimitiveDateTime -> (box (DateTime.Parse s))
-        | PrimitiveBool -> (box (Boolean.Parse s))
-        | PrimitiveUnion ty ->
-            FSharpType.GetUnionCases(ty)
-            |> Array.tryFind (fun case -> case.Name = s)
-            |> Option.get
-            |> fun c -> FSharpValue.MakeUnion(c, [||])
-
-    let private boxUnionOption<'t> (t:obj option) =
-        box (t |> Option.map (unbox<'t>))
-
-    let private buildSimpleOptional ty s =
-        match ty with
-        | PrimitiveString -> (box (Some s))
-        | PrimitiveInt -> (box (Some (Int32.Parse s)))
-        | PrimitiveDateTime -> (box (Some (DateTime.Parse s)))
-        | PrimitiveDouble -> (box (Some (Double.Parse s)))
-        | PrimitiveBool -> (box (Some (Boolean.Parse s)))
-        | PrimitiveUnion ty ->
-            FSharpType.GetUnionCases(ty)
-            |> Array.tryFind (fun case -> case.Name = s)
-            |> Option.map (fun c -> FSharpValue.MakeUnion(c, [||]))
-            |> fun a -> ReflectionUtils.invokeStatic <@@ boxUnionOption @@> [|ty|] [|a|]
-
-    let private boxUnionList<'t> (t:obj list) =
-        box (t |> List.map (unbox<'t>))
-
-    let private buildSimpleList ty s =
-        match ty with
-        | PrimitiveString -> (box s)
-        | PrimitiveInt -> (box (s |> List.map Int32.Parse))
-        | PrimitiveDateTime -> (box (s |> List.map DateTime.Parse))
-        | PrimitiveDouble -> (box (s |> List.map Double.Parse))
-        | PrimitiveBool -> (box (s |> List.map Boolean.Parse))
-        | PrimitiveUnion ty ->
-            s
-            |> List.map
-                (fun x ->
-                    FSharpType.GetUnionCases(ty)
-                    |> Array.tryFind (fun case -> case.Name = x)
-                    |> Option.get
-                    |> fun c -> FSharpValue.MakeUnion(c, [||]))
-            |> fun a -> ReflectionUtils.invokeStatic <@@ boxUnionList @@> [|ty|] [|a|]
-
     let rec private buildType data =
         match data with
-        | RequiredData(ty, s) ->
+        | RequiredData(n, ty, s) ->
+            if s.IsNone then Choice2Of2 (sprintf "Missing value for %s" n)
+            else
             buildSimple ty s.Value
         | OptionalData(ty, s) ->
             if s.IsNone then box None
@@ -337,6 +383,7 @@ module ArgParser =
         | UnionData(o) ->
             let (case, data) = o.Value
             FSharpValue.MakeUnion(case, [|(buildType data)|])
+        | InvalidData(s) -> failwith ""
 
     /// Parse command line arguments into a record.
     let parse<'r>(args) =
