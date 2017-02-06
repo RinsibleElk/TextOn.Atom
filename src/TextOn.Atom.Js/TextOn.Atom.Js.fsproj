@@ -5,14 +5,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>7105faba-8e4c-4943-b1a7-35f55be69003</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>TextOn.Atom</RootNamespace>
-    <AssemblyName>TextOn.Atom</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <ProjectGuid>3ae802ac-48bb-4359-a625-6d88740ae577</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TextOn.Atom.Js</RootNamespace>
+    <AssemblyName>TextOn.Atom.Js</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
-    <Name>TextOn.Atom</Name>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Name>TextOn.Atom.Js</Name>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,9 +23,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\TextOn.Atom.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Debug\TextOn.Atom.Js.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,9 +32,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\TextOn.Atom.XML</DocumentationFile>
-    <Prefer32Bit>true</Prefer32Bit>
+    <DocumentationFile>bin\Release\TextOn.Atom.Js.XML</DocumentationFile>
   </PropertyGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '11.0'">
@@ -49,8 +46,37 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
-  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="DTO.fs" />
+    <Compile Include="Control.fs" />
+    <Compile Include="Logging.fs" />
+    <Compile Include="LanguageService.fs" />
+    <Compile Include="Errors.fs" />
+    <None Include="Script.fsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FunScript">
+      <HintPath>..\..\packages\FunScript\lib\net40\FunScript.dll</HintPath>
+    </Reference>
+    <Reference Include="FunScript.Interop">
+      <HintPath>..\..\packages\FunScript\lib\net40\FunScript.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="FunScript.TypeScript.Binding.atom">
+      <HintPath>..\..\paket-files\github.com\ionide\ionide-helpers\release\FunScript.TypeScript.Binding.atom.dll</HintPath>
+    </Reference>
+    <Reference Include="FunScript.TypeScript.Binding.jquery">
+      <HintPath>..\..\paket-files\github.com\ionide\ionide-helpers\release\FunScript.TypeScript.Binding.jquery.dll</HintPath>
+    </Reference>
+    <Reference Include="FunScript.TypeScript.Binding.lib">
+      <HintPath>..\..\paket-files\github.com\ionide\ionide-helpers\release\FunScript.TypeScript.Binding.lib.dll</HintPath>
+    </Reference>
+    <Reference Include="FunScript.TypeScript.Binding.node">
+      <HintPath>..\..\paket-files\github.com\ionide\ionide-helpers\release\FunScript.TypeScript.Binding.node.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionide.Helpers">
+      <HintPath>..\..\paket-files\github.com\ionide\ionide-helpers\release\Ionide.Helpers.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
@@ -59,32 +85,5 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="ArgParser.fs" />
-    <Compile Include="Preprocessor.fs" />
-    <Compile Include="CommentStripper.fs" />
-    <Compile Include="LineCategorizer.fs" />
-    <Compile Include="Tokens.fs" />
-    <Compile Include="FunctionLineTokenizer.fs" />
-    <Compile Include="VariableLineTokenizer.fs" />
-    <Compile Include="AttributeLineTokenizer.fs" />
-    <Compile Include="Tokenizer.fs" />
-    <Compile Include="ConditionParser.fs" />
-    <Compile Include="FunctionDefinitionParser.fs" />
-    <Compile Include="VariableDefinitionParser.fs" />
-    <Compile Include="AttributeDefinitionParser.fs" />
-    <Compile Include="Parser.fs" />
-    <Compile Include="ConditionEvaluator.fs" />
-    <Compile Include="VariableConditionEvaluator.fs" />
-    <Compile Include="CompiledAttributeDefinition.fs" />
-    <Compile Include="CompiledVariableDefinition.fs" />
-    <Compile Include="CompiledDefinitionNode.fs" />
-    <Compile Include="CompiledTemplate.fs" />
-    <Compile Include="Compiler.fs" />
-    <Compile Include="Generator.fs" />
-    <Compile Include="main.fs" />
-    <None Include="regex.fsx" />
-    <None Include="Agent.fsx" />
-  </ItemGroup>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
 </Project>

@@ -5,3 +5,4 @@ git https://github.com/ionide/ionide-helpers.git master build:"build.cmd"
 nuget FAKE
 nuget FantomasCLI
 nuget FunScript
+nuget Suave
