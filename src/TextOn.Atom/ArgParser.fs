@@ -12,7 +12,7 @@ type ArgDescriptionAttribute(description:string) =
     inherit Attribute()
     member __.Description = description
 
-/// Base class for arg range.
+/// Add an acceptable range to an argument.
 [<Sealed>]
 type ArgRangeAttribute(minValue:obj, maxValue:obj) =
     inherit Attribute()
@@ -56,10 +56,10 @@ module ArgParser =
             override this.ToString() =
                 match this with
                 | PrimitiveString -> "String"
-                | PrimitiveInt -> "Int"
+                | PrimitiveInt -> "Integer"
                 | PrimitiveBool -> "Bool"
-                | PrimitiveDouble -> "Double"
-                | PrimitiveFileInfo -> "FileInfo"
+                | PrimitiveDouble -> "Float"
+                | PrimitiveFileInfo -> "FileName"
                 | PrimitiveUnion(t) ->
                     t
                     |> FSharpType.GetUnionCases
@@ -353,7 +353,7 @@ module ArgParser =
                     match (ty.ParseAndValidate(matchString, r, v)) with
                     | Choice1Of2 o -> OptionalData(ty, (o |> Some |> ReflectionUtils.boxOptionGen ty.Type))
                     | Choice2Of2 e -> InvalidData e
-                ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), OptionalData(ty, Some v))
+                ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), data)
         | ArgList(matchString, _, r, ty) ->
             let mutable li = []
             let mutable anymore = true
@@ -424,26 +424,36 @@ module ArgParser =
         | InvalidData(s) -> failwith ""
 
     /// Parse command line arguments into a record.
-    let parse<'r> args =
+    let internal parseOrError<'r> args =
         let info = getArgs (typeof<'r>)
         match info with
         | ArgInvalid ->
-            failwith "Not a valid ArgParser type"
+            Choice2Of2 "Not a valid ArgParser type"
         | _ ->
             let help = args |> Array.tryFind (fun x -> x = "--help")
             if help.IsSome then
-                eprintfn "Usage:"
-                eprintfn "%s" (info.ToString())
-                None
+                Choice2Of2 (sprintf "Usage:\n%s" (info.ToString()))
             else
                 let (args, data) = doParse info args
                 if (not (isFilledIn data)) then
-                    eprintfn "%s" (data.Errors |> Option.get)
-                    eprintfn "%s" (info.ToString())
-                    None
+                    Choice2Of2 (sprintf "%s\n%s" (data.Errors |> Option.get) (info.ToString()))
                 else if args |> Array.isEmpty |> not then
-                    eprintfn "%s" (info.ToString())
-                    eprintfn "Extra args: %A" args
-                    None
+                    Choice2Of2 (sprintf "%s\nExtra args: %A" (info.ToString()) args)
                 else
-                    (Some (unbox<'r>(buildType data)))
+                    Choice1Of2 (unbox<'r>(buildType data))
+
+    /// Parse the arguments type, outputting errors to standard error.
+    let tryParse<'r> args =
+        match (parseOrError<'r> args) with
+        | Choice1Of2 o -> Some o
+        | Choice2Of2 s ->
+            eprintfn "%s" s
+            None
+
+    /// Parse the arguments type, outputting errors to standard error and throwing if there is an error.
+    let parse<'r> args =
+        match (parseOrError<'r> args) with
+        | Choice1Of2 o -> o
+        | Choice2Of2 s ->
+            eprintfn "%s" s
+            failwith "Invalid arguments"

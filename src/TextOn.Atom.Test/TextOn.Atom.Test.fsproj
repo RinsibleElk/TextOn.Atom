@@ -83,6 +83,7 @@
     <Error Condition="!Exists('..\..\packages\MSBuild.Extension.Pack.1.9.0\build\net40\MSBuild.Extension.Pack.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\MSBuild.Extension.Pack.1.9.0\build\net40\MSBuild.Extension.Pack.targets'))" />
   </Target>
   <ItemGroup>
+    <Compile Include="TestArgParser.fs" />
     <Compile Include="TestPreprocessor.fs" />
     <Compile Include="TestCommentStripper.fs" />
     <Compile Include="TestLineCategorizer.fs" />

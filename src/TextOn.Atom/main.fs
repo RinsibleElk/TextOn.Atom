@@ -108,8 +108,8 @@ module internal Main =
 
     [<EntryPoint>]
     let main argv =
-        let mode : Mode option = ArgParser.parse argv
-        if (mode |> Option.isNone) then 0
+        let mode : Mode option = ArgParser.tryParse argv
+        if mode.IsNone then 0
         else
             match mode.Value with
             | Interactive (interactive) -> runInteractive interactive
