@@ -244,8 +244,8 @@ module Compiler =
                 if mainFunction |> Option.isSome then
                     CompilationSuccess
                         {
-                            Attributes = attributeDefinitions |> Map.toArray |> Array.map snd
-                            Variables = variableDefinitions |> Map.toArray |> Array.map snd
+                            Attributes = attributeDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
+                            Variables = variableDefinitions |> Map.toArray |> Array.map snd|> Array.sortBy (fun v -> v.Index)
                             Definition = mainFunction.Value
                         }
                 else
@@ -295,8 +295,8 @@ module Compiler =
             compileInner v a f e t
 
     /// Compile the results of parsing into a tree, with inlined functions, variables and attributes.
-    let compile (elements:ParsedElement[]) : CompilationResult =
-        compileInner Map.empty Map.empty Map.empty [] (elements |> List.ofArray)
+    let compile (elements:ParsedElement list) : CompilationResult =
+        compileInner Map.empty Map.empty Map.empty [] elements
 
 
 

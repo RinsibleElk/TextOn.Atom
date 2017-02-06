@@ -23,7 +23,6 @@ module internal Main =
                 |> CommentStripper.stripComments
                 |> LineCategorizer.categorize
                 |> List.map (Tokenizer.tokenize >> Parser.parse)
-                |> List.toArray
                 |> Compiler.compile
             match compilationResult with
             | CompilationFailure errors ->

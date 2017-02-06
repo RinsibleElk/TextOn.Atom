@@ -24,9 +24,13 @@ module VariableConditionEvaluator =
         | VarEither(c1, c2) -> (c1 |> resolve attributeCache variableCache) || (c2 |> resolve attributeCache variableCache)
         | VarAreEqual(identity, value) ->
             match identity with
-            | Attribute attributeIdentity -> (attributeCache |> Map.find attributeIdentity) = value
-            | Variable variableIdentity -> (variableCache |> Map.find variableIdentity) = value
+            | Attribute attributeIdentity ->
+                (attributeCache |> Map.find attributeIdentity) = value
+            | Variable variableIdentity ->
+                (variableCache |> Map.find variableIdentity) = value
         | VarAreNotEqual(identity, value) ->
             match identity with
-            | Attribute attributeIdentity -> (attributeCache |> Map.find attributeIdentity) <> value
-            | Variable variableIdentity -> (variableCache |> Map.find variableIdentity) <> value
+            | Attribute attributeIdentity ->
+                (attributeCache |> Map.find attributeIdentity) <> value
+            | Variable variableIdentity ->
+                (variableCache |> Map.find variableIdentity) <> value

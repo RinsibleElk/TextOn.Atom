@@ -184,7 +184,6 @@ let ``End to end test``() =
         |> CommentStripper.stripComments
         |> LineCategorizer.categorize
         |> List.map (Tokenizer.tokenize >> Parser.parse)
-        |> List.toArray
         |> Compiler.compile
     test <@ compiled = CompilationSuccess expected @>
 
@@ -195,7 +194,6 @@ let compileLines (lines:string) =
     |> CommentStripper.stripComments
     |> LineCategorizer.categorize
     |> List.map (Tokenizer.tokenize >> Parser.parse)
-    |> List.toArray
     |> Compiler.compile
 
 [<Test>]
