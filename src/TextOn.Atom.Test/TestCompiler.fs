@@ -49,131 +49,173 @@ let funcText =
 let exampleFileName = "example.texton"
 
 let expected =
-    {
-        Attributes = [||]
-        Variables = [|{Name = "SomeVar";
-                Index = 0;
-                File = "example.texton";
-                StartLine = 1;
-                EndLine = 1;
-                PermitsFreeValue = true;
-                Text = "Hello world";
-                Values = [||];}|];
-         Definition =
+    {Attributes = [||];
+     Variables = [|{Name = "SomeVar";
+                    Index = 0;
+                    File = "example.texton";
+                    StartLine = 1;
+                    EndLine = 1;
+                    PermitsFreeValue = true;
+                    Text = "Hello world";
+                    Values = [||];}|];
+     Functions =
+      [|{Name = "main";
+         Index = 1;
+         File = "example.texton";
+         StartLine = 3;
+         EndLine = 34;
+         Tree =
           Seq
             [|(Choice
                  [|(Seq
                       [|(Sentence
-                           ("example.texton", 7,
+                           ("example.texton", 6,
                             SimpleText
                               "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
                          True);
                         (Sentence
-                           ("example.texton", 8,
+                           ("example.texton", 7,
                             SimpleSeq
                               [|SimpleText "Cras ante lorem, ";
                                 SimpleChoice
-                                  [|SimpleText "faucibus"; SimpleText "maximus"|];
-                                SimpleText " vel mauris eget, luctus suscipit elit."|]),
+                                  [|SimpleText "faucibus";
+                                    SimpleText "maximus"|];
+                                SimpleText
+                                  " vel mauris eget, luctus suscipit elit."|]),
                          True);
                         (Sentence
-                           ("example.texton", 9,
+                           ("example.texton", 8,
                             SimpleText
                               "Morbi lorem nibh, ultricies ac ligula gravida, pharetra posuere nibh."),
                          True);
                         (Sentence
-                           ("example.texton", 10,
+                           ("example.texton", 9,
                             SimpleText
                               "Curabitur eu mauris aliquam, mattis arcu vitae, semper lectus."),
                          True);
                         (Sentence
-                           ("example.texton", 11,
-                            SimpleText "Phasellus at elit ac sem dapibus dapibus."),
+                           ("example.texton", 10,
+                            SimpleText
+                              "Phasellus at elit ac sem dapibus dapibus."),
                          True);
                         (Sentence
-                           ("example.texton", 12,
+                           ("example.texton", 11,
                             SimpleSeq
-                              [|SimpleText "Morbi convallis varius "; VariableValue 0;
-                                SimpleText "."|]), True);
+                              [|SimpleText "Morbi convallis varius ";
+                                VariableValue 0; SimpleText "."|]), True);
                         (Sentence
-                           ("example.texton", 13,
+                           ("example.texton", 12,
                             SimpleText
                               "Curabitur scelerisque semper justo sit amet vehicula."),
                          True);
                         (Sentence
-                           ("example.texton", 14,
-                            SimpleText "Ut ut velit at ante viverra euismod."), True);
+                           ("example.texton", 13,
+                            SimpleText "Ut ut velit at ante viverra euismod."),
+                         True);
                         (Sentence
-                           ("example.texton", 15,
+                           ("example.texton", 14,
                             SimpleText
                               "Nullam et pharetra libero, sit amet consequat nunc."),
                          True);
                         (Sentence
-                           ("example.texton", 16, SimpleText "Fusce ac sagittis libero."),
-                         True);
+                           ("example.texton", 15,
+                            SimpleText "Fusce ac sagittis libero."), True);
                         (Sentence
-                           ("example.texton", 17,
+                           ("example.texton", 16,
                             SimpleSeq
                               [|SimpleText "Duis vel mi a ";
                                 SimpleChoice
-                                  [|SimpleText "liquet odio"; SimpleText "ante viverra"|];
+                                  [|SimpleText "liquet odio";
+                                    SimpleText "ante viverra"|];
                                 SimpleText " blandit tincidunt."|]), True);
                         (Sentence
-                           ("example.texton", 18,
+                           ("example.texton", 17,
                             SimpleSeq
                               [|SimpleText "Integer a mi "; VariableValue 0;
                                 SimpleText "."|]), True);
                         (Sentence
-                           ("example.texton", 19,
-                            SimpleText "Integer vitae ipsum non purus tincidunt semper."),
+                           ("example.texton", 18,
+                            SimpleText
+                              "Integer vitae ipsum non purus tincidunt semper."),
                          True)|], True);
                    (Seq
                       [|(Sentence
-                           ("example.texton", 22,
+                           ("example.texton", 21,
                             SimpleText
                               "Ut ornare pellentesque quam, consectetur congue augue ultricies nec."),
                          True);
                         (Sentence
-                           ("example.texton", 23,
+                           ("example.texton", 22,
                             SimpleSeq
-                              [|SimpleText "In gravida lacinia "; VariableValue 0;
-                                SimpleText "."|]), True);
+                              [|SimpleText "In gravida lacinia ";
+                                VariableValue 0; SimpleText "."|]), True);
                         (Sentence
-                           ("example.texton", 24,
-                            SimpleText "Vivamus scelerisque blandit pulvinar."), True);
-                        (Sentence
-                           ("example.texton", 25,
-                            SimpleText "Praesent ullamcorper et ipsum et scelerisque."),
+                           ("example.texton", 23,
+                            SimpleText "Vivamus scelerisque blandit pulvinar."),
                          True);
                         (Sentence
-                           ("example.texton", 26,
+                           ("example.texton", 24,
+                            SimpleText
+                              "Praesent ullamcorper et ipsum et scelerisque."),
+                         True);
+                        (Sentence
+                           ("example.texton", 25,
                             SimpleText
                               "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."),
                          True);
                         (Sentence
-                           ("example.texton", 27,
+                           ("example.texton", 26,
                             SimpleText
                               "Aliquam ac augue pharetra, placerat sem non, lobortis massa."),
                          True);
                         (Sentence
-                           ("example.texton", 28,
+                           ("example.texton", 27,
                             SimpleText
                               "Mauris eu mauris luctus, ullamcorper leo eget, scelerisque orci."),
                          True);
                         (Sentence
-                           ("example.texton", 29,
+                           ("example.texton", 28,
                             SimpleText
                               "Vivamus ipsum lacus, facilisis semper risus eu, placerat dapibus nulla."),
                          True);
                         (Sentence
-                           ("example.texton", 30,
+                           ("example.texton", 29,
                             SimpleText
                               "Sed finibus libero ipsum, sed vestibulum leo cursus sit amet."),
                          True);
                         (Sentence
-                           ("example.texton", 31,
-                            SimpleText "Aenean mollis condimentum nulla."), True)|],
-                    True)|], True)|];}
+                           ("example.texton", 30,
+                            SimpleText "Aenean mollis condimentum nulla."),
+                         True)|], True)|], True)|];}|];}
+
+let rec compareTemplates t e =
+    match (t,e) with
+    | (Sentence(ts,ti,tn), Sentence(es,ei,en)) ->
+        test <@ ts = es @>
+        test <@ ti = ti @>
+        test <@ tn = en @>
+    | (ParagraphBreak(ts,ti), ParagraphBreak(es,ei)) ->
+        test <@ ts = es @>
+        test <@ ti = ti @>
+    | (Choice(tn), Choice(en)) ->
+        if tn.Length <> en.Length then failwithf "Different lengths in choices %A <> %A" tn en
+        else
+            Array.zip tn en
+            |> Array.iter
+                (fun ((tn,tc),(en,ec)) ->
+                    test <@ tc = ec @>
+                    compareTemplates tn en)
+    | (Seq(tn), Seq(en)) ->
+        if tn.Length <> en.Length then failwithf "Different lengths in seqs %A <> %A" tn en
+        else
+            Array.zip tn en
+            |> Array.iter
+                (fun ((tn,tc),(en,ec)) ->
+                    test <@ tc = ec @>
+                    compareTemplates tn en)
+    | (Function(ti), Function(ei)) ->
+        test <@ ti = ei @>
+    | _ -> failwithf "Got different elements %A <> %A" t e
 
 [<Test>]
 let ``End to end test``() =
@@ -185,7 +227,25 @@ let ``End to end test``() =
         |> LineCategorizer.categorize
         |> List.map (Tokenizer.tokenize >> Parser.parse)
         |> Compiler.compile
-    test <@ compiled = CompilationSuccess expected @>
+    match compiled with
+    | CompilationFailure errors -> failwithf "Got errors during compilation %A" errors
+    | CompilationSuccess template ->
+        test <@ template.Attributes = expected.Attributes @>
+        test <@ template.Variables = expected.Variables @>
+        if template.Functions.Length <> expected.Functions.Length then
+            failwithf "Different lengths %d <> %d" template.Functions.Length expected.Functions.Length
+        else
+            Array.zip
+                template.Functions
+                expected.Functions
+            |> Array.iter
+                (fun (t,e) ->
+                    test <@ t.Name = e.Name @>
+                    test <@ t.EndLine = e.EndLine @>
+                    test <@ t.StartLine = e.StartLine @>
+                    test <@ t.Index = e.Index @>
+                    test <@ t.File = e.File @>
+                    compareTemplates t.Tree e.Tree)
 
 let compileLines (lines:string) =
     lines.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)

@@ -181,3 +181,50 @@ let text =
     |> Seq.fold (+) ""
 
 
+let funcText =
+    "@var @free $SomeVar = \"Hello world\"
+
+@func @main
+{
+  @choice {
+    @seq {
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      Cras ante lorem, {faucibus|maximus} vel mauris eget, luctus suscipit elit.
+      Morbi lorem nibh, ultricies ac ligula gravida, pharetra posuere nibh.
+      Curabitur eu mauris aliquam, mattis arcu vitae, semper lectus.
+      Phasellus at elit ac sem dapibus dapibus.
+      Morbi convallis varius $SomeVar.
+      Curabitur scelerisque semper justo sit amet vehicula.
+      Ut ut velit at ante viverra euismod.
+      Nullam et pharetra libero, sit amet consequat nunc.
+      Fusce ac sagittis libero.
+      Duis vel mi a {liquet odio|ante viverra} blandit tincidunt.
+      Integer a mi $SomeVar.
+      Integer vitae ipsum non purus tincidunt semper.
+    }
+    @seq {
+      Ut ornare pellentesque quam, consectetur congue augue ultricies nec.
+      In gravida lacinia $SomeVar.
+      Vivamus scelerisque blandit pulvinar.
+      Praesent ullamcorper et ipsum et scelerisque.
+      Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+      Aliquam ac augue pharetra, placerat sem non, lobortis massa.
+      Mauris eu mauris luctus, ullamcorper leo eget, scelerisque orci.
+      Vivamus ipsum lacus, facilisis semper risus eu, placerat dapibus nulla.
+      Sed finibus libero ipsum, sed vestibulum leo cursus sit amet.
+      Aenean mollis condimentum nulla.
+    }
+  }
+}"
+
+let exampleFileName = "example.texton"
+let funcLines = funcText.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray
+let compiled =
+    funcLines
+    |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName None
+    |> CommentStripper.stripComments
+    |> LineCategorizer.categorize
+    |> List.map (Tokenizer.tokenize >> Parser.parse)
+    |> Compiler.compile
+
+

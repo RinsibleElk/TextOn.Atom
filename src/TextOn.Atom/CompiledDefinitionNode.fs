@@ -11,3 +11,4 @@ type CompiledDefinitionNode =
     | ParagraphBreak of string * int
     | Choice of (CompiledDefinitionNode * Condition)[]
     | Seq of (CompiledDefinitionNode * Condition)[]
+    | Function of int

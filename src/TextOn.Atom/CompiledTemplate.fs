@@ -4,5 +4,5 @@ type CompiledTemplate =
     {
         Attributes : CompiledAttributeDefinition[]
         Variables : CompiledVariableDefinition[]
-        Definition : CompiledDefinitionNode
+        Functions : CompiledFunctionDefinition[]
     }

@@ -23,7 +23,17 @@ let exampleLineNumber = 1
 let makeNoVariablesTemplate node = {
     Attributes = [||]
     Variables = [||]
-    Definition = Seq [| (node, True) |] }
+    Functions =
+        [|
+            {
+                Name = "main"
+                Index = 1
+                File = exampleFileName
+                StartLine = exampleLineNumber
+                EndLine = exampleLineNumber
+                Tree = Seq [| (node, True) |]
+            }
+        |] }
 
 let expectSuccess result =
     match result with
@@ -148,7 +158,17 @@ let makeSingleAttributeTemplate node = {
             }
         |]
     Variables = [||]
-    Definition = Seq [| (node, True) |] }
+    Functions =
+        [|
+            {
+                Name = "main"
+                Index = 1
+                File = exampleFileName
+                StartLine = exampleLineNumber
+                EndLine = exampleLineNumber
+                Tree = Seq [| (node, True) |]
+            }
+        |] }
 
 let makeSingleAttributeInput gender = {
     RandomSeed = SpecificValue(42)
@@ -233,7 +253,17 @@ let makeSingleVariableTemplate node = {
                     |]
             }
         |]
-    Definition = Seq [| (node, True) |] }
+    Functions =
+        [|
+            {
+                Name = "main"
+                Index = 1
+                File = exampleFileName
+                StartLine = exampleLineNumber
+                EndLine = exampleLineNumber
+                Tree = Seq [| (node, True) |]
+            }
+        |] }
 
 let makeSingleVariableInput country = {
     RandomSeed = SpecificValue(42)

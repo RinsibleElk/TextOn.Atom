@@ -73,7 +73,7 @@ module Generator =
             |> Array.map (generateSentence variableValues random)
             |> Array.fold (+) ""
         | SimpleText(s) -> s
-    let rec private generateInner attributeValues variableValues (random:Random) (node:CompiledDefinitionNode) =
+    let rec private generateInner attributeValues variableValues functions (random:Random) (node:CompiledDefinitionNode) =
         match node with
         | Sentence(inputFile, inputLineNumber, s) ->
             Seq.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
@@ -87,14 +87,16 @@ module Generator =
                         else None)
             if options.Length = 0 then failwith "Internal error"
             let index = random.Next(options.Length)
-            generateInner attributeValues variableValues random options.[index]
+            generateInner attributeValues variableValues functions random options.[index]
         | Seq(s) ->
             s
             |> Array.filter (fun (node, condition) -> ConditionEvaluator.resolve attributeValues condition)
             |> Seq.collect
                 (fun (node, _) ->
                     let random = Random(random.Next())
-                    generateInner attributeValues variableValues random node)
+                    generateInner attributeValues variableValues functions random node)
+        | Function(index) ->
+            generateInner attributeValues variableValues functions random (functions |> Map.find index)
     let generate (input:GeneratorInput) (compiledTemplate:CompiledTemplate) : GeneratorResult =
         let randomSeed =
             match input.RandomSeed with
@@ -147,44 +149,48 @@ module Generator =
         | (Some e, _)
         | (_, Some e) -> GeneratorError e
         | _ ->
-            let output = generateInner attributeValues variableValues random compiledTemplate.Definition |> Seq.toList
-            let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
-            let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
-            let paraBreakText = [ 0 .. input.Config.NumBlankLinesBetweenParagraphs ] |> Seq.map (fun _ -> lineBreakText) |> Seq.fold (+) ""
-            let rec loop previousIsSentence remaining =
-                match remaining with
-                | [] -> Seq.empty
-                | h::t ->
-                    let (newPreviousIsSentence, output) =
-                        match h with
-                        | SentenceText(inputFile, inputLineNumber, text) ->
-                            let l =
-                                if previousIsSentence then
-                                    seq [
-                                        {   InputFile = null
-                                            InputLineNumber = Int32.MinValue
-                                            Value = sentenceBreakText }
-                                        {
-                                            InputFile = inputFile
-                                            InputLineNumber = inputLineNumber
-                                            Value = text }
-                                    ]
-                                else
+            let mainFunction = compiledTemplate.Functions |> Array.tryFind (fun f -> f.Name = "main")
+            if mainFunction.IsNone then GeneratorError "No main function defined - nothing to generate"
+            else
+                let definition = mainFunction.Value.Tree
+                let output = generateInner attributeValues variableValues (compiledTemplate.Functions |> Array.map (fun fn -> (fn.Index, fn.Tree)) |> Map.ofArray) random definition |> Seq.toList
+                let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
+                let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
+                let paraBreakText = [ 0 .. input.Config.NumBlankLinesBetweenParagraphs ] |> Seq.map (fun _ -> lineBreakText) |> Seq.fold (+) ""
+                let rec loop previousIsSentence remaining =
+                    match remaining with
+                    | [] -> Seq.empty
+                    | h::t ->
+                        let (newPreviousIsSentence, output) =
+                            match h with
+                            | SentenceText(inputFile, inputLineNumber, text) ->
+                                let l =
+                                    if previousIsSentence then
+                                        seq [
+                                            {   InputFile = null
+                                                InputLineNumber = Int32.MinValue
+                                                Value = sentenceBreakText }
+                                            {
+                                                InputFile = inputFile
+                                                InputLineNumber = inputLineNumber
+                                                Value = text }
+                                        ]
+                                    else
+                                        Seq.singleton
+                                            {
+                                                InputFile = inputFile
+                                                InputLineNumber = inputLineNumber
+                                                Value = text }
+                                (true, l)
+                            | ParaBreak(inputFile, inputLineNumber) ->
+                                (false,
                                     Seq.singleton
-                                        {
-                                            InputFile = inputFile
+                                        {   InputFile = inputFile
                                             InputLineNumber = inputLineNumber
-                                            Value = text }
-                            (true, l)
-                        | ParaBreak(inputFile, inputLineNumber) ->
-                            (false,
-                                Seq.singleton
-                                    {   InputFile = inputFile
-                                        InputLineNumber = inputLineNumber
-                                        Value = paraBreakText })
-                    seq {
-                        yield! output
-                        yield! loop newPreviousIsSentence t }
-            GeneratorSuccess
-                {   LastSeed    = randomSeed
-                    Text        = loop false output |> Seq.toArray }
+                                            Value = paraBreakText })
+                        seq {
+                            yield! output
+                            yield! loop newPreviousIsSentence t }
+                GeneratorSuccess
+                    {   LastSeed    = randomSeed
+                        Text        = loop false output |> Seq.toArray }

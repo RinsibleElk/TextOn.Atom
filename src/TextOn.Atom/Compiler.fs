@@ -130,10 +130,10 @@ module Compiler =
             | Errors e -> Errors e
             | Result compiledSentence -> Result (Sentence(file, lineNumber, compiledSentence))
         | ParsedFunctionInvocation(lineNumber, startLocation, endLocation, functionName) ->
-            let func = functionDefinitions |> Map.tryFind functionName
+            let func : CompiledFunctionDefinition option = functionDefinitions |> Map.tryFind functionName
             match func with
             | None -> Errors [|(makeParseError file lineNumber startLocation endLocation (sprintf "Undefined function: %s" functionName))|]
-            | Some f -> Result f
+            | Some f -> Result (Function f.Index)
         | ParsedSeq(nodes) ->
             let nodes =
                 nodes
@@ -240,16 +240,12 @@ module Compiler =
         | [] ->
             match errors with
             | [] ->
-                let mainFunction = functionDefinitions |> Map.tryFind "main"
-                if mainFunction |> Option.isSome then
-                    CompilationSuccess
-                        {
-                            Attributes = attributeDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
-                            Variables = variableDefinitions |> Map.toArray |> Array.map snd|> Array.sortBy (fun v -> v.Index)
-                            Definition = mainFunction.Value
-                        }
-                else
-                    CompilationFailure([|GeneralError "No main function specified"|])
+                CompilationSuccess
+                    {
+                        Attributes = attributeDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
+                        Variables = variableDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
+                        Functions = functionDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
+                    }
             | _ ->
                 CompilationFailure (errors |> List.toArray)
         | h::t ->
@@ -271,7 +267,15 @@ module Compiler =
                         else
                             match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
                             | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
-                            | Result r -> (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name r), errors)
+                            | Result r ->
+                                let fn = {
+                                    Name = f.Name
+                                    Index = f.Index
+                                    File = h.File
+                                    StartLine = f.StartLine
+                                    EndLine = f.EndLine
+                                    Tree = r }
+                                (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name fn), errors)
                 | ParsedAttribute a ->
                     // Traverse through replacing variable & attribute references and inlining function references.
                     if a.HasErrors || (errors |> List.isEmpty |> not) then
