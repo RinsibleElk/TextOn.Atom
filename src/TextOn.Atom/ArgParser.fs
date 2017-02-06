@@ -44,6 +44,13 @@ module ArgParser =
         | PrimitiveBool
         | PrimitiveUnion of Type
         with
+            member this.Type =
+                match this with
+                | PrimitiveString -> typeof<string>
+                | PrimitiveInt -> typeof<int>
+                | PrimitiveBool -> typeof<bool>
+                | PrimitiveDouble -> typeof<float>
+                | PrimitiveUnion ty -> ty
             override this.ToString() =
                 match this with
                 | PrimitiveString -> "String"
@@ -55,7 +62,7 @@ module ArgParser =
                     |> FSharpType.GetUnionCases
                     |> Array.map (fun case -> case.Name)
                     |> fun a -> String.Join("/", a)
-            member this.ParseAndValidate(r:ArgRangeAttribute option, s) =
+            member this.ParseAndValidate(n, r:ArgRangeAttribute option, s) =
                 match this with
                 | PrimitiveString ->
                     let errorMessage =
@@ -65,7 +72,7 @@ module ArgParser =
                                 let minValue = unbox<string> r.MinValue
                                 let maxValue = unbox<string> r.MaxValue
                                 if minValue > s || maxValue < s then
-                                    Some (sprintf "Value %s is outside range [%s - %s]" s minValue maxValue)
+                                    Some (sprintf "%s - value %s is outside range [%s - %s]" n s minValue maxValue)
                                 else
                                     None)
                         |> defaultArg <| None
@@ -74,7 +81,7 @@ module ArgParser =
                 | PrimitiveInt ->
                     let (ok, v) = Int32.TryParse(s)
                     if (not ok) then
-                        Choice2Of2 (sprintf "'%s' is not a valid integer" s)
+                        Choice2Of2 (sprintf "%s - '%s' is not a valid integer" n s)
                     else
                         let s = v
                         r
@@ -83,7 +90,7 @@ module ArgParser =
                                 let minValue = unbox<int>(r.MinValue)
                                 let maxValue = unbox<int>(r.MaxValue)
                                 if minValue > s || maxValue < s then
-                                    Some (sprintf "Value %d is outside range [%d - %d]" s minValue maxValue)
+                                    Some (sprintf "%s - alue %d is outside range [%d - %d]" n s minValue maxValue)
                                 else
                                     None)
                         |> defaultArg <| None
@@ -91,7 +98,7 @@ module ArgParser =
                 | PrimitiveBool ->
                     let (ok, v) = Boolean.TryParse(s)
                     if (not ok) then
-                        Choice2Of2 (sprintf "'%s' is not a valid bool" s)
+                        Choice2Of2 (sprintf "%s - '%s' is not a valid bool" n s)
                     else
                         let s = v
                         r
@@ -100,7 +107,7 @@ module ArgParser =
                                 let minValue = unbox<bool>(r.MinValue)
                                 let maxValue = unbox<bool>(r.MaxValue)
                                 if minValue > s || maxValue < s then
-                                    Some (sprintf "Value %b is outside range [%b - %b]" s minValue maxValue)
+                                    Some (sprintf "%s - value %b is outside range [%b - %b]" n s minValue maxValue)
                                 else
                                     None)
                         |> defaultArg <| None
@@ -108,7 +115,7 @@ module ArgParser =
                 | PrimitiveDouble ->
                     let (ok, v) = Double.TryParse(s)
                     if (not ok) then
-                        Choice2Of2 (sprintf "'%s' is not a valid double" s)
+                        Choice2Of2 (sprintf "%s - '%s' is not a valid double" n s)
                     else
                         let s = v
                         r
@@ -117,7 +124,7 @@ module ArgParser =
                                 let minValue = unbox<double>(r.MinValue)
                                 let maxValue = unbox<double>(r.MaxValue)
                                 if minValue > s || maxValue < s then
-                                    Some (sprintf "Value %f is outside range [%f - %f]" s minValue maxValue)
+                                    Some (sprintf "%s - value %f is outside range [%f - %f]" n s minValue maxValue)
                                 else
                                     None)
                         |> defaultArg <| None
@@ -129,7 +136,7 @@ module ArgParser =
                     |> Option.map
                         (fun case ->
                             Choice1Of2 (FSharpValue.MakeUnion(case, [||])))
-                    |> defaultArg <| Choice2Of2 (sprintf "'%s' is not a valid '%s'" s t.Name)
+                    |> defaultArg <| Choice2Of2 (sprintf "%s - '%s' is not a valid '%s'" n s t.Name)
 
     type private ArgParserTypeInfo =
         | ArgRequired of string * string * ArgRangeAttribute option * Primitive
@@ -177,10 +184,9 @@ module ArgParser =
             override this.ToString() = this.Print(0)
 
     type private ArgParserDataInfo =
-        | RequiredData of string * Primitive * string option
-        | OptionalData of string * Primitive * string option
-        | ListData of Primitive * string list
-        | OptionalBoolData of bool
+        | RequiredData of Primitive * obj
+        | OptionalData of Primitive * obj
+        | ListData of Primitive * obj
         | RecordData of Type * ArgParserDataInfo[]
         | UnionData of (UnionCaseInfo * ArgParserDataInfo) option
         | InvalidData of string
@@ -190,7 +196,6 @@ module ArgParser =
         |> fun a -> "--" + String.Join("", a)
     let rec private isFilledIn data =
         match data with
-        | RequiredData(_, o) -> o.IsSome
         | RecordData (_, r) ->
             r
             |> Array.tryFind (isFilledIn >> not)
@@ -299,47 +304,60 @@ module ArgParser =
         | ArgRequired(matchString, _, r, ty) ->
             let i = args |> Array.tryFindIndex (fun x -> x = matchString)
             if i |> Option.isNone then
-                (args, RequiredData(ty, None))
+                (args, InvalidData (sprintf "%s - Not supplied" matchString))
             else if i.Value = args.Length - 1 then
-                ((args |> Array.take (args.Length - 1)), InvalidData (sprintf "Missing argument for %s" matchString))
+                ((args |> Array.take (args.Length - 1)), InvalidData (sprintf "%s - Missing argument" matchString))
             else
                 let v = args.[i.Value + 1]
-                ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), RequiredData(ty, Some v))
+                let data =
+                    match (ty.ParseAndValidate(matchString, r, v)) with
+                    | Choice1Of2 o -> RequiredData(ty, o)
+                    | Choice2Of2 e -> InvalidData e
+                ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), data)
         | ArgOptional(matchString, _, r, ty) ->
             let i = args |> Array.tryFindIndex (fun x -> x = matchString)
             if i |> Option.isNone then
-                (args, OptionalData(ty, None))
+                (args, OptionalData(ty, box None))
             else if i.Value = args.Length - 1 then
-                ((args |> Array.take (args.Length - 1)), InvalidData (sprintf "Missing argument for %s" matchString))
+                ((args |> Array.take (args.Length - 1)), InvalidData (sprintf "%s - Missing argument" matchString))
             else
                 let v = args.[i.Value + 1]
+                let data =
+                    match (ty.ParseAndValidate(matchString, r, v)) with
+                    | Choice1Of2 o -> OptionalData(ty, (o |> Some |> ReflectionUtils.boxOptionGen ty.Type))
+                    | Choice2Of2 e -> InvalidData e
                 ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 2))), OptionalData(ty, Some v))
         | ArgList(matchString, _, r, ty) ->
             let mutable li = []
             let mutable anymore = true
-            let mutable isvalid = true
+            let mutable error = null
             let mutable newArgs = args
             while anymore do
                 let i = newArgs |> Array.tryFindIndex (fun x -> x = matchString)
                 if i |> Option.isNone then
                     anymore <- false
                 else if i.Value = newArgs.Length - 1 then
-                    isvalid <- false
+                    error <- sprintf "%s - Missing argument" matchString
                     anymore <- false
                 else
                     let v = newArgs.[i.Value + 1]
+                    match (ty.ParseAndValidate(matchString, r, v)) with
+                    | Choice1Of2 o ->
+                        li <- o::li
+                    | Choice2Of2 e ->
+                        error <- e
+                        anymore <- false
                     newArgs <- Array.append (newArgs |> Array.take i.Value) (newArgs |> Array.skip (i.Value + 2))
-                    li <- v::li
-            if isvalid then
-                (newArgs, ListData(ty, li |> List.rev))
+            if error |> isNull |> not then
+                (newArgs, InvalidData(error))
             else
-                (newArgs, RequiredData(ty, None)) // hack
+                (newArgs, ListData(ty, (li |> List.rev |> ReflectionUtils.boxListGen ty.Type)))
         | ArgOptionalBool(matchString, _) ->
             let i = args |> Array.tryFindIndex (fun x -> x = matchString)
             if i |> Option.isNone then
-                (args, OptionalBoolData(false))
+                (args, OptionalData(PrimitiveBool, box None))
             else
-                ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 1))), OptionalBoolData(true))
+                ((Array.append (args |> Array.take i.Value) (args |> Array.skip (i.Value + 1))), OptionalData(PrimitiveBool, (box (Some true))))
         | ArgRecord(ty, fields) ->
             let (args, data) =
                 fields
@@ -367,17 +385,9 @@ module ArgParser =
 
     let rec private buildType data =
         match data with
-        | RequiredData(n, ty, s) ->
-            if s.IsNone then Choice2Of2 (sprintf "Missing value for %s" n)
-            else
-            buildSimple ty s.Value
-        | OptionalData(ty, s) ->
-            if s.IsNone then box None
-            else buildSimpleOptional ty s.Value
-        | OptionalBoolData(v) ->
-            if v then (box (Some(true))) else box None
-        | ListData(ty, li) ->
-            li |> buildSimpleList ty
+        | ListData(_, s)
+        | RequiredData(_, s)
+        | OptionalData(_, s) -> s
         | RecordData(ty, data) ->
             FSharpValue.MakeRecord(ty, data |> Array.map buildType)
         | UnionData(o) ->

@@ -119,15 +119,8 @@ let source          = Agent.source()
 let preprocessor    = source |> Agent.map (time (fun (a,b,c) -> Preprocessor.preprocess Preprocessor.realFileResolver a b c))
 let stripper        = preprocessor |> Agent.map (time CommentStripper.stripComments)
 let categorizer     = stripper |> Agent.map (time LineCategorizer.categorize)
-let tokenizer       =
-    categorizer
-    |> Agent.map
-        (time
-            (fun s ->
-                s
-                |> List.map (Tokenizer.tokenize)
-                |> List.toArray))
-let parser          = tokenizer |> Agent.map (time (Array.map Parser.parse))
+let tokenizer       = categorizer |> Agent.map (time (List.map (Tokenizer.tokenize)))
+let parser          = tokenizer |> Agent.map (time (List.map Parser.parse))
 let compiler        = parser |> Agent.map (time Compiler.compile)
 
 // Example data.
@@ -135,6 +128,7 @@ let filename =
     [
         @"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton"
         @"/Users/Oliver/Projects/TextOn.Atom/TextOn.Atom/examples/original/sixt.texton"
+        @"/Users/jonaskiessling/Documents/TextOn.Atom/examples/original/sixt.texton"
     ]
     |> List.tryFind File.Exists
     |> Option.get
@@ -186,5 +180,5 @@ let text =
     |> Seq.map (fun t -> t.Value)
     |> Seq.fold (+) ""
 
-
-
+type A = | Abc | Def
+type B = { A : A list }
