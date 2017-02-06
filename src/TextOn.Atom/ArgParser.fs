@@ -42,6 +42,7 @@ module ArgParser =
         | PrimitiveInt
         | PrimitiveDouble
         | PrimitiveBool
+        | PrimitiveFileInfo
         | PrimitiveUnion of Type
         with
             member this.Type =
@@ -50,6 +51,7 @@ module ArgParser =
                 | PrimitiveInt -> typeof<int>
                 | PrimitiveBool -> typeof<bool>
                 | PrimitiveDouble -> typeof<float>
+                | PrimitiveFileInfo -> typeof<FileInfo>
                 | PrimitiveUnion ty -> ty
             override this.ToString() =
                 match this with
@@ -57,6 +59,7 @@ module ArgParser =
                 | PrimitiveInt -> "Int"
                 | PrimitiveBool -> "Bool"
                 | PrimitiveDouble -> "Double"
+                | PrimitiveFileInfo -> "FileInfo"
                 | PrimitiveUnion(t) ->
                     t
                     |> FSharpType.GetUnionCases
@@ -78,6 +81,18 @@ module ArgParser =
                         |> defaultArg <| None
                     if errorMessage.IsSome then Choice2Of2 errorMessage.Value
                     else Choice1Of2 (box s)
+                | PrimitiveFileInfo ->
+                    let fi = FileInfo s
+                    let errorMessage =
+                        if r.IsSome then
+                            Some (sprintf "%s - FileInfo does not support ArgRange" n)
+                        else
+                            if fi.Exists |> not then
+                                Some (sprintf "%s - file '%s' does not exist" n s)
+                            else
+                                None
+                    if errorMessage.IsSome then Choice2Of2 errorMessage.Value
+                    else Choice1Of2 (box fi)
                 | PrimitiveInt ->
                     let (ok, v) = Int32.TryParse(s)
                     if (not ok) then
@@ -195,7 +210,6 @@ module ArgParser =
                 match this with
                 | InvalidData e -> Some e
                 | RecordData(_, d) -> Some (String.Join("\n", d |> Array.map (fun a -> a.Errors) |> Array.filter Option.isSome |> Array.map Option.get))
-                | UnionData(o) -> o |> Option.map (fun (_,s) -> s.Errors) |> Option.bind id
                 | _ -> None
     let private makeName (s:string) =
         s.ToCharArray()
@@ -242,7 +256,9 @@ module ArgParser =
                         |> Option.map (fun a -> a :?> ArgRangeAttribute)
                     if ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<_ option> then
                         let genTy = ty.GetGenericArguments().[0]
-                        if genTy = typeof<string> then
+                        if genTy = typeof<FileInfo> then
+                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveFileInfo))
+                        else if genTy = typeof<string> then
                             (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveString))
                         else if genTy = typeof<int> then
                             (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveInt))
@@ -263,6 +279,8 @@ module ArgParser =
                         let genTy = ty.GetGenericArguments().[0]
                         if genTy = typeof<string> then
                             (field.Name, ArgList((makeName field.Name), description, range, PrimitiveString))
+                        else if genTy = typeof<FileInfo> then
+                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveFileInfo))
                         else if genTy = typeof<int> then
                             (field.Name, ArgList((makeName field.Name), description, range, PrimitiveInt))
                         else if genTy = typeof<double> then
@@ -291,6 +309,8 @@ module ArgParser =
                             (field.Name, getArgs ty)
                     else if ty = typeof<string> then
                         (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveString))
+                    else if ty = typeof<FileInfo> then
+                        (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveFileInfo))
                     else if ty = typeof<int> then
                         (field.Name, ArgRequired((makeName field.Name), description, range, PrimitiveInt))
                     else if ty = typeof<double> then
@@ -382,12 +402,13 @@ module ArgParser =
                     (fun (unionCaseInfo, (_, inner)) ->
                         let (newArgs, output) = doParse inner args
                         (unionCaseInfo, newArgs, output))
-                |> Array.tryFind (fun (_, _, a) -> isFilledIn a)
-            if data.IsSome then
-                let (unionCaseInfo, args, data) = data.Value
+            let validData = data |> Array.tryFind (fun (_, _, a) -> isFilledIn a)
+            if validData.IsSome then
+                let (unionCaseInfo, args, data) = validData.Value
                 (args, UnionData(Some (unionCaseInfo, data)))
             else
-                (args, UnionData(None))
+                
+                (args, InvalidData(String.Join("\n", data |> Array.map (fun (_, _, a) -> a.Errors) |> Array.filter Option.isSome |> Array.map Option.get)))
         | ArgInvalid -> failwith "Internal error"
 
     let rec private buildType data =
