@@ -63,7 +63,6 @@
     <Compile Include="Errors.fs" />
     <Compile Include="TextOnIDE.fs" />
     <Compile Include="main.fs" />
-    <None Include="Script.fsx" />
     <None Include="../../build.fsx">
       <Link>build.fsx</Link>
     </None>
