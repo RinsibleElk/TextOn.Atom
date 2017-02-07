@@ -19,7 +19,7 @@ type Interactive =
         PrintRandomSeed : bool option
         [<ArgDescription("Specify the random seed for testing.")>]
         UseRandomSeed : int option
-        [<ArgDescription("If specified, repeat with different inputs")>]
+        [<ArgDescription("If specified, repeat with different inputs.")>]
         Continuous : bool option
     }
 type Mode =
