@@ -235,7 +235,12 @@ module ArgParser =
                     else
                         let field = fields.[0]
                         let ty = field.PropertyType
-                        (caseInfo.Name, (getArgs ty)))
+                        let description =
+                            caseInfo.GetCustomAttributes(typeof<ArgDescriptionAttribute>)
+                            |> Array.tryFind (fun _ -> true)
+                            |> Option.map (fun a -> (a :?> ArgDescriptionAttribute).Description)
+                            |> defaultArg <| caseInfo.Name
+                        (description, (getArgs ty)))
             |> fun x ->
                 let isInvalid = x |> Array.map snd |> Array.tryFind (function | ArgInvalid -> true | _ -> false) |> Option.isSome
                 if isInvalid then ArgInvalid

@@ -17,7 +17,7 @@ type Interactive =
         ParagraphLines : int option
     }
 type Mode =
-    | Interactive of Interactive
+    | [<ArgDescription("Interactive mode (compile a full template and fill in values for generation)")>] Interactive of Interactive
 
 module internal Main =
     let private runInteractive interactive =
