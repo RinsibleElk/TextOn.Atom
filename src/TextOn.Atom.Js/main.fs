@@ -88,8 +88,7 @@ let translateModules fileName =
             yield "config:  {
                 UseLinter: {type: 'boolean', 'default': true},
                 DeveloperMode: {type: 'boolean', 'default': false},
-                MonoPath: {type: 'string', 'default': '/usr/bin'}
-            }}"
+                MonoPath: {type: 'string', 'default': '/usr/bin'}"
             yield "}"
 
             yield "};" ]
@@ -100,4 +99,4 @@ let translateModules fileName =
 // Entry point - do stuff!
 // --------------------------------------------------------------------------------------
 
-do translateModules "../release/lib/texton.js"
+do translateModules "../../release/lib/texton.js"
