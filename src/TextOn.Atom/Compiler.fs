@@ -3,9 +3,15 @@
 open System
 open System.Text.RegularExpressions
 
+type FullFileError =
+    {
+        File : string
+        ErrorText : string
+    }
+
 type CompilationError =
     | ParserError of ParseError
-    | GeneralError of string
+    | GeneralError of FullFileError
 
 type CompilationResult =
     | CompilationFailure of CompilationError[]

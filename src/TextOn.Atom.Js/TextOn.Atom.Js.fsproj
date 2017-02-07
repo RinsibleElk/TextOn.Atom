@@ -47,13 +47,17 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <None Include="atom-bindings.fsx" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="DTO.fs" />
     <Compile Include="Control.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="LanguageService.fs" />
     <Compile Include="Errors.fs" />
+    <Compile Include="TextOnIDE.fs" />
+    <Compile Include="main.fs" />
     <None Include="Script.fsx" />
+    <None Include="../../build.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FunScript">

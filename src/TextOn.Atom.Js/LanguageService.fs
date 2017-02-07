@@ -144,11 +144,11 @@ module LanguageService =
     let start () =
         try
             let pth = if Process.isWin () then
-                        @"\ionide-fsharp\bin\FsAutoComplete.Suave.exe"
+                        @"\texton\bin\TextOn.Atom.exe"
                       else
-                        @"/ionide-fsharp/bin/FsAutoComplete.Suave.exe"
+                        @"/texton/bin/TextOn.Atom.exe"
             let location = Globals.atom.packages.packageDirPaths.[0] + pth
-            let child = Process.spawn location (Process.fromPath "mono") port
+            let child = Process.spawn location (Process.fromPath "mono") ("--port " + port)
             service <- Some child
             child.stderr.on("data", unbox<Function>( fun n -> Globals.console.error (n.ToString()))) |> ignore
             ()

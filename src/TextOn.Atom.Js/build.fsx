@@ -20,7 +20,16 @@ open Fake.ZipHelper
         "src/TextOn.Atom.Js/DTO.fs"
         "src/TextOn.Atom.Js/Logging.fs"
         "src/TextOn.Atom.Js/LanguageService.fs"
+        "src/TextOn.Atom.Js/Parser.fs"
+        "src/TextOn.Atom.Js/CompletionHelpers.fs"
+        "src/TextOn.Atom.Js/UnicodeGlyphs.fs"
+        "src/TextOn.Atom.Js/Autocomplete.fs"
+        "src/TextOn.Atom.Js/Tooltips.fs"
+        "src/TextOn.Atom.Js/HighlightUse.fs"
+        "src/TextOn.Atom.Js/Toolbar.fs"
         "src/TextOn.Atom.Js/Errors.fs"
+        "src/TextOn.Atom.Js/FindDeclaration.fs"
+        "src/TextOn.Atom.Js/Format.fs"
         "src/TextOn.Atom.Js/TextOnIDE.fs"
         "src/TextOn.Atom.Js/main.fs"
 #endif
@@ -135,7 +144,7 @@ Target "RunGenerator" (fun () ->
 #if MONO
 #else
 Target "RunScript" (fun () ->
-    TextOn.Atom.Js.Generator.translateModules "../release/lib/fsharp.js"
+    Atom.FSharp.Generator.translateModules "../release/lib/fsharp.js"
 )
 #endif
 

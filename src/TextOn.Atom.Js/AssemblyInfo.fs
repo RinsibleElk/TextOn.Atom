@@ -8,11 +8,11 @@ open System.Runtime.InteropServices
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [<assembly: AssemblyTitle("TextOn.Atom.Js")>]
-[<assembly: AssemblyDescription("")>]
+[<assembly: AssemblyDescription("Atom plugin giving IDE services for the TextOn language")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("")>]
+[<assembly: AssemblyCompany("TextOn")>]
 [<assembly: AssemblyProduct("TextOn.Atom.Js")>]
-[<assembly: AssemblyCopyright("Copyright ©  2017")>]
+[<assembly: AssemblyCopyright("Copyright © TextOn 2017")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 

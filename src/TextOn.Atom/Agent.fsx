@@ -228,3 +228,8 @@ let compiled =
     |> Compiler.compile
 
 
+let genPort () =
+    let r = Random().NextDouble()
+    let r' = r * (8999. - 8100.) + 8100.
+    r'.ToString().Substring(0,4)
+genPort()

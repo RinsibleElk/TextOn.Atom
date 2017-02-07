@@ -10,9 +10,9 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyTitle("TextOn.Atom")>]
 [<assembly: AssemblyDescription("Application providing compiler services for TextOn.")>]
 [<assembly: AssemblyConfiguration("")>]
-[<assembly: AssemblyCompany("Oliver Samson")>]
+[<assembly: AssemblyCompany("TextOn")>]
 [<assembly: AssemblyProduct("TextOn.Atom")>]
-[<assembly: AssemblyCopyright("Copyright © Oliver Samson 2016")>]
+[<assembly: AssemblyCopyright("Copyright © TextOn 2017")>]
 [<assembly: AssemblyTrademark("")>]
 [<assembly: AssemblyCulture("")>]
 

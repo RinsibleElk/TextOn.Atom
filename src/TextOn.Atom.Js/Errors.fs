@@ -48,7 +48,7 @@ module ErrorLinterProvider =
         async {
             let! result = LanguageService.parseEditor editor
             let! result' = LanguageService.lint editor
-            let linter = Globals.atom.config.get("ionide-fsharp.UseLinter") |> unbox<bool>
+            let linter = Globals.atom.config.get("texton.UseLinter") |> unbox<bool>
             return
                 match result, result' with
                 | Some n, Some n' ->
@@ -60,7 +60,4 @@ module ErrorLinterProvider =
                 | None, None -> [||]
         } |> Async.StartAsPromise
 
-    let create () =
-        [|
-          { grammarScopes = [| "source.fsharp"; "source.fsharp.fsi"; "source.fsharp.fsx"; "source.fsharp.fsl"|]; scope = "file"; lint = lint; lintOnFly = true}
-        |]
+    let create () = [| { grammarScopes = [|"source.texton"|]; scope = "file"; lint = lint; lintOnFly = true} |]

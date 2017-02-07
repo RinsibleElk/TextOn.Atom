@@ -67,9 +67,9 @@ module Logger =
         subscriptions.Clear()
 
     let log category msg =
-        let debug = Globals.atom.config.get("ionide-fsharp.DeveloperMode") |> unbox<bool>
+        let debug = Globals.atom.config.get("texton.DeveloperMode") |> unbox<bool>
         if debug && active then emitLog category msg [||]
 
     let logf category format (o:obj[]) =
-        let debug = Globals.atom.config.get("ionide-fsharp.DeveloperMode") |> unbox<bool>
+        let debug = Globals.atom.config.get("texton.DeveloperMode") |> unbox<bool>
         if debug && active then emitLog category format o

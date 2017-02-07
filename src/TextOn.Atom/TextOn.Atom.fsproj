@@ -88,6 +88,10 @@
     <Compile Include="CompiledTemplate.fs" />
     <Compile Include="Compiler.fs" />
     <Compile Include="Generator.fs" />
+    <Compile Include="RunInteractive.fs" />
+    <Compile Include="SuaveUtils.fs" />
+    <Compile Include="CommandResponse.fs" />
+    <Compile Include="RunServer.fs" />
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />
     <None Include="Agent.fsx" />
