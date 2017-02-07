@@ -113,9 +113,10 @@ module internal Main =
                         if (interactive.PrintRandomSeed |> defaultArg <| false) then
                             output.LastSeed |> printfn "Random seed used was %d\n\n"
                         output.Text
-                    | _ -> failwith ""
-                |> Seq.map (fun t -> t.Value)
-                |> Seq.fold (+) ""
+                        |> Seq.map (fun t -> t.Value)
+                        |> Seq.fold (+) ""
+                    | GeneratorError error ->
+                        sprintf "Generator Error: %s" error
                 |> printfn "%s"
                 printfn ""
             0 // return an integer exit code

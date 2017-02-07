@@ -426,7 +426,7 @@ module ArgParser =
         | UnionData(o) ->
             let (case, data) = o.Value
             FSharpValue.MakeUnion(case, [|(buildType data)|])
-        | InvalidData(s) -> failwith ""
+        | InvalidData(s) -> failwith "Internal error"
 
     /// Parse command line arguments into a record.
     let internal parseOrError<'r> args =

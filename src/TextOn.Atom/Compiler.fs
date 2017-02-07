@@ -192,7 +192,7 @@ module Compiler =
             else
                 let values =
                     values
-                    |> Array.map (function | Result r -> r | _ -> failwith "")
+                    |> Array.map (function | Result r -> r | _ -> failwith "Internal error")
                 Result
                     {
                         Name = name
@@ -223,7 +223,7 @@ module Compiler =
             else
                 let values =
                     suggestedValues
-                    |> Array.map (function | Result r -> r | _ -> failwith "")
+                    |> Array.map (function | Result r -> r | _ -> failwith "Internal error")
                 Result
                     {
                         Name = name
