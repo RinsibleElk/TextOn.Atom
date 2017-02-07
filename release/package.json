@@ -3,7 +3,7 @@
     "main": "./lib/texton",
     "version": "0.0.0",
     "description": "Core plugin for TextOn development",
-    "repository": "https://github.com/Skrivmaskin/TextOn.Atom",
+    "repository": "https://github.com/RinsibleElk/TextOn.Atom",
     "license": "Appache 2.0",
     "engines": {
         "atom": ">=0.174.0 <2.0.0"
