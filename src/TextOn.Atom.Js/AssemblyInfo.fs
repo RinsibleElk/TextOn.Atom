@@ -8,7 +8,7 @@ open System.Runtime.InteropServices
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [<assembly: AssemblyTitle("TextOn.Atom.Js")>]
-[<assembly: AssemblyDescription("Atom plugin giving IDE services for the TextOn language")>]
+[<assembly: AssemblyDescription("FAKE build executable for deploying TextOn Atom plugin")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("TextOn")>]
 [<assembly: AssemblyProduct("TextOn.Atom.Js")>]
@@ -22,7 +22,7 @@ open System.Runtime.InteropServices
 [<assembly: ComVisible(false)>]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[<assembly: Guid("3ae802ac-48bb-4359-a625-6d88740ae577")>]
+[<assembly: Guid("e3d2d777-7666-4c41-9283-e078dd196a20")>]
 
 // Version information for an assembly consists of the following four values:
 // 

@@ -7,7 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom", "src\TextOn.A
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.Test", "src\TextOn.Atom.Test\TextOn.Atom.Test.fsproj", "{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.Js", "src\TextOn.Atom.Js\TextOn.Atom.Js.fsproj", "{3AE802AC-48BB-4359-A625-6D88740AE577}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.Js", "src\TextOn.Atom.Js\TextOn.Atom.Js.fsproj", "{E3D2D777-7666-4C41-9283-E078DD196A20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFD0CBF4-9709-4822-945C-D8B9F3313EF7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3AE802AC-48BB-4359-A625-6D88740AE577}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3AE802AC-48BB-4359-A625-6D88740AE577}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3AE802AC-48BB-4359-A625-6D88740AE577}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3AE802AC-48BB-4359-A625-6D88740AE577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3D2D777-7666-4C41-9283-E078DD196A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3D2D777-7666-4C41-9283-E078DD196A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3D2D777-7666-4C41-9283-E078DD196A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3D2D777-7666-4C41-9283-E078DD196A20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
