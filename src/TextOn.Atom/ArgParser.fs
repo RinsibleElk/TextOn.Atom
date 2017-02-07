@@ -197,15 +197,15 @@ module ArgParser =
                 match this with
                 | ArgRequired(arg, desc, r, ty) ->
                     let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
-                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (ty.ToString()) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" ++ (ty.ToString() >*> ConsoleColor.Green) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
                 | ArgOptional(arg, desc, r, ty) ->
                     let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
-                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[optional]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (ty.ToString()) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[optional]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" ++ (ty.ToString() >*> ConsoleColor.Green) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
                 | ArgList(arg, desc, r, ty) ->
                     let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
-                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[*]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (ty.ToString()) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[*]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" ++ (ty.ToString() >*> ConsoleColor.Green) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
                 | ArgOptionalBool(arg, desc) ->
-                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[optional]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (PrimitiveBool.ToString()) +>+ (") : " + desc + "\n")
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[optional]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" ++ (PrimitiveBool.ToString() >*> ConsoleColor.Green) +>+ (") : " + desc + "\n")
                 | ArgRecord(ty, info) ->
                     let a =
                         info
