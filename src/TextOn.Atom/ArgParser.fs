@@ -6,6 +6,37 @@ open FSharp.Reflection
 open FSharp.Quotations
 open FSharp.Quotations.Patterns
 
+type internal ColoredText =
+    | Plain of string
+    | Colored of ConsoleColor * string
+    | Cons of ColoredText list
+    with
+        override this.ToString() =
+            match this with
+            | Plain(s) -> s
+            | Colored(_, s) -> s
+            | Cons(li) -> String.Join("", li |> List.map (fun x -> x.ToString()))
+        member this.OutputToConsole() =
+            match this with
+            | Plain(s) -> printf "%s" s
+            | Colored(c, s) -> cprintf c "%s" s
+            | Cons(li) -> li |> List.iter (fun c -> c.OutputToConsole())
+
+[<AutoOpen>]
+module internal ColoredTextUtils =
+    let (++) (c1:ColoredText) (c2:ColoredText) =
+        match (c1, c2) with
+        | (Cons(l1),(Cons(l2))) -> Cons(l1@l2)
+        | (_,Cons(l2)) -> Cons(c1::l2)
+        | (Cons(l1),_) -> Cons(l1@[c2])
+        | _ -> Cons([c1;c2])
+    let (+<+) (s:string) (c:ColoredText) =
+        (Plain(s)) ++ c
+    let (+>+) (c:ColoredText) (s:string) =
+        c ++ (Plain(s))
+    let (>*>) (s:string) (c:ConsoleColor) =
+        Colored(c, s)
+
 /// Add a description to an argument.
 [<Sealed>]
 type ArgDescriptionAttribute(description:string) =
@@ -162,41 +193,43 @@ module ArgParser =
         | ArgUnion of Type * (string * ArgParserTypeInfo)[]
         | ArgInvalid
         with
-            member private this.Print(i) =
+            member internal this.Print(i) : ColoredText =
                 match this with
                 | ArgRequired(arg, desc, r, ty) ->
                     let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
-                    sprintf "%s%s <argument> (%s%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) rangeString desc
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (ty.ToString()) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
                 | ArgOptional(arg, desc, r, ty) ->
                     let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
-                    sprintf "%s[optional] %s <argument> (%s%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) rangeString desc
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[optional]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (ty.ToString()) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
                 | ArgList(arg, desc, r, ty) ->
                     let rangeString = r |> Option.map (fun r -> " " + r.PrintRange()) |> defaultArg <| ""
-                    sprintf "%s[*] %s <argument> (%s%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (ty.ToString()) rangeString desc
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[*]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (ty.ToString()) ++ (rangeString >*> ConsoleColor.Cyan) +>+ (") : " + desc + "\n")
                 | ArgOptionalBool(arg, desc) ->
-                    sprintf "%s[optional] %s (%s) : %s\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) arg (PrimitiveBool.ToString()) desc
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) + "[optional]" +<+ (arg >*> ConsoleColor.Yellow) +>+ " <argument> (" +>+ (PrimitiveBool.ToString()) +>+ (") : " + desc + "\n")
                 | ArgRecord(ty, info) ->
-                    let s = sprintf "%s{\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " ")))
                     let a =
                         info
-                        |> Array.fold
-                            (fun a (name, info) ->
-                                let infoLine = info.Print(i + 2)
-                                (a + infoLine))
-                            ""
-                    let e = sprintf "%s}\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " ")))
-                    s + a + e
+                        |> List.ofArray
+                        |> List.map (fun (_, info) -> info.Print(i + 2) +>+ "\n")
+                    seq {
+                        yield (Plain (sprintf "%s{\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " ")))))
+                        yield! a
+                        yield (Plain (sprintf "%s}\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))))) }
+                    |> List.ofSeq
+                    |> Cons
                 | ArgUnion(ty, info) ->
                     info
-                    |> Array.fold
-                        (fun a (name, info) ->
+                    |> List.ofArray
+                    |> List.map
+                        (fun (name, info) ->
                             let nameLine = sprintf "%s| %s:\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) name
-                            let infoLine = info.Print(i + 2)
-                            (a + nameLine + infoLine))
-                        ""
+                            nameLine +<+ (info.Print(i + 2) +>+ "\n"))
+                    |> Cons
                 | ArgInvalid ->
-                    sprintf "%sInvalid\n" (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " ")))
-            override this.ToString() = this.Print(0)
+                    (String.Join("", [1 .. i] |> List.toArray |> Array.map (fun _ -> " "))) +<+ ("Invalid\n" >*> ConsoleColor.Red)
+            override this.ToString() = this.Print(0).ToString()
+            member this.OutputToConsole() =
+                this.Print(0).OutputToConsole()
 
     type private ArgParserDataInfo =
         | RequiredData of Primitive * obj
@@ -433,17 +466,17 @@ module ArgParser =
         let info = getArgs (typeof<'r>)
         match info with
         | ArgInvalid ->
-            Choice2Of2 "Not a valid ArgParser type"
+            Choice2Of2 ("Not a valid ArgParser type" >*> ConsoleColor.Red)
         | _ ->
             let help = args |> Array.tryFind (fun x -> x = "--help")
             if help.IsSome then
-                Choice2Of2 (sprintf "Usage:\n%s" (info.ToString()))
+                Choice2Of2 ("Usage:\n" +<+ (info.Print(0)))
             else
                 let (args, data) = doParse info args
                 if (not (isFilledIn data)) then
-                    Choice2Of2 (sprintf "%s\n%s" (data.Errors |> Option.get) (info.ToString()))
+                    Choice2Of2 (((sprintf "%s\n" (data.Errors |> Option.get)) >*> ConsoleColor.Red) ++ (info.Print(0)))
                 else if args |> Array.isEmpty |> not then
-                    Choice2Of2 (sprintf "%s\nExtra args: %A" (info.ToString()) args)
+                    Choice2Of2 (((sprintf "Extra args: %A\n" args) >*> ConsoleColor.Blue) ++ (info.Print(0)))
                 else
                     Choice1Of2 (unbox<'r>(buildType data))
 
@@ -452,7 +485,7 @@ module ArgParser =
         match (parseOrError<'r> args) with
         | Choice1Of2 o -> Some o
         | Choice2Of2 s ->
-            eprintfn "%s" s
+            s.OutputToConsole()
             None
 
     /// Parse the arguments type, outputting errors to standard error and throwing if there is an error.
@@ -460,5 +493,5 @@ module ArgParser =
         match (parseOrError<'r> args) with
         | Choice1Of2 o -> o
         | Choice2Of2 s ->
-            eprintfn "%s" s
+            s.OutputToConsole()
             failwith "Invalid arguments"

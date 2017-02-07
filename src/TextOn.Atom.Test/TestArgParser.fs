@@ -27,10 +27,15 @@ type F = { V : E }
 type G = { W : E option }
 type H = { Y : E list }
 
+let mapC2 f c =
+    match c with
+    | Choice1Of2 a -> Choice1Of2 a
+    | Choice2Of2 b -> Choice2Of2 (f b)
+
 let runTest<'a when 'a : equality> args expected =
-    let result = ArgParser.parseOrError<'a> args
+    let result = ArgParser.parseOrError<'a> args |> mapC2 (fun x -> x.ToString())
     match (result, expected) with
-    | (Choice2Of2 e1, Choice2Of2 (e2:string)) -> test <@ e1.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries) = e2.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries) @>
+    | (Choice2Of2 e1, Choice2Of2 (e2:string)) -> test <@ e1.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries) = e2.Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries) @>
     | (Choice1Of2 a1, Choice1Of2 a2) -> test <@ a1 = a2 @>
     | _ -> failwithf "Didn't match %A <> %A" result expected
 
