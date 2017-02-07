@@ -57,7 +57,6 @@
     <Compile Include="TextOnIDE.fs" />
     <Compile Include="main.fs" />
     <None Include="Script.fsx" />
-    <None Include="../../build.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FunScript">
