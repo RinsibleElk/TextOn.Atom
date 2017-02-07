@@ -5,7 +5,7 @@ open System.IO
 
 type Interactive =
     {
-        [<ArgDescription("The template file to compile for.")>]
+        [<ArgDescription("The template file to compile.")>]
         Template : FileInfo
         [<ArgDescription("Which line ending characters to use.")>]
         LineEnding : LineEnding option
