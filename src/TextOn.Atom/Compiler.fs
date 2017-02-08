@@ -260,7 +260,7 @@ module Compiler =
                 | ParserErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                 | ParsedFunction f ->
                     // Traverse through replacing variable & attribute references and inlining function references.
-                    if f.HasErrors || (errors |> List.isEmpty |> not) then
+                    if f.HasErrors then
                         match f.Tree with
                         | ParseErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)

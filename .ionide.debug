@@ -468,3 +468,57 @@
   Got 'info': [object Object]
 [21:43:41] SERVICE
   Received info event '{"Kind":"info","Data":"No symbol information found"}': [object Object]
+[22:17:17] SERVICE
+  Sending request: [object Object]
+[22:17:18] SERVICE
+  Sending request: [object Object]
+[22:17:18] SERVICE
+  Got 'project': [object Object]
+[22:17:21] SERVICE
+  Got 'errors': [object Object]
+[22:17:21] SERVICE
+  Sending request: [object Object]
+[22:17:21] SERVICE
+  Got 'lint': [object Object]
+[22:17:22] SERVICE
+  Sending request: [object Object]
+[22:17:22] SERVICE
+  Got 'info': [object Object]
+[22:17:22] SERVICE
+  Received info event '{"Kind":"info","Data":"No tooltip information"}': [object Object]
+[22:17:38] SERVICE
+  Sending request: [object Object]
+[22:17:38] SERVICE
+  Received info event '{"Kind":"info","Data":"Cannot find ident for tooltip"}': [object Object]
+[22:17:38] SERVICE
+  Got 'info': [object Object]
+[22:17:39] SERVICE
+  Sending request: [object Object]
+[22:17:39] SERVICE
+  Got 'info': [object Object]
+[22:17:39] SERVICE
+  Received info event '{"Kind":"info","Data":"No tooltip information"}': [object Object]
+[22:17:44] SERVICE
+  Sending request: [object Object]
+[22:17:44] SERVICE
+  Sending request: [object Object]
+[22:17:44] SERVICE
+  Received info event '{"Kind":"info","Data":"No tooltip information"}': [object Object]
+[22:17:44] SERVICE
+  Got 'info': [object Object]
+[22:17:44] SERVICE
+  Got 'info': [object Object]
+[22:17:44] SERVICE
+  Received info event '{"Kind":"info","Data":"No symbol information found"}': [object Object]
+[22:17:47] SERVICE
+  Sending request: [object Object]
+[22:17:47] SERVICE
+  Sending request: [object Object]
+[22:17:47] SERVICE
+  Got 'info': [object Object]
+[22:17:47] SERVICE
+  Got 'info': [object Object]
+[22:17:47] SERVICE
+  Received info event '{"Kind":"info","Data":"No ident at this location"}': [object Object]
+[22:17:47] SERVICE
+  Received info event '{"Kind":"info","Data":"Cannot find ident for tooltip"}': [object Object]
