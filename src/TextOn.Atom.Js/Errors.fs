@@ -28,7 +28,7 @@ module ErrorLinterProvider =
 
     let mapError (editor : IEditor) (item : DTO.Error)  =
         let range = [|[|float (item.StartLine - 1); float (item.StartColumn - 1)|];
-                      [|float (item.EndLine - 1);  float (item.EndColumn - 1)|]|]
+                      [|float (item.EndLine - 1);  float (item.EndColumn)|]|]
         let error =
             {   ``type`` = item.Severity
                 text = item.Message.Replace("\n", "")
@@ -40,7 +40,7 @@ module ErrorLinterProvider =
 
     let mapLint (editor : IEditor)  (item : DTO.LintWarning) =
         let range = [|[|float (item.StartLine - 1); float (item.StartColumn - 1)|];
-                        [|float (item.EndLine - 1);  float (item.EndColumn - 1)|]|]
+                        [|float (item.EndLine - 1);  float (item.EndColumn)|]|]
         { ``type`` = "Trace"
           text = item.Info.Replace("\n", "")
           filePath = editor.buffer.file.path

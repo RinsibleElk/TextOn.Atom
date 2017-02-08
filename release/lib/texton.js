@@ -246,8 +246,8 @@ AsyncBuilder__Delay$Object___Object___ = (function(x,f)
 {
     return Async__protectedCont$Object___Object___((function(k)
     {
-      var _2413;
-      var patternInput = f(_2413);
+      var _2409;
+      var patternInput = f(_2409);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -266,8 +266,8 @@ AsyncBuilder__Delay$Unit_Unit_ = (function(x,f)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _2577;
-      var patternInput = f(_2577);
+      var _2573;
+      var patternInput = f(_2573);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -312,8 +312,8 @@ AsyncBuilder__Zero$ = (function(x,unitVar1)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _2439;
-      return Async__invokeCont$Unit_Unit_(k, _2439);
+      var _2435;
+      return Async__invokeCont$Unit_Unit_(k, _2435);
     }));
 });
 AsyncBuilder___ctor$ = (function(unitVar0)
@@ -381,17 +381,17 @@ Async_1_Object____ContObject___ = (function(Item)
 });
 Async_1_StartImmediate$ = (function(workflow,cancellationToken)
 {
-    var _2585;
+    var _2581;
     if ((cancellationToken.Tag == 1.000000)) 
     {
       var v = Option__GetValue$CancellationToken_CancellationToken_(cancellationToken);
-      _2585 = v;
+      _2581 = v;
     }
     else
     {
-      _2585 = (new CancellationToken___ctor$({Tag: 0.000000}));
+      _2581 = (new CancellationToken___ctor$({Tag: 0.000000}));
     };
-    var token = _2585;
+    var token = _2581;
     var f = workflow.Item;
     var aux = (new AsyncParamsAux___ctor$({contents: 0}, (function(value)
     {
@@ -760,19 +760,19 @@ ErrorLinterProvider__lint$ = (function(editor)
             {
               return ErrorLinterProvider__mapError$(editor, item);
             }), __n.Data);
-            var _2088;
+            var _2084;
             if (linter) 
             {
-              _2088 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
+              _2084 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
               {
                 return ErrorLinterProvider__mapLint$(editor, item);
               }), n_.Data);
             }
             else
             {
-              _2088 = [];
+              _2084 = [];
             };
-            var r_ = _2088;
+            var r_ = _2084;
             _1900 = Array__Concat$Object_Object_(Seq__OfList$Object___Object___(List__CreateCons$Object___Object___(r, List__CreateCons$Object___Object___(r_, List__Empty$Object___Object___()))));
           };
         };
@@ -782,14 +782,14 @@ ErrorLinterProvider__lint$ = (function(editor)
 });
 ErrorLinterProvider__mapError$ = (function(editor,item)
 {
-    var range = [[(item.StartLine - 1), (item.StartColumn - 1)], [(item.EndLine - 1), (item.EndColumn - 1)]];
+    var range = [[(item.StartLine - 1), (item.StartColumn - 1)], [(item.EndLine - 1), item.EndColumn]];
     var error = (new LintResult___ctor$(item.Severity, String__Replace$(item.Message, "\n", ""), (((editor.buffer).file).path), range));
     Logger__logf$("Service", "Got error %A", [error]);
     return error;
 });
 ErrorLinterProvider__mapLint$ = (function(editor,item)
 {
-    var range = [[(item.StartLine - 1), (item.StartColumn - 1)], [(item.EndLine - 1), (item.EndColumn - 1)]];
+    var range = [[(item.StartLine - 1), (item.StartColumn - 1)], [(item.EndLine - 1), item.EndColumn]];
     return (new LintResult___ctor$("Trace", String__Replace$(item.Info, "\n", ""), (((editor.buffer).file).path), range));
 });
 LanguageService__genPort$ = (function(unitVar0)
@@ -1628,8 +1628,8 @@ Seq__FromFactory$Object___Object___ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _2201;
-        return __.factory(_2201);
+        var _2197;
+        return __.factory(_2197);
       })(impl, unitVar1);
     })};
 });
@@ -1659,7 +1659,7 @@ Seq__Iterate$Disposable_Disposable_ = (function(f,xs)
 });
 Seq__IterateIndexed$Object___Object___ = (function(f,xs)
 {
-    var _2221;
+    var _2217;
     return Seq__FoldIndexed$Object____Unit_Object____Unit_((function(i)
     {
       return (function(unitVar1)
@@ -1669,7 +1669,7 @@ Seq__IterateIndexed$Object___Object___ = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _2221, xs);
+    }), _2217, xs);
 });
 Seq__IterateIndexed$String___String___ = (function(f,xs)
 {
@@ -1800,8 +1800,8 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
           });
           return (Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___(__.acc) && (function()
           {
-            var _2179;
-            return next(_2179);
+            var _2175;
+            return next(_2175);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)

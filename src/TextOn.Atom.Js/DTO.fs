@@ -75,13 +75,6 @@ module DTO =
         MSBuild : string
     }
 
-    type Range = {
-        StartColumn: int
-        StartLine: int
-        EndColumn: int
-        EndLine: int
-    }
-
     type LintWarning =
         {
             /// Warning to display to the user.
