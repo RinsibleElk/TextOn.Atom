@@ -53,14 +53,20 @@ module Parser =
                         |> List.choose
                             (fun t ->
                                 match t.Token with
-                                | InvalidPreprocessorError(s)
-                                | InvalidUnrecognised(s) ->
+                                | InvalidPreprocessorError(s) ->
                                     Some
                                         {   File = tokenSet.File
                                             LineNumber = l.LineNumber
                                             StartLocation = t.TokenStartLocation
                                             EndLocation = t.TokenEndLocation
                                             ErrorText = s }
+                                | InvalidUnrecognised(s) ->
+                                    Some
+                                        {   File = tokenSet.File
+                                            LineNumber = l.LineNumber
+                                            StartLocation = t.TokenStartLocation
+                                            EndLocation = t.TokenEndLocation
+                                            ErrorText = "Unrecognised raw text outside of function: " + s }
                                 | _ -> None)
                         |> List.toArray)
             {   File = tokenSet.File
