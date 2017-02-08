@@ -284,7 +284,7 @@ module Compiler =
                                 (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name fn), errors)
                 | ParsedAttribute a ->
                     // Traverse through replacing variable & attribute references and inlining function references.
-                    if a.HasErrors || (errors |> List.isEmpty |> not) then
+                    if a.HasErrors then
                         match a.Result with
                         | ParsedAttributeErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
@@ -294,7 +294,7 @@ module Compiler =
                         | Result r -> (variableDefinitions, (attributeDefinitions |> Map.add a.Name r), functionDefinitions, errors)
                 | ParsedVariable v ->
                     // Traverse through replacing variable & attribute references and inlining function references.
-                    if v.HasErrors || (errors |> List.isEmpty |> not) then
+                    if v.HasErrors then
                         match v.Result with
                         | ParsedVariableErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
