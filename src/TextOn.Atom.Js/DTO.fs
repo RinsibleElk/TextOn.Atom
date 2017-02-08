@@ -26,6 +26,7 @@ module DTO =
         EndColumn : int
         /// Description of the error
         Message : string
+        /// The severity - "Error" or "Warning".
         Severity : string
         /// Type of the Error
         Subcategory : string

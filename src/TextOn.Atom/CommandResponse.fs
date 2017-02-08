@@ -2,9 +2,6 @@
 
 open System
 
-type TextOnErrorSeverity =
-    | Warning
-    | Error
 type TextOnErrorInfo =
     {
         FileName: string
@@ -12,7 +9,7 @@ type TextOnErrorInfo =
         EndLine:int
         StartColumn:int
         EndColumn:int
-        Severity:TextOnErrorSeverity
+        Severity:string
         Message:string
         Subcategory:string
     }
@@ -26,7 +23,7 @@ type TextOnErrorInfo =
                     EndLine = e.LineNumber
                     StartColumn = e.StartLocation
                     EndColumn = e.EndLocation
-                    Severity = TextOnErrorSeverity.Error
+                    Severity = "Error"
                     Message = e.ErrorText
                     Subcategory = "Parser"
                 }
@@ -37,7 +34,7 @@ type TextOnErrorInfo =
                     EndLine = 1
                     StartColumn = 1
                     EndColumn = 1
-                    Severity = TextOnErrorSeverity.Error
+                    Severity = "Error"
                     Message = e.ErrorText
                     Subcategory = "General"
                 }

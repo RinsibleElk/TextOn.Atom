@@ -15,14 +15,14 @@ type Commands (serialize : Serializer) =
     let tokenize groups = async { return Tokenizer.tokenize groups }
     let parse tokens = async { return Parser.parse tokens }
     let compile source = async { return Compiler.compile source }
-    let doCompile file lines =
+    let doCompile (file:FileInfo) lines =
         async {
-            let! lines = preprocess file lines
-            let! lines' = stripComments lines
-            let! groups = categorize lines'
-            let! tokens = groups |> List.map tokenize |> Async.Parallel
-            let! source = tokens |> Array.map parse |> Async.Parallel
-            let! output = compile (source |> List.ofArray)
+            let lines = Preprocessor.preprocess Preprocessor.realFileResolver file.FullName (Some file.Directory.FullName) lines
+            let lines' = CommentStripper.stripComments lines
+            let groups = LineCategorizer.categorize lines'
+            let tokens = groups |> List.map Tokenizer.tokenize
+            let source = tokens |> List.map Parser.parse
+            let output = Compiler.compile source
             return Success output }
     let parse' file lines =
         async {
@@ -45,17 +45,5 @@ type Commands (serialize : Serializer) =
             return! parse' (FileInfo file) lines }
 
     member __.Lint (file: SourceFilePath) = async {
-//        fprintf someTextWriter @"Asked to lint %s" file
-        let file = Path.GetFullPath file
-        let file = file |> FileInfo
-        let! result = doCompile file (file.FullName |> File.ReadAllLines |> List.ofArray)
-        return
-            match result with
-            | Failure e -> [CommandResponse.error serialize e]
-            | Success (compilationResult) ->
-                match compilationResult with
-                | CompilationResult.CompilationFailure(errors) ->
-                    [ CommandResponse.errors serialize (errors, file.FullName) ]
-                | _ ->
-                    let errors = [||]
-                    [ CommandResponse.errors serialize (errors, file.FullName) ] }
+        let errors = [||]
+        return [ CommandResponse.errors serialize (errors, file) ] }

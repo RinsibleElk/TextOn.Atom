@@ -233,3 +233,21 @@ let genPort () =
     let r' = r * (8999. - 8100.) + 8100.
     r'.ToString().Substring(0,4)
 genPort()
+
+
+
+let doCompile (file:FileInfo) lines =
+    async {
+        let lines = Preprocessor.preprocess Preprocessor.realFileResolver file.FullName (Some file.Directory.FullName) lines
+        let lines' = CommentStripper.stripComments lines
+        let groups = LineCategorizer.categorize lines'
+        let tokens = groups |> List.map Tokenizer.tokenize
+        let source = tokens |> List.map Parser.parse
+        let output = Compiler.compile source
+        return Success output }
+let timeCompile file =
+    let file = FileInfo file
+    doCompile file (file.FullName |> File.ReadAllLines |> List.ofArray) |> Async.RunSynchronously
+#time
+timeCompile @"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton"
+

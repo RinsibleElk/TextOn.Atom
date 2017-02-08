@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="atom-bindings.fsx" />
-    <Compile Include="ViewsHelpers.fs" />
+    <Compile Include="ViewHelpers.fs" />
     <Compile Include="ProcessHelpers.fs" />
     <Compile Include="Control.fs" />
     <Compile Include="DTO.fs" />

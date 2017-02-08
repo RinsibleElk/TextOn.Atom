@@ -100,5 +100,6 @@
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />
     <None Include="Agent.fsx" />
+    <None Include="SuaveTesting.fsx" />
   </ItemGroup>
 </Project>

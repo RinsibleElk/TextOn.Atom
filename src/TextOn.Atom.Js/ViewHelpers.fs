@@ -11,7 +11,7 @@ open Atom
 
 [<AutoOpen>]
 [<ReflectedDefinition>]
-module TextOnViewsHelpers =
+module TextOnViewHelpers =
     let jq(selector : string) = Globals.Dollar.Invoke selector
     let jq'(selector : Element) = Globals.Dollar.Invoke selector
     let jqC (context: Element) (selector : string) = Globals.Dollar.Invoke (selector,context)

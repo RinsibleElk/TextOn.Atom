@@ -7,3 +7,4 @@ nuget FantomasCLI
 nuget FunScript
 nuget Suave
 nuget Newtonsoft.Json
+nuget FSharp.Data
