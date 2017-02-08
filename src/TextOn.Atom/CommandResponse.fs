@@ -56,6 +56,6 @@ module CommandResponse =
     let errors (serialize : Serializer) (errors:CompilationError[], file: string) =
         serialize { Kind = "errors"
                     Data = { File = file
-                             Errors = Array.map TextOnErrorInfo.OfCompilationError errors } }
+                             Errors = Array.map TextOnErrorInfo.OfCompilationError errors |> Array.filter (fun f -> f.FileName = file) } }
     let info (serialize : Serializer) (s: string) = serialize { Kind = "info"; Data = s }
     let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = s }

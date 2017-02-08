@@ -1649,7 +1649,7 @@ Logger__emitLog$ = (function(category,message,data)
     Logger__fullLog = (Logger__fullLog + logLine);
     Option__Iterate$String_1String((function(p)
     {
-      return (fs.appendFile((p + "/.ionide.debug"), logLine));
+      return (fs.appendFile((p + "/.texton.debug"), logLine));
     }), Logger__logPath);
     return Option__Iterate$IEditor_IEditor_((function(e)
     {

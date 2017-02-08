@@ -22,7 +22,7 @@ module Logger =
     let mutable private active = false
     /// Full log used when debug window is opened
     let mutable private fullLog = ""
-    /// Path of the .ionide.debug file (location of editted file)
+    /// Path of the .texton.debug file (location of editted file)
     let mutable private logPath = None
     /// Editor window displaying debug output
     let mutable private editor : IEditor option = None
@@ -41,8 +41,8 @@ module Logger =
         let logLine = (Util.format (Array.append [| box msg |] data)) + "\n"
         fullLog <- fullLog + logLine
 
-        // Log event to .ionide.debug file & editor window (if displayed)
-        logPath |> Option.iter (fun p -> Globals.appendFile(p + "/.ionide.debug", logLine))
+        // Log event to .texton.debug file & editor window (if displayed)
+        logPath |> Option.iter (fun p -> Globals.appendFile(p + "/.texton.debug", logLine))
         editor |> Option.iter (fun e ->
             e.scrollToBufferPosition([| e.getLastBufferRow(); 0.0 |], null) |> ignore
             e.getBuffer().append logLine |> ignore)

@@ -15,35 +15,33 @@ type Commands (serialize : Serializer) =
     let tokenize groups = async { return Tokenizer.tokenize groups }
     let parse tokens = async { return Parser.parse tokens }
     let compile source = async { return Compiler.compile source }
-    let doCompile (file:FileInfo) lines =
+    let doCompile fileName directory lines =
         async {
-            let lines = Preprocessor.preprocess Preprocessor.realFileResolver file.FullName (Some file.Directory.FullName) lines
+            let lines = Preprocessor.preprocess Preprocessor.realFileResolver fileName (Some directory) lines
             let lines' = CommentStripper.stripComments lines
             let groups = LineCategorizer.categorize lines'
             let tokens = groups |> List.map Tokenizer.tokenize
             let source = tokens |> List.map Parser.parse
             let output = Compiler.compile source
             return Success output }
-    let parse' file lines =
+    let parse' fileName directory lines =
         async {
-            let! result = doCompile file lines
+            let! result = doCompile fileName directory lines
             return
                 match result with
                 | Failure e -> [CommandResponse.error serialize e]
                 | Success (compilationResult) ->
                     match compilationResult with
                     | CompilationResult.CompilationFailure(errors) ->
-                        [ CommandResponse.errors serialize (errors, file.FullName) ]
+                        [ CommandResponse.errors serialize (errors, fileName) ]
                     | _ ->
-                        let errors = [||]
-                        [ CommandResponse.errors serialize (errors, file.FullName) ] }
-//    let someTextWriter = new System.IO.StreamWriter(new FileStream(@"D:\Documents\TextOn.Output\out.txt", FileMode.OpenOrCreate, FileAccess.Write))
+                        let errors = [|(GeneralError({File=fileName;ErrorText="Hello world"}))|]
+                        [ CommandResponse.errors serialize (errors, fileName) ] }
     member __.Parse file lines =
-//        fprintf someTextWriter @"Asked to parse %s" file
         async {
-            let file = Path.GetFullPath file
-            return! parse' (FileInfo file) lines }
+            let fi = Path.GetFullPath file |> FileInfo
+            return! parse' file fi.Directory.FullName lines }
 
     member __.Lint (file: SourceFilePath) = async {
-        let errors = [||]
+        let errors = [|(GeneralError({File=file;ErrorText="Hello world"}))|]
         return [ CommandResponse.errors serialize (errors, file) ] }
