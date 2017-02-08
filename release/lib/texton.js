@@ -8,7 +8,7 @@ var path = require('path');
 var Emitter = require('event-kit').Emitter;
 
 function wrappedFunScript() { 
-var list_1_Tuple_2_String__String__NilTuple_2_String__String_, list_1_Tuple_2_String__String__ConsTuple_2_String__String_, list_1_String____NilString___, list_1_String____ConsString___, list_1_String__NilString, list_1_String__ConsString, list_1_Object____NilObject___, list_1_Object____ConsObject___, Web__sendRequest$Unit_Unit_, WebResponse___ctor$, WebResponse__GetResponseStream$, WebRequest__set_Method$, WebRequest__get_Method$, WebRequest__get_Headers$, WebRequest___ctor$, WebRequest__GetRequestStream$, WebRequest__Create$, WebRequest__AsyncGetResponse$, WebHeaderCollection__get_Values$, WebHeaderCollection__get_Keys$, WebHeaderCollection___ctor$, WebHeaderCollection__Add$, ViewsHelpers__isFSharpEditor$, UnfoldEnumerator_2_Int32__String_____ctor$Int32_String___, UnfoldEnumerator_2_Int32__Disposable___ctor$Int32_Disposable_, UnfoldEnumerator_2_FSharpList_1_String____String_____ctor$FSharpList_1_String____String___, UnfoldEnumerator_2_FSharpList_1_Object____Object_____ctor$FSharpList_1_Object____Object___, UTF8Encoding___ctor$, UTF8Encoding__GetString$, UTF8Encoding__GetBytes$, TupleString____Int32, TupleString____FSharpList_1_String___, TupleString_String, TupleObject____FSharpList_1_Object___, TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_Lint___, TupleFSharpFunc_2_WebResponse__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_String__Unit_, TupleDisposable__Int32, TextOnIDE__provideErrors$, TextOnIDE__deactivate$, TextOnIDE__activate$, TextOnIDE___ctor$, TextOnCommands__openSettings$, String__StartsWith$, String__SplitWithoutOptions$, String__Replace$, String__PrintFormatToString$, Stream__get_Contents$, Stream___ctor$, Stream__Write$, Seq__Unfold$Int32__String___Int32_String___, Seq__Unfold$Int32__Disposable_Int32_Disposable_, Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___, Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___, Seq__ToArray$String___String___, Seq__ToArray$Object___Object___, Seq__OfList$String___String___, Seq__OfList$Object___Object___, Seq__OfArray$String___String___, Seq__IterateIndexed$String___String___, Seq__IterateIndexed$Object___Object___, Seq__Iterate$Disposable_Disposable_, Seq__FromFactory$String___String___, Seq__FromFactory$Object___Object___, Seq__FromFactory$Disposable_Disposable_, Seq__FoldIndexedAux$Unit__String___Unit__String___, Seq__FoldIndexedAux$Unit__Object___Unit__Object___, Seq__FoldIndexedAux$Unit__Disposable_Unit__Disposable_, Seq__FoldIndexed$String____Unit_String____Unit_, Seq__FoldIndexed$Object____Unit_Object____Unit_, Seq__FoldIndexed$Disposable__Unit_Disposable__Unit_, Seq__Fold$Disposable__Unit_Disposable__Unit_, Seq__Enumerator$String___String___, Seq__Enumerator$Object___Object___, Seq__Enumerator$Disposable_Disposable_, ResizeArray__ToSeq$Disposable_Disposable_, ResizeArray_1_Object__get_Item$Object_, ResizeArray_1_Object__get_Count$Object_, Replacements__utf8Encoding$, Provider___ctor$, Process__spawn$, Process__isWin$, Process__getCwd$, Process__fromPath$, ParseRequest___ctor$, Options___ctor$, Option__Iterate$String_1String, Option__Iterate$IEditor_IEditor_, Option__Iterate$ChildProcess_ChildProcess_, Option__IsSome$Int32_Int32, Option__IsSome$FSharpList_1_String___FSharpList_1_String___, Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_, Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___, Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___, Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_, Option__GetValue$String_1String, Option__GetValue$Result_1_Lint___Result_1_Lint___, Option__GetValue$Result_1_Error___Result_1_Error___, Option__GetValue$Int32_Int32, Option__GetValue$IEditor_IEditor_, Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_, Option__GetValue$FSharpList_1_String___FSharpList_1_String___, Option__GetValue$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$ChildProcess_ChildProcess_, Option__GetValue$CancellationToken_CancellationToken_, OpenEditorOptions___ctor$, Logger__subscriptions, Logger__logf$, Logger__logPath, Logger__get_subscriptions$, Logger__get_logPath$, Logger__get_fullLog$, Logger__get_editor$, Logger__get_active$, Logger__fullLog, Logger__emitLog$, Logger__editor, Logger__deactivate$, Logger__active, Logger__activate$, List__ToArray$String_1String, List__Tail$String___String___, List__Tail$Object___Object___, List__Reverse$String_1String, List__Map$Tuple_2_String__String__String_1Tuple_2_String__String__String, List__Length$String_1String, List__IterateIndexed$String_1String, List__Head$String___String___, List__Head$Object___Object___, List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_2_String__String_, List__FoldIndexedAux$list_1_String__String_1list_1_String__String, List__FoldIndexedAux$Unit__String_1Unit__String, List__FoldIndexedAux$Int32__String_1Int32_String, List__FoldIndexed$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__FoldIndexed$String_1_list_1_String_String_list_1_String_, List__FoldIndexed$String_1_Unit_String_Unit_, List__FoldIndexed$String_1_Int32_String_Int32, List__Fold$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__Fold$String_1_list_1_String_String_list_1_String_, List__Fold$String_1_Int32_String_Int32, List__Empty$Tuple_2_String__String_Tuple_2_String__String_, List__Empty$String___String___, List__Empty$Object___Object___, List__CreateCons$Tuple_2_String__String_Tuple_2_String__String_, List__CreateCons$String___String___, List__CreateCons$Object___Object___, LintResult___ctor$, LintRequest___ctor$, LanguageService__url$, LanguageService__tryParse$Result_1_Lint___Result_1_Lint___, LanguageService__tryParse$Result_1_Error___Result_1_Error___, LanguageService__stop$, LanguageService__start$, LanguageService__service, LanguageService__send$Lint___Lint___, LanguageService__send$Error___Error___, LanguageService__request$ParseRequest_ParseRequest_, LanguageService__request$LintRequest_LintRequest_, LanguageService__port, LanguageService__parseResponse$Lint___Lint___, LanguageService__parseResponse$Error___Error___, LanguageService__parseEditor$, LanguageService__parse$, LanguageService__lint$, LanguageService__get_service$, LanguageService__get_port$, LanguageService__genPort$, ErrorLinterProvider__mapLint$, ErrorLinterProvider__mapError$, ErrorLinterProvider__lint$, ErrorLinterProvider__create$, DateTime__get_Now$, DateTime__createUnsafe$, DateTime__ToLongTimeString$, CreateEnumerable_1_String_____ctor$String___, CreateEnumerable_1_Object_____ctor$Object___, CreateEnumerable_1_Disposable___ctor$Disposable_, Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_, Control__CommandRegistry_subscribe$, Control__Async_StartAsPromise_Static$Object_Object_, CancellationToken___ctor$, CancellationToken__ThrowIfCancellationRequested$, Async__protectedCont$WebResponse_WebResponse_, Async__protectedCont$Unit_Unit_, Async__protectedCont$String___String___, Async__protectedCont$Object___Object___, Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__invokeCont$Unit_Unit_, Async__invokeCont$String___String___, Async__invokeCont$Object___Object___, Async__invokeCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__get_async$, Async_1_WebResponse__ContWebResponse_, Async_1_Unit__ContUnit_, Async_1_String____ContString___, Async_1_StartImmediate$, Async_1_Object____ContObject___, Async_1_FromContinuations$WebResponse_WebResponse_, Async_1_FSharpOption_1_Result_1_Lint____ContFSharpOption_1_Result_1_Lint___, Async_1_FSharpOption_1_Result_1_Error____ContFSharpOption_1_Result_1_Error___, AsyncParams_1_WebResponse___ctor$WebResponse_, AsyncParams_1_Unit___ctor$Unit_, AsyncParams_1_String_____ctor$String___, AsyncParams_1_Object_____ctor$Object___, AsyncParams_1_FSharpOption_1_Result_1_Lint_____ctor$FSharpOption_1_Result_1_Lint___, AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___, AsyncParamsAux___ctor$, AsyncBuilder___ctor$, AsyncBuilder__Zero$, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Return$String___String___, AsyncBuilder__Return$Object___Object___, AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__Return$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Delay$Unit_Unit_, AsyncBuilder__Delay$String___String___, AsyncBuilder__Delay$Object___Object___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$WebResponse__String___WebResponse__String___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Lint___String____FSharpOption_1_Result_1_Lint___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Error___String____FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$Object____Unit_Object____Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_Lint____Object___FSharpOption_1_Result_1_Lint____Object___, AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Result_1_Error____Object___, Array__ZeroCreate$String___String___, Array__ZeroCreate$String_1String, Array__ZeroCreate$Object___Object___, Array__ZeroCreate$Object_Object_, Array__ZeroCreate$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Array__ZeroCreate$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Array__MapIndexed$String_1_String___String_String___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__MapIndexed$Lint__Object_Lint__Object_, Array__MapIndexed$Error__Object_Error__Object_, Array__Map$String_1_String___String_String___, Array__Map$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___, Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__Map$Lint__Object_Lint__Object_, Array__Map$Error__Object_Error__Object_, Array__Length$String_1String, Array__Length$Lint_Lint_, Array__Length$Error_Error_, Array__GetSubArray$Byte_Byte, Array__FoldIndexed$String____String_1String____String, Array__Fold$String_1_String___String_String___, Array__ConcatImpl$String_1String, Array__ConcatImpl$Object_Object_, Array__Concat$String_1String, Array__Concat$Object_Object_, Array__BoxedLength$, Array__Append$Object_Object_, Array__Append$Byte_Byte;
+var list_1_Tuple_2_String__String__NilTuple_2_String__String_, list_1_Tuple_2_String__String__ConsTuple_2_String__String_, list_1_String____NilString___, list_1_String____ConsString___, list_1_String__NilString, list_1_String__ConsString, list_1_Object____NilObject___, list_1_Object____ConsObject___, Web__sendRequest$Unit_Unit_, WebResponse___ctor$, WebResponse__GetResponseStream$, WebRequest__set_Method$, WebRequest__get_Method$, WebRequest__get_Headers$, WebRequest___ctor$, WebRequest__GetRequestStream$, WebRequest__Create$, WebRequest__AsyncGetResponse$, WebHeaderCollection__get_Values$, WebHeaderCollection__get_Keys$, WebHeaderCollection___ctor$, WebHeaderCollection__Add$, ViewsHelpers__isFSharpEditor$, UnfoldEnumerator_2_Int32__String_____ctor$Int32_String___, UnfoldEnumerator_2_Int32__Disposable___ctor$Int32_Disposable_, UnfoldEnumerator_2_FSharpList_1_String____String_____ctor$FSharpList_1_String____String___, UnfoldEnumerator_2_FSharpList_1_Object____Object_____ctor$FSharpList_1_Object____Object___, UTF8Encoding___ctor$, UTF8Encoding__GetString$, UTF8Encoding__GetBytes$, TupleString____Int32, TupleString____FSharpList_1_String___, TupleString_String, TupleObject____FSharpList_1_Object___, TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_Lint___, TupleFSharpFunc_2_WebResponse__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_String__Unit_, TupleDisposable__Int32, TextOnProcess__spawn$, TextOnProcess__isWin$, TextOnProcess__getCwd$, TextOnProcess__fromPath$, TextOnIDE__provideErrors$, TextOnIDE__deactivate$, TextOnIDE__activate$, TextOnIDE___ctor$, TextOnCommands__openSettings$, String__StartsWith$, String__SplitWithoutOptions$, String__Replace$, String__PrintFormatToString$, Stream__get_Contents$, Stream___ctor$, Stream__Write$, Seq__Unfold$Int32__String___Int32_String___, Seq__Unfold$Int32__Disposable_Int32_Disposable_, Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___, Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___, Seq__ToArray$String___String___, Seq__ToArray$Object___Object___, Seq__OfList$String___String___, Seq__OfList$Object___Object___, Seq__OfArray$String___String___, Seq__IterateIndexed$String___String___, Seq__IterateIndexed$Object___Object___, Seq__Iterate$Disposable_Disposable_, Seq__FromFactory$String___String___, Seq__FromFactory$Object___Object___, Seq__FromFactory$Disposable_Disposable_, Seq__FoldIndexedAux$Unit__String___Unit__String___, Seq__FoldIndexedAux$Unit__Object___Unit__Object___, Seq__FoldIndexedAux$Unit__Disposable_Unit__Disposable_, Seq__FoldIndexed$String____Unit_String____Unit_, Seq__FoldIndexed$Object____Unit_Object____Unit_, Seq__FoldIndexed$Disposable__Unit_Disposable__Unit_, Seq__Fold$Disposable__Unit_Disposable__Unit_, Seq__Enumerator$String___String___, Seq__Enumerator$Object___Object___, Seq__Enumerator$Disposable_Disposable_, ResizeArray__ToSeq$Disposable_Disposable_, ResizeArray_1_Object__get_Item$Object_, ResizeArray_1_Object__get_Count$Object_, Replacements__utf8Encoding$, Provider___ctor$, ParseRequest___ctor$, Options___ctor$, Option__Iterate$String_1String, Option__Iterate$IEditor_IEditor_, Option__Iterate$ChildProcess_ChildProcess_, Option__IsSome$Int32_Int32, Option__IsSome$FSharpList_1_String___FSharpList_1_String___, Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_, Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___, Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___, Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_, Option__GetValue$String_1String, Option__GetValue$Result_1_Lint___Result_1_Lint___, Option__GetValue$Result_1_Error___Result_1_Error___, Option__GetValue$Int32_Int32, Option__GetValue$IEditor_IEditor_, Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_, Option__GetValue$FSharpList_1_String___FSharpList_1_String___, Option__GetValue$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$ChildProcess_ChildProcess_, Option__GetValue$CancellationToken_CancellationToken_, OpenEditorOptions___ctor$, Logger__subscriptions, Logger__logf$, Logger__logPath, Logger__get_subscriptions$, Logger__get_logPath$, Logger__get_fullLog$, Logger__get_editor$, Logger__get_active$, Logger__fullLog, Logger__emitLog$, Logger__editor, Logger__deactivate$, Logger__active, Logger__activate$, List__ToArray$String_1String, List__Tail$String___String___, List__Tail$Object___Object___, List__Reverse$String_1String, List__Map$Tuple_2_String__String__String_1Tuple_2_String__String__String, List__Length$String_1String, List__IterateIndexed$String_1String, List__Head$String___String___, List__Head$Object___Object___, List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_2_String__String_, List__FoldIndexedAux$list_1_String__String_1list_1_String__String, List__FoldIndexedAux$Unit__String_1Unit__String, List__FoldIndexedAux$Int32__String_1Int32_String, List__FoldIndexed$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__FoldIndexed$String_1_list_1_String_String_list_1_String_, List__FoldIndexed$String_1_Unit_String_Unit_, List__FoldIndexed$String_1_Int32_String_Int32, List__Fold$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__Fold$String_1_list_1_String_String_list_1_String_, List__Fold$String_1_Int32_String_Int32, List__Empty$Tuple_2_String__String_Tuple_2_String__String_, List__Empty$String___String___, List__Empty$Object___Object___, List__CreateCons$Tuple_2_String__String_Tuple_2_String__String_, List__CreateCons$String___String___, List__CreateCons$Object___Object___, LintResult___ctor$, LintRequest___ctor$, LanguageService__url$, LanguageService__tryParse$Result_1_Lint___Result_1_Lint___, LanguageService__tryParse$Result_1_Error___Result_1_Error___, LanguageService__stop$, LanguageService__start$, LanguageService__service, LanguageService__send$Lint___Lint___, LanguageService__send$Error___Error___, LanguageService__request$ParseRequest_ParseRequest_, LanguageService__request$LintRequest_LintRequest_, LanguageService__port, LanguageService__parseResponse$Lint___Lint___, LanguageService__parseResponse$Error___Error___, LanguageService__parseEditor$, LanguageService__parse$, LanguageService__lint$, LanguageService__get_service$, LanguageService__get_port$, LanguageService__genPort$, ErrorLinterProvider__mapLint$, ErrorLinterProvider__mapError$, ErrorLinterProvider__lint$, ErrorLinterProvider__create$, DateTime__get_Now$, DateTime__createUnsafe$, DateTime__ToLongTimeString$, CreateEnumerable_1_String_____ctor$String___, CreateEnumerable_1_Object_____ctor$Object___, CreateEnumerable_1_Disposable___ctor$Disposable_, Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_, Control__CommandRegistry_subscribe$, Control__Async_StartAsPromise_Static$Object_Object_, CancellationToken___ctor$, CancellationToken__ThrowIfCancellationRequested$, Async__protectedCont$WebResponse_WebResponse_, Async__protectedCont$Unit_Unit_, Async__protectedCont$String___String___, Async__protectedCont$Object___Object___, Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__invokeCont$Unit_Unit_, Async__invokeCont$String___String___, Async__invokeCont$Object___Object___, Async__invokeCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__get_async$, Async_1_WebResponse__ContWebResponse_, Async_1_Unit__ContUnit_, Async_1_String____ContString___, Async_1_StartImmediate$, Async_1_Object____ContObject___, Async_1_FromContinuations$WebResponse_WebResponse_, Async_1_FSharpOption_1_Result_1_Lint____ContFSharpOption_1_Result_1_Lint___, Async_1_FSharpOption_1_Result_1_Error____ContFSharpOption_1_Result_1_Error___, AsyncParams_1_WebResponse___ctor$WebResponse_, AsyncParams_1_Unit___ctor$Unit_, AsyncParams_1_String_____ctor$String___, AsyncParams_1_Object_____ctor$Object___, AsyncParams_1_FSharpOption_1_Result_1_Lint_____ctor$FSharpOption_1_Result_1_Lint___, AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___, AsyncParamsAux___ctor$, AsyncBuilder___ctor$, AsyncBuilder__Zero$, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Return$String___String___, AsyncBuilder__Return$Object___Object___, AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__Return$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Delay$Unit_Unit_, AsyncBuilder__Delay$String___String___, AsyncBuilder__Delay$Object___Object___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$WebResponse__String___WebResponse__String___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Lint___String____FSharpOption_1_Result_1_Lint___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Error___String____FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$Object____Unit_Object____Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_Lint____Object___FSharpOption_1_Result_1_Lint____Object___, AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Result_1_Error____Object___, Array__ZeroCreate$String___String___, Array__ZeroCreate$String_1String, Array__ZeroCreate$Object___Object___, Array__ZeroCreate$Object_Object_, Array__ZeroCreate$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Array__ZeroCreate$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Array__MapIndexed$String_1_String___String_String___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__MapIndexed$Lint__Object_Lint__Object_, Array__MapIndexed$Error__Object_Error__Object_, Array__Map$String_1_String___String_String___, Array__Map$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___, Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__Map$Lint__Object_Lint__Object_, Array__Map$Error__Object_Error__Object_, Array__Length$String_1String, Array__Length$Lint_Lint_, Array__Length$Error_Error_, Array__GetSubArray$Byte_Byte, Array__FoldIndexed$String____String_1String____String, Array__Fold$String_1_String___String_String___, Array__ConcatImpl$String_1String, Array__ConcatImpl$Object_Object_, Array__Concat$String_1String, Array__Concat$Object_Object_, Array__BoxedLength$, Array__Append$Object_Object_, Array__Append$Byte_Byte;
 Array__Append$Byte_Byte = (function(xs,ys)
 {
     return xs.concat(ys);;
@@ -1272,7 +1272,7 @@ LanguageService__start$ = (function(unitVar0)
     try
     {
       var _249;
-      if (Process__isWin$()) 
+      if (TextOnProcess__isWin$()) 
       {
         _249 = "\\texton\\bin\\TextOn.Atom.exe";
       }
@@ -1282,7 +1282,7 @@ LanguageService__start$ = (function(unitVar0)
       };
       var pth = _249;
       var location = ((((window.atom).packages).packageDirPaths)[0] + pth);
-      var child = Process__spawn$(location, Process__fromPath$("mono"), ("--port " + LanguageService__port));
+      var child = TextOnProcess__spawn$(location, TextOnProcess__fromPath$("mono"), ("--port " + LanguageService__port));
       LanguageService__service = {Tag: 1.000000, Value: child};
       var ignored0 = ((child.stderr).on("data", (function(n)
       {
@@ -1812,75 +1812,6 @@ ParseRequest___ctor$ = (function(FileName,IsAsync,Lines)
     __this.FileName = FileName;
     __this.IsAsync = IsAsync;
     __this.Lines = Lines;
-});
-Process__fromPath$ = (function(name)
-{
-    if (Process__isWin$()) 
-    {
-      return name;
-    }
-    else
-    {
-      var path = (((window.atom).config).get("texton.MonoPath"));
-      return ((path + "/") + name);
-    };
-});
-Process__getCwd$ = (function(unitVar0)
-{
-    try
-    {
-      var t = (((window.atom).project).getPaths())[0];
-      if ((fs.existsSync(t))) 
-      {
-        return t;
-      }
-      else
-      {
-        return null;
-      };
-    }
-    catch(matchValue){
-      return null;
-    };
-});
-Process__isWin$ = (function(unitVar0)
-{
-    return String__StartsWith$(((window.process).platform), "win");
-});
-Process__spawn$ = (function(location,linuxCmd,cmd)
-{
-    var _300;
-    if ((cmd == "")) 
-    {
-      _300 = [];
-    }
-    else
-    {
-      _300 = String__SplitWithoutOptions$(cmd, [" "]);
-    };
-    var cmd_ = _300;
-    var cwd = Process__getCwd$();
-    var _523;
-    try
-    {
-      _523 = (new Options___ctor$(cwd));
-    }
-    catch(matchValue){
-      _523 = (new Options___ctor$(null));
-    };
-    var options = _523;
-    var _528;
-    if (Process__isWin$()) 
-    {
-      _528 = (child_process.spawn(location, cmd_, options));
-    }
-    else
-    {
-      var prms = Array__Concat$String_1String(Seq__OfList$String___String___(List__CreateCons$String___String___([location], List__CreateCons$String___String___(cmd_, List__Empty$String___String___()))));
-      _528 = (child_process.spawn(linuxCmd, prms, options));
-    };
-    var procs = _528;
-    return procs;
 });
 Provider___ctor$ = (function(grammarScopes,scope,lintOnFly,lint)
 {
@@ -2483,6 +2414,75 @@ TextOnIDE__deactivate$ = (function(x,unitVar1)
 TextOnIDE__provideErrors$ = (function(__,unitVar1)
 {
     return ErrorLinterProvider__create$();
+});
+TextOnProcess__fromPath$ = (function(name)
+{
+    if (TextOnProcess__isWin$()) 
+    {
+      return name;
+    }
+    else
+    {
+      var path = (((window.atom).config).get("texton.MonoPath"));
+      return ((path + "/") + name);
+    };
+});
+TextOnProcess__getCwd$ = (function(unitVar0)
+{
+    try
+    {
+      var t = (((window.atom).project).getPaths())[0];
+      if ((fs.existsSync(t))) 
+      {
+        return t;
+      }
+      else
+      {
+        return null;
+      };
+    }
+    catch(matchValue){
+      return null;
+    };
+});
+TextOnProcess__isWin$ = (function(unitVar0)
+{
+    return String__StartsWith$(((window.process).platform), "win");
+});
+TextOnProcess__spawn$ = (function(location,linuxCmd,cmd)
+{
+    var _300;
+    if ((cmd == "")) 
+    {
+      _300 = [];
+    }
+    else
+    {
+      _300 = String__SplitWithoutOptions$(cmd, [" "]);
+    };
+    var cmd_ = _300;
+    var cwd = TextOnProcess__getCwd$();
+    var _523;
+    try
+    {
+      _523 = (new Options___ctor$(cwd));
+    }
+    catch(matchValue){
+      _523 = (new Options___ctor$(null));
+    };
+    var options = _523;
+    var _528;
+    if (TextOnProcess__isWin$()) 
+    {
+      _528 = (child_process.spawn(location, cmd_, options));
+    }
+    else
+    {
+      var prms = Array__Concat$String_1String(Seq__OfList$String___String___(List__CreateCons$String___String___([location], List__CreateCons$String___String___(cmd_, List__Empty$String___String___()))));
+      _528 = (child_process.spawn(linuxCmd, prms, options));
+    };
+    var procs = _528;
+    return procs;
 });
 TupleDisposable__Int32 = (function(Item0,Item1)
 {
