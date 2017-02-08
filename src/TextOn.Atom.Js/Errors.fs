@@ -29,11 +29,14 @@ module ErrorLinterProvider =
     let mapError (editor : IEditor) (item : DTO.Error)  =
         let range = [|[|float (item.StartLine - 1); float (item.StartColumn - 1)|];
                       [|float (item.EndLine - 1);  float (item.EndColumn - 1)|]|]
-        { ``type`` = item.Severity
-          text = item.Message.Replace("\n", "")
-          filePath = editor.buffer.file.path
-          range = range
-        } :> obj
+        let error =
+            {   ``type`` = item.Severity
+                text = item.Message.Replace("\n", "")
+                filePath = editor.buffer.file.path
+                range = range
+            }
+        Logger.logf "Service" "Got error %A" [|error|]
+        error :> obj
 
     let mapLint (editor : IEditor)  (item : DTO.LintWarning) =
         let range = [|[|float (item.StartLine - 1); float (item.StartColumn - 1)|];
@@ -47,7 +50,7 @@ module ErrorLinterProvider =
     let lint (editor : IEditor) =
         async {
             let! result = LanguageService.parseEditor editor
-            let! result' = LanguageService.lint editor
+            let result' : DTO.LintWarning[] DTO.Result option = None
             let linter = Globals.atom.config.get("texton.UseLinter") |> unbox<bool>
             return
                 match result, result' with

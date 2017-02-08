@@ -74,11 +74,9 @@ type LintWarning =
 module CommandResponse =
     let errors (serialize : Serializer) (errors:CompilationError[], file: string) =
         serialize { Kind = "errors"
-                    Data = { File = file
-                             Errors =
-                                errors
-                                |> Array.filter (function | ParserError(e) -> e.File = file | _ -> true)
-                                |> Array.map TextOnErrorInfo.OfCompilationError } }
+                    Data = errors
+                           |> Array.filter (function | ParserError(e) -> e.File = file | _ -> true)
+                           |> Array.map TextOnErrorInfo.OfCompilationError }
     let info (serialize : Serializer) (s: string) = serialize { Kind = "info"; Data = s }
     let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = s }
     let lint (serialize : Serializer) (warnings : LintWarning list) =
