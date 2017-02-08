@@ -6,3 +6,4 @@ nuget FAKE
 nuget FantomasCLI
 nuget FunScript
 nuget Suave
+nuget Newtonsoft.Json

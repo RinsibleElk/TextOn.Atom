@@ -60,3 +60,5 @@ module CommandResponse =
         serialize { Kind = "errors"
                     Data = { File = file
                              Errors = Array.map TextOnErrorInfo.OfCompilationError errors } }
+    let info (serialize : Serializer) (s: string) = serialize { Kind = "info"; Data = s }
+    let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = s }

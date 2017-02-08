@@ -55,6 +55,9 @@
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Suave">
       <HintPath>..\..\packages\Suave\lib\net40\Suave.dll</HintPath>
     </Reference>
@@ -89,8 +92,10 @@
     <Compile Include="Compiler.fs" />
     <Compile Include="Generator.fs" />
     <Compile Include="RunInteractive.fs" />
+    <Compile Include="JsonSerializer.fs" />
     <Compile Include="SuaveUtils.fs" />
     <Compile Include="CommandResponse.fs" />
+    <Compile Include="Commands.fs" />
     <Compile Include="RunServer.fs" />
     <Compile Include="main.fs" />
     <None Include="regex.fsx" />

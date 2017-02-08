@@ -1,17 +1,18 @@
 ﻿namespace TextOn.Atom
 
+open System
+
 [<AutoOpen>]
 module Cprint =
     /// Colored printf
     let cprintf c fmt = 
         Printf.kprintf
             (fun s ->
-                let old = System.Console.ForegroundColor
                 try
-                    System.Console.ForegroundColor <- c
-                    System.Console.Write s
+                    Console.ForegroundColor <- c
+                    Console.Write s
                 finally
-                    System.Console.ForegroundColor <- old)
+                    Console.ResetColor())
             fmt
 
     /// Colored printfn

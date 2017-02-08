@@ -5,7 +5,7 @@ open System.IO
 
 type Mode =
     | [<ArgDescription("Interactive mode (compile a full template and fill in values for generation)")>] Interactive of InteractiveConfig
-    | [<ArgDescription("Server mode (listen on a given port and provide IDE services to a UI over HTTP)")>] Server of ServerConfig
+    | [<ArgDescription("Server mode (listen on a given port and provide IDE services to a UI over HTTP)")>] Server of ServerModeConfig
 
 module internal Main =
     [<EntryPoint>]
