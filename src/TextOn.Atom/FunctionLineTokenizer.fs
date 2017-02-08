@@ -130,6 +130,8 @@ module internal FunctionLineTokenizer =
                     else
                         Seq.empty
                 seq { yield funcDefinitionToken; yield funcNameToken; yield! openCurlyToken }
+            else if funcDefinitionMatch.Length >= line.Length then
+                Seq.singleton funcDefinitionToken
             else
                 let unrecognisedToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = line.Length;Token = InvalidUnrecognised (line.Substring(funcDefinitionMatch.Length + 1)) }
                 seq {

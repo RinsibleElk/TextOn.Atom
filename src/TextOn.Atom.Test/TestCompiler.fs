@@ -336,3 +336,21 @@ let ``Declare the same function twice``() =
                     }
             |]
     test <@ result = expected @>
+
+[<Test>]
+let ``Test func with no name``() =
+    let lines = "@func "
+    let result = lines |> compileLines
+    let expected =
+        CompilationFailure
+            [|
+                ParserError
+                    {
+                        File = exampleFileName
+                        LineNumber = 1
+                        StartLocation = 1
+                        EndLocation = 5
+                        ErrorText = "No name given for function"
+                    }
+            |]
+    test <@ result = expected @>
