@@ -88,6 +88,7 @@ let translateModules fileName =
             yield "config:  {
                 UseLinter: {type: 'boolean', 'default': true},
                 DeveloperMode: {type: 'boolean', 'default': false},
+                TextOnPath: {type: 'string', 'default': ''},
                 MonoPath: {type: 'string', 'default': '/usr/bin'}"
             yield "}"
 

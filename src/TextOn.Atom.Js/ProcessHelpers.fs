@@ -13,11 +13,7 @@ open Atom
 
 [<ReflectedDefinition>]
 module TextOnProcess =
-    let jq(selector : string) = Globals.Dollar.Invoke selector
-    let jq'(selector : Element) = Globals.Dollar.Invoke selector
-    let jqC (context: Element) (selector : string) = Globals.Dollar.Invoke (selector,context)
     type Options = {cwd : string}
-
 
     ///Checks if current OS is windows
     let isWin () =
@@ -29,6 +25,14 @@ module TextOnProcess =
         else
             let path = Globals.atom.config.get "texton.MonoPath" |> unbox<string>
             path + "/" + name
+
+    let textonPath () =
+        let path = Globals.atom.config.get "texton.TextOnPath" |> unbox<string>
+        if path = null || path = "" then null
+        else if isWin () then
+            path + @"\TextOn.Atom.exe"
+        else
+            path + @"/TextOn.Atom.exe"
 
     ///Create new notification or append text to existing notification
     let notice (currentNotification: INotification option ref) isError text details =

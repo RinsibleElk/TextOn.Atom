@@ -1,0 +1,76 @@
+[19:26:48] ERROR
+  Parsing response failed: null
+[19:26:48] ERROR
+  Parsing response failed: null
+[19:26:53] SERVICE
+  Sending request: [object Object]
+[19:27:08] SERVICE
+  Sending request: [object Object]
+[19:27:09] SERVICE
+  Got 'errors': [object Object]
+[19:27:09] SERVICE
+  Sending request: [object Object]
+[19:27:09] SERVICE
+  Sending request: [object Object]
+[19:27:09] SERVICE
+  Got 'errors': [object Object]
+[19:27:23] SERVICE
+  Got 'errors': [object Object]
+[19:27:23] SERVICE
+  Got 'errors': [object Object]
+[19:29:23] SERVICE
+  Sending request: [object Object]
+[19:29:37] SERVICE
+  Got 'errors': [object Object]
+[19:29:37] SERVICE
+  Sending request: [object Object]
+[19:29:37] SERVICE
+  Got 'errors': [object Object]
+[19:34:24] SERVICE
+  Sending request: [object Object]
+[19:34:26] ERROR
+  Parsing response failed: null
+[19:34:26] SERVICE
+  Sending request: [object Object]
+[19:34:26] ERROR
+  Parsing response failed: null
+[19:35:02] SERVICE
+  Sending request: [object Object]
+[19:35:16] SERVICE
+  Sending request: [object Object]
+[19:35:17] SERVICE
+  Got 'errors': [object Object]
+[19:35:17] SERVICE
+  Sending request: [object Object]
+[19:35:17] SERVICE
+  Got 'errors': [object Object]
+[19:35:17] SERVICE
+  Sending request: [object Object]
+[19:35:17] SERVICE
+  Got 'errors': [object Object]
+[19:35:17] SERVICE
+  Got 'errors': [object Object]
+[19:35:29] SERVICE
+  Sending request: [object Object]
+[19:35:29] SERVICE
+  Sending request: [object Object]
+[19:35:29] SERVICE
+  Got 'errors': [object Object]
+[19:35:29] SERVICE
+  Got 'errors': [object Object]
+[19:35:29] SERVICE
+  Sending request: [object Object]
+[19:35:29] SERVICE
+  Got 'errors': [object Object]
+[19:35:29] SERVICE
+  Sending request: [object Object]
+[19:35:29] SERVICE
+  Got 'errors': [object Object]
+[19:35:34] SERVICE
+  Sending request: [object Object]
+[19:35:34] SERVICE
+  Got 'errors': [object Object]
+[19:35:34] SERVICE
+  Sending request: [object Object]
+[19:35:34] SERVICE
+  Got 'errors': [object Object]

@@ -96,7 +96,7 @@ module LanguageService =
         |> send<Helptext> 0
 
     let parseEditor (editor : IEditor) =
-        if isFSharpEditor editor && unbox<obj>(editor.buffer.file) <> null then
+        if isTextOnEditor editor && unbox<obj>(editor.buffer.file) <> null then
             let path = editor.buffer.file.path
             let text = editor.getText()
             parse path text
@@ -135,7 +135,7 @@ module LanguageService =
         () |> request (url "compilerlocation") |> send<CompilerLocation> 0
 
     let lint editor =
-        if isFSharpEditor editor && unbox<obj>(editor.buffer.file) <> null then
+        if isTextOnEditor editor && unbox<obj>(editor.buffer.file) <> null then
             {LintRequest.FileName = editor.buffer.file.path }
             |> request (url "lint")
             |> send<Lint[]> 0
@@ -143,15 +143,13 @@ module LanguageService =
 
     let start () =
         try
-            let pth = if TextOnProcess.isWin () then
-                        @"\texton\bin\TextOn.Atom.exe"
-                      else
-                        @"/texton/bin/TextOn.Atom.exe"
-            let location = Globals.atom.packages.packageDirPaths.[0] + pth
-            let child = TextOnProcess.spawn location (TextOnProcess.fromPath "mono") ("--port " + port)
-            service <- Some child
-            child.stderr.on("data", unbox<Function>( fun n -> Globals.console.error (n.ToString()))) |> ignore
-            ()
+            let location = TextOnProcess.textonPath ()
+            if location = null then ()
+            else
+                let child = TextOnProcess.spawn location (TextOnProcess.fromPath "mono") ("--port " + port)
+                service <- Some child
+                child.stderr.on("data", unbox<Function>( fun n -> Globals.console.error (n.ToString()))) |> ignore
+                ()
         with
         | exc ->
             Globals.console.error exc
