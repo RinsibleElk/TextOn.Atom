@@ -143,12 +143,12 @@ module LanguageService =
 
     let start () =
         try
-            let pth = if Process.isWin () then
+            let pth = if TextOnProcess.isWin () then
                         @"\texton\bin\TextOn.Atom.exe"
                       else
                         @"/texton/bin/TextOn.Atom.exe"
             let location = Globals.atom.packages.packageDirPaths.[0] + pth
-            let child = Process.spawn location (Process.fromPath "mono") ("--port " + port)
+            let child = TextOnProcess.spawn location (TextOnProcess.fromPath "mono") ("--port " + port)
             service <- Some child
             child.stderr.on("data", unbox<Function>( fun n -> Globals.console.error (n.ToString()))) |> ignore
             ()

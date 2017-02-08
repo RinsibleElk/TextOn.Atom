@@ -37,15 +37,15 @@ type Commands (serialize : Serializer) =
                     | _ ->
                         let errors = [||]
                         [ CommandResponse.errors serialize (errors, file.FullName) ] }
-    let someTextWriter = new System.IO.StreamWriter(new FileStream(@"D:\Documents\TextOn.Output\out.txt", FileMode.OpenOrCreate, FileAccess.Write))
+//    let someTextWriter = new System.IO.StreamWriter(new FileStream(@"D:\Documents\TextOn.Output\out.txt", FileMode.OpenOrCreate, FileAccess.Write))
     member __.Parse file lines =
-        fprintf someTextWriter @"Asked to parse %s" file
+//        fprintf someTextWriter @"Asked to parse %s" file
         async {
             let file = Path.GetFullPath file
             return! parse' (FileInfo file) lines }
 
     member __.Lint (file: SourceFilePath) = async {
-        fprintf someTextWriter @"Asked to lint %s" file
+//        fprintf someTextWriter @"Asked to lint %s" file
         let file = Path.GetFullPath file
         let file = file |> FileInfo
         let! result = doCompile file (file.FullName |> File.ReadAllLines |> List.ofArray)

@@ -16,6 +16,7 @@ open Fake.ZipHelper
 #if MONO
 #else
 #load   "src/TextOn.Atom.Js/atom-bindings.fsx"
+        "src/TextOn.Atom.Js/ProcessHelpers.fs"
         "src/TextOn.Atom.Js/Control.fs"
         "src/TextOn.Atom.Js/DTO.fs"
         "src/TextOn.Atom.Js/Logging.fs"

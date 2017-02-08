@@ -1821,7 +1821,7 @@ Process__fromPath$ = (function(name)
     }
     else
     {
-      var path = (((window.atom).config).get("ionide-fsharp.MonoPath"));
+      var path = (((window.atom).config).get("texton.MonoPath"));
       return ((path + "/") + name);
     };
 });
