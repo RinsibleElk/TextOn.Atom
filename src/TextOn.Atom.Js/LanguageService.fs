@@ -138,7 +138,7 @@ module LanguageService =
         if isTextOnEditor editor && unbox<obj>(editor.buffer.file) <> null then
             {LintRequest.FileName = editor.buffer.file.path }
             |> request (url "lint")
-            |> send<Lint[]> 0
+            |> send<LintWarning[]> 0
          else async {return None}
 
     let start () =

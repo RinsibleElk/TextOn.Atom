@@ -35,7 +35,7 @@ type Commands (serialize : Serializer) =
                     | CompilationResult.CompilationFailure(errors) ->
                         [ CommandResponse.errors serialize (errors, fileName) ]
                     | _ ->
-                        let errors = [|(GeneralError({File=fileName;ErrorText="Hello world"}))|]
+                        let errors = [||]
                         [ CommandResponse.errors serialize (errors, fileName) ] }
     member __.Parse file lines =
         async {
@@ -43,5 +43,6 @@ type Commands (serialize : Serializer) =
             return! parse' file fi.Directory.FullName lines }
 
     member __.Lint (file: SourceFilePath) = async {
-        let errors = [|(GeneralError({File=file;ErrorText="Hello world"}))|]
-        return [ CommandResponse.errors serialize (errors, file) ] }
+        let file = Path.GetFullPath file
+        let res = [ CommandResponse.lint serialize [] ]
+        return res }

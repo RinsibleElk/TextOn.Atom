@@ -445,7 +445,7 @@ module ArgParser =
                 let (unionCaseInfo, args, data) = validData.Value
                 (args, UnionData(Some (unionCaseInfo, data)))
             else
-                
+
                 (args, InvalidData(String.Join("\n", data |> Array.map (fun (_, _, a) -> a.Errors) |> Array.filter Option.isSome |> Array.map Option.get)))
         | ArgInvalid -> failwith "Internal error"
 

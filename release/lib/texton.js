@@ -8,7 +8,7 @@ var path = require('path');
 var Emitter = require('event-kit').Emitter;
 
 function wrappedFunScript() { 
-var list_1_Tuple_2_String__String__NilTuple_2_String__String_, list_1_Tuple_2_String__String__ConsTuple_2_String__String_, list_1_String____NilString___, list_1_String____ConsString___, list_1_String__NilString, list_1_String__ConsString, list_1_Object____NilObject___, list_1_Object____ConsObject___, Web__sendRequest$Unit_Unit_, WebResponse___ctor$, WebResponse__GetResponseStream$, WebRequest__set_Method$, WebRequest__get_Method$, WebRequest__get_Headers$, WebRequest___ctor$, WebRequest__GetRequestStream$, WebRequest__Create$, WebRequest__AsyncGetResponse$, WebHeaderCollection__get_Values$, WebHeaderCollection__get_Keys$, WebHeaderCollection___ctor$, WebHeaderCollection__Add$, UnfoldEnumerator_2_Int32__String_____ctor$Int32_String___, UnfoldEnumerator_2_Int32__Disposable___ctor$Int32_Disposable_, UnfoldEnumerator_2_FSharpList_1_String____String_____ctor$FSharpList_1_String____String___, UnfoldEnumerator_2_FSharpList_1_Object____Object_____ctor$FSharpList_1_Object____Object___, UTF8Encoding___ctor$, UTF8Encoding__GetString$, UTF8Encoding__GetBytes$, TupleString____Int32, TupleString____FSharpList_1_String___, TupleString_String, TupleObject____FSharpList_1_Object___, TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_Lint___, TupleFSharpFunc_2_WebResponse__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_String__Unit_, TupleDisposable__Int32, TextOnViewHelpers__isTextOnEditor$, TextOnProcess__textonPath$, TextOnProcess__spawn$, TextOnProcess__isWin$, TextOnProcess__getCwd$, TextOnProcess__fromPath$, TextOnIDE__provideErrors$, TextOnIDE__deactivate$, TextOnIDE__activate$, TextOnIDE___ctor$, TextOnCommands__openSettings$, String__StartsWith$, String__SplitWithoutOptions$, String__Replace$, String__PrintFormatToString$, Stream__get_Contents$, Stream___ctor$, Stream__Write$, Seq__Unfold$Int32__String___Int32_String___, Seq__Unfold$Int32__Disposable_Int32_Disposable_, Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___, Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___, Seq__ToArray$String___String___, Seq__ToArray$Object___Object___, Seq__OfList$String___String___, Seq__OfList$Object___Object___, Seq__OfArray$String___String___, Seq__IterateIndexed$String___String___, Seq__IterateIndexed$Object___Object___, Seq__Iterate$Disposable_Disposable_, Seq__FromFactory$String___String___, Seq__FromFactory$Object___Object___, Seq__FromFactory$Disposable_Disposable_, Seq__FoldIndexedAux$Unit__String___Unit__String___, Seq__FoldIndexedAux$Unit__Object___Unit__Object___, Seq__FoldIndexedAux$Unit__Disposable_Unit__Disposable_, Seq__FoldIndexed$String____Unit_String____Unit_, Seq__FoldIndexed$Object____Unit_Object____Unit_, Seq__FoldIndexed$Disposable__Unit_Disposable__Unit_, Seq__Fold$Disposable__Unit_Disposable__Unit_, Seq__Enumerator$String___String___, Seq__Enumerator$Object___Object___, Seq__Enumerator$Disposable_Disposable_, ResizeArray__ToSeq$Disposable_Disposable_, ResizeArray_1_Object__get_Item$Object_, ResizeArray_1_Object__get_Count$Object_, Replacements__utf8Encoding$, Provider___ctor$, ParseRequest___ctor$, Options___ctor$, Option__Iterate$String_1String, Option__Iterate$IEditor_IEditor_, Option__Iterate$ChildProcess_ChildProcess_, Option__IsSome$Int32_Int32, Option__IsSome$FSharpList_1_String___FSharpList_1_String___, Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_, Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___, Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___, Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_, Option__GetValue$String_1String, Option__GetValue$Result_1_Lint___Result_1_Lint___, Option__GetValue$Result_1_Error___Result_1_Error___, Option__GetValue$Int32_Int32, Option__GetValue$IEditor_IEditor_, Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_, Option__GetValue$FSharpList_1_String___FSharpList_1_String___, Option__GetValue$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$ChildProcess_ChildProcess_, Option__GetValue$CancellationToken_CancellationToken_, OpenEditorOptions___ctor$, Logger__subscriptions, Logger__logf$, Logger__logPath, Logger__get_subscriptions$, Logger__get_logPath$, Logger__get_fullLog$, Logger__get_editor$, Logger__get_active$, Logger__fullLog, Logger__emitLog$, Logger__editor, Logger__deactivate$, Logger__active, Logger__activate$, List__ToArray$String_1String, List__Tail$String___String___, List__Tail$Object___Object___, List__Reverse$String_1String, List__Map$Tuple_2_String__String__String_1Tuple_2_String__String__String, List__Length$String_1String, List__IterateIndexed$String_1String, List__Head$String___String___, List__Head$Object___Object___, List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_2_String__String_, List__FoldIndexedAux$list_1_String__String_1list_1_String__String, List__FoldIndexedAux$Unit__String_1Unit__String, List__FoldIndexedAux$Int32__String_1Int32_String, List__FoldIndexed$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__FoldIndexed$String_1_list_1_String_String_list_1_String_, List__FoldIndexed$String_1_Unit_String_Unit_, List__FoldIndexed$String_1_Int32_String_Int32, List__Fold$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__Fold$String_1_list_1_String_String_list_1_String_, List__Fold$String_1_Int32_String_Int32, List__Empty$Tuple_2_String__String_Tuple_2_String__String_, List__Empty$String___String___, List__Empty$Object___Object___, List__CreateCons$Tuple_2_String__String_Tuple_2_String__String_, List__CreateCons$String___String___, List__CreateCons$Object___Object___, LintResult___ctor$, LintRequest___ctor$, LanguageService__url$, LanguageService__tryParse$Result_1_Lint___Result_1_Lint___, LanguageService__tryParse$Result_1_Error___Result_1_Error___, LanguageService__stop$, LanguageService__start$, LanguageService__service, LanguageService__send$Lint___Lint___, LanguageService__send$Error___Error___, LanguageService__request$ParseRequest_ParseRequest_, LanguageService__request$LintRequest_LintRequest_, LanguageService__port, LanguageService__parseResponse$Lint___Lint___, LanguageService__parseResponse$Error___Error___, LanguageService__parseEditor$, LanguageService__parse$, LanguageService__lint$, LanguageService__get_service$, LanguageService__get_port$, LanguageService__genPort$, ErrorLinterProvider__mapLint$, ErrorLinterProvider__mapError$, ErrorLinterProvider__lint$, ErrorLinterProvider__create$, DateTime__get_Now$, DateTime__createUnsafe$, DateTime__ToLongTimeString$, CreateEnumerable_1_String_____ctor$String___, CreateEnumerable_1_Object_____ctor$Object___, CreateEnumerable_1_Disposable___ctor$Disposable_, Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_, Control__CommandRegistry_subscribe$, Control__Async_StartAsPromise_Static$Object_Object_, CancellationToken___ctor$, CancellationToken__ThrowIfCancellationRequested$, Async__protectedCont$WebResponse_WebResponse_, Async__protectedCont$Unit_Unit_, Async__protectedCont$String___String___, Async__protectedCont$Object___Object___, Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__invokeCont$Unit_Unit_, Async__invokeCont$String___String___, Async__invokeCont$Object___Object___, Async__invokeCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__get_async$, Async_1_WebResponse__ContWebResponse_, Async_1_Unit__ContUnit_, Async_1_String____ContString___, Async_1_StartImmediate$, Async_1_Object____ContObject___, Async_1_FromContinuations$WebResponse_WebResponse_, Async_1_FSharpOption_1_Result_1_Lint____ContFSharpOption_1_Result_1_Lint___, Async_1_FSharpOption_1_Result_1_Error____ContFSharpOption_1_Result_1_Error___, AsyncParams_1_WebResponse___ctor$WebResponse_, AsyncParams_1_Unit___ctor$Unit_, AsyncParams_1_String_____ctor$String___, AsyncParams_1_Object_____ctor$Object___, AsyncParams_1_FSharpOption_1_Result_1_Lint_____ctor$FSharpOption_1_Result_1_Lint___, AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___, AsyncParamsAux___ctor$, AsyncBuilder___ctor$, AsyncBuilder__Zero$, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Return$String___String___, AsyncBuilder__Return$Object___Object___, AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__Return$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Delay$Unit_Unit_, AsyncBuilder__Delay$String___String___, AsyncBuilder__Delay$Object___Object___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$WebResponse__String___WebResponse__String___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Lint___String____FSharpOption_1_Result_1_Lint___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Error___String____FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$Object____Unit_Object____Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_Lint____Object___FSharpOption_1_Result_1_Lint____Object___, AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Result_1_Error____Object___, Array__ZeroCreate$String___String___, Array__ZeroCreate$String_1String, Array__ZeroCreate$Object___Object___, Array__ZeroCreate$Object_Object_, Array__ZeroCreate$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___, Array__ZeroCreate$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Array__MapIndexed$String_1_String___String_String___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__MapIndexed$Lint__Object_Lint__Object_, Array__MapIndexed$Error__Object_Error__Object_, Array__Map$String_1_String___String_String___, Array__Map$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___, Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__Map$Lint__Object_Lint__Object_, Array__Map$Error__Object_Error__Object_, Array__Length$String_1String, Array__Length$Lint_Lint_, Array__Length$Error_Error_, Array__GetSubArray$Byte_Byte, Array__FoldIndexed$String____String_1String____String, Array__Fold$String_1_String___String_String___, Array__ConcatImpl$String_1String, Array__ConcatImpl$Object_Object_, Array__Concat$String_1String, Array__Concat$Object_Object_, Array__BoxedLength$, Array__Append$Object_Object_, Array__Append$Byte_Byte;
+var list_1_Tuple_2_String__String__NilTuple_2_String__String_, list_1_Tuple_2_String__String__ConsTuple_2_String__String_, list_1_String____NilString___, list_1_String____ConsString___, list_1_String__NilString, list_1_String__ConsString, list_1_Object____NilObject___, list_1_Object____ConsObject___, Web__sendRequest$Unit_Unit_, WebResponse___ctor$, WebResponse__GetResponseStream$, WebRequest__set_Method$, WebRequest__get_Method$, WebRequest__get_Headers$, WebRequest___ctor$, WebRequest__GetRequestStream$, WebRequest__Create$, WebRequest__AsyncGetResponse$, WebHeaderCollection__get_Values$, WebHeaderCollection__get_Keys$, WebHeaderCollection___ctor$, WebHeaderCollection__Add$, UnfoldEnumerator_2_Int32__String_____ctor$Int32_String___, UnfoldEnumerator_2_Int32__Disposable___ctor$Int32_Disposable_, UnfoldEnumerator_2_FSharpList_1_String____String_____ctor$FSharpList_1_String____String___, UnfoldEnumerator_2_FSharpList_1_Object____Object_____ctor$FSharpList_1_Object____Object___, UTF8Encoding___ctor$, UTF8Encoding__GetString$, UTF8Encoding__GetBytes$, TupleString____Int32, TupleString____FSharpList_1_String___, TupleString_String, TupleObject____FSharpList_1_Object___, TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_LintWarning___, TupleFSharpFunc_2_WebResponse__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_String__Unit_, TupleDisposable__Int32, TextOnViewHelpers__isTextOnEditor$, TextOnProcess__textonPath$, TextOnProcess__spawn$, TextOnProcess__isWin$, TextOnProcess__getCwd$, TextOnProcess__fromPath$, TextOnIDE__provideErrors$, TextOnIDE__deactivate$, TextOnIDE__activate$, TextOnIDE___ctor$, TextOnCommands__openSettings$, String__StartsWith$, String__SplitWithoutOptions$, String__Replace$, String__PrintFormatToString$, Stream__get_Contents$, Stream___ctor$, Stream__Write$, Seq__Unfold$Int32__String___Int32_String___, Seq__Unfold$Int32__Disposable_Int32_Disposable_, Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___, Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___, Seq__ToArray$String___String___, Seq__ToArray$Object___Object___, Seq__OfList$String___String___, Seq__OfList$Object___Object___, Seq__OfArray$String___String___, Seq__IterateIndexed$String___String___, Seq__IterateIndexed$Object___Object___, Seq__Iterate$Disposable_Disposable_, Seq__FromFactory$String___String___, Seq__FromFactory$Object___Object___, Seq__FromFactory$Disposable_Disposable_, Seq__FoldIndexedAux$Unit__String___Unit__String___, Seq__FoldIndexedAux$Unit__Object___Unit__Object___, Seq__FoldIndexedAux$Unit__Disposable_Unit__Disposable_, Seq__FoldIndexed$String____Unit_String____Unit_, Seq__FoldIndexed$Object____Unit_Object____Unit_, Seq__FoldIndexed$Disposable__Unit_Disposable__Unit_, Seq__Fold$Disposable__Unit_Disposable__Unit_, Seq__Enumerator$String___String___, Seq__Enumerator$Object___Object___, Seq__Enumerator$Disposable_Disposable_, ResizeArray__ToSeq$Disposable_Disposable_, ResizeArray_1_Object__get_Item$Object_, ResizeArray_1_Object__get_Count$Object_, Replacements__utf8Encoding$, Provider___ctor$, ParseRequest___ctor$, Options___ctor$, Option__Iterate$String_1String, Option__Iterate$IEditor_IEditor_, Option__Iterate$ChildProcess_ChildProcess_, Option__IsSome$Int32_Int32, Option__IsSome$FSharpList_1_String___FSharpList_1_String___, Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_, Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___, Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___, Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_, Option__GetValue$String_1String, Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___, Option__GetValue$Result_1_Error___Result_1_Error___, Option__GetValue$Int32_Int32, Option__GetValue$IEditor_IEditor_, Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_, Option__GetValue$FSharpList_1_String___FSharpList_1_String___, Option__GetValue$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$ChildProcess_ChildProcess_, Option__GetValue$CancellationToken_CancellationToken_, OpenEditorOptions___ctor$, Logger__subscriptions, Logger__logf$, Logger__logPath, Logger__get_subscriptions$, Logger__get_logPath$, Logger__get_fullLog$, Logger__get_editor$, Logger__get_active$, Logger__fullLog, Logger__emitLog$, Logger__editor, Logger__deactivate$, Logger__active, Logger__activate$, List__ToArray$String_1String, List__Tail$String___String___, List__Tail$Object___Object___, List__Reverse$String_1String, List__Map$Tuple_2_String__String__String_1Tuple_2_String__String__String, List__Length$String_1String, List__IterateIndexed$String_1String, List__Head$String___String___, List__Head$Object___Object___, List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_2_String__String_, List__FoldIndexedAux$list_1_String__String_1list_1_String__String, List__FoldIndexedAux$Unit__String_1Unit__String, List__FoldIndexedAux$Int32__String_1Int32_String, List__FoldIndexed$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__FoldIndexed$String_1_list_1_String_String_list_1_String_, List__FoldIndexed$String_1_Unit_String_Unit_, List__FoldIndexed$String_1_Int32_String_Int32, List__Fold$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__Fold$String_1_list_1_String_String_list_1_String_, List__Fold$String_1_Int32_String_Int32, List__Empty$Tuple_2_String__String_Tuple_2_String__String_, List__Empty$String___String___, List__Empty$Object___Object___, List__CreateCons$Tuple_2_String__String_Tuple_2_String__String_, List__CreateCons$String___String___, List__CreateCons$Object___Object___, LintResult___ctor$, LintRequest___ctor$, LanguageService__url$, LanguageService__tryParse$Result_1_LintWarning___Result_1_LintWarning___, LanguageService__tryParse$Result_1_Error___Result_1_Error___, LanguageService__stop$, LanguageService__start$, LanguageService__service, LanguageService__send$LintWarning___LintWarning___, LanguageService__send$Error___Error___, LanguageService__request$ParseRequest_ParseRequest_, LanguageService__request$LintRequest_LintRequest_, LanguageService__port, LanguageService__parseResponse$LintWarning___LintWarning___, LanguageService__parseResponse$Error___Error___, LanguageService__parseEditor$, LanguageService__parse$, LanguageService__lint$, LanguageService__get_service$, LanguageService__get_port$, LanguageService__genPort$, ErrorLinterProvider__mapLint$, ErrorLinterProvider__mapError$, ErrorLinterProvider__lint$, ErrorLinterProvider__create$, DateTime__get_Now$, DateTime__createUnsafe$, DateTime__ToLongTimeString$, CreateEnumerable_1_String_____ctor$String___, CreateEnumerable_1_Object_____ctor$Object___, CreateEnumerable_1_Disposable___ctor$Disposable_, Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_, Control__CommandRegistry_subscribe$, Control__Async_StartAsPromise_Static$Object_Object_, CancellationToken___ctor$, CancellationToken__ThrowIfCancellationRequested$, Async__protectedCont$WebResponse_WebResponse_, Async__protectedCont$Unit_Unit_, Async__protectedCont$String___String___, Async__protectedCont$Object___Object___, Async__protectedCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___, Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__invokeCont$Unit_Unit_, Async__invokeCont$String___String___, Async__invokeCont$Object___Object___, Async__invokeCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___, Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__get_async$, Async_1_WebResponse__ContWebResponse_, Async_1_Unit__ContUnit_, Async_1_String____ContString___, Async_1_StartImmediate$, Async_1_Object____ContObject___, Async_1_FromContinuations$WebResponse_WebResponse_, Async_1_FSharpOption_1_Result_1_LintWarning____ContFSharpOption_1_Result_1_LintWarning___, Async_1_FSharpOption_1_Result_1_Error____ContFSharpOption_1_Result_1_Error___, AsyncParams_1_WebResponse___ctor$WebResponse_, AsyncParams_1_Unit___ctor$Unit_, AsyncParams_1_String_____ctor$String___, AsyncParams_1_Object_____ctor$Object___, AsyncParams_1_FSharpOption_1_Result_1_LintWarning_____ctor$FSharpOption_1_Result_1_LintWarning___, AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___, AsyncParamsAux___ctor$, AsyncBuilder___ctor$, AsyncBuilder__Zero$, AsyncBuilder__TryWith$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Return$String___String___, AsyncBuilder__Return$Object___Object___, AsyncBuilder__Return$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___, AsyncBuilder__Return$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Delay$Unit_Unit_, AsyncBuilder__Delay$String___String___, AsyncBuilder__Delay$Object___Object___, AsyncBuilder__Delay$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___, AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$WebResponse__String___WebResponse__String___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_LintWarning___String____FSharpOption_1_Result_1_LintWarning___, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Error___String____FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$Object____Unit_Object____Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_LintWarning____Object___FSharpOption_1_Result_1_LintWarning____Object___, AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Result_1_Error____Object___, Array__ZeroCreate$String___String___, Array__ZeroCreate$String_1String, Array__ZeroCreate$Object___Object___, Array__ZeroCreate$Object_Object_, Array__ZeroCreate$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___, Array__ZeroCreate$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Array__MapIndexed$String_1_String___String_String___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_LintWarning___String_FSharpOption_1_Result_1_LintWarning___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__MapIndexed$LintWarning__Object_LintWarning__Object_, Array__MapIndexed$Error__Object_Error__Object_, Array__Map$String_1_String___String_String___, Array__Map$String_1_FSharpOption_1_Result_1_LintWarning___String_FSharpOption_1_Result_1_LintWarning___, Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__Map$LintWarning__Object_LintWarning__Object_, Array__Map$Error__Object_Error__Object_, Array__Length$String_1String, Array__Length$LintWarning_LintWarning_, Array__Length$Error_Error_, Array__GetSubArray$Byte_Byte, Array__FoldIndexed$String____String_1String____String, Array__Fold$String_1_String___String_String___, Array__ConcatImpl$String_1String, Array__ConcatImpl$Object_Object_, Array__Concat$String_1String, Array__Concat$Object_Object_, Array__BoxedLength$, Array__Append$Object_Object_, Array__Append$Byte_Byte;
 Array__Append$Byte_Byte = (function(xs,ys)
 {
     return xs.concat(ys);;
@@ -68,7 +68,7 @@ Array__Length$Error_Error_ = (function(xs)
 {
     return xs.length;;
 });
-Array__Length$Lint_Lint_ = (function(xs)
+Array__Length$LintWarning_LintWarning_ = (function(xs)
 {
     return xs.length;;
 });
@@ -86,9 +86,9 @@ Array__Map$Error__Object_Error__Object_ = (function(f,xs)
       });
     }), xs);
 });
-Array__Map$Lint__Object_Lint__Object_ = (function(f,xs)
+Array__Map$LintWarning__Object_LintWarning__Object_ = (function(f,xs)
 {
-    return Array__MapIndexed$Lint__Object_Lint__Object_((function(_arg1)
+    return Array__MapIndexed$LintWarning__Object_LintWarning__Object_((function(_arg1)
     {
       return (function(x)
       {
@@ -106,9 +106,9 @@ Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result
       });
     }), xs);
 });
-Array__Map$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___ = (function(f,xs)
+Array__Map$String_1_FSharpOption_1_Result_1_LintWarning___String_FSharpOption_1_Result_1_LintWarning___ = (function(f,xs)
 {
-    return Array__MapIndexed$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___((function(_arg1)
+    return Array__MapIndexed$String_1_FSharpOption_1_Result_1_LintWarning___String_FSharpOption_1_Result_1_LintWarning___((function(_arg1)
     {
       return (function(x)
       {
@@ -136,10 +136,10 @@ Array__MapIndexed$Error__Object_Error__Object_ = (function(f,xs)
     };
     return ys;
 });
-Array__MapIndexed$Lint__Object_Lint__Object_ = (function(f,xs)
+Array__MapIndexed$LintWarning__Object_LintWarning__Object_ = (function(f,xs)
 {
-    var ys = Array__ZeroCreate$Object_Object_(Array__Length$Lint_Lint_(xs));
-    for (var i = 0; i <= (Array__Length$Lint_Lint_(xs) - 1); i++)
+    var ys = Array__ZeroCreate$Object_Object_(Array__Length$LintWarning_LintWarning_(xs));
+    for (var i = 0; i <= (Array__Length$LintWarning_LintWarning_(xs) - 1); i++)
     {
       ys[i] = f(i)(xs[i]);
       null;
@@ -156,9 +156,9 @@ Array__MapIndexed$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1
     };
     return ys;
 });
-Array__MapIndexed$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___ = (function(f,xs)
+Array__MapIndexed$String_1_FSharpOption_1_Result_1_LintWarning___String_FSharpOption_1_Result_1_LintWarning___ = (function(f,xs)
 {
-    var ys = Array__ZeroCreate$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Array__Length$String_1String(xs));
+    var ys = Array__ZeroCreate$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Array__Length$String_1String(xs));
     for (var i = 0; i <= (Array__Length$String_1String(xs) - 1); i++)
     {
       ys[i] = f(i)(xs[i]);
@@ -180,7 +180,7 @@ Array__ZeroCreate$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error_
 {
     return new Array(size);;
 });
-Array__ZeroCreate$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___ = (function(size)
+Array__ZeroCreate$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___ = (function(size)
 {
     return new Array(size);;
 });
@@ -214,7 +214,7 @@ AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Resu
       return v((new AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___(cont, k.Aux)));
     }));
 });
-AsyncBuilder__Bind$FSharpOption_1_Result_1_Lint____Object___FSharpOption_1_Result_1_Lint____Object___ = (function(x,_arg1,f)
+AsyncBuilder__Bind$FSharpOption_1_Result_1_LintWarning____Object___FSharpOption_1_Result_1_LintWarning____Object___ = (function(x,_arg1,f)
 {
     var v = _arg1.Item;
     return Async__protectedCont$Object___Object___((function(k)
@@ -225,7 +225,7 @@ AsyncBuilder__Bind$FSharpOption_1_Result_1_Lint____Object___FSharpOption_1_Resul
         var r = patternInput.Item;
         return r(k);
       });
-      return v((new AsyncParams_1_FSharpOption_1_Result_1_Lint_____ctor$FSharpOption_1_Result_1_Lint___(cont, k.Aux)));
+      return v((new AsyncParams_1_FSharpOption_1_Result_1_LintWarning_____ctor$FSharpOption_1_Result_1_LintWarning___(cont, k.Aux)));
     }));
 });
 AsyncBuilder__Bind$Object____Unit_Object____Unit_ = (function(x,_arg1,f)
@@ -256,10 +256,10 @@ AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Error___String____FSharpOpt
       return v((new AsyncParams_1_String_____ctor$String___(cont, k.Aux)));
     }));
 });
-AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Lint___String____FSharpOption_1_Result_1_Lint___ = (function(x,_arg1,f)
+AsyncBuilder__Bind$String____FSharpOption_1_Result_1_LintWarning___String____FSharpOption_1_Result_1_LintWarning___ = (function(x,_arg1,f)
 {
     var v = _arg1.Item;
-    return Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___((function(k)
+    return Async__protectedCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___((function(k)
     {
       var cont = (function(a)
       {
@@ -294,9 +294,9 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Erro
       return r(k);
     }));
 });
-AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___ = (function(x,f)
+AsyncBuilder__Delay$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___ = (function(x,f)
 {
-    return Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___((function(k)
+    return Async__protectedCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___((function(k)
     {
       var _2259;
       var patternInput = f(_2259);
@@ -308,8 +308,8 @@ AsyncBuilder__Delay$Object___Object___ = (function(x,f)
 {
     return Async__protectedCont$Object___Object___((function(k)
     {
-      var _2876;
-      var patternInput = f(_2876);
+      var _2860;
+      var patternInput = f(_2860);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -328,8 +328,8 @@ AsyncBuilder__Delay$Unit_Unit_ = (function(x,f)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _3040;
-      var patternInput = f(_3040);
+      var _3024;
+      var patternInput = f(_3024);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -341,11 +341,11 @@ AsyncBuilder__Return$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Err
       return Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___(k, v);
     }));
 });
-AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___ = (function(x,v)
+AsyncBuilder__Return$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___ = (function(x,v)
 {
-    return Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___((function(k)
+    return Async__protectedCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___((function(k)
     {
-      return Async__invokeCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(k, v);
+      return Async__invokeCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(k, v);
     }));
 });
 AsyncBuilder__Return$Object___Object___ = (function(x,v)
@@ -377,10 +377,10 @@ AsyncBuilder__TryWith$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Er
       return v((new AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___(k.Cont, Aux)));
     }));
 });
-AsyncBuilder__TryWith$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___ = (function(x,_arg2,catchFunction)
+AsyncBuilder__TryWith$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___ = (function(x,_arg2,catchFunction)
 {
     var v = _arg2.Item;
-    return Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___((function(k)
+    return Async__protectedCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___((function(k)
     {
       CancellationToken__ThrowIfCancellationRequested$(k.Aux.CancellationToken);
       var inputRecord = k.Aux;
@@ -389,15 +389,15 @@ AsyncBuilder__TryWith$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lin
         return k.Cont(catchFunction(ex));
       });
       var Aux = (new AsyncParamsAux___ctor$(inputRecord.StackCounter, ExceptionCont, inputRecord.CancelledCont, inputRecord.CancellationToken));
-      return v((new AsyncParams_1_FSharpOption_1_Result_1_Lint_____ctor$FSharpOption_1_Result_1_Lint___(k.Cont, Aux)));
+      return v((new AsyncParams_1_FSharpOption_1_Result_1_LintWarning_____ctor$FSharpOption_1_Result_1_LintWarning___(k.Cont, Aux)));
     }));
 });
 AsyncBuilder__Zero$ = (function(x,unitVar1)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _2902;
-      return Async__invokeCont$Unit_Unit_(k, _2902);
+      var _2886;
+      return Async__invokeCont$Unit_Unit_(k, _2886);
     }));
 });
 AsyncBuilder___ctor$ = (function(unitVar0)
@@ -418,7 +418,7 @@ AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Err
     __this.Cont = Cont;
     __this.Aux = Aux;
 });
-AsyncParams_1_FSharpOption_1_Result_1_Lint_____ctor$FSharpOption_1_Result_1_Lint___ = (function(Cont,Aux)
+AsyncParams_1_FSharpOption_1_Result_1_LintWarning_____ctor$FSharpOption_1_Result_1_LintWarning___ = (function(Cont,Aux)
 {
     var __this = this;
     __this.Cont = Cont;
@@ -455,7 +455,7 @@ Async_1_FSharpOption_1_Result_1_Error____ContFSharpOption_1_Result_1_Error___ = 
     __this._CaseName = "Cont";
     __this.Item = Item;
 });
-Async_1_FSharpOption_1_Result_1_Lint____ContFSharpOption_1_Result_1_Lint___ = (function(Item)
+Async_1_FSharpOption_1_Result_1_LintWarning____ContFSharpOption_1_Result_1_LintWarning___ = (function(Item)
 {
     var __this = this;
     __this.Tag = 0.000000;
@@ -478,17 +478,17 @@ Async_1_Object____ContObject___ = (function(Item)
 });
 Async_1_StartImmediate$ = (function(workflow,cancellationToken)
 {
-    var _3048;
+    var _3032;
     if ((cancellationToken.Tag == 1.000000)) 
     {
       var v = Option__GetValue$CancellationToken_CancellationToken_(cancellationToken);
-      _3048 = v;
+      _3032 = v;
     }
     else
     {
-      _3048 = (new CancellationToken___ctor$({Tag: 0.000000}));
+      _3032 = (new CancellationToken___ctor$({Tag: 0.000000}));
     };
-    var token = _3048;
+    var token = _3032;
     var f = workflow.Item;
     var aux = (new AsyncParamsAux___ctor$({contents: 0}, (function(value)
     {
@@ -531,7 +531,7 @@ Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error_
 {
     return k.Cont(value);
 });
-Async__invokeCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___ = (function(k,value)
+Async__invokeCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___ = (function(k,value)
 {
     return k.Cont(value);
 });
@@ -581,9 +581,9 @@ Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Err
       };
     })));
 });
-Async__protectedCont$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___ = (function(f)
+Async__protectedCont$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___ = (function(f)
 {
-    return (new Async_1_FSharpOption_1_Result_1_Lint____ContFSharpOption_1_Result_1_Lint___((function(args)
+    return (new Async_1_FSharpOption_1_Result_1_LintWarning____ContFSharpOption_1_Result_1_LintWarning___((function(args)
     {
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
@@ -851,12 +851,12 @@ ErrorLinterProvider__lint$ = (function(editor)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Result_1_Error____Object___(Async__get_async$(), LanguageService__parseEditor$(editor), (function(_arg1)
       {
         var result = _arg1;
-        return AsyncBuilder__Bind$FSharpOption_1_Result_1_Lint____Object___FSharpOption_1_Result_1_Lint____Object___(Async__get_async$(), LanguageService__lint$(editor), (function(_arg2)
+        return AsyncBuilder__Bind$FSharpOption_1_Result_1_LintWarning____Object___FSharpOption_1_Result_1_LintWarning____Object___(Async__get_async$(), LanguageService__lint$(editor), (function(_arg2)
         {
           var result_ = _arg2;
           var linter = (((window.atom).config).get("texton.UseLinter"));
           var _2333;
-          var matchValue = (new TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_Lint___(result, result_));
+          var matchValue = (new TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_LintWarning___(result, result_));
           if ((matchValue.Items[0.000000].Tag == 0.000000)) 
           {
             if ((matchValue.Items[1.000000].Tag == 0.000000)) 
@@ -865,10 +865,10 @@ ErrorLinterProvider__lint$ = (function(editor)
             }
             else
             {
-              var n = Option__GetValue$Result_1_Lint___Result_1_Lint___(matchValue.Items[1.000000]);
+              var n = Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___(matchValue.Items[1.000000]);
               if (linter) 
               {
-                _2333 = Array__Map$Lint__Object_Lint__Object_((function(item)
+                _2333 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
                 {
                   return ErrorLinterProvider__mapLint$(editor, item);
                 }), n.Data);
@@ -892,24 +892,24 @@ ErrorLinterProvider__lint$ = (function(editor)
             else
             {
               var __n = Option__GetValue$Result_1_Error___Result_1_Error___(matchValue.Items[0.000000]);
-              var n_ = Option__GetValue$Result_1_Lint___Result_1_Lint___(matchValue.Items[1.000000]);
+              var n_ = Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___(matchValue.Items[1.000000]);
               var r = Array__Map$Error__Object_Error__Object_((function(item)
               {
                 return ErrorLinterProvider__mapError$(editor, item);
               }), __n.Data);
-              var _2532;
+              var _2516;
               if (linter) 
               {
-                _2532 = Array__Map$Lint__Object_Lint__Object_((function(item)
+                _2516 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
                 {
                   return ErrorLinterProvider__mapLint$(editor, item);
                 }), n_.Data);
               }
               else
               {
-                _2532 = [];
+                _2516 = [];
               };
-              var r_ = _2532;
+              var r_ = _2516;
               _2333 = Array__Concat$Object_Object_(Seq__OfList$Object___Object___(List__CreateCons$Object___Object___(r, List__CreateCons$Object___Object___(r_, List__Empty$Object___Object___()))));
             };
           };
@@ -925,7 +925,7 @@ ErrorLinterProvider__mapError$ = (function(editor,item)
 });
 ErrorLinterProvider__mapLint$ = (function(editor,item)
 {
-    var range = [[(item.Range.StartLine - 1), (item.Range.StartColumn - 1)], [(item.Range.EndLine - 1), (item.Range.EndColumn - 1)]];
+    var range = [[(item.StartLine - 1), (item.StartColumn - 1)], [(item.EndLine - 1), (item.EndColumn - 1)]];
     return (new LintResult___ctor$("Trace", String__Replace$(item.Info, "\n", ""), (((editor.buffer).file).path), range));
 });
 LanguageService__genPort$ = (function(unitVar0)
@@ -946,13 +946,13 @@ LanguageService__lint$ = (function(editor)
 {
     if ((TextOnViewHelpers__isTextOnEditor$(editor) && (((editor.buffer).file) != null))) 
     {
-      return LanguageService__send$Lint___Lint___(0, LanguageService__request$LintRequest_LintRequest_(LanguageService__url$("lint"), (new LintRequest___ctor$((((editor.buffer).file).path)))));
+      return LanguageService__send$LintWarning___LintWarning___(0, LanguageService__request$LintRequest_LintRequest_(LanguageService__url$("lint"), (new LintRequest___ctor$((((editor.buffer).file).path)))));
     }
     else
     {
-      return AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), (function(unitVar)
+      return AsyncBuilder__Delay$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), (function(unitVar)
       {
-        return AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), {Tag: 0.000000});
+        return AsyncBuilder__Return$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), {Tag: 0.000000});
       }));
     };
 });
@@ -1078,14 +1078,14 @@ LanguageService__parseResponse$Error___Error___ = (function(response)
       };
     }), response);
 });
-LanguageService__parseResponse$Lint___Lint___ = (function(response)
+LanguageService__parseResponse$LintWarning___LintWarning___ = (function(response)
 {
-    return Array__Map$String_1_FSharpOption_1_Result_1_Lint___String_FSharpOption_1_Result_1_Lint___((function(s)
+    return Array__Map$String_1_FSharpOption_1_Result_1_LintWarning___String_FSharpOption_1_Result_1_LintWarning___((function(s)
     {
-      var matchValue = LanguageService__tryParse$Result_1_Lint___Result_1_Lint___(s);
+      var matchValue = LanguageService__tryParse$Result_1_LintWarning___Result_1_LintWarning___(s);
       if ((matchValue.Tag == 1.000000)) 
       {
-        var event = Option__GetValue$Result_1_Lint___Result_1_Lint___(matchValue);
+        var event = Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___(matchValue);
         var o = event;
         Logger__logf$("Service", "Got \u0027%s\u0027: %O", [event.Kind, o]);
         var _matchValue = event.Kind;
@@ -1248,22 +1248,22 @@ LanguageService__send$Error___Error___ = (function(id,req)
       }));
     }));
 });
-LanguageService__send$Lint___Lint___ = (function(id,req)
+LanguageService__send$LintWarning___LintWarning___ = (function(id,req)
 {
-    return AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), (function(unitVar)
+    return AsyncBuilder__Delay$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), (function(unitVar)
     {
-      return AsyncBuilder__TryWith$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), AsyncBuilder__Delay$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), (function(_unitVar)
+      return AsyncBuilder__TryWith$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), AsyncBuilder__Delay$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), (function(_unitVar)
       {
-        return AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Lint___String____FSharpOption_1_Result_1_Lint___(Async__get_async$(), req, (function(_arg1)
+        return AsyncBuilder__Bind$String____FSharpOption_1_Result_1_LintWarning___String____FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), req, (function(_arg1)
         {
           var r = _arg1;
-          return AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), LanguageService__parseResponse$Lint___Lint___(r)[id]);
+          return AsyncBuilder__Return$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), LanguageService__parseResponse$LintWarning___LintWarning___(r)[id]);
         }));
       })), (function(_arg2)
       {
         var e = _arg2;
         Logger__logf$("ERROR", "Parsing response failed: %O", [e]);
-        return AsyncBuilder__Return$FSharpOption_1_Result_1_Lint___FSharpOption_1_Result_1_Lint___(Async__get_async$(), {Tag: 0.000000});
+        return AsyncBuilder__Return$FSharpOption_1_Result_1_LintWarning___FSharpOption_1_Result_1_LintWarning___(Async__get_async$(), {Tag: 0.000000});
       }));
     }));
 });
@@ -1318,7 +1318,7 @@ LanguageService__tryParse$Result_1_Error___Result_1_Error___ = (function(s)
       return {Tag: 0.000000};
     };
 });
-LanguageService__tryParse$Result_1_Lint___Result_1_Lint___ = (function(s)
+LanguageService__tryParse$Result_1_LintWarning___Result_1_LintWarning___ = (function(s)
 {
     try
     {
@@ -1726,7 +1726,7 @@ Option__GetValue$Result_1_Error___Result_1_Error___ = (function(option)
 {
     return option.Value;;
 });
-Option__GetValue$Result_1_Lint___Result_1_Lint___ = (function(option)
+Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___ = (function(option)
 {
     return option.Value;;
 });
@@ -1941,8 +1941,8 @@ Seq__FromFactory$Object___Object___ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _2645;
-        return __.factory(_2645);
+        var _2629;
+        return __.factory(_2629);
       })(impl, unitVar1);
     })};
 });
@@ -1972,7 +1972,7 @@ Seq__Iterate$Disposable_Disposable_ = (function(f,xs)
 });
 Seq__IterateIndexed$Object___Object___ = (function(f,xs)
 {
-    var _2665;
+    var _2649;
     return Seq__FoldIndexed$Object____Unit_Object____Unit_((function(i)
     {
       return (function(unitVar1)
@@ -1982,7 +1982,7 @@ Seq__IterateIndexed$Object___Object___ = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _2665, xs);
+    }), _2649, xs);
 });
 Seq__IterateIndexed$String___String___ = (function(f,xs)
 {
@@ -2113,8 +2113,8 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
           });
           return (Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___(__.acc) && (function()
           {
-            var _2623;
-            return next(_2623);
+            var _2607;
+            return next(_2607);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -2514,7 +2514,7 @@ TupleFSharpFunc_2_WebResponse__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_
     var __this = this;
     __this.Items = [Item0, Item1, Item2];
 });
-TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_Lint___ = (function(Item0,Item1)
+TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_LintWarning___ = (function(Item0,Item1)
 {
     var __this = this;
     __this.Items = [Item0, Item1];

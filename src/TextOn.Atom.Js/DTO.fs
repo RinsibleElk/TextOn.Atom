@@ -82,11 +82,21 @@ module DTO =
         EndLine: int
     }
 
-    type Lint = {
-        Info : string
-        Input : string
-        Range : Range
-    }
+    type LintWarning =
+        {
+            /// Warning to display to the user.
+            Info: string
+            /// 1-indexed first line of the lint block
+            StartLine : int
+            /// 1-indexed first column of the lint block
+            StartColumn : int
+            /// 1-indexed last line of the lint block
+            EndLine : int
+            /// 1-indexed last column of the lint block
+            EndColumn : int
+            /// Entire input file, needed to display where in the file the error occurred.
+            Input: string
+        }
 
     type Result<'T> = {Kind : string; Data : 'T}
     type CompilerLocationResult = Result<CompilerLocation>
@@ -96,4 +106,4 @@ module DTO =
     type TooltipResult = Result<OverloadSignature[][]>
     type ParseResult = Result<Error[]>
     type FindDeclarationResult = Result<Declaration>
-    type LintResult = Result<Lint[]>
+    type LintResult = Result<LintWarning[]>

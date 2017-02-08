@@ -35,9 +35,9 @@ module ErrorLinterProvider =
           range = range
         } :> obj
 
-    let mapLint (editor : IEditor)  (item : DTO.Lint) =
-        let range = [|[|float (item.Range.StartLine - 1); float (item.Range.StartColumn - 1)|];
-                        [|float (item.Range.EndLine - 1);  float (item.Range.EndColumn - 1)|]|]
+    let mapLint (editor : IEditor)  (item : DTO.LintWarning) =
+        let range = [|[|float (item.StartLine - 1); float (item.StartColumn - 1)|];
+                        [|float (item.EndLine - 1);  float (item.EndColumn - 1)|]|]
         { ``type`` = "Trace"
           text = item.Info.Replace("\n", "")
           filePath = editor.buffer.file.path
