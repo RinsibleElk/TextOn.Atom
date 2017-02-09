@@ -10,7 +10,6 @@ open FunScript.TypeScript.text_buffer
 open FunScript.TypeScript.path
 
 open Atom
-open Atom.FSharp
 open TextOn.Atom.Js
 open TextOn.Atom.Js.Control
 

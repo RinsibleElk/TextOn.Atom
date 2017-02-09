@@ -8,7 +8,6 @@ open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 
 open Atom
-open Atom.FSharp
 open TextOn.Atom.Js.Control
 
 [<ReflectedDefinition>]

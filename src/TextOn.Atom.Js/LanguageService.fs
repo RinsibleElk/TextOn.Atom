@@ -8,7 +8,6 @@ open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 open Atom
-open Atom.FSharp
 open Control
 open DTO
 

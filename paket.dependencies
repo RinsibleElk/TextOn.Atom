@@ -1,10 +1,12 @@
 source https://nuget.org/api/v2
 
-git https://github.com/ionide/ionide-helpers.git master build:"build.cmd"
-
 nuget FAKE
-nuget FantomasCLI
 nuget FunScript
 nuget Suave
 nuget Newtonsoft.Json
+nuget FSharp.Core ~> 4
 nuget FSharp.Data
+nuget FsCheck
+nuget FsUnit
+nuget NUnit
+nuget Unquote

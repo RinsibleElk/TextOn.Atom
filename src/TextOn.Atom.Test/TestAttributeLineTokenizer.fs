@@ -24,13 +24,13 @@ let test lines =
         (fun (s, e, r) ->
             let eLen = e |> List.length
             let rLen = r |> List.length
-            let eTrun = e |> List.truncate rLen
-            let rTrun = r |> List.truncate eLen
+            let eTrun = e |> Seq.truncate rLen |> Seq.toList
+            let rTrun = r |> Seq.truncate eLen |> Seq.toList
             let firstIncorrect = List.zip eTrun rTrun |> List.tryFind (fun (e,r) -> e <> r) |> Option.map (fun (e,r) -> sprintf "%A\n\n<>\n\n%A" e r)
             if eLen > rLen then
-                failwithf "Too short for %s - got %d tokens, expected %d tokens, first missing token %A, first incorrect token %A" s rLen eLen (e |> List.skip (rLen) |> List.head) firstIncorrect
+                failwithf "Too short for %s - got %d tokens, expected %d tokens, first missing token %A, first incorrect token %A" s rLen eLen (e |> Seq.skip (rLen) |> Seq.head) firstIncorrect
             else if eLen < rLen then
-                failwithf "Too long for %s - got %d tokens, expected %d tokens, first extra token %A, first incorrect token %A" s rLen eLen (r |> List.skip (eLen) |> List.head) firstIncorrect
+                failwithf "Too long for %s - got %d tokens, expected %d tokens, first extra token %A, first incorrect token %A" s rLen eLen (r |> Seq.skip (eLen) |> Seq.head) firstIncorrect
             else if firstIncorrect.IsSome then
                 failwithf "Incorrect token for %s %s" s firstIncorrect.Value)
 
