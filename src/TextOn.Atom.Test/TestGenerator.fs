@@ -16,7 +16,8 @@ let noVariablesInput = {
                 NumBlankLinesBetweenParagraphs = 1
                 LineEnding = CRLF }
     Attributes = []
-    Variables = [] }
+    Variables = []
+    Function = None }
 
 let exampleFileName = "example.texton"
 let exampleLineNumber = 1
@@ -176,7 +177,8 @@ let makeSingleAttributeInput gender = {
                 NumBlankLinesBetweenParagraphs = 1
                 LineEnding = CRLF }
     Attributes = [{Name = "Gender";Value = gender}]
-    Variables = [] }
+    Variables = []
+    Function = None }
 
 [<Test>]
 let ``Test successful condition``() =
@@ -271,7 +273,8 @@ let makeSingleVariableInput country = {
                 NumBlankLinesBetweenParagraphs = 1
                 LineEnding = CRLF }
     Attributes = []
-    Variables = [{Name = "Country";Value = country}] }
+    Variables = [{Name = "Country";Value = country}]
+    Function = None }
 
 [<Test>]
 let ``Test variable replacement``() =
@@ -295,7 +298,8 @@ let makeNoVariablesInputWithSeed seed = {
                 NumBlankLinesBetweenParagraphs = 1
                 LineEnding = CRLF }
     Attributes = []
-    Variables = [] }
+    Variables = []
+    Function = None }
 
 [<Test>]
 let ``Test using same seed gets same value``() =

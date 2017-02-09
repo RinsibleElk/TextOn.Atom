@@ -41,7 +41,9 @@ type GeneratorInput = {
     /// Attribute values.
     Attributes : StringNameValuePair list
     /// Variable values.
-    Variables : StringNameValuePair list }
+    Variables : StringNameValuePair list
+    /// The function to generate text for. Default: "main".
+    Function : string option }
 
 type AttributedOutputString = {
     InputFile : string
@@ -149,8 +151,9 @@ module Generator =
         | (Some e, _)
         | (_, Some e) -> GeneratorError e
         | _ ->
-            let mainFunction = compiledTemplate.Functions |> Array.tryFind (fun f -> f.Name = "main")
-            if mainFunction.IsNone then GeneratorError "No main function defined - nothing to generate"
+            let functionName = input.Function |> defaultArg <| "main"
+            let mainFunction = compiledTemplate.Functions |> Array.tryFind (fun f -> f.Name = functionName)
+            if mainFunction.IsNone then GeneratorError (sprintf "No %s function defined - nothing to generate" functionName)
             else
                 let definition = mainFunction.Value.Tree
                 let output = generateInner attributeValues variableValues (compiledTemplate.Functions |> Array.map (fun fn -> (fn.Index, fn.Tree)) |> Map.ofArray) random definition |> Seq.toList

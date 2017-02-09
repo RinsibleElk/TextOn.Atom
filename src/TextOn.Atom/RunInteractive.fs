@@ -21,6 +21,8 @@ type InteractiveConfig =
         UseRandomSeed : int option
         [<ArgDescription("If specified, repeat with different inputs.")>]
         Continuous : bool option
+        [<ArgDescription("The function to generate for. Default: \"main\".")>]
+        Function : string option
     }
 
 [<RequireQualifiedAccess>]
@@ -105,7 +107,8 @@ module internal RunInteractive =
                     Variables =
                         template.Variables
                         |> List.ofArray
-                        |> List.map (fun att -> { Name = att.Name ; Value = variableValues.[att.Index] }) }
+                        |> List.map (fun att -> { Name = att.Name ; Value = variableValues.[att.Index] })
+                    Function = interactive.Function }
                 Generator.generate generatorInput template
                 |> function
                     | GeneratorSuccess output ->
