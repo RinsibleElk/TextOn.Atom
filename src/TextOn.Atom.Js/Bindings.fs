@@ -1,4 +1,4 @@
-﻿namespace Atom
+﻿namespace TextOn.Atom.Js
 
 open FunScript
 open FunScript.TypeScript

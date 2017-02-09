@@ -9,8 +9,6 @@ open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 
-open Atom
-
 [<ReflectedDefinition>]
 module TextOnProcess =
     type Options = {cwd : string}

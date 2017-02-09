@@ -6,8 +6,6 @@ open FunScript.TypeScript.fs
 open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
-
-open Atom
 open TextOn.Atom.Js.Control
 
 [<ReflectedDefinition>]
@@ -16,7 +14,7 @@ module ErrorLinterProvider =
         grammarScopes : string[]
         scope         : string
         lintOnFly     : bool
-        lint          : IEditor -> Atom.Promise.Promise  }
+        lint          : IEditor -> Promise.Promise  }
 
     type LintResult = {
         ``type`` : string

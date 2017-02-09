@@ -55,9 +55,9 @@ type Microsoft.FSharp.Control.Async with
 
   /// Starts the specified asynchronous computation as Atom's promise
   static member StartAsPromise(computation:Async<'T[]>) = 
-    Atom.Promise.create(fun () ->
+    Promise.create(fun () ->
       async { let! res = computation
-              Atom.Promise.resolve(unbox res) } |> Async.StartImmediate)
+              Promise.resolve(unbox res) } |> Async.StartImmediate)
 
 /// A cell in `Queue<T>`
 type private QueueCell<'T> = 

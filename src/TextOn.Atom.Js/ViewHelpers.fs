@@ -7,8 +7,6 @@ open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 
-open Atom
-
 [<AutoOpen>]
 [<ReflectedDefinition>]
 module TextOnViewHelpers =
@@ -24,7 +22,7 @@ module TextOnViewHelpers =
     let getElementsByClass cls e =
         e
         |> fun n -> if JS.isDefined n then Some n else None
-        |> Option.map (Atom.JS.getProperty<HTMLElement> "rootElement")
+        |> Option.map (JS.getProperty<HTMLElement> "rootElement")
         |> Option.map (fun n -> n.querySelectorAll cls)
 
     let pixelPositionFromMouseEvent (e : JQueryMouseEventObject) =

@@ -8,8 +8,6 @@ open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 open FunScript.TypeScript.path
-
-open Atom
 open TextOn.Atom.Js
 open TextOn.Atom.Js.Control
 

@@ -8,8 +8,6 @@ open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 open Control
 
-open Atom
-
 module Util =
     [<JSEmitInline("util.format.apply(util, {0})")>]
     let format (args:obj[]) : string = failwith "!"
