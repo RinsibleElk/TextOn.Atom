@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------------------------
 
 #if INTERACTIVE
-#I "../../paket-files/github.com/ionide/ionide-helpers/release"
+#I "../../lib"
 #I "../../packages/FunScript/lib/net40"
 
 #r "FunScript.dll"
@@ -12,5 +12,4 @@
 #r "FunScript.TypeScript.Binding.jquery.dll"
 #r "FunScript.TypeScript.Binding.lib.dll"
 #r "FunScript.TypeScript.Binding.node.dll"
-#r "Ionide.Helpers.dll"
 #endif
