@@ -153,7 +153,7 @@ module Generator =
         | _ ->
             let functionName = input.Function |> defaultArg <| "main"
             let mainFunction = compiledTemplate.Functions |> Array.tryFind (fun f -> f.Name = functionName)
-            if mainFunction.IsNone then GeneratorError (sprintf "No %s function defined - nothing to generate" functionName)
+            if mainFunction.IsNone then GeneratorError (sprintf "Function \"%s\" is not defined - nothing to generate" functionName)
             else
                 let definition = mainFunction.Value.Tree
                 let output = generateInner attributeValues variableValues (compiledTemplate.Functions |> Array.map (fun fn -> (fn.Index, fn.Tree)) |> Map.ofArray) random definition |> Seq.toList
