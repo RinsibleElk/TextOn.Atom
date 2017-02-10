@@ -12,7 +12,6 @@ open TextOn.Atom
 
 let funcText =
     "@var @free $SomeVar = \"Hello world\"
-
 @func @main
 {
   @choice {
@@ -62,8 +61,8 @@ let expected =
       [|{Name = "main";
          Index = 1;
          File = "example.texton";
-         StartLine = 3;
-         EndLine = 34;
+         StartLine = 2;
+         EndLine = 33;
          Tree =
           Seq
             [|(Choice
