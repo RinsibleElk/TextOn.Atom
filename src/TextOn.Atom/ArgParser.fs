@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Reflection
 open FSharp.Reflection
 open FSharp.Quotations
 open FSharp.Quotations.Patterns
@@ -257,27 +258,72 @@ module ArgParser =
         | UnionData (o) -> o.IsSome
         | InvalidData(_) -> false
         | _ -> true
-    let rec private getArgs (ty:Type) =
+    let private getOptionalArg (ty:Type) (field:PropertyInfo) description range =
+        let genTy = ty.GetGenericArguments().[0]
+        if genTy = typeof<FileInfo> then
+            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveFileInfo))
+        else if genTy = typeof<string> then
+            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveString))
+        else if genTy = typeof<int> then
+            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveInt))
+        else if genTy = typeof<double> then
+            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveDouble))
+        else if genTy = typeof<bool> then
+            (field.Name, ArgOptionalBool((makeName field.Name), description))
+        else if genTy |> FSharpType.IsUnion then
+            let cases = FSharpType.GetUnionCases genTy
+            let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
+            if isSimple then
+                (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveUnion(genTy)))
+            else
+                (field.Name, ArgInvalid)
+        else
+            (field.Name, ArgInvalid)
+    let private getListArg (ty:Type) (field:PropertyInfo) description range =
+        let genTy = ty.GetGenericArguments().[0]
+        if genTy = typeof<string> then
+            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveString))
+        else if genTy = typeof<FileInfo> then
+            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveFileInfo))
+        else if genTy = typeof<int> then
+            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveInt))
+        else if genTy = typeof<double> then
+            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveDouble))
+        else if genTy = typeof<bool> then
+            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveBool))
+        else if genTy |> FSharpType.IsUnion then
+            let cases = FSharpType.GetUnionCases genTy
+            let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
+            if isSimple then
+                (field.Name, ArgList((makeName field.Name), description, range, PrimitiveUnion(genTy)))
+            else
+                (field.Name, ArgInvalid)
+        else
+            (field.Name, ArgInvalid)
+    let rec private getUnionArgs ty =
+        ty
+        |> FSharpType.GetUnionCases
+        |> Array.map
+            (fun caseInfo ->
+                let fields = caseInfo.GetFields()
+                if fields.Length <> 1 then
+                    (caseInfo.Name, ArgInvalid)
+                else
+                    let field = fields.[0]
+                    let ty = field.PropertyType
+                    let description =
+                        caseInfo.GetCustomAttributes(typeof<ArgDescriptionAttribute>)
+                        |> Array.tryFind (fun _ -> true)
+                        |> Option.map (fun a -> (a :?> ArgDescriptionAttribute).Description)
+                        |> defaultArg <| caseInfo.Name
+                    (description, (getArgs ty)))
+        |> fun x ->
+            let isInvalid = x |> Array.map snd |> Array.tryFind (function | ArgInvalid -> true | _ -> false) |> Option.isSome
+            if isInvalid then ArgInvalid
+            else ArgUnion(ty, x)
+    and private getArgs (ty:Type) =
         if (FSharpType.IsUnion ty) then
-            FSharpType.GetUnionCases(ty)
-            |> Array.map
-                (fun caseInfo ->
-                    let fields = caseInfo.GetFields()
-                    if fields.Length <> 1 then
-                        (caseInfo.Name, ArgInvalid)
-                    else
-                        let field = fields.[0]
-                        let ty = field.PropertyType
-                        let description =
-                            caseInfo.GetCustomAttributes(typeof<ArgDescriptionAttribute>)
-                            |> Array.tryFind (fun _ -> true)
-                            |> Option.map (fun a -> (a :?> ArgDescriptionAttribute).Description)
-                            |> defaultArg <| caseInfo.Name
-                        (description, (getArgs ty)))
-            |> fun x ->
-                let isInvalid = x |> Array.map snd |> Array.tryFind (function | ArgInvalid -> true | _ -> false) |> Option.isSome
-                if isInvalid then ArgInvalid
-                else ArgUnion(ty, x)
+            getUnionArgs ty
         else if (FSharpType.IsRecord ty) then
             FSharpType.GetRecordFields(ty)
             |> Array.map
@@ -293,47 +339,9 @@ module ArgParser =
                         |> Seq.tryFind (fun _ -> true)
                         |> Option.map (fun a -> a :?> ArgRangeAttribute)
                     if ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<_ option> then
-                        let genTy = ty.GetGenericArguments().[0]
-                        if genTy = typeof<FileInfo> then
-                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveFileInfo))
-                        else if genTy = typeof<string> then
-                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveString))
-                        else if genTy = typeof<int> then
-                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveInt))
-                        else if genTy = typeof<double> then
-                            (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveDouble))
-                        else if genTy = typeof<bool> then
-                            (field.Name, ArgOptionalBool((makeName field.Name), description))
-                        else if genTy |> FSharpType.IsUnion then
-                            let cases = FSharpType.GetUnionCases genTy
-                            let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
-                            if isSimple then
-                                (field.Name, ArgOptional((makeName field.Name), description, range, PrimitiveUnion(genTy)))
-                            else
-                                (field.Name, ArgInvalid)
-                        else
-                            (field.Name, ArgInvalid)
+                        getOptionalArg ty field description range
                     else if ty.IsGenericType && ty.GetGenericTypeDefinition() = typedefof<_ list> then
-                        let genTy = ty.GetGenericArguments().[0]
-                        if genTy = typeof<string> then
-                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveString))
-                        else if genTy = typeof<FileInfo> then
-                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveFileInfo))
-                        else if genTy = typeof<int> then
-                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveInt))
-                        else if genTy = typeof<double> then
-                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveDouble))
-                        else if genTy = typeof<bool> then
-                            (field.Name, ArgList((makeName field.Name), description, range, PrimitiveBool))
-                        else if genTy |> FSharpType.IsUnion then
-                            let cases = FSharpType.GetUnionCases genTy
-                            let isSimple = cases |> Array.map (fun caseInfo -> caseInfo.GetFields() |> Array.isEmpty) |> Array.tryFind not |> Option.isNone
-                            if isSimple then
-                                (field.Name, ArgList((makeName field.Name), description, range, PrimitiveUnion(genTy)))
-                            else
-                                (field.Name, ArgInvalid)
-                        else
-                            (field.Name, ArgInvalid)
+                        getListArg ty field description range
                     else if ty |> FSharpType.IsRecord then
                         let a = getArgs ty
                         if a = ArgInvalid then (field.Name, ArgInvalid)
