@@ -24,26 +24,26 @@ let exampleFileName = "example.texton"
 
 let example =
     [
-        (false, "// Here's a function I can call from within the main.")
-        (true, "@func @guyStuff()")
-        (true, "{")
-        (true, "  @choice {")
-        (true, "    Blah.")
-        (true, "    Whatever.")
-        (true, "  }")
-        (true, "}")
-        (false, "")
-        (false, "    ")
-        (false, "  // Every full TextOn script must have a main function.   ")
-        (true, "@func @main()")
-        (true, "{")
-        (true, "  @seq {")
-        (false, "    // I can include comments at this level too. Note this poses a restriction that if you do want to start your line // we may have to invent an escape.")
-        (true, "    You are a bloke.")
-        (true, "    @guyStuff()")
-        (true, "  }")
-        (true, "}")
-        (false, "")
+        (false, "// Here's a function I can call from within the main.", None)
+        (true, "@func @guyStuff()", None)
+        (true, "{", None)
+        (true, "  @choice {", None)
+        (true, "    Blah.", None)
+        (true, "    Whatever. // Blah blah blah.", Some "    Whatever.")
+        (true, "  }", None)
+        (true, "}", None)
+        (false, "", None)
+        (false, "    ", None)
+        (false, "  // Every full TextOn script must have a main function.   ", None)
+        (true, "@func @main()", None)
+        (true, "{", None)
+        (true, "  @seq {", None)
+        (false, "    // I can include comments at this level too. Note this poses a restriction that if you do want to start your line // we may have to invent an escape.", None)
+        (true, "    You are a bloke.", None)
+        (true, "    @guyStuff()", None)
+        (true, "  }", None)
+        (true, "}", None)
+        (false, "", None)
     ]
 
 let alwaysFailFileResolver _ _ = None
@@ -53,14 +53,14 @@ let ``CommentStripper with lines``() =
     let expected =
         example
         |> List.scan
-            (fun (ln, _) (doInclude,line) ->
+            (fun (ln, _) (doInclude,line,replacedLine) ->
                 (ln + 1,
                     Some (doInclude,
                         {
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
                             CurrentFile = exampleFileName
-                            Contents = PreprocessorLine line})))
+                            Contents = PreprocessorLine (replacedLine |> defaultArg <| line) })))
             (1, None)
         |> List.skip 1
         |> List.map (snd >> Option.get)
@@ -68,7 +68,7 @@ let ``CommentStripper with lines``() =
         |> List.map snd
     let input =
         example
-        |> List.map snd
+        |> List.map (fun (_,line,_) -> line)
         |> Preprocessor.preprocess alwaysFailFileResolver exampleFileName None
     test input expected
 
