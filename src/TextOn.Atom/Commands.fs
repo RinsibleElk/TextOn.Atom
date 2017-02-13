@@ -9,15 +9,25 @@ module Contract =
     type LintRequest = { FileName : string }
 
 type Commands (serialize : Serializer) =
-    let preprocess (file:FileInfo) lines = async { return Preprocessor.preprocess Preprocessor.realFileResolver file.FullName (Some file.Directory.FullName) lines }
-    let stripComments lines = async { return CommentStripper.stripComments lines }
-    let categorize lines = async { return LineCategorizer.categorize lines }
-    let tokenize groups = async { return Tokenizer.tokenize groups }
-    let parse tokens = async { return Parser.parse tokens }
-    let compile source = async { return Compiler.compile source }
+    let fileLinesMap = System.Collections.Concurrent.ConcurrentDictionary<string, string list>()
+    let add fileName directory lines =
+        let key = Path.Combine(directory, fileName).ToLower()
+        let f = System.Func<string, string list, string list>(fun _ _ -> lines)
+        fileLinesMap.AddOrUpdate(key, lines, f) |> ignore
+    let fileResolver f d =
+        let o =
+            d
+            |> Option.bind
+                (fun d ->
+                    let (ok, r) = fileLinesMap.TryGetValue(Path.Combine(d, f).ToLower())
+                    if ok then Some r
+                    else None)
+            |> Option.map (fun x -> (f, d, x))
+        if o.IsNone then Preprocessor.realFileResolver f d
+        else o
     let doCompile fileName directory lines =
         async {
-            let lines = Preprocessor.preprocess Preprocessor.realFileResolver fileName (Some directory) lines
+            let lines = Preprocessor.preprocess fileResolver fileName (Some directory) lines
             let lines' = CommentStripper.stripComments lines
             let groups = LineCategorizer.categorize lines'
             let tokens = groups |> List.map Tokenizer.tokenize
@@ -26,6 +36,7 @@ type Commands (serialize : Serializer) =
             return Success output }
     let parse' fileName directory lines =
         async {
+            add fileName directory lines
             let! result = doCompile fileName directory lines
             return
                 match result with
