@@ -44,7 +44,7 @@
           "match": "\\$\\w+"
         },
         {
-          "name": "entity.other.attribute-name.texton",
+          "name": "constant.symbol.attribute-name.texton",
           "match": "\\%\\w+"
         },
         {
