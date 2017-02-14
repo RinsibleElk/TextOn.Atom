@@ -353,3 +353,49 @@ let ``Test func with no name``() =
                     }
             |]
     test <@ result = expected @>
+
+[<Test>]
+let ``Test not eager on condition errors``() =
+    let lines =
+        "@func @blah {
+  Hello. [%Unknown1 = \"Unknown\" && %Unknown2 = \"Unknown\"]
+  Goodbye. [%Unknown1 = \"Unknown\" || %Unknown2 = \"Unknown\"]
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationFailure
+            [|
+                ParserError
+                    {
+                        File = "example.texton";
+                         LineNumber = 2;
+                         StartLocation = 11;
+                         EndLocation = 19;
+                         ErrorText = "Undefined attribute Unknown1"
+                    }
+                ParserError
+                    {
+                        File = "example.texton"
+                        LineNumber = 2;
+                        StartLocation = 36;
+                        EndLocation = 44;
+                        ErrorText = "Undefined attribute Unknown2"
+                    }
+                ParserError
+                    {
+                        File = "example.texton"
+                        LineNumber = 3;
+                        StartLocation = 13;
+                        EndLocation = 21;
+                        ErrorText = "Undefined attribute Unknown1"
+                    }
+                ParserError
+                    {
+                        File = "example.texton"
+                        LineNumber = 3;
+                        StartLocation = 38;
+                        EndLocation = 46;
+                        ErrorText = "Undefined attribute Unknown2"
+                    }
+            |]
+    test <@ result = expected @>
