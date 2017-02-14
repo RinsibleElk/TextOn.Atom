@@ -269,11 +269,11 @@ module internal FunctionDefinitionParser =
                     let name = match firstLine.[1].Token with | FunctionName name -> name | _ -> "<unknown>"
                     (name, true, (ParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation "Function first line too long")|]))
                 else
-                    let name = match firstLine.[1].Token with | FunctionName name -> Some name | _ -> None
-                    if name.IsNone then
-                        ("<unknown>", true, (ParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation "Unnamed function")|]))
-                    else
-                        let name = name.Value
+                    let name = match firstLine.[1].Token with | FunctionName name -> Choice1Of2 name | InvalidReservedToken value -> Choice2Of2 ("Reserved token: " + value) | _ -> Choice2Of2 "Unnamed function"
+                    match name with
+                    | Choice2Of2 errorText ->
+                        ("<unknown>", true, (ParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation errorText)|]))
+                    | Choice1Of2 name ->
                         if tokenSet.Tokens.[tokenSet.Tokens.Length - 1].Tokens.Length > 1 || tokenSet.Tokens.[tokenSet.Tokens.Length - 1].Tokens.[0].Token <> CloseCurly then
                             let line = tokenSet.Tokens.[tokenSet.Tokens.Length - 1]
                             let attToken = line.Tokens.[0]
