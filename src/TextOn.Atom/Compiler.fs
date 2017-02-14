@@ -34,19 +34,17 @@ module Compiler =
         match condition with
         | ParsedUnconditional -> Result True
         | ParsedOr(c1, c2) ->
-            match (compileCondition file attributeDefinitions c1) with
-            | Errors e -> Errors e
-            | Result c1 ->
-                match (compileCondition file attributeDefinitions c2) with
-                | Errors e -> Errors e
-                | Result c2 -> Result (Either(c1, c2))
+            match ((compileCondition file attributeDefinitions c1), (compileCondition file attributeDefinitions c2)) with
+            | Errors e1, Errors e2 -> Errors (Array.append e1 e2)
+            | Errors e, _
+            | _, Errors e -> Errors e
+            | Result c1, Result c2 -> Result (Either(c1, c2))
         | ParsedAnd(c1, c2) ->
-            match (compileCondition file attributeDefinitions c1) with
-            | Errors e -> Errors e
-            | Result c1 ->
-                match (compileCondition file attributeDefinitions c2) with
-                | Errors e -> Errors e
-                | Result c2 -> Result (Both(c1, c2))
+            match ((compileCondition file attributeDefinitions c1), (compileCondition file attributeDefinitions c2)) with
+            | Errors e1, Errors e2 -> Errors (Array.append e1 e2)
+            | Errors e, _
+            | _, Errors e -> Errors e
+            | Result c1, Result c2 -> Result (Both(c1, c2))
         | ParsedAreEqual(line, startLocation, endLocation, ParsedAttributeName attribute, value) ->
             let att : CompiledAttributeDefinition option = attributeDefinitions |> Map.tryFind attribute
             match att with
