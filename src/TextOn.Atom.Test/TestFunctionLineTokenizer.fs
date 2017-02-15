@@ -35,3 +35,8 @@ let ``Invalid - only an escape character``() =
     if result <> expected then
         failwithf "Didn't get expected result %A\n\n<>\n\n%A" expected result
 
+[<Test>]
+let ``Test funny symbol``() =
+    let result = FunctionLineTokenizer.tokenizeLine "   \\|" |> Seq.toList
+    let expected = [{TokenStartLocation=4;TokenEndLocation=5;Token=RawText "|"}]
+    test <@ expected = result @>

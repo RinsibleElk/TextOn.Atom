@@ -114,6 +114,7 @@ module internal FunctionLineTokenizer =
     let private closeCurlyRegex = Regex("^(\\s*)\\}\\s*$")
     let private unescapedOpenBraceRegex = Regex("^(\\s*)(([^\[\\\\]+|\\\\\[|\\\\\\\\)*)(\[.*)?$")
     let private funcNameRegex = Regex("^@(\w+)(\s*)(\{)?\s*$")
+    let private leadingWhitespaceRegex = Regex("^(\\s*)")
     /// Tokenize a single line of source that has been categorized to lie within a function definition.
     let tokenizeLine (line:string) =
         let funcDefinitionMatch = funcDefinitionRegex.Match(line)
@@ -158,6 +159,6 @@ module internal FunctionLineTokenizer =
                         else
                             tokenizeMain unescapedOpenBraceMatch.Groups.[1].Length unescapedOpenBraceMatch.Groups.[2].Value
             else
-                // I think this can probably only fail if the line is only a backslash?
-                Seq.singleton {TokenStartLocation = 1;TokenEndLocation = line.Length; Token = InvalidUnrecognised line }
-
+                let m = leadingWhitespaceRegex.Match(line)
+                let l = m.Groups.[1].Length
+                tokenizeMain l (line.Substring(l))
