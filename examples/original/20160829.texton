@@ -76,11 +76,11 @@
 @func @stycke20160829_10
 {
   @choice {
-    Vi kan erbjuda {extrafunktioner|tilläggsfunktioner} till din hyrbil i $MÄRKE i form av till exempel {bilbarnstolar|barnstol|bilbarnstol,} {obegränsad körsträcka|extra förare|vintertillägg|dragkrok|premium drive} och {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}.
-    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {bilbarnstolar|barnstol|bilbarnstol,} {vintertillägg|takräcke|dragkrok|försäkringspaket|extraförare} och {moderna|toppmoderna} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem.Planerar} du att köra {långt|en längre sträcka|en längre resesträcka?} Då kan det vara en {smart|god} idé att välja {tillvalen|tillvalstjänsterna} obegränsad körsträcka liksom en extra förare.
-    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {bilbarnstolar|barnstol|bilbarnstol,} {vintertillägg|takräcke|dragkrok|försäkringspaket|extraförare} och {moderna|toppmoderna} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}. Ska du göra en längre {resa|bilresa?} {Då|I såna fall} kan det vara en {smart|god} idé att välja {tillvalen|tillvalstjänsterna} obegränsad körsträcka liksom en extra förare.
-    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {vintertillägg|takräcke|dragkrok|försäkringspaket|extraförare} och {moderna|toppmoderna} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}. Planerar du en {resa med familjen|en familjeresa?} Då erbjuder vi möjligheten att boka {bilbarnstolar|barnstol|bilbarnstol}.
-    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {bilbarnstolar|barnstol|bilbarnstol,} {obegränsad körsträcka|extra förare|vintertillägg|dragkrok|premium driveoch} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}.
+    Vi kan erbjuda {extrafunktioner|tilläggsfunktioner} till din hyrbil i $MÄRKE i form av till exempel {bilbarnstolar|barnstol|bilbarnstol}, {obegränsad körsträcka|extra förare|vintertillägg|dragkrok|premium drive} och {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}.
+    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {bilbarnstolar|barnstol|bilbarnstol}, {vintertillägg|takräcke|dragkrok|försäkringspaket|extraförare} och {moderna|toppmoderna} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem.Planerar} du att köra {långt|en längre sträcka|en längre resesträcka}? Då kan det vara en {smart|god} idé att välja {tillvalen|tillvalstjänsterna} obegränsad körsträcka liksom en extra förare.
+    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {bilbarnstolar|barnstol|bilbarnstol}, {vintertillägg|takräcke|dragkrok|försäkringspaket|extraförare} och {moderna|toppmoderna} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}. Ska du göra en längre {resa|bilresa}? {Då|I såna fall} kan det vara en {smart|god} idé att välja {tillvalen|tillvalstjänsterna} obegränsad körsträcka liksom en extra förare.
+    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {vintertillägg|takräcke|dragkrok|försäkringspaket|extraförare} och {moderna|toppmoderna} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}. Planerar du en {resa med familjen|en familjeresa}? Då erbjuder vi möjligheten att boka {bilbarnstolar|barnstol|bilbarnstol}.
+    Några exempel på dessa {tilläggstjänster|extrafunktioner|tillvalstjänster} är {bilbarnstolar|barnstol|bilbarnstol}, {obegränsad körsträcka|extra förare|vintertillägg|dragkrok|premium driveoch} {navigationssystem|GPS|GPS-tjänster|navigationstjänster|GPS-teknik|navigationssystem|satellitnavigeringssystem}.
   }
 }
 
@@ -92,7 +92,7 @@
     Med {dessa|våra} {tillval|tillvalstjänster} {extrafunktioner|tilläggsfunktioner|tillvalsfunktioner|tilläggsfunktioner} är det alltid {lätt|enkelt} att hyra en bil i $MÄRKE som passar din önskemål.
     På vår biluthyrning i $MÄRKE kan vi alltid ta fram en {lösning|hyrbilslösning} anpassad efter dina {önskemål|krav} när du ska {bege dig ut på|ge dig ut} på vägarna.
     På vår biluthyrning i $MÄRKE kan vi alltid ta fram en {lösning|hyrbilslösning} som passar just dina {behov|körbehov}.
-    På vår biluthyrning i $MÄRKE kan vi alltid ta fram en {lösning|skräddarsydd lösning} som tar hänsyn till dina behov då det gäller {säkerhet|körsäkerhet,} bekvämlighet och {trivsel|ekonomi|komfort}.
+    På vår biluthyrning i $MÄRKE kan vi alltid ta fram en {lösning|skräddarsydd lösning} som tar hänsyn till dina behov då det gäller {säkerhet|körsäkerhet}, bekvämlighet och {trivsel|ekonomi|komfort}.
   }
 }
 
@@ -100,7 +100,7 @@
 {
   @choice {
     Sätt ihop ett paket som passar just {dig|din resa|dina önskemål!}
-    Hitta en {lösning|hyrbilslösning} anpassad efte just dina {krav|önskemål} då det gäller {säkerhet|körsäkerhet,} bekvämlighet och {trivsel|ekonomi|komfort}.
+    Hitta en {lösning|hyrbilslösning} anpassad efte just dina {krav|önskemål} då det gäller {säkerhet|körsäkerhet}, bekvämlighet och {trivsel|ekonomi|komfort}.
   }
 }
 

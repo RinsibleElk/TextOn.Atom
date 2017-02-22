@@ -37,7 +37,7 @@
 
 @func @stycke20160831_4
 {
-  Eller kanske {planerar du|ska du göra|stundar|väntar} en {jobbresa|affärsresa|resa med jobbet|resa i arbetet|resa i arbetets räkning|resa med kollegorna|jobbresa kollegorna|affärsresa med kollegorna?}
+  Eller kanske {planerar du|ska du göra|stundar|väntar} en {jobbresa|affärsresa|resa med jobbet|resa i arbetet|resa i arbetets räkning|resa med kollegorna|jobbresa kollegorna|affärsresa med kollegorna}?
 }
 
 @func @stycke20160831_5
@@ -109,10 +109,10 @@
     Sixt är ett av världens främsta biluthryningsföretag och vi vet hur viktigt det är att ha flexibilitet under {resan|bilresan}.
     Sixt är ett av världens främsta biluthryningsföretag och vi känner väl till betydelsen av flexibilitet under hela {resan|bilresan}.
     Sixt är en av världens främsta {biluthyrare|biluthyrare} och hos oss {hittar|finner} du alltid en {modell|bilmodell} fordonsmodell anpassad utifrån din {krav|önskemål|resebehov|reseönskemål}.
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} är det alltid dina {krav|önskemål|resebehov|reseönskemål} som står i centrum.
+    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag}, är det alltid dina {krav|önskemål|resebehov|reseönskemål} som står i centrum.
     Sixt är en av världens främsta {biluthyrare|biluthyrare} och vi vet hur viktigt det är att du som {kund|förare} kan skapa en skräddarsydd lösning som passar just {dig|din resa}.
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,} {har din|ges din} resa alltid hög grad av flexibilitet
-    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag,}
+    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag}, {har din|ges din} resa alltid hög grad av flexibilitet
+    Hos oss på Sixt, som är en av världens {främsta|största} {biluthyrare|biluthyrningsföretag|hyrbilsföretag},
     får alltid {många|en rad|ett stort antal} {valmöjligheter|alternativ|hyrbilsmöjligheter} {när|då} du väljer att hyra bil i $MÄRKE.
   }
 }

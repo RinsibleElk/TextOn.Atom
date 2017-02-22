@@ -48,19 +48,19 @@
   @choice {
     Om det är en semester som lockar, och du ska hyra bil i $MÄRKE, så är det här även ett perfekt läge för fortsatta utflykter i regionen.
     Om det är en semester som fört dig hit, och du ska hyra bil i $MÄRKE, så har du stora möjligheter att lägga upp resan precis som du vill.
-    Genom att hyra bil i $MÄRKE lägger du upp resan i {regionen|området} precis som {vill|önskar,} och vårt {kontor|hyrbilskontor|uthyrningskontor} är en bra {utgångspunkt|start|startpunkt} för den fortsatta {bilresan|bilfärden|resan|färden|turen}.
+    Genom att hyra bil i $MÄRKE lägger du upp resan i {regionen|området} precis som {vill|önskar}, och vårt {kontor|hyrbilskontor|uthyrningskontor} är en bra {utgångspunkt|start|startpunkt} för den fortsatta {bilresan|bilfärden|resan|färden|turen}.
   }
 }
 
 @func @stycke20160823_5
 {
   @choice {
-    Eller kanske fortsätter även {färden|bilresan} vidare till andra städer i {området|regionen?}
-    Eller kanske har du planerat en längre {resa|bilresa} till angränsande {områden|regioner?}
+    Eller kanske fortsätter även {färden|bilresan} vidare till andra städer i {området|regionen}?
+    Eller kanske har du planerat en längre {resa|bilresa} till angränsande {områden|regioner}?
     Om du även vill fortsätta resan till närliggande städer så kan du hyra bil i $MÄRKE för en längre {period|tidsperiod}.
     Om du även vill fortsätta resan till närliggande städer så kan du hyra bil i $MÄRKE för en längre {period|tidsperiod}.
     Om du planerar att fortsätta resan till närliggande städer så kan du hyra bil i $MÄRKE för en längre {period|tidsperiod}.
-    Kanske vill du även ta {chansen|möjligheten} att {se|besöka} flera städer i {området|regionen?} Då kan du hyra bil i $MÄRKE för en längre {period|tidsperiod}.
+    Kanske vill du även ta {chansen|möjligheten} att {se|besöka} flera städer i {området|regionen}? Då kan du hyra bil i $MÄRKE för en längre {period|tidsperiod}.
     Om du även vill besöka närliggande {städer|kommuner} så kan du hyra bil i $MÄRKE för en längre {period|tidsperiod}.
   }
 }
@@ -101,17 +101,17 @@
 @func @stycke20160823_10
 {
   @choice {
-    Osäker på vilken {modell|bilmodell} som passar {dig|för din resa|för din färd?}
+    Osäker på vilken {modell|bilmodell} som passar {dig|för din resa|för din färd}?
     Vet du inte vilken {modell|bilmodell|bil} som passar dina önskemål bäst?
-    Vill du {veta mer|få mer info|få mer information} om {våra erbjudanden|våra bilar|vår hyrbilsservice?}
+    Vill du {veta mer|få mer info|få mer information} om {våra erbjudanden|våra bilar|vår hyrbilsservice}?
   }
 }
 
 @func @stycke20160823_11
 {
   @choice {
-    Gå in på {vår|Sixt} {hemsida|webbsida|nätsida|webb,} här presenteras alla våra {modeller|bilar|fordon}.
-    Gå in på {vår|Sixt} {hemsida|webbsida|nätsida|webb,} här {hittar|finner} du alla våra {modeller|bilar|fordon}.
+    Gå in på {vår|Sixt} {hemsida|webbsida|nätsida|webb}, här presenteras alla våra {modeller|bilar|fordon}.
+    Gå in på {vår|Sixt} {hemsida|webbsida|nätsida|webb}, här {hittar|finner} du alla våra {modeller|bilar|fordon}.
     På {vår|Sixt} {hemsida|webbsida|nätsida|webb} finns alla våra {modeller|bilar|fordon} presenterade.
   }
 }
