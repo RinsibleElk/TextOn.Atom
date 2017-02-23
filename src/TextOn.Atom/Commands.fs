@@ -3,11 +3,6 @@
 open System
 open System.IO
 
-[<AutoOpen>]
-module Contract =
-    type ParseRequest = { FileName : string; IsAsync : bool; Lines : string[] }
-    type LintRequest = { FileName : string }
-
 type Commands (serialize : Serializer) =
     let fileLinesMap = System.Collections.Concurrent.ConcurrentDictionary<string, string list>()
     let add fileName directory lines =

@@ -8,7 +8,8 @@ open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 open Control
-open DTO
+open TextOn.Atom.DTO
+open TextOn.Atom.DTO.DTO
 
 [<ReflectedDefinition>]
 module LanguageService =
@@ -55,7 +56,7 @@ module LanguageService =
 
     let private parseResponse<'T> (response : string[]) : DTO.Result<'T> option [] =
         response |> Array.map (fun s ->
-          match tryParse<Result<'T>> s with
+          match tryParse<DTO.Result<'T>> s with
           | None -> Logger.logf "Service" "Invalid response from FSAC: %s" [| s |]; None
           | Some event ->
             let o = box event
@@ -78,20 +79,20 @@ module LanguageService =
                 return None }
 
     let project s =
-        {ProjectRequest.FileName = s}
+        {DTO.ProjectRequest.FileName = s}
         |> request (url "project")
         |> send<unit> 0
 
     let parse path (text : string) =
         let lines = text.Replace("\uFEFF", "").Split('\n')
-        {ParseRequest.FileName = path; ParseRequest.Lines = lines; ParseRequest.IsAsync = true }
+        {DTO.ParseRequest.FileName = path; DTO.ParseRequest.Lines = lines; DTO.ParseRequest.IsAsync = true }
         |> request (url "parse")
-        |> send<Error[]> 0
+        |> send<DTO.Error[]> 0
 
     let helptext s =
-        {HelptextRequest.Symbol = s}
+        {DTO.HelptextRequest.Symbol = s}
         |> request (url "helptext")
-        |> send<Helptext> 0
+        |> send<DTO.Helptext> 0
 
     let parseEditor (editor : IEditor) =
         if isTextOnEditor editor && unbox<obj>(editor.buffer.file) <> null then
@@ -128,9 +129,6 @@ module LanguageService =
         {PositionRequest.Line = line; FileName = fn; Column = col; Filter = ""}
         |> request (url "finddeclaration")
         |> send<Declaration> 0
-
-    let compilerLocation () =
-        () |> request (url "compilerlocation") |> send<CompilerLocation> 0
 
     let lint editor =
         if isTextOnEditor editor && unbox<obj>(editor.buffer.file) <> null then

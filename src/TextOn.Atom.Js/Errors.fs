@@ -7,6 +7,7 @@ open FunScript.TypeScript.child_process
 open FunScript.TypeScript.AtomCore
 open FunScript.TypeScript.text_buffer
 open TextOn.Atom.Js.Control
+open TextOn.Atom.DTO
 
 [<ReflectedDefinition>]
 module ErrorLinterProvider =

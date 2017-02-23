@@ -60,7 +60,6 @@
     <Compile Include="ViewHelpers.fs" />
     <Compile Include="ProcessHelpers.fs" />
     <Compile Include="Control.fs" />
-    <Compile Include="DTO.fs" />
     <Compile Include="Logging.fs" />
     <Compile Include="LanguageService.fs" />
     <Compile Include="Errors.fs" />
@@ -96,5 +95,12 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
+      <Name>TextOn.Atom.DTO</Name>
+      <Project>{7c8b2d6c-feca-466f-8eff-9a2595fed812}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -20,7 +20,7 @@ open Fake.ZipHelper
         "src/TextOn.Atom.Js/ViewHelpers.fs"
         "src/TextOn.Atom.Js/ProcessHelpers.fs"
         "src/TextOn.Atom.Js/Control.fs"
-        "src/TextOn.Atom.Js/DTO.fs"
+        "src/TextOn.Atom.DTO/DTO.fs"
         "src/TextOn.Atom.Js/Logging.fs"
         "src/TextOn.Atom.Js/LanguageService.fs"
         "src/TextOn.Atom.Js/Errors.fs"

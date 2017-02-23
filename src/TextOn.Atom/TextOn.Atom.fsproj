@@ -102,4 +102,11 @@
     <None Include="Agent.fsx" />
     <None Include="SuaveTesting.fsx" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
+      <Name>TextOn.Atom.DTO</Name>
+      <Project>{7c8b2d6c-feca-466f-8eff-9a2595fed812}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

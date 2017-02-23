@@ -1,74 +1,31 @@
 ﻿namespace TextOn.Atom
 
 open System
+open TextOn.Atom.DTO.DTO
 
-type TextOnErrorInfo = {
-        /// 1-indexed first line of the error block
-        StartLine : int
-        /// 1-indexed first column of the error block
-        StartColumn : int
-        /// 1-indexed last line of the error block
-        EndLine : int
-        /// 1-indexed last column of the error block
-        EndColumn : int
-        /// Description of the error
-        Message : string
-        /// The severity - "Error" or "Warning".
-        Severity : string
-        /// Type of the Error
-        Subcategory : string
-    }
-    with
-        static member OfCompilationError(error) =
-            match error with
-            | ParserError(e) ->
-                {
-                    StartLine = e.LineNumber
-                    EndLine = e.LineNumber
-                    StartColumn = e.StartLocation
-                    EndColumn = e.EndLocation
-                    Severity = "Error"
-                    Message = e.ErrorText
-                    Subcategory = "Parser"
-                }
-            | GeneralError(e) ->
-                {
-                    StartLine = 1
-                    EndLine = 1
-                    StartColumn = 1
-                    EndColumn = 1
-                    Severity = "Error"
-                    Message = e.ErrorText
-                    Subcategory = "General"
-                }
-
-type ErrorResponse =
-    {
-        File: string
-        Errors: TextOnErrorInfo []
-    }
-
-type ResponseMsg<'T> =
-    {
-        Kind: string
-        Data: 'T
-    }
-
-type LintWarning =
-    {
-        /// Warning to display to the user.
-        Info: string
-        /// 1-indexed first line of the lint block
-        StartLine : int
-        /// 1-indexed first column of the lint block
-        StartColumn : int
-        /// 1-indexed last line of the lint block
-        EndLine : int
-        /// 1-indexed last column of the lint block
-        EndColumn : int
-        /// Entire input file, needed to display where in the file the error occurred.
-        Input: string
-    }
+module TextOnErrorInfo =
+    let OfCompilationError(error) =
+        match error with
+        | ParserError(e) ->
+            {
+                StartLine = e.LineNumber
+                EndLine = e.LineNumber
+                StartColumn = e.StartLocation
+                EndColumn = e.EndLocation
+                Severity = "Error"
+                Message = e.ErrorText
+                Subcategory = "Parser"
+            }
+        | GeneralError(e) ->
+            {
+                StartLine = 1
+                EndLine = 1
+                StartColumn = 1
+                EndColumn = 1
+                Severity = "Error"
+                Message = e.ErrorText
+                Subcategory = "General"
+            }
 
 [<RequireQualifiedAccess>]
 module CommandResponse =

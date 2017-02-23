@@ -1,4 +1,4 @@
-﻿namespace TextOn.Atom.Js
+﻿namespace TextOn.Atom.DTO
 
 [<ReflectedDefinition>]
 module DTO =
@@ -12,8 +12,7 @@ module DTO =
 
     type OverloadSignature = {
         Signature: string
-        Comment: string
-    }
+        Comment: string }
 
     type Error = {
         /// 1-indexed first line of the error block
@@ -29,14 +28,12 @@ module DTO =
         /// The severity - "Error" or "Warning".
         Severity : string
         /// Type of the Error
-        Subcategory : string
-        }
+        Subcategory : string }
 
     type Declaration = {
         File : string
         Line : int
-        Column : int
-    }
+        Column : int }
 
     type Completion = {
         Name : string
@@ -56,24 +53,15 @@ module DTO =
       IsFromComputationExpression : bool
       IsFromDispatchSlotImplementation : bool
       IsFromPattern : bool
-      IsFromType : bool
-    }
+      IsFromType : bool }
 
     type SymbolUses = {
         Name : string
-        Uses : SymbolUse array
-    }
+        Uses : SymbolUse array }
 
     type Helptext = {
         Name : string
-        Overloads: OverloadSignature [] []
-    }
-
-    type CompilerLocation = {
-        Fcs : string
-        Fsi : string
-        MSBuild : string
-    }
+        Overloads: OverloadSignature [] [] }
 
     type LintWarning =
         {
@@ -88,11 +76,9 @@ module DTO =
             /// 1-indexed last column of the lint block
             EndColumn : int
             /// Entire input file, needed to display where in the file the error occurred.
-            Input: string
-        }
+            Input: string }
 
     type Result<'T> = {Kind : string; Data : 'T}
-    type CompilerLocationResult = Result<CompilerLocation>
     type HelptextResult = Result<Helptext>
     type CompletionResult = Result<Completion[]>
     type SymbolUseResult = Result<SymbolUses>
