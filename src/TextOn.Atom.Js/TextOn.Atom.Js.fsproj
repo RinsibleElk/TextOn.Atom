@@ -63,6 +63,7 @@
     <Compile Include="Logging.fs" />
     <Compile Include="LanguageService.fs" />
     <Compile Include="Errors.fs" />
+    <Compile Include="GeneratorPane.fs" />
     <Compile Include="TextOnIDE.fs" />
     <Compile Include="main.fs" />
     <None Include="../../build.fsx">

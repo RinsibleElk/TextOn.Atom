@@ -10,6 +10,7 @@ open FunScript.TypeScript.text_buffer
 open FunScript.TypeScript.path
 open TextOn.Atom.Js
 open TextOn.Atom.Js.Control
+open TextOn.Atom.Js.GeneratorPane
 
 [<AutoOpen>]
 module TextOnCommands =
@@ -21,6 +22,7 @@ module TextOnCommands =
 
 type TextOnIDE() =
     let subscriptions = ResizeArray()
+    let generator = TextOnGenerator()
 
 //    member __.provide () =
 //        [| AutocompleteProvider.create() |]
@@ -39,6 +41,7 @@ type TextOnIDE() =
 
         if debug then Logger.activate ("TextOn IDE")
         LanguageService.start ()
+        generator.activate()
 //        Parser.activate ()
 //        TooltipHandler.activate ()
 //        if show then ToolbarHandler.activate()
@@ -65,6 +68,7 @@ type TextOnIDE() =
     member x.deactivate() =
         subscriptions |> Seq.iter(fun n -> n.dispose())
         subscriptions.Clear()
+        generator.deactivate()
 //        let show = Globals.atom.config.get("ionide-fsharp.ShowQuickInfoPanel") |> unbox<bool>
 
 //        Parser.deactivate ()

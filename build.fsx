@@ -24,6 +24,7 @@ open Fake.ZipHelper
         "src/TextOn.Atom.Js/Logging.fs"
         "src/TextOn.Atom.Js/LanguageService.fs"
         "src/TextOn.Atom.Js/Errors.fs"
+        "src/TextOn.Atom.Js/GeneratorPane.fs"
         "src/TextOn.Atom.Js/TextOnIDE.fs"
         "src/TextOn.Atom.Js/main.fs"
 #endif
