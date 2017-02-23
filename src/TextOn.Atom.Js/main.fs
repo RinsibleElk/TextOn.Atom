@@ -73,7 +73,7 @@ let translateModules fileName =
             yield "var util = require('util');"
             yield "var path = require('path');"
             yield "var Emitter = require('event-kit').Emitter;"
-            yield "var GeneratorPane = require('./generator-pane')"
+            yield "var GeneratorPane = require('./generator-pane');"
             yield ""
             yield "function wrappedFunScript() { \n" + coreJS + "\n }"
             yield "var _funcs = wrappedFunScript();"
