@@ -54,7 +54,6 @@ let release = List.head releaseNotesData
 let msg =  release.Notes |> List.fold (fun r s -> r + s + "\n") ""
 let releaseMsg = (sprintf "Release %s\n" release.NugetVersion) + msg
 
-
 let run cmd args dir =
     if execProcess( fun info ->
         info.FileName <- cmd
@@ -64,11 +63,10 @@ let run cmd args dir =
     ) System.TimeSpan.MaxValue = false then
         traceError <| sprintf "Error while running '%s' with args: %s" cmd args
 
-let atomPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "atom" </> "bin" 
-
+let atomPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "bin" 
 let apmTool, atomTool =
     #if MONO
-        "apm", atom 
+        "apm", "atom" 
     #else
         atomPath </> "apm.cmd" , atomPath </> "atom.cmd"
     #endif
@@ -85,7 +83,7 @@ Target "Clean" (fun _ ->
 
 
 Target "BuildGenerator" (fun () ->
-    [ __SOURCE_DIRECTORY__ @@ "src" @@ "TextOn.Atom.Js.fsproj" ]
+    [ __SOURCE_DIRECTORY__ @@ "src" @@ "TextOn.Atom.Js" @@ "TextOn.Atom.Js.fsproj" ]
     |> MSBuildDebug "" "Rebuild"
     |> Log "AppBuild-Output: "
 )
