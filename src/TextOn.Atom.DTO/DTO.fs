@@ -10,9 +10,9 @@ module DTO =
     type LintRequest = {FileName : string}
     type CompletionRequest = {FileName : string; SourceLine : string; Line : int; Column : int; Filter : string}
     type GeneratorStartRequest = {FileName : string; LineNumber : int; Lines : string[] }
-    type NavigateFunctionRequest = {FileName : string ; FunctionName : string }
+    type NavigateRequest = {FileName : string ; NavigateType : string ; Name : string }
 
-    type HtmlResult =
+    type GeneratorResult =
       { fileName : string
         functionName : string }
 

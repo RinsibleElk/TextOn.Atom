@@ -143,8 +143,8 @@ module LanguageService =
          else async {return None}
 
     let navigateToFunction fileName functionName =
-        { DTO.NavigateFunctionRequest.FileName = fileName ; DTO.NavigateFunctionRequest.FunctionName = functionName }
-        |> request (url "navigatefunctionrequest")
+        { DTO.NavigateRequest.FileName = fileName ; DTO.NavigateRequest.NavigateType = "NavigateToFunction" ; DTO.NavigateRequest.Name = functionName }
+        |> request (url "navigaterequest")
         |> send<DTO.NavigateData> 0
 
     let start () =

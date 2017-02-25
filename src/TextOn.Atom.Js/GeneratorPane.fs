@@ -114,7 +114,7 @@ let navigateToFunction fileName functionName =
     |> Async.StartImmediate
     |> box
 
-let private makeHtml (res:HtmlResult) =
+let private makeTitle (res:GeneratorResult) =
     let link =
         jq("<a />")
             .append(res.functionName)
@@ -122,33 +122,21 @@ let private makeHtml (res:HtmlResult) =
     jq("<h1>Generator for </h1>").append(link)
 
 /// Replace contents of panel with HTML output 
-let private replaceTextOnGeneratorHtmlPanel expanded (res:HtmlResult) = async {
+let private replaceTextOnGeneratorHtmlPanel expanded (res:GeneratorResult) = async {
     jq(".texton").empty() |> ignore
 
     let identity() = "html" + string DateTime.Now.Ticks            
 
-    let! html = 
+    let! title = 
       async {
           // Just paste the content in a <div> together with all styles and such
-          let el = jq("<div />").addClass("content").append(makeHtml res)
+          let el = jq("<div />").addClass("content").append(makeTitle res)
           return el }
 
     // Wrap the content with standard collapsible output panel.
-    let pre = jq("<pre />").text("(...)").hide()
-    let icon = jq("<span />").addClass("icon " + if expanded then "icon-chevron-down" else "icon-chevron-right")
-    let padding = jq("<div class='inset-panel padded'/>").append(icon).append(pre).append(html)
+    let paddedTitle = jq("<div class='inset-panel padded'/>").append(title)
     jq("<atom-panel id='" + identity() + "' />").addClass("top texton-block texton-html-block")
-      .click(fun _ ->
-          if pre.text() = "(...)" then 
-              icon.attr("class", "icon icon-chevron-down") |> ignore
-              pre.hide().text("") |> ignore
-              html.show() |> ignore
-          else 
-              icon.attr("class", "icon icon-chevron-right") |> ignore
-              pre.text("(...)").show() |> ignore
-              html.hide() |> ignore
-          obj() )
-      .append(jq("<div class='padded'/>").append(padding))
+      .append(jq("<div class='padded'/>").append(paddedTitle))
       .appendTo(jq(".texton")) |> ignore }
 
 /// Apend the result (Alt+Enter).

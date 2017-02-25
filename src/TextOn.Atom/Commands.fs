@@ -84,7 +84,7 @@ type Commands (serialize : Serializer) =
                 | GeneratorStartResult.GeneratorStarted(generatorSetup) ->
                     [ CommandResponse.generatorSetup serialize generatorSetup ] }
 
-    member __.NavigateFunction (file:SourceFilePath) functionName = async {
+    member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo
         let lines = fileResolver file (Some fi.Directory.FullName)
         if lines |> Option.isSome then
@@ -99,10 +99,16 @@ type Commands (serialize : Serializer) =
                         [ CommandResponse.error serialize "File had compilation errors" ]
                     | CompilationResult.CompilationSuccess template ->
                         let errors = [||]
-                        let f = template.Functions |> Array.tryFind (fun fn -> fn.Name = functionName)
+                        let f =
+                            match ty with
+                            | "NavigateToFunction" -> template.Functions |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "NavigateToVariable" -> template.Variables |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "NavigateToAttribute" -> template.Attributes |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | _ -> failwith "Internal error"
                         if f |> Option.isNone then
                             [ CommandResponse.error serialize "Function not found" ]
                         else
-                            [ CommandResponse.navigate serialize { FileName = f.Value.File ; LineNumber = f.Value.StartLine ; Location = 1 } ]
+                            let (f, l) = f.Value
+                            [ CommandResponse.navigate serialize { FileName = f ; LineNumber = l ; Location = 1 } ]
         else
             return [CommandResponse.error serialize "File not found"] }
