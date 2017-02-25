@@ -1,6 +1,9 @@
 var CompositeDisposable = require('atom').CompositeDisposable;
 var child_process = require('child_process');
 window.$ = require('jquery');
+var ReactForAtom = require('react-for-atom');
+var {React} = ReactForAtom;
+var {ReactSelectize} = ReactForAtom;
 var atomSpaceView = require('atom-space-pen-views');
 var fs = require('fs');
 var util = require('util');
@@ -8,7 +11,7 @@ var path = require('path');
 var Emitter = require('event-kit').Emitter;
 var GeneratorPane = require('./generator-pane-view');
 
-function wrappedFunScript() { 
+function wrappedFunScript() {
 var list_1_Tuple_2_String__String__NilTuple_2_String__String_, list_1_Tuple_2_String__String__ConsTuple_2_String__String_, list_1_Tuple_2_IPane__Object__NilTuple_2_IPane__Object_, list_1_Tuple_2_IPane__Object__ConsTuple_2_IPane__Object_, list_1_String____NilString___, list_1_String____ConsString___, list_1_String__NilString, list_1_String__ConsString, list_1_Object____NilObject___, list_1_Object____ConsObject___, Web__sendRequest$Unit_Unit_, WebResponse___ctor$, WebResponse__GetResponseStream$, WebRequest__set_Method$, WebRequest__get_Method$, WebRequest__get_Headers$, WebRequest___ctor$, WebRequest__GetRequestStream$, WebRequest__Create$, WebRequest__AsyncGetResponse$, WebHeaderCollection__get_Values$, WebHeaderCollection__get_Keys$, WebHeaderCollection___ctor$, WebHeaderCollection__Add$, UnfoldEnumerator_2_Int32__String_____ctor$Int32_String___, UnfoldEnumerator_2_Int32__Object___ctor$Int32_Object_, UnfoldEnumerator_2_Int32__IPane___ctor$Int32_IPane_, UnfoldEnumerator_2_Int32__Disposable___ctor$Int32_Disposable_, UnfoldEnumerator_2_IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object___ctor$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_, UnfoldEnumerator_2_IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object___ctor$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_, UnfoldEnumerator_2_FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object___ctor$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, UnfoldEnumerator_2_FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object___ctor$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, UnfoldEnumerator_2_FSharpList_1_String____String_____ctor$FSharpList_1_String____String___, UnfoldEnumerator_2_FSharpList_1_Object____Object_____ctor$FSharpList_1_Object____Object___, UnfoldEnumerator_2_Boolean__Tuple_2_IPane__Object___ctor$Boolean_Tuple_2_IPane__Object_, UTF8Encoding___ctor$, UTF8Encoding__GetString$, UTF8Encoding__GetBytes$, TupleTuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_, TupleTuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_, TupleString____Int32, TupleString____FSharpList_1_String___, TupleString_String, TupleObject____FSharpList_1_Object___, TupleObject__Int32, TupleIPane__Object_, TupleIPane__Int32, TupleIEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_, TupleIEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_, TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_LintWarning___, TupleFSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_, TupleFSharpFunc_2_WebResponse__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_String__Unit_, TupleFSharpFunc_2_Unit__Unit__FSharpFunc_2_Exception__Unit__FSharpFunc_2_String__Unit_, TupleDisposable__Int32, TimeSpan__get_TicksPerMillisecond$, TextOnViewHelpers__jq$, TextOnViewHelpers__isTextOnEditor$, TextOnProcess__textonPath$, TextOnProcess__spawn$, TextOnProcess__isWin$, TextOnProcess__getCwd$, TextOnProcess__fromPath$, TextOnIDE__provideErrors$, TextOnIDE__deactivate$, TextOnIDE__activate$, TextOnIDE___ctor$, TextOnGenerator__deactivate$, TextOnGenerator__activate$, TextOnGenerator___ctor$, TextOnCommands__openSettings$, String__StartsWith$, String__SplitWithoutOptions$, String__Replace$, String__PrintFormatToString$, String__EndsWith$, Stream__get_Contents$, Stream___ctor$, Stream__Write$, Seq__Unfold$Int32__String___Int32_String___, Seq__Unfold$Int32__Object_Int32_Object_, Seq__Unfold$Int32__IPane_Int32_IPane_, Seq__Unfold$Int32__Disposable_Int32_Disposable_, Seq__Unfold$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_, Seq__Unfold$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_, Seq__Unfold$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, Seq__Unfold$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___, Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___, Seq__Unfold$Boolean__Tuple_2_IPane__Object_Boolean_Tuple_2_IPane__Object_, Seq__ToList$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Seq__ToArray$String___String___, Seq__ToArray$Object___Object___, Seq__Singleton$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Seq__OfList$String___String___, Seq__OfList$Object___Object___, Seq__OfArray$String___String___, Seq__OfArray$Object_Object_, Seq__OfArray$IPane_IPane_, Seq__Map$Object__IEnumerable_1_Tuple_2_IPane__Object_Object__IEnumerable_1_Tuple_2_IPane__Object_, Seq__Map$IPane__IEnumerable_1_Tuple_2_IPane__Object_IPane__IEnumerable_1_Tuple_2_IPane__Object_, Seq__IterateIndexed$String___String___, Seq__IterateIndexed$Object___Object___, Seq__Iterate$Disposable_Disposable_, Seq__FromFactory$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Seq__FromFactory$String___String___, Seq__FromFactory$Object___Object___, Seq__FromFactory$Object_Object_, Seq__FromFactory$IPane_IPane_, Seq__FromFactory$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object_, Seq__FromFactory$Disposable_Disposable_, Seq__FoldIndexedAux$Unit__String___Unit__String___, Seq__FoldIndexedAux$Unit__Object___Unit__Object___, Seq__FoldIndexedAux$Unit__Disposable_Unit__Disposable_, Seq__FoldIndexedAux$FSharpList_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpList_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, Seq__FoldIndexed$Tuple_2_IPane__Object__FSharpList_1_Tuple_2_IPane__Object_Tuple_2_IPane__Object__FSharpList_1_Tuple_2_IPane__Object_, Seq__FoldIndexed$String____Unit_String____Unit_, Seq__FoldIndexed$Object____Unit_Object____Unit_, Seq__FoldIndexed$Disposable__Unit_Disposable__Unit_, Seq__Fold$Tuple_2_IPane__Object__FSharpList_1_Tuple_2_IPane__Object_Tuple_2_IPane__Object__FSharpList_1_Tuple_2_IPane__Object_, Seq__Fold$Disposable__Unit_Disposable__Unit_, Seq__Enumerator$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Seq__Enumerator$String___String___, Seq__Enumerator$Object___Object___, Seq__Enumerator$Object_Object_, Seq__Enumerator$IPane_IPane_, Seq__Enumerator$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object_, Seq__Enumerator$Disposable_Disposable_, Seq__Empty$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Seq__Delay$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Seq__Delay$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object_, Seq__Concat$IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, Seq__Collect$Object__IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_Object__IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, Seq__Collect$IPane__IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_IPane__IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, ResizeArray__ToSeq$Disposable_Disposable_, ResizeArray_1_Object__get_Item$Object_, ResizeArray_1_Object__get_Count$Object_, Replacements__utf8Encoding$, Provider___ctor$, ParseRequest___ctor$, Options___ctor$, Option__Iterate$String_1String, Option__Iterate$IEditor_IEditor_, Option__Iterate$ChildProcess_ChildProcess_, Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_, Option__IsSome$Result_1_GeneratorData_Result_1_GeneratorData_, Option__IsSome$Int32_Int32, Option__IsSome$IEnumerator_1_Object_IEnumerator_1_Object_, Option__IsSome$IEnumerator_1_IPane_IEnumerator_1_IPane_, Option__IsSome$FSharpOption_1_Tuple_2_IPane__Object_FSharpOption_1_Tuple_2_IPane__Object_, Option__IsSome$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_, Option__IsSome$FSharpList_1_String___FSharpList_1_String___, Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___, Option__IsSome$Boolean_Boolean, Option__GetValue$Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_, Option__GetValue$Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_, Option__GetValue$Tuple_2_Tuple_2_IPane__Object__Boolean_Tuple_2_Tuple_2_IPane__Object__Boolean_, Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_, Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___, Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___, Option__GetValue$Tuple_2_Object__Int32_Tuple_2_Object__Int32_, Option__GetValue$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, Option__GetValue$Tuple_2_IPane__Int32_Tuple_2_IPane__Int32_, Option__GetValue$Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_, Option__GetValue$Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_, Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_, Option__GetValue$String_1String, Option__GetValue$Result_1_NavigateData_Result_1_NavigateData_, Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___, Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_, Option__GetValue$Result_1_Error___Result_1_Error___, Option__GetValue$Int32_Int32, Option__GetValue$IEnumerator_1_Tuple_2_IPane__Object_IEnumerator_1_Tuple_2_IPane__Object_, Option__GetValue$IEnumerator_1_Object_IEnumerator_1_Object_, Option__GetValue$IEnumerator_1_IPane_IEnumerator_1_IPane_, Option__GetValue$IEditor_IEditor_, Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_, Option__GetValue$FSharpOption_1_Tuple_2_IPane__Object_FSharpOption_1_Tuple_2_IPane__Object_, Option__GetValue$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_, Option__GetValue$FSharpList_1_String___FSharpList_1_String___, Option__GetValue$FSharpList_1_Object___FSharpList_1_Object___, Option__GetValue$ChildProcess_ChildProcess_, Option__GetValue$CancellationToken_CancellationToken_, Option__GetValue$Boolean_Boolean, OpenOptions___ctor$, OpenEditorOptions___ctor$, NavigateRequest___ctor$, Logger__subscriptions, Logger__logf$, Logger__logPath, Logger__get_subscriptions$, Logger__get_logPath$, Logger__get_fullLog$, Logger__get_editor$, Logger__get_active$, Logger__fullLog, Logger__emitLog$, Logger__editor, Logger__deactivate$, Logger__active, Logger__activate$, List__TryPickIndexedAux$Tuple_2_IPane__Object__Tuple_2_IPane__Object_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, List__TryPickIndexed$Tuple_2_IPane__Object__Tuple_2_IPane__Object_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, List__TryPick$Tuple_2_IPane__Object__Tuple_2_IPane__Object_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, List__ToArray$String_1String, List__Tail$String___String___, List__Tail$Object___Object___, List__Reverse$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, List__Reverse$String_1String, List__Map$Tuple_2_String__String__String_1Tuple_2_String__String__String, List__Length$String_1String, List__IterateIndexed$String_1String, List__Head$String___String___, List__Head$Object___Object___, List__FoldIndexedAux$list_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_list_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_, List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_2_String__String_, List__FoldIndexedAux$list_1_String__String_1list_1_String__String, List__FoldIndexedAux$Unit__String_1Unit__String, List__FoldIndexedAux$Int32__String_1Int32_String, List__FoldIndexed$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__FoldIndexed$Tuple_2_IPane__Object__list_1_Tuple_2_IPane__Object_Tuple_2_IPane__Object__list_1_Tuple_2_IPane__Object_, List__FoldIndexed$String_1_list_1_String_String_list_1_String_, List__FoldIndexed$String_1_Unit_String_Unit_, List__FoldIndexed$String_1_Int32_String_Int32, List__Fold$Tuple_2_String__String__list_1_String_Tuple_2_String__String__list_1_String_, List__Fold$Tuple_2_IPane__Object__list_1_Tuple_2_IPane__Object_Tuple_2_IPane__Object__list_1_Tuple_2_IPane__Object_, List__Fold$String_1_list_1_String_String_list_1_String_, List__Fold$String_1_Int32_String_Int32, List__Empty$Tuple_2_String__String_Tuple_2_String__String_, List__Empty$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, List__Empty$String___String___, List__Empty$Object___Object___, List__CreateCons$Tuple_2_String__String_Tuple_2_String__String_, List__CreateCons$Tuple_2_IPane__Object_Tuple_2_IPane__Object_, List__CreateCons$String___String___, List__CreateCons$Object___Object___, LintResult___ctor$, LanguageService__url$, LanguageService__tryParse$Result_1_NavigateData_Result_1_NavigateData_, LanguageService__tryParse$Result_1_GeneratorData_Result_1_GeneratorData_, LanguageService__tryParse$Result_1_Error___Result_1_Error___, LanguageService__stop$, LanguageService__start$, LanguageService__service, LanguageService__send$NavigateData_NavigateData_, LanguageService__send$GeneratorData_GeneratorData_, LanguageService__send$Error___Error___, LanguageService__request$ParseRequest_ParseRequest_, LanguageService__request$NavigateRequest_NavigateRequest_, LanguageService__request$GeneratorStartRequest_GeneratorStartRequest_, LanguageService__port, LanguageService__parseResponse$NavigateData_NavigateData_, LanguageService__parseResponse$GeneratorData_GeneratorData_, LanguageService__parseResponse$Error___Error___, LanguageService__parseEditor$, LanguageService__parse$, LanguageService__navigateToFunction$, LanguageService__get_service$, LanguageService__get_port$, LanguageService__generatorStart$, LanguageService__genPort$, GeneratorStartRequest___ctor$, GeneratorResult___ctor$, GeneratorPane__tryFindTextOnGeneratorPane$, GeneratorPane__sendToTextOnGenerator$, GeneratorPane__sendToGenerator$, GeneratorPane__replaceTextOnGeneratorHtmlPanel$Boolean_Boolean, GeneratorPane__openTextOnGeneratorPane$, GeneratorPane__navigateToFunction$, GeneratorPane__navigateToEditor$, GeneratorPane__makeTitle$, GeneratorPane__getTextOnCursorLine$, ErrorLinterProvider__mapLint$, ErrorLinterProvider__mapError$, ErrorLinterProvider__lint$, ErrorLinterProvider__create$, DateTime__get_Ticks$, DateTime__get_Now$, DateTime__createUnsafe$, DateTime__ToLongTimeString$, CreateEnumerable_1_Tuple_2_IPane__Object___ctor$Tuple_2_IPane__Object_, CreateEnumerable_1_String_____ctor$String___, CreateEnumerable_1_Object___ctor$Object_, CreateEnumerable_1_Object_____ctor$Object___, CreateEnumerable_1_IPane___ctor$IPane_, CreateEnumerable_1_IEnumerable_1_Tuple_2_IPane__Object___ctor$IEnumerable_1_Tuple_2_IPane__Object_, CreateEnumerable_1_Disposable___ctor$Disposable_, Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_, Control__CommandRegistry_subscribe$, Control__Async_StartAsPromise_Static$Object_Object_, CancellationToken___ctor$, CancellationToken__ThrowIfCancellationRequested$, Async__protectedCont$WebResponse_WebResponse_, Async__protectedCont$Unit_Unit_, Async__protectedCont$String___String___, Async__protectedCont$Object___Object___, Async__protectedCont$JQuery_JQuery_, Async__protectedCont$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_, Async__protectedCont$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_, Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__invokeCont$Unit_Unit_, Async__invokeCont$String___String___, Async__invokeCont$Object___Object___, Async__invokeCont$JQuery_JQuery_, Async__invokeCont$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_, Async__invokeCont$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_, Async__invokeCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Async__get_async$, Async_1_WebResponse__ContWebResponse_, Async_1_Unit__ContUnit_, Async_1_String____ContString___, Async_1_StartImmediate$, Async_1_Object____ContObject___, Async_1_JQuery__ContJQuery_, Async_1_FromContinuations$WebResponse_WebResponse_, Async_1_FromContinuations$Unit_Unit_, Async_1_FSharpOption_1_Result_1_NavigateData__ContFSharpOption_1_Result_1_NavigateData_, Async_1_FSharpOption_1_Result_1_GeneratorData__ContFSharpOption_1_Result_1_GeneratorData_, Async_1_FSharpOption_1_Result_1_Error____ContFSharpOption_1_Result_1_Error___, AsyncParams_1_WebResponse___ctor$WebResponse_, AsyncParams_1_Unit___ctor$Unit_, AsyncParams_1_String_____ctor$String___, AsyncParams_1_Object_____ctor$Object___, AsyncParams_1_JQuery___ctor$JQuery_, AsyncParams_1_FSharpOption_1_Result_1_NavigateData___ctor$FSharpOption_1_Result_1_NavigateData_, AsyncParams_1_FSharpOption_1_Result_1_GeneratorData___ctor$FSharpOption_1_Result_1_GeneratorData_, AsyncParams_1_FSharpOption_1_Result_1_Error_____ctor$FSharpOption_1_Result_1_Error___, AsyncParamsAux___ctor$, AsyncBuilder___ctor$, AsyncBuilder__Zero$, AsyncBuilder__TryWith$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_, AsyncBuilder__TryWith$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_, AsyncBuilder__TryWith$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Return$Unit_Unit_, AsyncBuilder__Return$String___String___, AsyncBuilder__Return$Object___Object___, AsyncBuilder__Return$JQuery_JQuery_, AsyncBuilder__Return$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_, AsyncBuilder__Return$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_, AsyncBuilder__Return$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Delay$Unit_Unit_, AsyncBuilder__Delay$String___String___, AsyncBuilder__Delay$Object___Object___, AsyncBuilder__Delay$JQuery_JQuery_, AsyncBuilder__Delay$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_, AsyncBuilder__Delay$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_, AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, AsyncBuilder__Combine$Unit_Unit_, AsyncBuilder__Bind$WebResponse__String___WebResponse__String___, AsyncBuilder__Bind$Unit__Unit_Unit__Unit_, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_NavigateData_String____FSharpOption_1_Result_1_NavigateData_, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_GeneratorData_String____FSharpOption_1_Result_1_GeneratorData_, AsyncBuilder__Bind$String____FSharpOption_1_Result_1_Error___String____FSharpOption_1_Result_1_Error___, AsyncBuilder__Bind$Object____Unit_Object____Unit_, AsyncBuilder__Bind$JQuery__Unit_JQuery__Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_NavigateData__Unit_FSharpOption_1_Result_1_NavigateData__Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_GeneratorData__Unit_FSharpOption_1_Result_1_GeneratorData__Unit_, AsyncBuilder__Bind$FSharpOption_1_Result_1_Error____Object___FSharpOption_1_Result_1_Error____Object___, Array__ZeroCreate$String___String___, Array__ZeroCreate$String_1String, Array__ZeroCreate$Object___Object___, Array__ZeroCreate$Object_Object_, Array__ZeroCreate$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_, Array__ZeroCreate$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_, Array__ZeroCreate$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___, Array__MapIndexed$String_1_String___String_String___, Array__MapIndexed$String_1_FSharpOption_1_Result_1_NavigateData_String_FSharpOption_1_Result_1_NavigateData_, Array__MapIndexed$String_1_FSharpOption_1_Result_1_GeneratorData_String_FSharpOption_1_Result_1_GeneratorData_, Array__MapIndexed$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__MapIndexed$LintWarning__Object_LintWarning__Object_, Array__MapIndexed$Error__Object_Error__Object_, Array__Map$String_1_String___String_String___, Array__Map$String_1_FSharpOption_1_Result_1_NavigateData_String_FSharpOption_1_Result_1_NavigateData_, Array__Map$String_1_FSharpOption_1_Result_1_GeneratorData_String_FSharpOption_1_Result_1_GeneratorData_, Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___, Array__Map$LintWarning__Object_LintWarning__Object_, Array__Map$Error__Object_Error__Object_, Array__Length$String_1String, Array__Length$Object_Object_, Array__Length$LintWarning_LintWarning_, Array__Length$IPane_IPane_, Array__Length$Error_Error_, Array__GetSubArray$Byte_Byte, Array__FoldIndexed$String____String_1String____String, Array__Fold$String_1_String___String_String___, Array__ConcatImpl$String_1String, Array__ConcatImpl$Object_Object_, Array__Concat$String_1String, Array__Concat$Object_Object_, Array__BoxedLength$, Array__Append$Object_Object_, Array__Append$Byte_Byte;
 Array__Append$Byte_Byte = (function(xs,ys)
 {
@@ -384,8 +387,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Erro
 {
     return Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___((function(k)
     {
-      var _4221;
-      var patternInput = f(_4221);
+      var _4223;
+      var patternInput = f(_4223);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -394,8 +397,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_
 {
     return Async__protectedCont$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_((function(k)
     {
-      var _2825;
-      var patternInput = f(_2825);
+      var _2823;
+      var patternInput = f(_2823);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -404,8 +407,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1
 {
     return Async__protectedCont$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_((function(k)
     {
-      var _3351;
-      var patternInput = f(_3351);
+      var _3349;
+      var patternInput = f(_3349);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -414,8 +417,8 @@ AsyncBuilder__Delay$JQuery_JQuery_ = (function(x,f)
 {
     return Async__protectedCont$JQuery_JQuery_((function(k)
     {
-      var _3694;
-      var patternInput = f(_3694);
+      var _3696;
+      var patternInput = f(_3696);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -424,8 +427,8 @@ AsyncBuilder__Delay$Object___Object___ = (function(x,f)
 {
     return Async__protectedCont$Object___Object___((function(k)
     {
-      var _4805;
-      var patternInput = f(_4805);
+      var _4807;
+      var patternInput = f(_4807);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -434,8 +437,8 @@ AsyncBuilder__Delay$String___String___ = (function(x,f)
 {
     return Async__protectedCont$String___String___((function(k)
     {
-      var _2529;
-      var patternInput = f(_2529);
+      var _2527;
+      var patternInput = f(_2527);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -444,8 +447,8 @@ AsyncBuilder__Delay$Unit_Unit_ = (function(x,f)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _3517;
-      var patternInput = f(_3517);
+      var _3519;
+      var patternInput = f(_3519);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -548,8 +551,8 @@ AsyncBuilder__Zero$ = (function(x,unitVar1)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _3494;
-      return Async__invokeCont$Unit_Unit_(k, _3494);
+      var _3496;
+      return Async__invokeCont$Unit_Unit_(k, _3496);
     }));
 });
 AsyncBuilder___ctor$ = (function(unitVar0)
@@ -664,7 +667,7 @@ Async_1_Object____ContObject___ = (function(Item)
 Async_1_StartImmediate$ = (function(workflow,cancellationToken)
 {
     var _1643;
-    if ((cancellationToken.Tag == 1.000000)) 
+    if ((cancellationToken.Tag == 1.000000))
     {
       var v = Option__GetValue$CancellationToken_CancellationToken_(cancellationToken);
       _1643 = v;
@@ -747,7 +750,7 @@ Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Err
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -781,7 +784,7 @@ Async__protectedCont$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -815,7 +818,7 @@ Async__protectedCont$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -849,7 +852,7 @@ Async__protectedCont$JQuery_JQuery_ = (function(f)
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -883,7 +886,7 @@ Async__protectedCont$Object___Object___ = (function(f)
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -917,7 +920,7 @@ Async__protectedCont$String___String___ = (function(f)
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -951,7 +954,7 @@ Async__protectedCont$Unit_Unit_ = (function(f)
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -985,7 +988,7 @@ Async__protectedCont$WebResponse_WebResponse_ = (function(f)
       CancellationToken__ThrowIfCancellationRequested$(args.Aux.CancellationToken);
       args.Aux.StackCounter.contents = (args.Aux.StackCounter.contents + 1);
       null;
-      if ((args.Aux.StackCounter.contents > 1000)) 
+      if ((args.Aux.StackCounter.contents > 1000))
       {
         args.Aux.StackCounter.contents = 0;
         null;
@@ -1015,10 +1018,10 @@ Async__protectedCont$WebResponse_WebResponse_ = (function(f)
 CancellationToken__ThrowIfCancellationRequested$ = (function(x,unitVar1)
 {
     var matchValue = x.Cell;
-    if ((matchValue.Tag == 1.000000)) 
+    if ((matchValue.Tag == 1.000000))
     {
       var cell = Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_(matchValue);
-      if (cell.contents) 
+      if (cell.contents)
       {
         var _cell = Option__GetValue$FSharpRef_1_Boolean_FSharpRef_1_Boolean_(matchValue);
         throw ("OperationCancelledException");
@@ -1142,36 +1145,36 @@ ErrorLinterProvider__lint$ = (function(editor)
         var result = _arg1;
         var result_ = {Tag: 0.000000};
         var linter = (((window.atom).config).get("texton.UseLinter"));
-        var _4296;
+        var _4298;
         var matchValue = (new TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_LintWarning___(result, result_));
-        if ((matchValue.Items[0.000000].Tag == 0.000000)) 
+        if ((matchValue.Items[0.000000].Tag == 0.000000))
         {
-          if ((matchValue.Items[1.000000].Tag == 0.000000)) 
+          if ((matchValue.Items[1.000000].Tag == 0.000000))
           {
-            _4296 = [];
+            _4298 = [];
           }
           else
           {
             var n = Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___(matchValue.Items[1.000000]);
-            if (linter) 
+            if (linter)
             {
-              _4296 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
+              _4298 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
               {
                 return ErrorLinterProvider__mapLint$(editor, item);
               }), n.Data);
             }
             else
             {
-              _4296 = [];
+              _4298 = [];
             };
           };
         }
         else
         {
-          if ((matchValue.Items[1.000000].Tag == 0.000000)) 
+          if ((matchValue.Items[1.000000].Tag == 0.000000))
           {
             var _n = Option__GetValue$Result_1_Error___Result_1_Error___(matchValue.Items[0.000000]);
-            _4296 = Array__Map$Error__Object_Error__Object_((function(item)
+            _4298 = Array__Map$Error__Object_Error__Object_((function(item)
             {
               return ErrorLinterProvider__mapError$(editor, item);
             }), _n.Data);
@@ -1184,23 +1187,23 @@ ErrorLinterProvider__lint$ = (function(editor)
             {
               return ErrorLinterProvider__mapError$(editor, item);
             }), __n.Data);
-            var _4480;
-            if (linter) 
+            var _4482;
+            if (linter)
             {
-              _4480 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
+              _4482 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
               {
                 return ErrorLinterProvider__mapLint$(editor, item);
               }), n_.Data);
             }
             else
             {
-              _4480 = [];
+              _4482 = [];
             };
-            var r_ = _4480;
-            _4296 = Array__Concat$Object_Object_(Seq__OfList$Object___Object___(List__CreateCons$Object___Object___(r, List__CreateCons$Object___Object___(r_, List__Empty$Object___Object___()))));
+            var r_ = _4482;
+            _4298 = Array__Concat$Object_Object_(Seq__OfList$Object___Object___(List__CreateCons$Object___Object___(r, List__CreateCons$Object___Object___(r_, List__Empty$Object___Object___()))));
           };
         };
-        return AsyncBuilder__Return$Object___Object___(Async__get_async$(), _4296);
+        return AsyncBuilder__Return$Object___Object___(Async__get_async$(), _4298);
       }));
     })));
 });
@@ -1220,7 +1223,7 @@ GeneratorPane__getTextOnCursorLine$ = (function(unitVar0)
 {
     var editor = (((window.atom).workspace).getActiveTextEditor());
     var posn = (editor.getCursorBufferPosition());
-    return ((posn.row) + 1);
+    return (posn.row);
 });
 GeneratorPane__makeTitle$ = (function(res)
 {
@@ -1234,25 +1237,25 @@ GeneratorPane__navigateToEditor$ = (function(file,line,col)
 {
     var found = false;
     var arr = (((window.atom).workspace).getPanes());
-    for (var _3480 = 0; _3480 <= (Array__Length$IPane_IPane_(arr) - 1); _3480++)
+    for (var _3482 = 0; _3482 <= (Array__Length$IPane_IPane_(arr) - 1); _3482++)
     {
       (function(idx)
       {
         var pane = arr[idx];
-        if ((!found)) 
+        if ((!found))
         {
           var _arr = (pane.getItems());
-          for (var _3479 = 0; _3479 <= (Array__Length$Object_Object_(_arr) - 1); _3479++)
+          for (var _3481 = 0; _3481 <= (Array__Length$Object_Object_(_arr) - 1); _3481++)
           {
             (function(_idx)
             {
               var item = _arr[_idx];
-              if ((!found)) 
+              if ((!found))
               {
                 try
                 {
                   var ed = item;
-                  if (((ed.getPath()) == file)) 
+                  if (((ed.getPath()) == file))
                   {
                     (pane.activate());
                     var ignored0 = (pane.activateItem(ed));
@@ -1273,16 +1276,16 @@ GeneratorPane__navigateToEditor$ = (function(file,line,col)
               {
                 ;
               };
-            })(_3479);
+            })(_3481);
           };
         }
         else
         {
           ;
         };
-      })(_3480);
+      })(_3482);
     };
-    if ((!found)) 
+    if ((!found))
     {
       var ignored0 = (((window.atom).workspace).open(file, (new OpenOptions___ctor$(line, col))));
     }
@@ -1298,21 +1301,21 @@ GeneratorPane__navigateToFunction$ = (function(fileName,functionName)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_NavigateData__Unit_FSharpOption_1_Result_1_NavigateData__Unit_(Async__get_async$(), LanguageService__navigateToFunction$(fileName, functionName), (function(_arg1)
       {
         var navigationResult = _arg1;
-        var _3412;
-        if (Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_(navigationResult)) 
+        var _3410;
+        if (Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_(navigationResult))
         {
           var data = Option__GetValue$Result_1_NavigateData_Result_1_NavigateData_(navigationResult).Data;
-          GeneratorPane__navigateToEditor$(data.FileName, data.LineNumber, data.Location);
-          _3412 = AsyncBuilder__Zero$(Async__get_async$());
+          GeneratorPane__navigateToEditor$(data.FileName, (data.LineNumber - 1), (data.Location - 1));
+          _3410 = AsyncBuilder__Zero$(Async__get_async$());
         }
         else
         {
-          _3412 = AsyncBuilder__Zero$(Async__get_async$());
+          _3410 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _3412, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _3410, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _3510;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _3510);
+          var _3512;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _3512);
         })));
       }));
     })), {Tag: 0.000000});
@@ -1334,7 +1337,7 @@ GeneratorPane__openTextOnGeneratorPane$ = (function(unitVar0)
         return cont(_713);
       });
       var matchValue = GeneratorPane__tryFindTextOnGeneratorPane$();
-      if ((matchValue.Tag == 0.000000)) 
+      if ((matchValue.Tag == 0.000000))
       {
         return ((((window.atom).workspace).open("TextOn Generator", (new OpenEditorOptions___ctor$("right")))).done((function(ed)
         {
@@ -1371,8 +1374,8 @@ GeneratorPane__replaceTextOnGeneratorHtmlPanel$Boolean_Boolean = (function(expan
       {
         var title = _arg1;
         var paddedTitle = (TextOnViewHelpers__jq$("\u003cdiv class=\u0027inset-panel padded\u0027/\u003e").append(title));
-        var _3716;
-        var _ignored0 = (((TextOnViewHelpers__jq$((("\u003catom-panel id=\u0027" + identity(_3716)) + "\u0027 /\u003e")).addClass("top texton-block texton-html-block")).append((TextOnViewHelpers__jq$("\u003cdiv class=\u0027padded\u0027/\u003e").append(paddedTitle)))).appendTo(TextOnViewHelpers__jq$(".texton")));
+        var _3718;
+        var _ignored0 = (((TextOnViewHelpers__jq$((("\u003catom-panel id=\u0027" + identity(_3718)) + "\u0027 /\u003e")).addClass("top texton-block texton-html-block")).append((TextOnViewHelpers__jq$("\u003cdiv class=\u0027padded\u0027/\u003e").append(paddedTitle)))).appendTo(TextOnViewHelpers__jq$(".texton")));
         return AsyncBuilder__Zero$(Async__get_async$());
       }));
     }));
@@ -1394,7 +1397,7 @@ GeneratorPane__sendToTextOnGenerator$ = (function(unitVar0)
     return AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(unitVar)
     {
       var editor = (((window.atom).workspace).getActiveTextEditor());
-      if (TextOnViewHelpers__isTextOnEditor$(editor)) 
+      if (TextOnViewHelpers__isTextOnEditor$(editor))
       {
         var line = GeneratorPane__getTextOnCursorLine$();
         return AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__openTextOnGeneratorPane$(), (function(_arg1)
@@ -1402,12 +1405,12 @@ GeneratorPane__sendToTextOnGenerator$ = (function(unitVar0)
           return AsyncBuilder__Bind$FSharpOption_1_Result_1_GeneratorData__Unit_FSharpOption_1_Result_1_GeneratorData__Unit_(Async__get_async$(), LanguageService__generatorStart$(editor, line), (function(_arg2)
           {
             var res = _arg2;
-            if (Option__IsSome$Result_1_GeneratorData_Result_1_GeneratorData_(res)) 
+            if (Option__IsSome$Result_1_GeneratorData_Result_1_GeneratorData_(res))
             {
               return AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__sendToGenerator$(Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_(res).Data), (function(_arg3)
               {
-                var _3759;
-                return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _3759);
+                var _3761;
+                return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _3761);
               }));
             }
             else
@@ -1435,7 +1438,7 @@ GeneratorPane__tryFindTextOnGeneratorPane$ = (function(unitVar0)
       {
         return Seq__Collect$Object__IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_Object__IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_((function(item)
         {
-          if ((item.getTitle() == "TextOn Generator")) 
+          if ((item.getTitle() == "TextOn Generator"))
           {
             return Seq__Singleton$Tuple_2_IPane__Object_Tuple_2_IPane__Object_((new TupleIPane__Object_(pane, item)));
           }
@@ -1468,7 +1471,7 @@ LanguageService__genPort$ = (function(unitVar0)
 });
 LanguageService__generatorStart$ = (function(editor,lineNumber)
 {
-    if ((TextOnViewHelpers__isTextOnEditor$(editor) && (((editor.buffer).file) != null))) 
+    if ((TextOnViewHelpers__isTextOnEditor$(editor) && (((editor.buffer).file) != null)))
     {
       var path = (((editor.buffer).file).path);
       var text = (editor.getText());
@@ -1502,7 +1505,7 @@ LanguageService__parse$ = (function(path,text)
 });
 LanguageService__parseEditor$ = (function(editor)
 {
-    if ((TextOnViewHelpers__isTextOnEditor$(editor) && (((editor.buffer).file) != null))) 
+    if ((TextOnViewHelpers__isTextOnEditor$(editor) && (((editor.buffer).file) != null)))
     {
       var path = (((editor.buffer).file).path);
       var text = (editor.getText());
@@ -1521,86 +1524,86 @@ LanguageService__parseResponse$Error___Error___ = (function(response)
     return Array__Map$String_1_FSharpOption_1_Result_1_Error___String_FSharpOption_1_Result_1_Error___((function(s)
     {
       var matchValue = LanguageService__tryParse$Result_1_Error___Result_1_Error___(s);
-      if ((matchValue.Tag == 1.000000)) 
+      if ((matchValue.Tag == 1.000000))
       {
         var event = Option__GetValue$Result_1_Error___Result_1_Error___(matchValue);
         var o = event;
         Logger__logf$("Service", "Got \u0027%s\u0027: %O", [event.Kind, o]);
         var _matchValue = event.Kind;
-        if ((_matchValue == "project")) 
+        if ((_matchValue == "project"))
         {
           return {Tag: 1.000000, Value: event};
         }
         else
         {
-          if ((_matchValue == "errors")) 
+          if ((_matchValue == "errors"))
           {
             return {Tag: 1.000000, Value: event};
           }
           else
           {
-            if ((_matchValue == "completion")) 
+            if ((_matchValue == "completion"))
             {
               return {Tag: 1.000000, Value: event};
             }
             else
             {
-              if ((_matchValue == "symboluse")) 
+              if ((_matchValue == "symboluse"))
               {
                 return {Tag: 1.000000, Value: event};
               }
               else
               {
-                if ((_matchValue == "helptext")) 
+                if ((_matchValue == "helptext"))
                 {
                   return {Tag: 1.000000, Value: event};
                 }
                 else
                 {
-                  if ((_matchValue == "tooltip")) 
+                  if ((_matchValue == "tooltip"))
                   {
                     return {Tag: 1.000000, Value: event};
                   }
                   else
                   {
-                    if ((_matchValue == "finddecl")) 
+                    if ((_matchValue == "finddecl"))
                     {
                       return {Tag: 1.000000, Value: event};
                     }
                     else
                     {
-                      if ((_matchValue == "compilerlocation")) 
+                      if ((_matchValue == "compilerlocation"))
                       {
                         return {Tag: 1.000000, Value: event};
                       }
                       else
                       {
-                        if ((_matchValue == "lint")) 
+                        if ((_matchValue == "lint"))
                         {
                           return {Tag: 1.000000, Value: event};
                         }
                         else
                         {
-                          if ((_matchValue == "generatorSetup")) 
+                          if ((_matchValue == "generatorSetup"))
                           {
                             return {Tag: 1.000000, Value: event};
                           }
                           else
                           {
-                            if ((_matchValue == "navigate")) 
+                            if ((_matchValue == "navigate"))
                             {
                               return {Tag: 1.000000, Value: event};
                             }
                             else
                             {
-                              if ((_matchValue == "error")) 
+                              if ((_matchValue == "error"))
                               {
                                 Logger__logf$("Service", "Received error event \u0027%s\u0027: %O", [s, o]);
                                 return {Tag: 0.000000};
                               }
                               else
                               {
-                                if ((_matchValue == "info")) 
+                                if ((_matchValue == "info"))
                                 {
                                   Logger__logf$("Service", "Received info event \u0027%s\u0027: %O", [s, o]);
                                   return {Tag: 0.000000};
@@ -1636,86 +1639,86 @@ LanguageService__parseResponse$GeneratorData_GeneratorData_ = (function(response
     return Array__Map$String_1_FSharpOption_1_Result_1_GeneratorData_String_FSharpOption_1_Result_1_GeneratorData_((function(s)
     {
       var matchValue = LanguageService__tryParse$Result_1_GeneratorData_Result_1_GeneratorData_(s);
-      if ((matchValue.Tag == 1.000000)) 
+      if ((matchValue.Tag == 1.000000))
       {
         var event = Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_(matchValue);
         var o = event;
         Logger__logf$("Service", "Got \u0027%s\u0027: %O", [event.Kind, o]);
         var _matchValue = event.Kind;
-        if ((_matchValue == "project")) 
+        if ((_matchValue == "project"))
         {
           return {Tag: 1.000000, Value: event};
         }
         else
         {
-          if ((_matchValue == "errors")) 
+          if ((_matchValue == "errors"))
           {
             return {Tag: 1.000000, Value: event};
           }
           else
           {
-            if ((_matchValue == "completion")) 
+            if ((_matchValue == "completion"))
             {
               return {Tag: 1.000000, Value: event};
             }
             else
             {
-              if ((_matchValue == "symboluse")) 
+              if ((_matchValue == "symboluse"))
               {
                 return {Tag: 1.000000, Value: event};
               }
               else
               {
-                if ((_matchValue == "helptext")) 
+                if ((_matchValue == "helptext"))
                 {
                   return {Tag: 1.000000, Value: event};
                 }
                 else
                 {
-                  if ((_matchValue == "tooltip")) 
+                  if ((_matchValue == "tooltip"))
                   {
                     return {Tag: 1.000000, Value: event};
                   }
                   else
                   {
-                    if ((_matchValue == "finddecl")) 
+                    if ((_matchValue == "finddecl"))
                     {
                       return {Tag: 1.000000, Value: event};
                     }
                     else
                     {
-                      if ((_matchValue == "compilerlocation")) 
+                      if ((_matchValue == "compilerlocation"))
                       {
                         return {Tag: 1.000000, Value: event};
                       }
                       else
                       {
-                        if ((_matchValue == "lint")) 
+                        if ((_matchValue == "lint"))
                         {
                           return {Tag: 1.000000, Value: event};
                         }
                         else
                         {
-                          if ((_matchValue == "generatorSetup")) 
+                          if ((_matchValue == "generatorSetup"))
                           {
                             return {Tag: 1.000000, Value: event};
                           }
                           else
                           {
-                            if ((_matchValue == "navigate")) 
+                            if ((_matchValue == "navigate"))
                             {
                               return {Tag: 1.000000, Value: event};
                             }
                             else
                             {
-                              if ((_matchValue == "error")) 
+                              if ((_matchValue == "error"))
                               {
                                 Logger__logf$("Service", "Received error event \u0027%s\u0027: %O", [s, o]);
                                 return {Tag: 0.000000};
                               }
                               else
                               {
-                                if ((_matchValue == "info")) 
+                                if ((_matchValue == "info"))
                                 {
                                   Logger__logf$("Service", "Received info event \u0027%s\u0027: %O", [s, o]);
                                   return {Tag: 0.000000};
@@ -1751,86 +1754,86 @@ LanguageService__parseResponse$NavigateData_NavigateData_ = (function(response)
     return Array__Map$String_1_FSharpOption_1_Result_1_NavigateData_String_FSharpOption_1_Result_1_NavigateData_((function(s)
     {
       var matchValue = LanguageService__tryParse$Result_1_NavigateData_Result_1_NavigateData_(s);
-      if ((matchValue.Tag == 1.000000)) 
+      if ((matchValue.Tag == 1.000000))
       {
         var event = Option__GetValue$Result_1_NavigateData_Result_1_NavigateData_(matchValue);
         var o = event;
         Logger__logf$("Service", "Got \u0027%s\u0027: %O", [event.Kind, o]);
         var _matchValue = event.Kind;
-        if ((_matchValue == "project")) 
+        if ((_matchValue == "project"))
         {
           return {Tag: 1.000000, Value: event};
         }
         else
         {
-          if ((_matchValue == "errors")) 
+          if ((_matchValue == "errors"))
           {
             return {Tag: 1.000000, Value: event};
           }
           else
           {
-            if ((_matchValue == "completion")) 
+            if ((_matchValue == "completion"))
             {
               return {Tag: 1.000000, Value: event};
             }
             else
             {
-              if ((_matchValue == "symboluse")) 
+              if ((_matchValue == "symboluse"))
               {
                 return {Tag: 1.000000, Value: event};
               }
               else
               {
-                if ((_matchValue == "helptext")) 
+                if ((_matchValue == "helptext"))
                 {
                   return {Tag: 1.000000, Value: event};
                 }
                 else
                 {
-                  if ((_matchValue == "tooltip")) 
+                  if ((_matchValue == "tooltip"))
                   {
                     return {Tag: 1.000000, Value: event};
                   }
                   else
                   {
-                    if ((_matchValue == "finddecl")) 
+                    if ((_matchValue == "finddecl"))
                     {
                       return {Tag: 1.000000, Value: event};
                     }
                     else
                     {
-                      if ((_matchValue == "compilerlocation")) 
+                      if ((_matchValue == "compilerlocation"))
                       {
                         return {Tag: 1.000000, Value: event};
                       }
                       else
                       {
-                        if ((_matchValue == "lint")) 
+                        if ((_matchValue == "lint"))
                         {
                           return {Tag: 1.000000, Value: event};
                         }
                         else
                         {
-                          if ((_matchValue == "generatorSetup")) 
+                          if ((_matchValue == "generatorSetup"))
                           {
                             return {Tag: 1.000000, Value: event};
                           }
                           else
                           {
-                            if ((_matchValue == "navigate")) 
+                            if ((_matchValue == "navigate"))
                             {
                               return {Tag: 1.000000, Value: event};
                             }
                             else
                             {
-                              if ((_matchValue == "error")) 
+                              if ((_matchValue == "error"))
                               {
                                 Logger__logf$("Service", "Received error event \u0027%s\u0027: %O", [s, o]);
                                 return {Tag: 0.000000};
                               }
                               else
                               {
-                                if ((_matchValue == "info")) 
+                                if ((_matchValue == "info"))
                                 {
                                   Logger__logf$("Service", "Received info event \u0027%s\u0027: %O", [s, o]);
                                   return {Tag: 0.000000};
@@ -1998,7 +2001,7 @@ LanguageService__start$ = (function(unitVar0)
     try
     {
       var location = TextOnProcess__textonPath$();
-      if ((location == null)) 
+      if ((location == null))
       {
         ;
       }
@@ -2196,7 +2199,7 @@ List__FoldIndexed$Tuple_2_String__String__list_1_String_Tuple_2_String__String__
 });
 List__FoldIndexedAux$Int32__String_1Int32_String = (function(f,i,acc,_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2209,7 +2212,7 @@ List__FoldIndexedAux$Int32__String_1Int32_String = (function(f,i,acc,_arg1)
 });
 List__FoldIndexedAux$Unit__String_1Unit__String = (function(f,i,acc,_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2222,7 +2225,7 @@ List__FoldIndexedAux$Unit__String_1Unit__String = (function(f,i,acc,_arg1)
 });
 List__FoldIndexedAux$list_1_String__String_1list_1_String__String = (function(f,i,acc,_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2235,7 +2238,7 @@ List__FoldIndexedAux$list_1_String__String_1list_1_String__String = (function(f,
 });
 List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_2_String__String_ = (function(f,i,acc,_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2248,7 +2251,7 @@ List__FoldIndexedAux$list_1_String__Tuple_2_String__String_list_1_String__Tuple_
 });
 List__FoldIndexedAux$list_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_list_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_ = (function(f,i,acc,_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2261,7 +2264,7 @@ List__FoldIndexedAux$list_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_list_1_
 });
 List__Head$Object___Object___ = (function(_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2275,7 +2278,7 @@ List__Head$Object___Object___ = (function(_arg1)
 });
 List__Head$String___String___ = (function(_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2289,7 +2292,7 @@ List__Head$String___String___ = (function(_arg1)
 });
 List__IterateIndexed$String_1String = (function(f,xs)
 {
-    var _2194;
+    var _2192;
     return List__FoldIndexed$String_1_Unit_String_Unit_((function(i)
     {
       return (function(unitVar1)
@@ -2299,7 +2302,7 @@ List__IterateIndexed$String_1String = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _2194, xs);
+    }), _2192, xs);
 });
 List__Length$String_1String = (function(xs)
 {
@@ -2343,7 +2346,7 @@ List__Reverse$Tuple_2_IPane__Object_Tuple_2_IPane__Object_ = (function(xs)
 });
 List__Tail$Object___Object___ = (function(_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2357,7 +2360,7 @@ List__Tail$Object___Object___ = (function(_arg1)
 });
 List__Tail$String___String___ = (function(_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
@@ -2399,12 +2402,12 @@ List__TryPickIndexed$Tuple_2_IPane__Object__Tuple_2_IPane__Object_Tuple_2_IPane_
 });
 List__TryPickIndexedAux$Tuple_2_IPane__Object__Tuple_2_IPane__Object_Tuple_2_IPane__Object__Tuple_2_IPane__Object_ = (function(f,i,_arg1)
 {
-    if ((_arg1.Tag == 1.000000)) 
+    if ((_arg1.Tag == 1.000000))
     {
       var xs = _arg1.Item2;
       var x = _arg1.Item1;
       var result = f(i)(x);
-      if ((result.Tag == 0.000000)) 
+      if ((result.Tag == 0.000000))
       {
         return List__TryPickIndexedAux$Tuple_2_IPane__Object__Tuple_2_IPane__Object_Tuple_2_IPane__Object__Tuple_2_IPane__Object_(f, (i + 1), xs);
       }
@@ -2451,7 +2454,7 @@ Logger__deactivate$ = (function(unitVar0)
 Logger__emitLog$ = (function(category,message,data)
 {
     var msg = ((("[" + category.toUpperCase()) + "] ") + message);
-    if ((Array__BoxedLength$(data) == 0)) 
+    if ((Array__BoxedLength$(data) == 0))
     {
       ((window.console).log(msg));
     }
@@ -2497,7 +2500,7 @@ Logger__get_subscriptions$ = (function()
 Logger__logf$ = (function(category,format,o)
 {
     var debug = (((window.atom).config).get("texton.DeveloperMode"));
-    if ((debug && Logger__active)) 
+    if ((debug && Logger__active))
     {
       return Logger__emitLog$(category, format, o);
     }
@@ -2686,7 +2689,7 @@ Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_ = (function(option)
 });
 Option__Iterate$ChildProcess_ChildProcess_ = (function(f,inp)
 {
-    if ((inp.Tag == 1.000000)) 
+    if ((inp.Tag == 1.000000))
     {
       var x = Option__GetValue$ChildProcess_ChildProcess_(inp);
       return f(x);
@@ -2698,7 +2701,7 @@ Option__Iterate$ChildProcess_ChildProcess_ = (function(f,inp)
 });
 Option__Iterate$IEditor_IEditor_ = (function(f,inp)
 {
-    if ((inp.Tag == 1.000000)) 
+    if ((inp.Tag == 1.000000))
     {
       var x = Option__GetValue$IEditor_IEditor_(inp);
       return f(x);
@@ -2710,7 +2713,7 @@ Option__Iterate$IEditor_IEditor_ = (function(f,inp)
 });
 Option__Iterate$String_1String = (function(f,inp)
 {
-    if ((inp.Tag == 1.000000)) 
+    if ((inp.Tag == 1.000000))
     {
       var x = Option__GetValue$String_1String(inp);
       return f(x);
@@ -2756,7 +2759,7 @@ ResizeArray__ToSeq$Disposable_Disposable_ = (function(xs)
 {
     return Seq__Unfold$Int32__Disposable_Int32_Disposable_((function(i)
     {
-      if ((i < ResizeArray_1_Object__get_Count$Object_(xs))) 
+      if ((i < ResizeArray_1_Object__get_Count$Object_(xs)))
       {
         return {Tag: 1.000000, Value: (new TupleDisposable__Int32(ResizeArray_1_Object__get_Item$Object_(xs, i), (i + 1)))};
       }
@@ -2787,10 +2790,10 @@ Seq__Concat$IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_IEnumerab
         while ((!hasFinished.contents))
         {
           var matchValue = _innerEnum.contents;
-          if ((matchValue.Tag == 1.000000)) 
+          if ((matchValue.Tag == 1.000000))
           {
             var currentEnum = Option__GetValue$IEnumerator_1_Tuple_2_IPane__Object_IEnumerator_1_Tuple_2_IPane__Object_(matchValue);
-            if (currentEnum.MoveNext()) 
+            if (currentEnum.MoveNext())
             {
               output.contents = {Tag: 1.000000, Value: currentEnum.get_Current()};
               null;
@@ -2805,7 +2808,7 @@ Seq__Concat$IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_IEnumerab
           }
           else
           {
-            if (_enum.MoveNext()) 
+            if (_enum.MoveNext())
             {
               _innerEnum.contents = {Tag: 1.000000, Value: Seq__Enumerator$Tuple_2_IPane__Object_Tuple_2_IPane__Object_(_enum.get_Current())};
               null;
@@ -2818,9 +2821,9 @@ Seq__Concat$IEnumerable_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_IEnumerab
           };
         };
         var _matchValue = (new TupleFSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_(_innerEnum.contents, output.contents));
-        if ((_matchValue.Items[0.000000].Tag == 1.000000)) 
+        if ((_matchValue.Items[0.000000].Tag == 1.000000))
         {
-          if ((_matchValue.Items[1.000000].Tag == 1.000000)) 
+          if ((_matchValue.Items[1.000000].Tag == 1.000000))
           {
             var e = Option__GetValue$IEnumerator_1_Tuple_2_IPane__Object_IEnumerator_1_Tuple_2_IPane__Object_(_matchValue.Items[0.000000]);
             var x = Option__GetValue$Tuple_2_IPane__Object_Tuple_2_IPane__Object_(_matchValue.Items[1.000000]);
@@ -3047,8 +3050,8 @@ Seq__FromFactory$Object___Object___ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _4593;
-        return __.factory(_4593);
+        var _4595;
+        return __.factory(_4595);
       })(impl, unitVar1);
     })};
 });
@@ -3091,7 +3094,7 @@ Seq__Iterate$Disposable_Disposable_ = (function(f,xs)
 });
 Seq__IterateIndexed$Object___Object___ = (function(f,xs)
 {
-    var _4613;
+    var _4615;
     return Seq__FoldIndexed$Object____Unit_Object____Unit_((function(i)
     {
       return (function(unitVar1)
@@ -3101,7 +3104,7 @@ Seq__IterateIndexed$Object___Object___ = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _4613, xs);
+    }), _4615, xs);
 });
 Seq__IterateIndexed$String___String___ = (function(f,xs)
 {
@@ -3123,7 +3126,7 @@ Seq__Map$IPane__IEnumerable_1_Tuple_2_IPane__Object_IPane__IEnumerable_1_Tuple_2
     {
       return Seq__Unfold$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_((function(_enum)
       {
-        if (_enum.MoveNext()) 
+        if (_enum.MoveNext())
         {
           return {Tag: 1.000000, Value: (new TupleIEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_(f(_enum.get_Current()), _enum))};
         }
@@ -3140,7 +3143,7 @@ Seq__Map$Object__IEnumerable_1_Tuple_2_IPane__Object_Object__IEnumerable_1_Tuple
     {
       return Seq__Unfold$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_((function(_enum)
       {
-        if (_enum.MoveNext()) 
+        if (_enum.MoveNext())
         {
           return {Tag: 1.000000, Value: (new TupleIEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_(f(_enum.get_Current()), _enum))};
         }
@@ -3155,7 +3158,7 @@ Seq__OfArray$IPane_IPane_ = (function(xs)
 {
     return Seq__Unfold$Int32__IPane_Int32_IPane_((function(i)
     {
-      if ((i < Array__BoxedLength$(xs))) 
+      if ((i < Array__BoxedLength$(xs)))
       {
         return {Tag: 1.000000, Value: (new TupleIPane__Int32(xs[i], (i + 1)))};
       }
@@ -3169,7 +3172,7 @@ Seq__OfArray$Object_Object_ = (function(xs)
 {
     return Seq__Unfold$Int32__Object_Int32_Object_((function(i)
     {
-      if ((i < Array__BoxedLength$(xs))) 
+      if ((i < Array__BoxedLength$(xs)))
       {
         return {Tag: 1.000000, Value: (new TupleObject__Int32(xs[i], (i + 1)))};
       }
@@ -3183,7 +3186,7 @@ Seq__OfArray$String___String___ = (function(xs)
 {
     return Seq__Unfold$Int32__String___Int32_String___((function(i)
     {
-      if ((i < Array__BoxedLength$(xs))) 
+      if ((i < Array__BoxedLength$(xs)))
       {
         return {Tag: 1.000000, Value: (new TupleString____Int32(xs[i], (i + 1)))};
       }
@@ -3197,7 +3200,7 @@ Seq__OfList$Object___Object___ = (function(xs)
 {
     return Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___((function(_arg1)
     {
-      if ((_arg1.Tag == 1.000000)) 
+      if ((_arg1.Tag == 1.000000))
       {
         var _xs = List__Tail$Object___Object___(_arg1);
         var x = List__Head$Object___Object___(_arg1);
@@ -3213,7 +3216,7 @@ Seq__OfList$String___String___ = (function(xs)
 {
     return Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___((function(_arg1)
     {
-      if ((_arg1.Tag == 1.000000)) 
+      if ((_arg1.Tag == 1.000000))
       {
         var _xs = List__Tail$String___String___(_arg1);
         var x = List__Head$String___String___(_arg1);
@@ -3229,7 +3232,7 @@ Seq__Singleton$Tuple_2_IPane__Object_Tuple_2_IPane__Object_ = (function(x)
 {
     return Seq__Unfold$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_((function(_arg1)
     {
-      if ((_arg1.Tag == 0.000000)) 
+      if ((_arg1.Tag == 0.000000))
       {
         return {Tag: 0.000000};
       }
@@ -3302,7 +3305,7 @@ Seq__Unfold$Boolean__Tuple_2_IPane__Object_Boolean_Tuple_2_IPane__Object_ = (fun
           {
             var currAcc = Option__GetValue$Boolean_Boolean(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_Tuple_2_IPane__Object__Boolean_Tuple_2_Tuple_2_IPane__Object__Boolean_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_Tuple_2_IPane__Object__Boolean_Tuple_2_Tuple_2_IPane__Object__Boolean_(x).Items[1.000000];
@@ -3359,7 +3362,7 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
           {
             var currAcc = Option__GetValue$FSharpList_1_Object___FSharpList_1_Object___(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_Object____FSharpList_1_Object___Tuple_2_Object____FSharpList_1_Object___(x).Items[1.000000];
@@ -3376,8 +3379,8 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
           });
           return (Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___(__.acc) && (function()
           {
-            var _4571;
-            return next(_4571);
+            var _4573;
+            return next(_4573);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -3416,7 +3419,7 @@ Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___ = (
           {
             var currAcc = Option__GetValue$FSharpList_1_String___FSharpList_1_String___(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_String____FSharpList_1_String___Tuple_2_String____FSharpList_1_String___(x).Items[1.000000];
@@ -3473,7 +3476,7 @@ Seq__Unfold$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__O
           {
             var currAcc = Option__GetValue$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_(x).Items[1.000000];
@@ -3530,7 +3533,7 @@ Seq__Unfold$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOp
           {
             var currAcc = Option__GetValue$FSharpOption_1_Tuple_2_IPane__Object_FSharpOption_1_Tuple_2_IPane__Object_(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_Tuple_2_Tuple_2_IPane__Object__FSharpOption_1_Tuple_2_IPane__Object_(x).Items[1.000000];
@@ -3587,7 +3590,7 @@ Seq__Unfold$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator
           {
             var currAcc = Option__GetValue$IEnumerator_1_IPane_IEnumerator_1_IPane_(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_IPane_(x).Items[1.000000];
@@ -3644,7 +3647,7 @@ Seq__Unfold$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_IEnumerato
           {
             var currAcc = Option__GetValue$IEnumerator_1_Object_IEnumerator_1_Object_(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_Tuple_2_IEnumerable_1_Tuple_2_IPane__Object__IEnumerator_1_Object_(x).Items[1.000000];
@@ -3701,7 +3704,7 @@ Seq__Unfold$Int32__Disposable_Int32_Disposable_ = (function(f,seed)
           {
             var currAcc = Option__GetValue$Int32_Int32(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_Disposable__Int32_Tuple_2_Disposable__Int32_(x).Items[1.000000];
@@ -3758,7 +3761,7 @@ Seq__Unfold$Int32__IPane_Int32_IPane_ = (function(f,seed)
           {
             var currAcc = Option__GetValue$Int32_Int32(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_IPane__Int32_Tuple_2_IPane__Int32_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_IPane__Int32_Tuple_2_IPane__Int32_(x).Items[1.000000];
@@ -3815,7 +3818,7 @@ Seq__Unfold$Int32__Object_Int32_Object_ = (function(f,seed)
           {
             var currAcc = Option__GetValue$Int32_Int32(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_Object__Int32_Tuple_2_Object__Int32_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_Object__Int32_Tuple_2_Object__Int32_(x).Items[1.000000];
@@ -3872,7 +3875,7 @@ Seq__Unfold$Int32__String___Int32_String___ = (function(f,seed)
           {
             var currAcc = Option__GetValue$Int32_Int32(__.acc);
             var x = __.unfold(currAcc);
-            if ((x.Tag == 1.000000)) 
+            if ((x.Tag == 1.000000))
             {
               var value = Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_(x).Items[0.000000];
               var nextAcc = Option__GetValue$Tuple_2_String____Int32_Tuple_2_String____Int32_(x).Items[1.000000];
@@ -3972,8 +3975,8 @@ String__StartsWith$ = (function(s,search)
 });
 TextOnCommands__openSettings$ = (function(unitVar0)
 {
-    var _3812;
-    return (((window.atom).workspace).open("atom://config/packages/texton", _3812));
+    var _3814;
+    return (((window.atom).workspace).open("atom://config/packages/texton", _3814));
 });
 TextOnGenerator___ctor$ = (function(unitVar0)
 {
@@ -3990,7 +3993,7 @@ TextOnGenerator__activate$ = (function(x,state)
     {
       try
       {
-        if (String__EndsWith$(uri, "TextOn Generator")) 
+        if (String__EndsWith$(uri, "TextOn Generator"))
         {
           return new GeneratorPane();
         }
@@ -4022,7 +4025,7 @@ TextOnIDE___ctor$ = (function(unitVar0)
 TextOnIDE__activate$ = (function(x,state)
 {
     var debug = (((window.atom).config).get("texton.DeveloperMode"));
-    if (debug) 
+    if (debug)
     {
       Logger__activate$("TextOn IDE");
     }
@@ -4035,7 +4038,7 @@ TextOnIDE__activate$ = (function(x,state)
     TextOnGenerator__activate$(x.generator, _682);
     x.subscriptions.push(Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_(((window.atom).config), "texton.DeveloperMode", (function(n)
     {
-      if (n.newValue) 
+      if (n.newValue)
       {
         return Logger__activate$("TextOn IDE");
       }
@@ -4066,7 +4069,7 @@ TextOnIDE__provideErrors$ = (function(__,unitVar1)
 });
 TextOnProcess__fromPath$ = (function(name)
 {
-    if (TextOnProcess__isWin$()) 
+    if (TextOnProcess__isWin$())
     {
       return name;
     }
@@ -4081,7 +4084,7 @@ TextOnProcess__getCwd$ = (function(unitVar0)
     try
     {
       var t = (((window.atom).project).getPaths())[0];
-      if ((fs.existsSync(t))) 
+      if ((fs.existsSync(t)))
       {
         return t;
       }
@@ -4101,7 +4104,7 @@ TextOnProcess__isWin$ = (function(unitVar0)
 TextOnProcess__spawn$ = (function(location,linuxCmd,cmd)
 {
     var _315;
-    if ((cmd == "")) 
+    if ((cmd == ""))
     {
       _315 = [];
     }
@@ -4121,7 +4124,7 @@ TextOnProcess__spawn$ = (function(location,linuxCmd,cmd)
     };
     var options = _538;
     var _543;
-    if (TextOnProcess__isWin$()) 
+    if (TextOnProcess__isWin$())
     {
       _543 = (child_process.spawn(location, cmd_, options));
     }
@@ -4136,13 +4139,13 @@ TextOnProcess__spawn$ = (function(location,linuxCmd,cmd)
 TextOnProcess__textonPath$ = (function(unitVar0)
 {
     var path = (((window.atom).config).get("texton.TextOnPath"));
-    if (((path == null) || (path == ""))) 
+    if (((path == null) || (path == "")))
     {
       return null;
     }
     else
     {
-      if (TextOnProcess__isWin$()) 
+      if (TextOnProcess__isWin$())
       {
         return (path + "\\TextOn.Atom.exe");
       }
@@ -4413,16 +4416,16 @@ WebRequest__AsyncGetResponse$ = (function(req,unitVar1)
       {
         return onError(null);
       });
-      var _2041;
-      if ((WebRequest__get_Method$(req) == "GET")) 
+      var _2039;
+      if ((WebRequest__get_Method$(req) == "GET"))
       {
-        _2041 = null;
+        _2039 = null;
       }
       else
       {
-        _2041 = UTF8Encoding__GetString$(Replacements__utf8Encoding$(), Stream__get_Contents$(req.requestStream));
+        _2039 = UTF8Encoding__GetString$(Replacements__utf8Encoding$(), Stream__get_Contents$(req.requestStream));
       };
-      var body = _2041;
+      var body = _2039;
       return Web__sendRequest$Unit_Unit_(WebRequest__get_Method$(req), req.url, WebHeaderCollection__get_Keys$(WebRequest__get_Headers$(req)), WebHeaderCollection__get_Values$(WebRequest__get_Headers$(req)), body, onReceived, onErrorReceived);
     }));
 });
@@ -4474,13 +4477,13 @@ WebResponse___ctor$ = (function(contents)
 });
 Web__sendRequest$Unit_Unit_ = (function(meth,url,headerKeys,headerValues,body,onSuccess,onError)
 {
-    
-    var _method = meth, 
-        _url = url, 
-        _headerKeys = headerKeys, 
+
+    var _method = meth,
+        _url = url,
+        _headerKeys = headerKeys,
         _headerValues = headerValues,
-        _body = body, 
-        _onSuccess = onSuccess, 
+        _body = body,
+        _onSuccess = onSuccess,
         _onError = onError;
 
     if (window.XDomainRequest) {

@@ -55,9 +55,6 @@ let private tryFindTextOnGeneratorPane () =
               if getTitle item = "TextOn Generator" then yield pane, item ]
     |> List.tryPick Some
 
-/// Helper JS mapping for the function below
-type MessageEvent = { data:string }
-
 /// Opens or activates the TextOn Generator panel
 let private openTextOnGeneratorPane () =
     Async.FromContinuations(fun (cont, econt, ccont) ->
@@ -82,7 +79,7 @@ let private openTextOnGeneratorPane () =
 let private getTextOnCursorLine () =
     let editor = Globals.atom.workspace.getActiveTextEditor()
     let posn = editor.getCursorBufferPosition()
-    (int posn.row) + 1
+    (int posn.row)
 
 /// Remove any whitespace and also the specified suffix from a string
 let trimEnd (suffix:string) (text:string) = 
@@ -96,7 +93,7 @@ let navigateToFunction fileName functionName =
         let! navigationResult = LanguageService.navigateToFunction fileName functionName
         if navigationResult.IsSome then
             let data = navigationResult.Value.Data
-            navigateToEditor data.FileName data.LineNumber data.Location
+            navigateToEditor data.FileName (data.LineNumber - 1) (data.Location - 1)
         return () }
     |> Async.StartImmediate
     |> box
