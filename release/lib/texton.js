@@ -1,9 +1,6 @@
 var CompositeDisposable = require('atom').CompositeDisposable;
 var child_process = require('child_process');
 window.$ = require('jquery');
-var ReactForAtom = require('react-for-atom');
-var {React} = ReactForAtom;
-var {ReactSelectize} = ReactForAtom;
 var atomSpaceView = require('atom-space-pen-views');
 var fs = require('fs');
 var util = require('util');
