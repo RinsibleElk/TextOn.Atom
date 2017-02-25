@@ -9,6 +9,12 @@ module DTO =
     type PositionRequest = {FileName : string; Line : int; Column : int; Filter : string}
     type LintRequest = {FileName : string}
     type CompletionRequest = {FileName : string; SourceLine : string; Line : int; Column : int; Filter : string}
+    type GeneratorStartRequest = {FileName : string; LineNumber : int; Lines : string[] }
+    type NavigateFunctionRequest = {FileName : string ; FunctionName : string }
+
+    type HtmlResult =
+      { fileName : string
+        functionName : string }
 
     type OverloadSignature = {
         Signature: string
@@ -78,6 +84,19 @@ module DTO =
             /// Entire input file, needed to display where in the file the error occurred.
             Input: string }
 
+    type GeneratorData =
+        {
+            FileName : string
+            FunctionName : string
+        }
+
+    type NavigateData =
+        {
+            FileName : string
+            LineNumber : int
+            Location : int
+        }
+
     type Result<'T> = {Kind : string; Data : 'T}
     type HelptextResult = Result<Helptext>
     type CompletionResult = Result<Completion[]>
@@ -86,3 +105,5 @@ module DTO =
     type ParseResult = Result<Error[]>
     type FindDeclarationResult = Result<Declaration>
     type LintResult = Result<LintWarning[]>
+    type GeneratorStartResult = Result<GeneratorData>
+    type NavigateResult = Result<NavigateData>

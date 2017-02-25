@@ -1,9 +1,8 @@
 ﻿module TextOn.Atom.Js.Generator
 
 // --------------------------------------------------------------------------------------
-// Load the F# implementation and specify parameters for the translator
+// Load the F# implementation and specify parameters for the translator.
 // --------------------------------------------------------------------------------------
-
 
 // Root directory, relatively to which files are saved
 let root = __SOURCE_DIRECTORY__
@@ -100,5 +99,4 @@ let translateModules fileName =
 // --------------------------------------------------------------------------------------
 // Entry point - do stuff!
 // --------------------------------------------------------------------------------------
-
 do translateModules "../../release/lib/texton.js"

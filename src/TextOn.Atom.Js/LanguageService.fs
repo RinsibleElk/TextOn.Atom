@@ -21,7 +21,6 @@ module LanguageService =
 
     let port = genPort ()
 
-
     let url s = sprintf @"http://localhost:%s/%s" port s
     // flag to send tooltip response to the proper event stream
     let mutable private toolbarFlag = false
@@ -52,22 +51,19 @@ module LanguageService =
         try unbox<'T>(Globals.JSON.parse s) |> Some
         with ex -> None
 
-    //type Request = { Kind : string }
-
     let private parseResponse<'T> (response : string[]) : DTO.Result<'T> option [] =
         response |> Array.map (fun s ->
           match tryParse<DTO.Result<'T>> s with
-          | None -> Logger.logf "Service" "Invalid response from FSAC: %s" [| s |]; None
+          | None -> Logger.logf "Service" "Invalid response from TextOn: %s" [| s |]; None
           | Some event ->
             let o = box event
             Logger.logf "Service" "Got '%s': %O" [| box event.Kind; o |]
             match event.Kind with
             | "project" | "errors" | "completion" | "symboluse" | "helptext"
-            | "tooltip" | "finddecl" | "compilerlocation" | "lint" -> Some event
+            | "tooltip" | "finddecl" | "compilerlocation" | "lint" | "generatorSetup" | "navigate" -> Some event
             | "error" -> Logger.logf "Service" "Received error event '%s': %O" [| box s; o |]; None
             | "info" -> Logger.logf "Service" "Received info event '%s': %O" [| box s; o |]; None
             | s -> Logger.logf "Service" "Received unexpected event '%s': %O" [| box s; o |]; None)
-
 
     let send<'T> id req =
         async {
@@ -124,7 +120,6 @@ module LanguageService =
         |> request (url "tooltip")
         |> send<OverloadSignature[][]> 0
 
-
     let findDeclaration fn line col =
         {PositionRequest.Line = line; FileName = fn; Column = col; Filter = ""}
         |> request (url "finddeclaration")
@@ -136,6 +131,21 @@ module LanguageService =
             |> request (url "lint")
             |> send<LintWarning[]> 0
          else async {return None}
+
+    let generatorStart editor lineNumber =
+        if isTextOnEditor editor && unbox<obj>(editor.buffer.file) <> null then
+            let path = editor.buffer.file.path
+            let text = editor.getText()
+            let lines = text.Replace("\uFEFF", "").Split('\n')
+            {DTO.GeneratorStartRequest.FileName = path; DTO.GeneratorStartRequest.Lines = lines; DTO.GeneratorStartRequest.LineNumber = lineNumber }
+            |> request (url "generatorstart")
+            |> send<DTO.GeneratorData> 0
+         else async {return None}
+
+    let navigateToFunction fileName functionName =
+        { DTO.NavigateFunctionRequest.FileName = fileName ; DTO.NavigateFunctionRequest.FunctionName = functionName }
+        |> request (url "navigatefunctionrequest")
+        |> send<DTO.NavigateData> 0
 
     let start () =
         try

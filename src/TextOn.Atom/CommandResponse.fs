@@ -39,3 +39,7 @@ module CommandResponse =
     let lint (serialize : Serializer) (warnings : LintWarning list) =
         let data = warnings |> List.toArray
         serialize { Kind = "lint"; Data = data }
+    let generatorSetup (serialize : Serializer) (generatorData:GeneratorData) =
+        serialize { Kind = "generatorSetup" ; Data = generatorData }
+    let navigate (serialize : Serializer) (data:NavigateData) =
+        serialize { Kind = "navigate" ; Data = data }

@@ -5,6 +5,8 @@ open System.IO
 
 type Commands (serialize : Serializer) =
     let fileLinesMap = System.Collections.Concurrent.ConcurrentDictionary<string, string list>()
+    //TODO: Make thread-safe.
+    let generator = GeneratorServer()
     let add fileName directory lines =
         let key = Path.Combine(directory, fileName).ToLower()
         let f = System.Func<string, string list, string list>(fun _ _ -> lines)
@@ -43,6 +45,22 @@ type Commands (serialize : Serializer) =
                     | _ ->
                         let errors = [||]
                         [ CommandResponse.errors serialize (errors, fileName) ] }
+
+    let doGenerateStart fileName directory lines line = async {
+        add fileName directory lines
+        let! compileResult = doCompile fileName directory lines
+        return
+            match compileResult with
+            | Failure e -> Failure e
+            | Success compilationResult ->
+                match compilationResult with
+                | CompilationResult.CompilationFailure errors -> Success (GeneratorStartResult.CompilationFailure errors)
+                | CompilationResult.CompilationSuccess template ->
+                    template.Functions
+                    |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
+                    |> Option.map (fun f -> Success (GeneratorStartResult.GeneratorStarted { FileName = fileName ; FunctionName = f.Name }))
+                    |> defaultArg <| Failure "Nothing to generate" }
+
     member __.Parse file lines =
         async {
             let fi = Path.GetFullPath file |> FileInfo
@@ -52,3 +70,39 @@ type Commands (serialize : Serializer) =
         let file = Path.GetFullPath file
         let res = [ CommandResponse.lint serialize [] ]
         return res }
+
+    member __.GenerateStart (file:SourceFilePath) lines line = async {
+        let fi = Path.GetFullPath file |> FileInfo
+        let! result = doGenerateStart file fi.Directory.FullName lines line
+        return
+            match result with
+            | Failure e -> [CommandResponse.error serialize e]
+            | Success (generateStartResult) ->
+                match generateStartResult with
+                | GeneratorStartResult.CompilationFailure(errors) ->
+                    [ CommandResponse.error serialize "Nothing to generate"]
+                | GeneratorStartResult.GeneratorStarted(generatorSetup) ->
+                    [ CommandResponse.generatorSetup serialize generatorSetup ] }
+
+    member __.NavigateFunction (file:SourceFilePath) functionName = async {
+        let fi = Path.GetFullPath file |> FileInfo
+        let lines = fileResolver file (Some fi.Directory.FullName)
+        if lines |> Option.isSome then
+            let (file, directory, lines) = lines.Value
+            let! compileResult = doCompile file directory.Value lines
+            return
+                match compileResult with
+                | Failure e -> [CommandResponse.error serialize e]
+                | Success (compilationResult) ->
+                    match compilationResult with
+                    | CompilationResult.CompilationFailure(errors) ->
+                        [ CommandResponse.error serialize "File had compilation errors" ]
+                    | CompilationResult.CompilationSuccess template ->
+                        let errors = [||]
+                        let f = template.Functions |> Array.tryFind (fun fn -> fn.Name = functionName)
+                        if f |> Option.isNone then
+                            [ CommandResponse.error serialize "Function not found" ]
+                        else
+                            [ CommandResponse.navigate serialize { FileName = f.Value.File ; LineNumber = f.Value.StartLine ; Location = 1 } ]
+        else
+            return [CommandResponse.error serialize "File not found"] }

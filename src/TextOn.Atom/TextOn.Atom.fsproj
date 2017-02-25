@@ -94,6 +94,7 @@
     <Compile Include="RunInteractive.fs" />
     <Compile Include="JsonSerializer.fs" />
     <Compile Include="SuaveUtils.fs" />
+    <Compile Include="GeneratorServer.fs" />
     <Compile Include="CommandResponse.fs" />
     <Compile Include="Commands.fs" />
     <Compile Include="RunServer.fs" />

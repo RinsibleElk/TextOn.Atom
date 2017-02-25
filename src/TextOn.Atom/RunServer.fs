@@ -41,7 +41,9 @@ module internal RunServer =
         let app =
             choose [
                 path "/parse" >=> handler (fun (data : ParseRequest) -> commands.Parse data.FileName (data.Lines |> List.ofArray))
-                path "/lint" >=> handler (fun (data: LintRequest) -> commands.Lint data.FileName)
+                path "/lint" >=> handler (fun (data : LintRequest) -> commands.Lint data.FileName)
+                path "/generatorstart" >=> handler (fun (data : GeneratorStartRequest) -> commands.GenerateStart data.FileName (data.Lines |> List.ofArray) (data.LineNumber))
+                path "/navigatefunctionrequest" >=> handler (fun (data : NavigateFunctionRequest) -> commands.NavigateFunction data.FileName data.FunctionName)
             ]
 
         let port = serverModeConfig.Port
