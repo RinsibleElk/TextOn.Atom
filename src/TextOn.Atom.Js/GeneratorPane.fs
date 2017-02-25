@@ -132,7 +132,7 @@ let navigateToVariable fileName variableName =
 
 let navigateToFileLine file line =
     async {
-        navigateToEditor file 0 0 }
+        navigateToEditor file (line - 1) 0 }
     |> Async.StartImmediate
     |> box
 
