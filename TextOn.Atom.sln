@@ -11,6 +11,11 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.Js", "src\TextO
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TextOn.Atom.DTO", "src\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj", "{7C8B2D6C-FECA-466F-8EFF-9A2595FED812}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6A0EC93D-D6FC-4966-88AA-ABB49A26F09E}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

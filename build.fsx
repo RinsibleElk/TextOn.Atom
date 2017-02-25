@@ -63,7 +63,7 @@ let run cmd args dir =
     ) System.TimeSpan.MaxValue = false then
         traceError <| sprintf "Error while running '%s' with args: %s" cmd args
 
-let atomPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "bin" 
+let atomPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) </> "atom" </> "bin" 
 let apmTool, atomTool =
     #if MONO
         "apm", "atom" 
