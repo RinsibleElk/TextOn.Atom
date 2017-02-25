@@ -7,7 +7,7 @@ open NUnit.Framework
 open Swensen.Unquote
 open FSharp.Quotations
 open System.Collections.Generic
-
+open System.IO
 open TextOn.Atom
 
 let funcText =
@@ -46,12 +46,13 @@ let funcText =
 }"
 
 let exampleFileName = "example.texton"
+let exampleDirectory = @"D:\Example"
 
 let expected =
     {Attributes = [||];
      Variables = [|{Name = "SomeVar";
                     Index = 0;
-                    File = "example.texton";
+                    File = Path.Combine(exampleDirectory, exampleFileName);
                     StartLine = 1;
                     EndLine = 1;
                     PermitsFreeValue = true;
@@ -60,7 +61,7 @@ let expected =
      Functions =
       [|{Name = "main";
          Index = 1;
-         File = "example.texton";
+         File = Path.Combine(exampleDirectory, exampleFileName);
          StartLine = 2;
          EndLine = 33;
          Tree =
@@ -68,12 +69,12 @@ let expected =
             [|(Choice
                  [|(Seq
                       [|(Sentence
-                           ("example.texton", 6,
+                           (Path.Combine(exampleDirectory, exampleFileName), 6,
                             SimpleText
                               "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
                          True);
                         (Sentence
-                           ("example.texton", 7,
+                           (Path.Combine(exampleDirectory, exampleFileName), 7,
                             SimpleSeq
                               [|SimpleText "Cras ante lorem, ";
                                 SimpleChoice
@@ -83,44 +84,44 @@ let expected =
                                   " vel mauris eget, luctus suscipit elit."|]),
                          True);
                         (Sentence
-                           ("example.texton", 8,
+                           (Path.Combine(exampleDirectory, exampleFileName), 8,
                             SimpleText
                               "Morbi lorem nibh, ultricies ac ligula gravida, pharetra posuere nibh."),
                          True);
                         (Sentence
-                           ("example.texton", 9,
+                           (Path.Combine(exampleDirectory, exampleFileName), 9,
                             SimpleText
                               "Curabitur eu mauris aliquam, mattis arcu vitae, semper lectus."),
                          True);
                         (Sentence
-                           ("example.texton", 10,
+                           (Path.Combine(exampleDirectory, exampleFileName), 10,
                             SimpleText
                               "Phasellus at elit ac sem dapibus dapibus."),
                          True);
                         (Sentence
-                           ("example.texton", 11,
+                           (Path.Combine(exampleDirectory, exampleFileName), 11,
                             SimpleSeq
                               [|SimpleText "Morbi convallis varius ";
                                 VariableValue 0; SimpleText "."|]), True);
                         (Sentence
-                           ("example.texton", 12,
+                           (Path.Combine(exampleDirectory, exampleFileName), 12,
                             SimpleText
                               "Curabitur scelerisque semper justo sit amet vehicula."),
                          True);
                         (Sentence
-                           ("example.texton", 13,
+                           (Path.Combine(exampleDirectory, exampleFileName), 13,
                             SimpleText "Ut ut velit at ante viverra euismod."),
                          True);
                         (Sentence
-                           ("example.texton", 14,
+                           (Path.Combine(exampleDirectory, exampleFileName), 14,
                             SimpleText
                               "Nullam et pharetra libero, sit amet consequat nunc."),
                          True);
                         (Sentence
-                           ("example.texton", 15,
+                           (Path.Combine(exampleDirectory, exampleFileName), 15,
                             SimpleText "Fusce ac sagittis libero."), True);
                         (Sentence
-                           ("example.texton", 16,
+                           (Path.Combine(exampleDirectory, exampleFileName), 16,
                             SimpleSeq
                               [|SimpleText "Duis vel mi a ";
                                 SimpleChoice
@@ -128,62 +129,62 @@ let expected =
                                     SimpleText "ante viverra"|];
                                 SimpleText " blandit tincidunt."|]), True);
                         (Sentence
-                           ("example.texton", 17,
+                           (Path.Combine(exampleDirectory, exampleFileName), 17,
                             SimpleSeq
                               [|SimpleText "Integer a mi "; VariableValue 0;
                                 SimpleText "."|]), True);
                         (Sentence
-                           ("example.texton", 18,
+                           (Path.Combine(exampleDirectory, exampleFileName), 18,
                             SimpleText
                               "Integer vitae ipsum non purus tincidunt semper."),
                          True)|], True);
                    (Seq
                       [|(Sentence
-                           ("example.texton", 21,
+                           (Path.Combine(exampleDirectory, exampleFileName), 21,
                             SimpleText
                               "Ut ornare pellentesque quam, consectetur congue augue ultricies nec."),
                          True);
                         (Sentence
-                           ("example.texton", 22,
+                           (Path.Combine(exampleDirectory, exampleFileName), 22,
                             SimpleSeq
                               [|SimpleText "In gravida lacinia ";
                                 VariableValue 0; SimpleText "."|]), True);
                         (Sentence
-                           ("example.texton", 23,
+                           (Path.Combine(exampleDirectory, exampleFileName), 23,
                             SimpleText "Vivamus scelerisque blandit pulvinar."),
                          True);
                         (Sentence
-                           ("example.texton", 24,
+                           (Path.Combine(exampleDirectory, exampleFileName), 24,
                             SimpleText
                               "Praesent ullamcorper et ipsum et scelerisque."),
                          True);
                         (Sentence
-                           ("example.texton", 25,
+                           (Path.Combine(exampleDirectory, exampleFileName), 25,
                             SimpleText
                               "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."),
                          True);
                         (Sentence
-                           ("example.texton", 26,
+                           (Path.Combine(exampleDirectory, exampleFileName), 26,
                             SimpleText
                               "Aliquam ac augue pharetra, placerat sem non, lobortis massa."),
                          True);
                         (Sentence
-                           ("example.texton", 27,
+                           (Path.Combine(exampleDirectory, exampleFileName), 27,
                             SimpleText
                               "Mauris eu mauris luctus, ullamcorper leo eget, scelerisque orci."),
                          True);
                         (Sentence
-                           ("example.texton", 28,
+                           (Path.Combine(exampleDirectory, exampleFileName), 28,
                             SimpleText
                               "Vivamus ipsum lacus, facilisis semper risus eu, placerat dapibus nulla."),
                          True);
                         (Sentence
-                           ("example.texton", 29,
+                           (Path.Combine(exampleDirectory, exampleFileName), 29,
                             SimpleText
                               "Sed finibus libero ipsum, sed vestibulum leo cursus sit amet."),
                          True);
                         (Sentence
-                           ("example.texton", 30,
+                           (Path.Combine(exampleDirectory, exampleFileName), 30,
                             SimpleText "Aenean mollis condimentum nulla."),
                          True)|], True)|], True)|];}|];}
 
@@ -221,7 +222,7 @@ let ``End to end test``() =
     let funcLines = funcText.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray
     let compiled =
         funcLines
-        |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName None
+        |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
         |> CommentStripper.stripComments
         |> LineCategorizer.categorize
         |> List.map (Tokenizer.tokenize >> Parser.parse)
@@ -249,7 +250,7 @@ let ``End to end test``() =
 let compileLines (lines:string) =
     lines.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
     |> List.ofArray
-    |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName None
+    |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
     |> CommentStripper.stripComments
     |> LineCategorizer.categorize
     |> List.map (Tokenizer.tokenize >> Parser.parse)
@@ -269,7 +270,7 @@ let ``Declare the same variable twice``() =
             [|
                 ParserError
                     {
-                        File = exampleFileName
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 2
                         StartLocation = 1
                         EndLocation = 4
@@ -298,7 +299,7 @@ let ``Declare the same attribute twice``() =
             [|
                 ParserError
                     {
-                        File = exampleFileName
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 5
                         StartLocation = 1
                         EndLocation = 4
@@ -327,7 +328,7 @@ let ``Declare the same function twice``() =
             [|
                 ParserError
                     {
-                        File = "example.texton"
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 5
                         StartLocation = 1
                         EndLocation = 5
@@ -345,7 +346,7 @@ let ``Test func with no name``() =
             [|
                 ParserError
                     {
-                        File = exampleFileName
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 1
                         StartLocation = 1
                         EndLocation = 5
@@ -367,15 +368,15 @@ let ``Test not eager on condition errors``() =
             [|
                 ParserError
                     {
-                        File = "example.texton";
-                         LineNumber = 2;
-                         StartLocation = 11;
-                         EndLocation = 19;
-                         ErrorText = "Undefined attribute Unknown1"
+                        File = Path.Combine(exampleDirectory, exampleFileName);
+                        LineNumber = 2;
+                        StartLocation = 11;
+                        EndLocation = 19;
+                        ErrorText = "Undefined attribute Unknown1"
                     }
                 ParserError
                     {
-                        File = "example.texton"
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 2;
                         StartLocation = 36;
                         EndLocation = 44;
@@ -383,7 +384,7 @@ let ``Test not eager on condition errors``() =
                     }
                 ParserError
                     {
-                        File = "example.texton"
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 3;
                         StartLocation = 13;
                         EndLocation = 21;
@@ -391,7 +392,7 @@ let ``Test not eager on condition errors``() =
                     }
                 ParserError
                     {
-                        File = "example.texton"
+                        File = Path.Combine(exampleDirectory, exampleFileName)
                         LineNumber = 3;
                         StartLocation = 38;
                         EndLocation = 46;

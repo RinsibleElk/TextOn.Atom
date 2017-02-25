@@ -4,7 +4,7 @@ open System.Text.RegularExpressions
 open System.IO
 
 /// Service to resolve a file. Can be used in testing to not actually bother having real files lying around.
-type PreprocessorFileResolver = string -> string option -> (string * string option * string list) option
+type PreprocessorFileResolver = string -> string -> (string * string * string list) option
 
 // Loop through lines
 // If line contains a #include
@@ -41,7 +41,7 @@ module Preprocessor =
         member __.Add s = includedFiles <- includedFiles |> Set.add s
 
     /// Perform the preprocessing.
-    let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string option) (includedFilesContainer:IncludedFilesContainer) (lines:string list) =
+    let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string) (includedFilesContainer:IncludedFilesContainer) (lines:string list) =
         match lines with
         | [] -> Seq.empty
         | line::remaining ->
@@ -50,7 +50,7 @@ module Preprocessor =
                     yield {
                         TopLevelFileLineNumber = topLevelFileLineNumber
                         CurrentFileLineNumber = currentFileLineNumber
-                        CurrentFile = currentFile
+                        CurrentFile = Path.Combine(currentDirectory, currentFile)
                         Contents = PreprocessorLine line }
                 else
                     let includeMatch = includeRegex.Match(line)
@@ -58,7 +58,7 @@ module Preprocessor =
                         yield {
                             TopLevelFileLineNumber = topLevelFileLineNumber
                             CurrentFileLineNumber = currentFileLineNumber
-                            CurrentFile = currentFile
+                            CurrentFile = Path.Combine(currentDirectory, currentFile)
                             Contents = PreprocessorError {
                                 StartLocation = 1
                                 EndLocation = line.Length
@@ -70,7 +70,7 @@ module Preprocessor =
                             yield {
                                 TopLevelFileLineNumber = topLevelFileLineNumber
                                 CurrentFileLineNumber = currentFileLineNumber
-                                CurrentFile = currentFile
+                                CurrentFile = Path.Combine(currentDirectory, currentFile)
                                 Contents = PreprocessorError {
                                     StartLocation = 1 + line.IndexOf("\"")
                                     EndLocation = line.Length
@@ -85,12 +85,8 @@ module Preprocessor =
     /// Get a "real" file resolver.
     let realFileResolver : PreprocessorFileResolver =
         (fun fileUnresolved directory ->
-            let file =
-                if directory |> Option.isSome then
-                    FileInfo(Path.Combine(directory.Value, fileUnresolved))
-                else
-                    FileInfo(fileUnresolved)
-            if file.Exists then Some (file.FullName, file.Directory.FullName |> Some, file.FullName |> File.ReadAllLines |> List.ofArray)
+            let file = FileInfo(Path.Combine(directory, fileUnresolved))
+            if file.Exists then Some (file.Name, file.Directory.FullName, file.FullName |> File.ReadAllLines |> List.ofArray)
             else None)
 
     /// Perform the preprocess.

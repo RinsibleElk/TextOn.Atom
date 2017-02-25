@@ -30,7 +30,7 @@ module internal RunInteractive =
     let run interactive =
         let file = interactive.Template
         let compilationResult =
-            Preprocessor.preprocess Preprocessor.realFileResolver file.FullName (Some file.Directory.FullName) (file.FullName |> File.ReadAllLines |> List.ofArray)
+            Preprocessor.preprocess Preprocessor.realFileResolver file.Name file.Directory.FullName (file.FullName |> File.ReadAllLines |> List.ofArray)
             |> CommentStripper.stripComments
             |> LineCategorizer.categorize
             |> List.map (Tokenizer.tokenize >> Parser.parse)

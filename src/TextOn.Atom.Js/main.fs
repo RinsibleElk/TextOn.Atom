@@ -66,7 +66,8 @@ let translateModules fileName =
         let moduleJS =
           [ yield "var CompositeDisposable = require('atom').CompositeDisposable;"
             yield "var child_process = require('child_process');"
-            yield "window.$ = require('jquery');"
+            yield "$ = jQuery = require('jquery');"
+            yield "var jqueryUi = require('jquery-ui');"
             yield "var atomSpaceView = require('atom-space-pen-views');"
             yield "var fs = require('fs');"
             yield "var util = require('util');"

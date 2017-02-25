@@ -7,8 +7,11 @@ open NUnit.Framework
 open Swensen.Unquote
 open FSharp.Quotations
 open System.Collections.Generic
-
+open System.IO
 open TextOn.Atom
+
+let exampleFileName = "example.texton"
+let exampleDirectory = @"D:\Example"
 
 [<Test>]
 let ``Test choice parsing``() =
@@ -26,14 +29,14 @@ let ``Test choice parsing``() =
 }"
         |> fun s -> s.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
         |> List.ofArray
-        |> Preprocessor.preprocess (fun _ _ -> None) "example.texton" None
+        |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
         |> CommentStripper.stripComments
         |> LineCategorizer.categorize
         |> List.head
         |> Tokenizer.tokenize
         |> Parser.parse
     let expected =
-        {   File = "example.texton"
+        {   File = Path.Combine(exampleDirectory, exampleFileName)
             Result =
                 ParsedFunction
                     {   StartLine = 1

@@ -13,18 +13,15 @@ type Commands (serialize : Serializer) =
         fileLinesMap.AddOrUpdate(key, lines, f) |> ignore
     let fileResolver f d =
         let o =
-            d
-            |> Option.bind
-                (fun d ->
-                    let (ok, r) = fileLinesMap.TryGetValue(Path.Combine(d, f).ToLower())
-                    if ok then Some r
-                    else None)
+            let (ok, r) = fileLinesMap.TryGetValue(Path.Combine(d, f).ToLower())
+            if ok then Some r
+            else None
             |> Option.map (fun x -> (f, d, x))
         if o.IsNone then Preprocessor.realFileResolver f d
         else o
     let doCompile fileName directory lines =
         async {
-            let lines = Preprocessor.preprocess fileResolver fileName (Some directory) lines
+            let lines = Preprocessor.preprocess fileResolver fileName directory lines
             let lines' = CommentStripper.stripComments lines
             let groups = LineCategorizer.categorize lines'
             let tokens = groups |> List.map Tokenizer.tokenize
@@ -46,6 +43,24 @@ type Commands (serialize : Serializer) =
                         let errors = [||]
                         [ CommandResponse.errors serialize (errors, fileName) ] }
 
+    let convertAttribute (a:CompiledAttributeDefinition) : DTO.DTO.GeneratorAttribute =
+        {
+            Name = a.Name
+            Value = ""
+            Suggestions = a.Values |> Array.map (fun x -> x.Value)
+            IsEditable = true
+        }
+
+    let convertVariable (a:CompiledVariableDefinition) : DTO.DTO.GeneratorVariable =
+        {
+            Name = a.Name
+            Text = a.Text
+            Value = ""
+            Suggestions = a.Values |> Array.map (fun x -> x.Value)
+            IsEditable = true
+            IsFree = a.PermitsFreeValue
+        }
+
     let doGenerateStart fileName directory lines line = async {
         add fileName directory lines
         let! compileResult = doCompile fileName directory lines
@@ -58,7 +73,7 @@ type Commands (serialize : Serializer) =
                 | CompilationResult.CompilationSuccess template ->
                     template.Functions
                     |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
-                    |> Option.map (fun f -> Success (GeneratorStartResult.GeneratorStarted { FileName = fileName ; FunctionName = f.Name }))
+                    |> Option.map (fun f -> Success (GeneratorStartResult.GeneratorStarted { FileName = fileName ; FunctionName = f.Name ; Attributes = template.Attributes |> Array.map convertAttribute ; Variables = template.Variables |> Array.map convertVariable }))
                     |> defaultArg <| Failure "Nothing to generate" }
 
     member __.Parse file lines =
@@ -86,10 +101,10 @@ type Commands (serialize : Serializer) =
 
     member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo
-        let lines = fileResolver file (Some fi.Directory.FullName)
+        let lines = fileResolver fi.Name fi.Directory.FullName
         if lines |> Option.isSome then
             let (file, directory, lines) = lines.Value
-            let! compileResult = doCompile file directory.Value lines
+            let! compileResult = doCompile file directory lines
             return
                 match compileResult with
                 | Failure e -> [CommandResponse.error serialize e]

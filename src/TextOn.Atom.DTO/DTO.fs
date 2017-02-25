@@ -12,10 +12,6 @@ module DTO =
     type GeneratorStartRequest = {FileName : string; LineNumber : int; Lines : string[] }
     type NavigateRequest = {FileName : string ; NavigateType : string ; Name : string }
 
-    type GeneratorResult =
-      { fileName : string
-        functionName : string }
-
     type OverloadSignature = {
         Signature: string
         Comment: string }
@@ -84,10 +80,29 @@ module DTO =
             /// Entire input file, needed to display where in the file the error occurred.
             Input: string }
 
+    type GeneratorAttribute =
+        {
+            Name : string
+            Value : string
+            Suggestions : string[]
+            IsEditable : bool
+        }
+    type GeneratorVariable =
+        {
+            Name : string
+            Text : string
+            Value : string
+            Suggestions : string[]
+            IsEditable : bool
+            IsFree : bool
+        }
+
     type GeneratorData =
         {
             FileName : string
             FunctionName : string
+            Attributes : GeneratorAttribute[]
+            Variables : GeneratorVariable[]
         }
 
     type NavigateData =

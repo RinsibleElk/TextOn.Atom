@@ -4,15 +4,16 @@ open FsUnit
 open FsCheck
 open NUnit.Framework
 open Swensen.Unquote
-
+open System.IO
 open TextOn.Atom
 
 let alwaysFailFileResolver _ _ = None
 
 let exampleFileName = "example.texton"
+let exampleDirectory = @"D:\Example"
 
 let test f s e =
-    let r = Preprocessor.preprocess f exampleFileName None s |> Seq.toList
+    let r = Preprocessor.preprocess f exampleFileName exampleDirectory s |> Seq.toList
     let e = e |> Seq.toList
     let firstFailingLine =
         List.zip
@@ -73,7 +74,7 @@ let ``Preprocessor with no includes``() =
                     Some {
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
-                        CurrentFile = exampleFileName
+                        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
                         Contents = PreprocessorLine line
                     })
             (1,None)
@@ -89,7 +90,7 @@ let ``Preprocessor with single successful include``() =
             yield "#include \"gender.texton\""
             yield! example }
         |> Seq.toList
-    let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
+    let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", exampleDirectory, gender))
     let expectedGender =
         gender
         |> Seq.scan
@@ -98,7 +99,7 @@ let ``Preprocessor with single successful include``() =
                     Some {
                         TopLevelFileLineNumber = 1
                         CurrentFileLineNumber = ln
-                        CurrentFile = "gender.texton"
+                        CurrentFile = Path.Combine(exampleDirectory, "gender.texton")
                         Contents = PreprocessorLine line
                     })
             (1,None)
@@ -113,7 +114,7 @@ let ``Preprocessor with single successful include``() =
                     Some {
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
-                        CurrentFile = exampleFileName
+                        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
                         Contents = PreprocessorLine line
                     })
             (1,None)
@@ -131,7 +132,7 @@ let ``Preprocessor with double successful include``() =
             yield "#include \"gender.texton\""
             yield! example }
         |> Seq.toList
-    let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", None, gender))
+    let fileResolver : PreprocessorFileResolver = (fun _ _ -> Some ("gender.texton", exampleDirectory, gender))
     let expectedGender =
         gender
         |> Seq.scan
@@ -140,7 +141,7 @@ let ``Preprocessor with double successful include``() =
                     Some {
                         TopLevelFileLineNumber = 1
                         CurrentFileLineNumber = ln
-                        CurrentFile = "gender.texton"
+                        CurrentFile = Path.Combine(exampleDirectory, "gender.texton")
                         Contents = PreprocessorLine line
                     })
             (1,None)
@@ -154,7 +155,7 @@ let ``Preprocessor with double successful include``() =
                     Some {
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
-                        CurrentFile = exampleFileName
+                        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
                         Contents = PreprocessorLine line
                     })
             (1,None)
@@ -177,7 +178,7 @@ let ``Preprocessor with single failed include``() =
     let expectedError = {
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
-        CurrentFile = exampleFileName
+        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
         Contents = PreprocessorError {
             StartLocation = 10
             EndLocation = 24
@@ -190,7 +191,7 @@ let ``Preprocessor with single failed include``() =
                     Some {
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
-                        CurrentFile = exampleFileName
+                        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
                         Contents = PreprocessorLine line
                     })
             (1,None)
@@ -213,7 +214,7 @@ let ``Preprocessor with unrecognised directive``() =
     let expectedError = {
         TopLevelFileLineNumber = 1
         CurrentFileLineNumber = 1
-        CurrentFile = exampleFileName
+        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
         Contents = PreprocessorError {
             StartLocation = 1
             EndLocation = 25
@@ -226,7 +227,7 @@ let ``Preprocessor with unrecognised directive``() =
                     Some {
                         TopLevelFileLineNumber = ln
                         CurrentFileLineNumber = ln
-                        CurrentFile = exampleFileName
+                        CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
                         Contents = PreprocessorLine line
                     })
             (1,None)

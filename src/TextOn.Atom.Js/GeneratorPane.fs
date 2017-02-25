@@ -98,35 +98,108 @@ let navigateToFunction fileName functionName =
     |> Async.StartImmediate
     |> box
 
-let private makeTitle (res:GeneratorResult) =
+/// Fire and forget navigate to an attribute from a link in the pane.
+let navigateToAttribute fileName attributeName =
+    async {
+        let! navigationResult = LanguageService.navigateToAttribute fileName attributeName
+        if navigationResult.IsSome then
+            let data = navigationResult.Value.Data
+            navigateToEditor data.FileName (data.LineNumber - 1) (data.Location - 1)
+        return () }
+    |> Async.StartImmediate
+    |> box
+
+/// Fire and forget navigate to a variable from a link in the pane.
+let navigateToVariable fileName variableName =
+    async {
+        let! navigationResult = LanguageService.navigateToVariable fileName variableName
+        if navigationResult.IsSome then
+            let data = navigationResult.Value.Data
+            navigateToEditor data.FileName (data.LineNumber - 1) (data.Location - 1)
+        return () }
+    |> Async.StartImmediate
+    |> box
+
+let private makeTitle (res:GeneratorData) =
     let link =
         jq("<a />")
-            .append(res.functionName)
-            .click(fun _ -> navigateToFunction res.fileName res.functionName)
+            .append(res.FunctionName)
+            .click(fun _ -> navigateToFunction res.FileName res.FunctionName)
     jq("<h1>Generator for </h1>").append(link)
 
+let private makeCombobox name options =
+    let q =
+        options
+        |> List.fold
+            (fun (q:JQuery) o -> q.append("<option>" + o + "</option>"))
+            (jq("<select id=\"" + name + "\" />"))
+    q
+
+let td() =
+    jq("<td />").addClass("textontablecell")
+
+let th() =
+    jq("<th />").addClass("textontablecell")
+
+let private makeLinkForAttribute fileName (attribute:string) =
+    jq("<a />")
+        .append(attribute)
+        .click(fun _ -> navigateToAttribute fileName attribute)
+
+let private makeLinkForVariable fileName (variable:string) =
+    jq("<a />")
+        .append(variable)
+        .click(fun _ -> navigateToVariable fileName variable)
+
+let private makeAttributes (res:GeneratorData) =
+    let rows =
+        res.Attributes
+        |> Array.map (fun att -> jq("<tr />").append(td().append(makeLinkForAttribute res.FileName att.Name)).append(td().append(makeCombobox att.Name (att.Suggestions |> List.ofArray))))
+    let topRow = jq("<tr />").append(th().append("Name")).append(th().append("Value"))
+    let tbody =
+        rows
+        |> Array.fold
+            (fun (q:JQuery) r -> q.append(r))
+            (jq("<tbody />"))
+    jq("<table />").append(jq("<thead />").append(topRow)).append(tbody)
+
+let private makeVariables (res:GeneratorData) =
+    let rows =
+        res.Variables
+        |> Array.map (fun variable -> jq("<tr />").append(td().append(makeLinkForVariable res.FileName variable.Name)).append(td().append(variable.Text)).append(td().append(makeCombobox variable.Name (variable.Suggestions |> List.ofArray))))
+    let topRow = jq("<tr />").append(th().append("Name")).append(th().append("Text")).append(th().append("Value"))
+    let tbody =
+        rows
+        |> Array.fold
+            (fun (q:JQuery) r -> q.append(r))
+            (jq("<tbody />"))
+    jq("<table />").append(jq("<thead />").append(topRow)).append(tbody)
+
 /// Replace contents of panel with HTML output 
-let private replaceTextOnGeneratorHtmlPanel expanded (res:GeneratorResult) = async {
+let private replaceTextOnGeneratorHtmlPanel expanded (res:GeneratorData) = async {
     jq(".texton").empty() |> ignore
 
     let identity() = "html" + string DateTime.Now.Ticks            
 
-    let! title = 
-      async {
-          // Just paste the content in a <div> together with all styles and such
-          let el = jq("<div />").addClass("content").append(makeTitle res)
-          return el }
+    let title = jq("<div />").addClass("content").append(makeTitle res)
+    let paddedTitle = jq("<div class='inset-panel padded'/>").append(title)
+
+    let attributes = jq("<div />").addClass("content").append("<h2>Attributes</h2>").append(makeAttributes res)
+    let paddedAttributes = jq("<div class='inset-panel padded'/>").append(attributes)
+
+    let variables = jq("<div />").addClass("content").append("<h2>Variables</h2>").append(makeVariables res)
+    let paddedVariables = jq("<div class='inset-panel padded'/>").append(variables)
 
     // Wrap the content with standard collapsible output panel.
-    let paddedTitle = jq("<div class='inset-panel padded'/>").append(title)
     jq("<atom-panel id='" + identity() + "' />").addClass("top texton-block texton-html-block")
       .append(jq("<div class='padded'/>").append(paddedTitle))
+      .append(jq("<div class='padded'/>").append(paddedAttributes))
+      .append(jq("<div class='padded'/>").append(paddedVariables))
       .appendTo(jq(".texton")) |> ignore }
 
 /// Apend the result (Alt+Enter).
 let private sendToGenerator (res:GeneratorData) = async {
-    let html = { fileName = res.FileName ; functionName = res.FunctionName }
-    do! replaceTextOnGeneratorHtmlPanel true html
+    do! replaceTextOnGeneratorHtmlPanel true res
     jq(".texton").scrollTop(99999999.) |> ignore }
 
 /// Send the current line/file/selection to TextOn Generator

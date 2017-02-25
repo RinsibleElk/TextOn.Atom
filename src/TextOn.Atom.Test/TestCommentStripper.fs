@@ -4,7 +4,7 @@ open FsUnit
 open FsCheck
 open NUnit.Framework
 open Swensen.Unquote
-
+open System.IO
 open TextOn.Atom
 
 let test s e =
@@ -21,6 +21,7 @@ let test s e =
         failwithf "The lists didn't match - first failing line was: %s" firstFailingLine.Value
 
 let exampleFileName = "example.texton"
+let exampleDirectory = @"D:\Example"
 
 let example =
     [
@@ -59,7 +60,7 @@ let ``CommentStripper with lines``() =
                         {
                             TopLevelFileLineNumber = ln
                             CurrentFileLineNumber = ln
-                            CurrentFile = exampleFileName
+                            CurrentFile = Path.Combine(exampleDirectory, exampleFileName)
                             Contents = PreprocessorLine line })))
             (1, None)
         |> List.skip 1
@@ -69,7 +70,7 @@ let ``CommentStripper with lines``() =
     let input =
         example
         |> List.map snd
-        |> Preprocessor.preprocess alwaysFailFileResolver exampleFileName None
+        |> Preprocessor.preprocess alwaysFailFileResolver exampleFileName exampleDirectory
     test input expected
 
 [<Test>]

@@ -147,6 +147,16 @@ module LanguageService =
         |> request (url "navigaterequest")
         |> send<DTO.NavigateData> 0
 
+    let navigateToAttribute fileName attributeName =
+        { DTO.NavigateRequest.FileName = fileName ; DTO.NavigateRequest.NavigateType = "NavigateToAttribute" ; DTO.NavigateRequest.Name = attributeName }
+        |> request (url "navigaterequest")
+        |> send<DTO.NavigateData> 0
+
+    let navigateToVariable fileName variableName =
+        { DTO.NavigateRequest.FileName = fileName ; DTO.NavigateRequest.NavigateType = "NavigateToVariable" ; DTO.NavigateRequest.Name = variableName }
+        |> request (url "navigaterequest")
+        |> send<DTO.NavigateData> 0
+
     let start () =
         try
             let location = TextOnProcess.textonPath ()

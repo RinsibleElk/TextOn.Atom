@@ -11,5 +11,6 @@
 #r "FunScript.TypeScript.Binding.atom.dll"
 #r "FunScript.TypeScript.Binding.jquery.dll"
 #r "FunScript.TypeScript.Binding.lib.dll"
+#r "FunScript.TypeScript.Binding.jqueryui.dll"
 #r "FunScript.TypeScript.Binding.node.dll"
 #endif
