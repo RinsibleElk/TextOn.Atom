@@ -58,18 +58,6 @@ let private tryFindTextOnGeneratorPane () =
 /// Helper JS mapping for the function below
 type MessageEvent = { data:string }
 
-/// A handler for messages sent by <iframe> elements that HTML output may put into TextOn Generator window
-/// (a message "height <id> <number>" means max-height of iframe #<id> is given number) 
-let private setupIFrameResizeHandler () = 
-    Globals.window.addEventListener("message", fun e ->
-      let data = (unbox e).data.Split(' ') |> List.ofSeq
-      match data with
-      | [ "height"; id; hgt ] -> 
-          let hgt = if float hgt > 500.0 then 500.0 else float hgt
-          jq("#" + id + " iframe").height(string hgt + "px") |> ignore
-          jq(".texton").scrollTop(99999999.) |> ignore
-      | data -> Logger.logf "TextOn Generator" "Unhandled window message: %O" [| data |] )
-
 /// Opens or activates the TextOn Generator panel
 let private openTextOnGeneratorPane () =
     Async.FromContinuations(fun (cont, econt, ccont) ->
@@ -86,7 +74,6 @@ let private openTextOnGeneratorPane () =
             pane.activate() |> ignore
             activateAndCont ()
         | None ->
-            setupIFrameResizeHandler ()
             Globals.atom.workspace
               ._open("TextOn Generator", {split = "right"})
               ._done((fun ed -> activateAndCont ()) |> unbox<Function>))
