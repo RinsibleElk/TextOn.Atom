@@ -6,7 +6,7 @@ open System.IO
 type Commands (serialize : Serializer) =
     let fileLinesMap = System.Collections.Concurrent.ConcurrentDictionary<string, string list>()
     //TODO: Make thread-safe.
-    let generator = GeneratorServer()
+    let mutable generator = None
     let add fileName directory lines =
         let key = Path.Combine(directory, fileName).ToLower()
         let f = System.Func<string, string list, string list>(fun _ _ -> lines)
@@ -43,24 +43,6 @@ type Commands (serialize : Serializer) =
                         let errors = [||]
                         [ CommandResponse.errors serialize (errors, fileName) ] }
 
-    let convertAttribute (a:CompiledAttributeDefinition) : DTO.DTO.GeneratorAttribute =
-        {
-            Name = a.Name
-            Value = ""
-            Suggestions = a.Values |> Array.map (fun x -> x.Value)
-            IsEditable = true
-        }
-
-    let convertVariable (a:CompiledVariableDefinition) : DTO.DTO.GeneratorVariable =
-        {
-            Name = a.Name
-            Text = a.Text
-            Value = ""
-            Suggestions = a.Values |> Array.map (fun x -> x.Value)
-            IsEditable = true
-            IsFree = a.PermitsFreeValue
-        }
-
     let doGenerateStart fileName directory lines line = async {
         add fileName directory lines
         let! compileResult = doCompile fileName directory lines
@@ -73,7 +55,10 @@ type Commands (serialize : Serializer) =
                 | CompilationResult.CompilationSuccess template ->
                     template.Functions
                     |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
-                    |> Option.map (fun f -> Success (GeneratorStartResult.GeneratorStarted { FileName = fileName ; FunctionName = f.Name ; Attributes = template.Attributes |> Array.map convertAttribute ; Variables = template.Variables |> Array.map convertVariable }))
+                    |> Option.map
+                        (fun f ->
+                            generator <- Some (GeneratorServer(f.File, f.Name, template))
+                            Success (GeneratorStartResult.GeneratorStarted generator.Value.Data))
                     |> defaultArg <| Failure "Nothing to generate" }
 
     member __.Parse file lines =
@@ -98,6 +83,24 @@ type Commands (serialize : Serializer) =
                     [ CommandResponse.error serialize "Nothing to generate"]
                 | GeneratorStartResult.GeneratorStarted(generatorSetup) ->
                     [ CommandResponse.generatorSetup serialize generatorSetup ] }
+
+    member __.GenerateStop () = async {
+        generator <- None
+        return [] }
+
+    member __.GeneratorValueSet ty name value = async {
+        return
+            if generator.IsSome then
+                generator.Value.SetValue ty name value
+                [ CommandResponse.generatorSetup serialize generator.Value.Data ]
+            else [ CommandResponse.error serialize "Nothing to generate" ] }
+
+    member __.Generate () = async {
+        return
+            if generator.IsSome then
+                generator.Value.Generate()
+                [ CommandResponse.generatorSetup serialize generator.Value.Data ]
+            else [ CommandResponse.error serialize "Nothing to generate" ] }
 
     member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo

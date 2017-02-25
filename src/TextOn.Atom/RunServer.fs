@@ -43,7 +43,10 @@ module internal RunServer =
                 path "/parse" >=> handler (fun (data : ParseRequest) -> commands.Parse data.FileName (data.Lines |> List.ofArray))
                 path "/lint" >=> handler (fun (data : LintRequest) -> commands.Lint data.FileName)
                 path "/generatorstart" >=> handler (fun (data : GeneratorStartRequest) -> commands.GenerateStart data.FileName (data.Lines |> List.ofArray) (data.LineNumber))
+                path "/generatorstop" >=> handler (fun (data : GeneratorStopRequest) -> commands.GenerateStop ())
                 path "/navigaterequest" >=> handler (fun (data : NavigateRequest) -> commands.Navigate data.FileName data.NavigateType data.Name)
+                path "/generatorvalueset" >=> handler (fun (data : GeneratorValueSetRequest) -> commands.GeneratorValueSet data.Type data.Name data.Value)
+                path "/generate" >=> handler (fun (data : GenerateRequest) -> commands.Generate ())
             ]
 
         let port = serverModeConfig.Port

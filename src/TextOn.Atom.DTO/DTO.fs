@@ -10,7 +10,10 @@ module DTO =
     type LintRequest = {FileName : string}
     type CompletionRequest = {FileName : string; SourceLine : string; Line : int; Column : int; Filter : string}
     type GeneratorStartRequest = {FileName : string; LineNumber : int; Lines : string[] }
+    type GeneratorStopRequest = {Blank:string}
+    type GenerateRequest = {Blank:string}
     type NavigateRequest = {FileName : string ; NavigateType : string ; Name : string }
+    type GeneratorValueSetRequest = {Type:string;Name:string;Value:string}
 
     type OverloadSignature = {
         Signature: string
@@ -97,12 +100,19 @@ module DTO =
             IsFree : bool
         }
 
+    type OutputString = {
+        File : string
+        LineNumber : int
+        Value : string }
+
     type GeneratorData =
         {
             FileName : string
             FunctionName : string
             Attributes : GeneratorAttribute[]
             Variables : GeneratorVariable[]
+            CanGenerate : bool
+            Output : OutputString[]
         }
 
     type NavigateData =

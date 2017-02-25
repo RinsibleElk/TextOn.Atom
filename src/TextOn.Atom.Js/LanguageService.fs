@@ -157,6 +157,22 @@ module LanguageService =
         |> request (url "navigaterequest")
         |> send<DTO.NavigateData> 0
 
+    let generatorValueSet ty name value =
+        { DTO.GeneratorValueSetRequest.Type = ty ; DTO.GeneratorValueSetRequest.Name = name ; DTO.GeneratorValueSetRequest.Value = value }
+        |> request (url "generatorvalueset")
+        |> send<DTO.GeneratorData> 0
+
+    let generatorStop () =
+        { DTO.GeneratorStopRequest.Blank = "" }
+        |> request (url "generatorstop")
+        |> send<unit> 0
+        |> ignore
+
+    let generate () =
+        { DTO.GenerateRequest.Blank = "" }
+        |> request (url "generate")
+        |> send<DTO.GeneratorData> 0
+
     let start () =
         try
             let location = TextOnProcess.textonPath ()
