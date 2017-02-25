@@ -67,7 +67,7 @@ let private setupIFrameResizeHandler () =
       | [ "height"; id; hgt ] -> 
           let hgt = if float hgt > 500.0 then 500.0 else float hgt
           jq("#" + id + " iframe").height(string hgt + "px") |> ignore
-          jq(".textongen").scrollTop(99999999.) |> ignore
+          jq(".texton").scrollTop(99999999.) |> ignore
       | data -> Logger.logf "TextOn Generator" "Unhandled window message: %O" [| data |] )
 
 /// Opens or activates the TextOn Generator panel
