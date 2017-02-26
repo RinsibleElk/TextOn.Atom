@@ -31,10 +31,18 @@ type GeneratorServer(file, name, template:CompiledTemplate) =
                                     IsEditable = false
                                 }
                             else
+                                let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValues a.Condition) |> Array.map (fun a -> a.Value)
+                                let value = attributeValues |> Map.tryFind att.Index
+                                let value =
+                                    if value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
+                                        attributeValues <- attributeValues |> Map.remove att.Index
+                                        ""
+                                    else
+                                        value |> defaultArg <| ""
                                 {
                                     Name = att.Name
-                                    Value = attributeValues |> Map.tryFind att.Index |> defaultArg <| ""
-                                    Suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValues a.Condition) |> Array.map (fun a -> a.Value)
+                                    Value = value
+                                    Suggestions = suggestions
                                     IsEditable = true
                                 }
                         (haveSeenFilled || data.Value <> "", haveSeenEmpty || data.Value = "", (Some (Choice1Of2 data)))
@@ -51,11 +59,19 @@ type GeneratorServer(file, name, template:CompiledTemplate) =
                                     IsFree = var.PermitsFreeValue
                                 }
                             else
+                                let suggestions = var.Values |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValues variableValues a.Condition) |> Array.map (fun a -> a.Value)
+                                let value = variableValues |> Map.tryFind var.Index
+                                let value =
+                                    if (not (var.PermitsFreeValue)) && value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
+                                        variableValues <- variableValues |> Map.remove var.Index
+                                        ""
+                                    else
+                                        value |> defaultArg <| ""
                                 {
                                     Name = var.Name
                                     Text = var.Text
-                                    Value = variableValues |> Map.tryFind var.Index |> defaultArg <| ""
-                                    Suggestions = var.Values |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValues variableValues a.Condition) |> Array.map (fun a -> a.Value)
+                                    Value = value
+                                    Suggestions = suggestions
                                     IsEditable = true
                                     IsFree = var.PermitsFreeValue
                                 }
