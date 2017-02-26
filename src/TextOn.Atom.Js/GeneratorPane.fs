@@ -35,6 +35,15 @@ let private td() =
 let private th() =
     jq("<th />").addClass("textontablecell")
 
+let private divPadded() =
+    jq("<div class='padded'/>")
+
+let private divInsetPadded() =
+    jq("<div class='inset-panel padded'/>")
+
+let private divContent() =
+    jq("<div />").addClass("content")
+
 /// Go to an opened editor with the specified file or open a new one
 let private navigateToEditor file line col =
     // Try to go to an existing opened editor
@@ -238,19 +247,19 @@ and private replaceTextOnGeneratorHtmlPanel (res:GeneratorData) = async {
 
     let identity() = "html" + string DateTime.Now.Ticks            
 
-    let title = jq("<div />").addClass("content").append(makeTitle res)
-    let paddedTitle = jq("<div class='inset-panel padded'/>").append(title)
+    let title = divContent().append(makeTitle res)
+    let paddedTitle = divInsetPadded().append(title)
 
-    let attributes = jq("<div />").addClass("content").append("<h2>Attributes</h2>").append(makeAttributes res)
+    let attributes = divContent().append("<h2>Attributes</h2>").append(makeAttributes res)
     let paddedAttributes = jq("<div class='inset-panel padded'/>").append(attributes)
 
-    let variables = jq("<div />").addClass("content").append("<h2>Variables</h2>").append(makeVariables res)
-    let paddedVariables = jq("<div class='inset-panel padded'/>").append(variables)
+    let variables = divContent().append("<h2>Variables</h2>").append(makeVariables res)
+    let paddedVariables = divInsetPadded().append(variables)
 
     let makePaddedGeneratorButton() =
         let button = jq("<button>Generate</button>").click(fun _ -> performGeneration())
-        let generatorButton = jq("<div />").addClass("content").append("<h2>Generate</h2>").append(button)
-        jq("<div class='inset-panel padded'/>").append(generatorButton)
+        let generatorButton = divContent().append("<h2>Generate</h2>").append(button)
+        divInsetPadded().append(generatorButton)
 
     let makePaddedGeneratorOutput (output:OutputString[]) =
         let outputHtml =
@@ -265,24 +274,24 @@ and private replaceTextOnGeneratorHtmlPanel (res:GeneratorData) = async {
             |> List.fold
                 (fun (q:JQuery) q2 -> q.append(q2))
                 (jq("<div />"))
-        let paddedOutput = jq("<div />").addClass("content").append("<h2>Output</h2>").append(outputHtml)
+        let paddedOutput = divContent().append("<h2>Output</h2>").append(outputHtml)
         let copyToClipboardButton = jq("<button>Copy to Clipboard</button>").click(fun _ -> copyToClipboard output)
-        let paddedCopyToClipboardButton = jq("<div />").addClass("content").append(copyToClipboardButton)
-        jq("<div class='inset-panel padded'/>").append(paddedOutput).append(paddedCopyToClipboardButton)
+        let paddedCopyToClipboardButton = divContent().append(copyToClipboardButton)
+        divInsetPadded().append(paddedOutput).append(paddedCopyToClipboardButton)
 
     let q =
         jq("<atom-panel id='" + identity() + "' />").addClass("top texton-block texton-html-block")
-            .append(jq("<div class='padded'/>").append(paddedTitle))
-            .append(jq("<div class='padded'/>").append(paddedAttributes))
-            .append(jq("<div class='padded'/>").append(paddedVariables))
+            .append(divPadded().append(paddedTitle))
+            .append(divPadded().append(paddedAttributes))
+            .append(divPadded().append(paddedVariables))
     let q =
         if res.CanGenerate then
-            q.append(jq("<div class='padded'/>").append(makePaddedGeneratorButton()))
+            q.append(divPadded().append(makePaddedGeneratorButton()))
         else
             q
     let q =
         if res.Output.Length > 0 then
-            q.append(jq("<div class='padded'/>").append(makePaddedGeneratorOutput res.Output))
+            q.append(divPadded().append(makePaddedGeneratorOutput res.Output))
         else
             q
     q.appendTo(jq(".texton")) |> ignore }
