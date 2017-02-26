@@ -20,6 +20,7 @@ module DTO =
     type GenerateRequest = {Config:GeneratorConfiguration}
     type NavigateRequest = {FileName : string ; NavigateType : string ; Name : string }
     type GeneratorValueSetRequest = {Type:string;Name:string;Value:string}
+    type UpdateGeneratorRequest = {Blank:string}
 
     type OverloadSignature = {
         Signature: string

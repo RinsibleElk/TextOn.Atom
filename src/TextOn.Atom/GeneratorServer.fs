@@ -7,16 +7,18 @@ type GeneratorStartResult =
     | GeneratorStarted of GeneratorData
 
 [<Sealed>]
-type GeneratorServer(file, name, template:CompiledTemplate) =
-    let mutable currentTemplate = template
+type GeneratorServer(file, name) =
+    let mutable currentTemplate = None
     let mutable lastResult = None
     let mutable attributeValues = Map.empty
     let mutable variableValues = Map.empty
+    member __.File = file |> System.IO.FileInfo
+    member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =
         let (haveSeenEmpty, attributes, variables) =
             Array.append
-                (currentTemplate.Attributes |> Array.map Choice1Of2)
-                (currentTemplate.Variables |> Array.map Choice2Of2)
+                (currentTemplate.Value.Attributes |> Array.map Choice1Of2)
+                (currentTemplate.Value.Variables |> Array.map Choice2Of2)
             |> Array.scan
                 (fun (haveSeenFilled, haveSeenEmpty, _) value ->
                     match value with
@@ -94,10 +96,10 @@ type GeneratorServer(file, name, template:CompiledTemplate) =
         }
     member __.SetValue ty name value =
         if ty = "Variable" then
-            let index = currentTemplate.Variables |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
+            let index = currentTemplate.Value.Variables |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
             if index.IsSome then variableValues <- variableValues |> Map.add index.Value value
         else
-            let index = currentTemplate.Attributes |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
+            let index = currentTemplate.Value.Attributes |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
             if index.IsSome then attributeValues <- attributeValues |> Map.add index.Value value
     member __.Generate (config:GeneratorConfiguration) =
         let generatorInput =
@@ -105,9 +107,9 @@ type GeneratorServer(file, name, template:CompiledTemplate) =
                 Config = {  NumSpacesBetweenSentences = config.NumSpacesBetweenSentences
                             NumBlankLinesBetweenParagraphs = config.NumBlankLinesBetweenParagraphs
                             LineEnding = (if config.WindowsLineEndings then CRLF else LF) }
-                Attributes = currentTemplate.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Index })
-                Variables = currentTemplate.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Index })
+                Attributes = currentTemplate.Value.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Index })
+                Variables = currentTemplate.Value.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Index })
                 Function = Some name }
-        match (Generator.generate generatorInput currentTemplate) with
+        match (Generator.generate generatorInput currentTemplate.Value) with
         | GeneratorError _ -> lastResult <- None
         | GeneratorSuccess r -> lastResult <- Some (r.Text |> Array.map (fun a -> {File = a.InputFile ; LineNumber = a.InputLineNumber ; Value = a.Value ; IsPb = a.IsPb }))

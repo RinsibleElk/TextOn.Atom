@@ -314,6 +314,17 @@ let private sendToTextOnGenerator closeIfNotFound = async {
 
 [<ReflectedDefinition>]
 type TextOnGenerator() =
+    let mutable disp : Disposable option = None
+    let mutable sub : Disposable option = None
+    let updateGenerator() =
+        async {
+            let! generatorData = LanguageService.updateGenerator()
+            if generatorData.IsSome then
+                let data = generatorData.Value.Data
+                do! replaceTextOnGeneratorHtmlPanel data
+            return () }
+        |> Async.StartImmediate
+        |> ignore
     member x.activate(state:obj) =
         Logger.activate "TextOnGenerator"
 
@@ -332,7 +343,21 @@ type TextOnGenerator() =
             "atom-text-editor",
             "TextOn:Send-To-Generator",
             unbox <| fun () -> sendToTextOnGenerator false |> Async.StartImmediate) |> ignore
+        disp <-
+            Some
+                (Globals.atom.workspace.onDidChangeActivePaneItem(
+                    unbox
+                        <| fun () ->
+                                        sub |> Option.iter (fun d -> d.dispose())
+                                        sub <- None
+                                        let e = Globals.atom.workspace.getActiveTextEditor()
+                                        if isTextOnEditor e then
+                                            sub <- (Some (OnCursorStopMoving e 100.0 (fun _ -> updateGenerator())))))
 
     member x.deactivate() =
         Logger.deactivate ()
+        disp |> Option.iter (fun d -> d.dispose())
+        disp <- None
+        sub |> Option.iter (fun d -> d.dispose())
+        sub <- None
 

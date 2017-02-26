@@ -57,7 +57,9 @@ type Commands (serialize : Serializer) =
                     |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
                     |> Option.map
                         (fun f ->
-                            generator <- Some (GeneratorServer(f.File, f.Name, template))
+                            let g = GeneratorServer(f.File, f.Name)
+                            g.UpdateTemplate(template)
+                            generator <- Some g
                             Success (GeneratorStartResult.GeneratorStarted generator.Value.Data))
                     |> defaultArg <| Failure "Nothing to generate" }
 
@@ -101,6 +103,26 @@ type Commands (serialize : Serializer) =
                 generator.Value.Generate config
                 [ CommandResponse.generatorSetup serialize generator.Value.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
+
+    member __.UpdateGenerator () = async {
+        if generator.IsSome then
+            let generator = generator.Value
+            let fi = generator.File
+            let lines = fileResolver fi.Name fi.Directory.FullName
+            if lines.IsSome then
+                let (file, directory, lines) = lines.Value
+                let! compileResult = doCompile file directory lines
+                match compileResult with
+                | Success r ->
+                    match r with
+                    | CompilationResult.CompilationSuccess template ->
+                        generator.UpdateTemplate template
+                        return
+                            [ CommandResponse.generatorSetup serialize generator.Data ]
+                    | _ -> return []
+                | _ -> return []
+            else return []
+        else return [] }
 
     member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo

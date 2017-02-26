@@ -59,8 +59,7 @@ module LanguageService =
             let o = box event
             Logger.logf "Service" "Got '%s': %O" [| box event.Kind; o |]
             match event.Kind with
-            | "project" | "errors" | "completion" | "symboluse" | "helptext"
-            | "tooltip" | "finddecl" | "compilerlocation" | "lint" | "generatorSetup" | "navigate" -> Some event
+            | "errors" | "lint" | "generatorSetup" | "navigate" -> Some event
             | "error" -> Logger.logf "Service" "Received error event '%s': %O" [| box s; o |]; None
             | "info" -> Logger.logf "Service" "Received info event '%s': %O" [| box s; o |]; None
             | s -> Logger.logf "Service" "Received unexpected event '%s': %O" [| box s; o |]; None)
@@ -177,6 +176,11 @@ module LanguageService =
             }
         { DTO.GenerateRequest.Config = config }
         |> request (url "generate")
+        |> send<DTO.GeneratorData> 0
+
+    let updateGenerator() =
+        { DTO.UpdateGeneratorRequest.Blank = "" }
+        |> request (url "updategenerator")
         |> send<DTO.GeneratorData> 0
 
     let start () =
