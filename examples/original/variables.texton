@@ -12,12 +12,6 @@
     "Paris"
   }
 
-@var $Whatever = "Blah"
-  {
-    "Something" [$MÄRKE <> "Paris"]
-    "Or other"
-  }
-
 @var $P2 = "Which district?"
   {
     "Enfield" [$MÄRKE = "London"]
