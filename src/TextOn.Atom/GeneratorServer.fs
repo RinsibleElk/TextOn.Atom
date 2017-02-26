@@ -83,12 +83,12 @@ type GeneratorServer(file, name, template:CompiledTemplate) =
         else
             let index = currentTemplate.Attributes |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
             if index.IsSome then attributeValues <- attributeValues |> Map.add index.Value value
-    member __.Generate() =
+    member __.Generate (config:GeneratorConfiguration) =
         let generatorInput =
             {   RandomSeed = NoSeed
-                Config = {  NumSpacesBetweenSentences = 2
-                            NumBlankLinesBetweenParagraphs = 1
-                            LineEnding = CRLF }
+                Config = {  NumSpacesBetweenSentences = config.NumSpacesBetweenSentences
+                            NumBlankLinesBetweenParagraphs = config.NumBlankLinesBetweenParagraphs
+                            LineEnding = (if config.WindowsLineEndings then CRLF else LF) }
                 Attributes = currentTemplate.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Index })
                 Variables = currentTemplate.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Index })
                 Function = Some name }

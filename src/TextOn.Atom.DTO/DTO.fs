@@ -11,7 +11,13 @@ module DTO =
     type CompletionRequest = {FileName : string; SourceLine : string; Line : int; Column : int; Filter : string}
     type GeneratorStartRequest = {FileName : string; LineNumber : int; Lines : string[] }
     type GeneratorStopRequest = {Blank:string}
-    type GenerateRequest = {Blank:string}
+    type GeneratorConfiguration =
+        {
+            NumSpacesBetweenSentences : int
+            NumBlankLinesBetweenParagraphs : int
+            WindowsLineEndings : bool
+        }
+    type GenerateRequest = {Config:GeneratorConfiguration}
     type NavigateRequest = {FileName : string ; NavigateType : string ; Name : string }
     type GeneratorValueSetRequest = {Type:string;Name:string;Value:string}
 

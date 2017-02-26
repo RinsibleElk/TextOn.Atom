@@ -270,7 +270,6 @@ and private replaceTextOnGeneratorHtmlPanel (res:GeneratorData) = async {
         let paddedCopyToClipboardButton = jq("<div />").addClass("content").append(copyToClipboardButton)
         jq("<div class='inset-panel padded'/>").append(paddedOutput).append(paddedCopyToClipboardButton)
 
-    // Wrap the content with standard collapsible output panel.
     let q =
         jq("<atom-panel id='" + identity() + "' />").addClass("top texton-block texton-html-block")
             .append(jq("<div class='padded'/>").append(paddedTitle))

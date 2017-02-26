@@ -169,7 +169,13 @@ module LanguageService =
         |> ignore
 
     let generate () =
-        { DTO.GenerateRequest.Blank = "" }
+        let config : GeneratorConfiguration =
+            {
+                NumSpacesBetweenSentences = Globals.atom.config.get "texton.GeneratorConfig.NumSpacesBetweenSentences" |> unbox
+                NumBlankLinesBetweenParagraphs = Globals.atom.config.get "texton.GeneratorConfig.NumBlankLinesBetweenParagraphs" |> unbox
+                WindowsLineEndings = Globals.atom.config.get "texton.GeneratorConfig.WindowsLineEndings" |> unbox
+            }
+        { DTO.GenerateRequest.Config = config }
         |> request (url "generate")
         |> send<DTO.GeneratorData> 0
 

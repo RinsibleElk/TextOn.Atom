@@ -90,7 +90,12 @@ let translateModules fileName =
                 UseLinter: {type: 'boolean', 'default': true},
                 DeveloperMode: {type: 'boolean', 'default': false},
                 TextOnPath: {type: 'string', 'default': ''},
-                MonoPath: {type: 'string', 'default': '/usr/bin'}"
+                MonoPath: {type: 'string', 'default': '/usr/bin'},"
+            yield "GeneratorConfig: {type: 'object', properties: {
+                    NumSpacesBetweenSentences : {type: 'number', 'default': 2 },
+                    NumBlankLinesBetweenParagraphs : {type: 'number', 'default': 1 },
+                    WindowsLineEndings : {type: 'boolean', 'default': false }
+                   }}"
             yield "}"
 
             yield "};" ]

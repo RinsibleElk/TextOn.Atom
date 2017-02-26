@@ -46,7 +46,7 @@ module internal RunServer =
                 path "/generatorstop" >=> handler (fun (data : GeneratorStopRequest) -> commands.GenerateStop ())
                 path "/navigaterequest" >=> handler (fun (data : NavigateRequest) -> commands.Navigate data.FileName data.NavigateType data.Name)
                 path "/generatorvalueset" >=> handler (fun (data : GeneratorValueSetRequest) -> commands.GeneratorValueSet data.Type data.Name data.Value)
-                path "/generate" >=> handler (fun (data : GenerateRequest) -> commands.Generate ())
+                path "/generate" >=> handler (fun (data : GenerateRequest) -> commands.Generate data.Config)
             ]
 
         let port = serverModeConfig.Port

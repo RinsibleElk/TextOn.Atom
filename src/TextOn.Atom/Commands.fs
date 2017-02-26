@@ -95,10 +95,10 @@ type Commands (serialize : Serializer) =
                 [ CommandResponse.generatorSetup serialize generator.Value.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
 
-    member __.Generate () = async {
+    member __.Generate config = async {
         return
             if generator.IsSome then
-                generator.Value.Generate()
+                generator.Value.Generate config
                 [ CommandResponse.generatorSetup serialize generator.Value.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
 
