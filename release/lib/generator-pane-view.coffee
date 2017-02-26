@@ -3,9 +3,7 @@
 module.exports =
 class GeneratorPane extends ScrollView
   @content: ->
-    @div class: 'native-key-bindings', =>
-      @div class: 'block pull-right', =>
-        @button class: 'btn btn-sm', click: 'quit', 'Quit'
+    @div class: 'native-key-bindings', tabindex: -1
 
   constructor: (@editorId) ->
     super
