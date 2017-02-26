@@ -7,6 +7,7 @@ type GeneratorStartResult =
     | GeneratorStarted of GeneratorData
 
 [<Sealed>]
+// OPS World's least thread-safe implementation for now.
 type GeneratorServer(file, name) =
     let mutable currentTemplate = None
     let mutable lastResult = None
@@ -15,17 +16,22 @@ type GeneratorServer(file, name) =
     member __.File = file |> System.IO.FileInfo
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =
+        let currentTemplate = currentTemplate.Value
         let (haveSeenEmpty, attributes, variables) =
+            let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+            attributeValues <- attributeValues |> Map.filter (fun k _ -> k |> attributeNameToIndex |> Option.isSome)
+            let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+            variableValues <- variableValues |> Map.filter (fun k _ -> k |> variableNameToIndex |> Option.isSome)
             Array.append
-                (currentTemplate.Value.Attributes |> Array.map Choice1Of2)
-                (currentTemplate.Value.Variables |> Array.map Choice2Of2)
+                (currentTemplate.Attributes |> Array.map Choice1Of2)
+                (currentTemplate.Variables |> Array.map Choice2Of2)
             |> Array.scan
                 (fun (haveSeenFilled, haveSeenEmpty, _) value ->
                     match value with
                     | Choice1Of2 att ->
                         let data =
                             if haveSeenEmpty then
-                                attributeValues |> Map.remove att.Index |> ignore
+                                attributeValues |> Map.remove att.Name |> ignore
                                 {
                                     GeneratorAttribute.Name = att.Name
                                     Value = ""
@@ -33,11 +39,12 @@ type GeneratorServer(file, name) =
                                     IsEditable = false
                                 }
                             else
-                                let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValues a.Condition) |> Array.map (fun a -> a.Value)
-                                let value = attributeValues |> Map.tryFind att.Index
+                                let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                                let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
+                                let value = attributeValuesByIndex |> Map.tryFind att.Index
                                 let value =
                                     if value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
-                                        attributeValues <- attributeValues |> Map.remove att.Index
+                                        attributeValues <- attributeValues |> Map.remove att.Name
                                         ""
                                     else
                                         value |> defaultArg <| ""
@@ -51,7 +58,7 @@ type GeneratorServer(file, name) =
                     | Choice2Of2 var ->
                         let data =
                             if haveSeenEmpty then
-                                variableValues |> Map.remove var.Index |> ignore
+                                variableValues |> Map.remove var.Name |> ignore
                                 {
                                     GeneratorVariable.Name = var.Name
                                     Text = var.Text
@@ -61,11 +68,13 @@ type GeneratorServer(file, name) =
                                     IsFree = var.PermitsFreeValue
                                 }
                             else
-                                let suggestions = var.Values |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValues variableValues a.Condition) |> Array.map (fun a -> a.Value)
-                                let value = variableValues |> Map.tryFind var.Index
+                                let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                                let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                                let suggestions = var.Values |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
+                                let value = variableValuesByIndex |> Map.tryFind var.Index
                                 let value =
                                     if (not (var.PermitsFreeValue)) && value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
-                                        variableValues <- variableValues |> Map.remove var.Index
+                                        variableValues <- variableValues |> Map.remove var.Name
                                         ""
                                     else
                                         value |> defaultArg <| ""
@@ -96,19 +105,17 @@ type GeneratorServer(file, name) =
         }
     member __.SetValue ty name value =
         if ty = "Variable" then
-            let index = currentTemplate.Value.Variables |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
-            if index.IsSome then variableValues <- variableValues |> Map.add index.Value value
+            variableValues <- variableValues |> Map.add name value
         else
-            let index = currentTemplate.Value.Attributes |> Array.tryFind (fun v -> v.Name = name) |> Option.map (fun v -> v.Index)
-            if index.IsSome then attributeValues <- attributeValues |> Map.add index.Value value
+            attributeValues <- attributeValues |> Map.add name value
     member __.Generate (config:GeneratorConfiguration) =
         let generatorInput =
             {   RandomSeed = NoSeed
                 Config = {  NumSpacesBetweenSentences = config.NumSpacesBetweenSentences
                             NumBlankLinesBetweenParagraphs = config.NumBlankLinesBetweenParagraphs
                             LineEnding = (if config.WindowsLineEndings then CRLF else LF) }
-                Attributes = currentTemplate.Value.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Index })
-                Variables = currentTemplate.Value.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Index })
+                Attributes = currentTemplate.Value.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Name })
+                Variables = currentTemplate.Value.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name })
                 Function = Some name }
         match (Generator.generate generatorInput currentTemplate.Value) with
         | GeneratorError _ -> lastResult <- None

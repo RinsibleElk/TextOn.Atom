@@ -1,16 +1,32 @@
-@var @free $MÄRKE = "Which city?"
+@att %Gender
+{
+  "Male"
+  "Female"
+  "Attack Helicopter"
+}
+
+@var $Hello = "Blah"
+  {
+    "Whatever"
+  }
+
+@var $MÄRKE = "Which city?"
   {
     "London"
     "Berlin"
+    "Paris"
   }
 
-@var @free $P2 = "Which district?"
+@var $P2 = "Which district?"
   {
     "Enfield" [$MÄRKE = "London"]
+    "Montparnasse" [$MÄRKE = "Paris"]
+    "Tiergarten" [$MÄRKE = "Berlin"]
   }
 
-@var @free $P3 = "Which car brand?"
+@var $P3 = "Which car brand?"
   {
     "Ford"
     "Jaguar"
+    "Mini" [%Gender = "Female"]
   }
