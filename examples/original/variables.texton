@@ -5,16 +5,17 @@
   "Attack Helicopter"
 }
 
-@var $Hello = "Blah"
-  {
-    "Whatever"
-  }
-
 @var $MÄRKE = "Which city?"
   {
     "London"
     "Berlin"
     "Paris"
+  }
+
+@var $Whatever = "Blah"
+  {
+    "Something" [$MÄRKE <> "Paris"]
+    "Or other"
   }
 
 @var $P2 = "Which district?"

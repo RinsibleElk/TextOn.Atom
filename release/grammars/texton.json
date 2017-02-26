@@ -49,7 +49,7 @@
         },
         {
             "name": "string.quoted.double.texton",
-            "match": "(?=[^\\\\])(\"([^\"]|\\\")*\")"
+            "match": "(?=[^\\\\])(\"([^\"]|\\\")*?\")"
         },
         {
           "name": "keyword.func.texton",
