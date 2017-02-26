@@ -25,6 +25,10 @@ module Bindings =
         [<FunScript.JSEmitInline("({0}.paneForItem({1}))")>]
         member __.paneForItem(o : obj) : obj = failwith "JS"
 
+    type IClipboard with
+        [<FunScript.JSEmitInline("({0}.write({1}))")>]
+        member __.write(s:string) : unit = failwith "JS"
+
 let private td() =
     jq("<td />").addClass("textontablecell")
 
@@ -164,6 +168,14 @@ and private performGeneration() =
     |> Async.StartImmediate
     |> box
 
+/// Actually do the generation.
+and private copyToClipboard(output:OutputString[]) =
+    async {
+        Globals.atom.clipboard.write(output |> Array.map (fun o -> o.Value) |> Array.fold (+) "")
+        return () }
+    |> Async.StartImmediate
+    |> box
+
 and private makeCombobox ty name value options =
     let options =
         if value = "" then
@@ -241,7 +253,7 @@ and private replaceTextOnGeneratorHtmlPanel (res:GeneratorData) = async {
         jq("<div class='inset-panel padded'/>").append(generatorButton)
 
     let makePaddedGeneratorOutput (output:OutputString[]) =
-        let output =
+        let outputHtml =
             output
             |> Array.fold
                 (fun (q:JQuery, li) t ->
@@ -253,8 +265,10 @@ and private replaceTextOnGeneratorHtmlPanel (res:GeneratorData) = async {
             |> List.fold
                 (fun (q:JQuery) q2 -> q.append(q2))
                 (jq("<div />"))
-        let paddedOutput = jq("<div />").addClass("content").append("<h2>Output</h2>").append(output)
-        jq("<div class='inset-panel padded'/>").append(paddedOutput)
+        let paddedOutput = jq("<div />").addClass("content").append("<h2>Output</h2>").append(outputHtml)
+        let copyToClipboardButton = jq("<button>Copy to Clipboard</button>").click(fun _ -> copyToClipboard output)
+        let paddedCopyToClipboardButton = jq("<div />").addClass("content").append(copyToClipboardButton)
+        jq("<div class='inset-panel padded'/>").append(paddedOutput).append(paddedCopyToClipboardButton)
 
     // Wrap the content with standard collapsible output panel.
     let q =
