@@ -48,7 +48,8 @@ type GeneratorInput = {
 type AttributedOutputString = {
     InputFile : string
     InputLineNumber : int
-    Value : string }
+    Value : string
+    IsPb : bool }
 
 type AttributedOutputText =
     | SentenceText of (string * int * string)
@@ -172,25 +173,29 @@ module Generator =
                                         seq [
                                             {   InputFile = null
                                                 InputLineNumber = Int32.MinValue
-                                                Value = sentenceBreakText }
+                                                Value = sentenceBreakText
+                                                IsPb = false }
                                             {
                                                 InputFile = inputFile
                                                 InputLineNumber = inputLineNumber
-                                                Value = text }
+                                                Value = text
+                                                IsPb = false }
                                         ]
                                     else
                                         Seq.singleton
                                             {
                                                 InputFile = inputFile
                                                 InputLineNumber = inputLineNumber
-                                                Value = text }
+                                                Value = text
+                                                IsPb = false }
                                 (true, l)
                             | ParaBreak(inputFile, inputLineNumber) ->
                                 (false,
                                     Seq.singleton
                                         {   InputFile = inputFile
                                             InputLineNumber = inputLineNumber
-                                            Value = paraBreakText })
+                                            Value = paraBreakText
+                                            IsPb = true })
                         seq {
                             yield! output
                             yield! loop newPreviousIsSentence t }

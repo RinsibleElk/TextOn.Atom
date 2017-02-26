@@ -94,4 +94,4 @@ type GeneratorServer(file, name, template:CompiledTemplate) =
                 Function = Some name }
         match (Generator.generate generatorInput currentTemplate) with
         | GeneratorError _ -> lastResult <- None
-        | GeneratorSuccess r -> lastResult <- Some (r.Text |> Array.map (fun a -> {File = a.InputFile ; LineNumber = a.InputLineNumber ; Value = a.Value }))
+        | GeneratorSuccess r -> lastResult <- Some (r.Text |> Array.map (fun a -> {File = a.InputFile ; LineNumber = a.InputLineNumber ; Value = a.Value ; IsPb = a.IsPb }))

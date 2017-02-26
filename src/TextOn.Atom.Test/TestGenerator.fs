@@ -53,7 +53,8 @@ let ``Test simple text``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = textValue }
+                    Value = textValue
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 
@@ -77,7 +78,8 @@ let ``Test choice``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text2 }
+                    Value = text2
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 
@@ -101,13 +103,16 @@ let ``Test sentence break``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text1 }
+                    Value = text1
+                    IsPb = false }
                 {   InputFile = null
                     InputLineNumber = Int32.MinValue
-                    Value = "  " }
+                    Value = "  "
+                    IsPb = false }
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text2 }
+                    Value = text2
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 
@@ -132,13 +137,16 @@ let ``Test paragraph break``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text1 }
+                    Value = text1
+                    IsPb = false }
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = "\r\n\r\n" }
+                    Value = "\r\n\r\n"
+                    IsPb = true }
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text2 }
+                    Value = text2
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 
@@ -201,13 +209,16 @@ let ``Test successful condition``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text1 }
+                    Value = text1
+                    IsPb = false }
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = "\r\n\r\n" }
+                    Value = "\r\n\r\n"
+                    IsPb = true }
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text2 }
+                    Value = text2
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 
@@ -232,7 +243,8 @@ let ``Test failed condition``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = text2 }
+                    Value = text2
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 
@@ -288,7 +300,8 @@ let ``Test variable replacement``() =
             [|
                 {   InputFile = exampleFileName
                     InputLineNumber = exampleLineNumber
-                    Value = countryText }
+                    Value = countryText
+                    IsPb = false }
             |] }
     test <@ expected = output @>
 

@@ -103,7 +103,8 @@ module DTO =
     type OutputString = {
         File : string
         LineNumber : int
-        Value : string }
+        Value : string
+        IsPb : bool }
 
     type GeneratorData =
         {

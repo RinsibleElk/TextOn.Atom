@@ -244,8 +244,14 @@ and private replaceTextOnGeneratorHtmlPanel (res:GeneratorData) = async {
         let output =
             output
             |> Array.fold
-                (fun (q:JQuery) t ->
-                    q.append(makeLinkForLine t.File t.LineNumber t.Value))
+                (fun (q:JQuery, li) t ->
+                    if t.IsPb then (jq("<p />"), q::li)
+                    else
+                        (q.append(makeLinkForLine t.File t.LineNumber t.Value), li))
+                (jq("<p />"), [])
+            |> fun (q, li) -> (q::li) |> List.rev
+            |> List.fold
+                (fun (q:JQuery) q2 -> q.append(q2))
                 (jq("<div />"))
         let paddedOutput = jq("<div />").addClass("content").append("<h2>Output</h2>").append(output)
         jq("<div class='inset-panel padded'/>").append(paddedOutput)
