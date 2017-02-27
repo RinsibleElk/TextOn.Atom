@@ -582,8 +582,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Erro
 {
     return Async__protectedCont$FSharpOption_1_Result_1_Error___FSharpOption_1_Result_1_Error___((function(k)
     {
-      var _1337;
-      var patternInput = f(_1337);
+      var _5652;
+      var patternInput = f(_5652);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -592,8 +592,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_
 {
     return Async__protectedCont$FSharpOption_1_Result_1_GeneratorData_FSharpOption_1_Result_1_GeneratorData_((function(k)
     {
-      var _4046;
-      var patternInput = f(_4046);
+      var _3225;
+      var patternInput = f(_3225);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -602,8 +602,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1
 {
     return Async__protectedCont$FSharpOption_1_Result_1_NavigateData_FSharpOption_1_Result_1_NavigateData_((function(k)
     {
-      var _4528;
-      var patternInput = f(_4528);
+      var _3707;
+      var patternInput = f(_3707);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -612,8 +612,8 @@ AsyncBuilder__Delay$FSharpOption_1_Result_1_Unit_FSharpOption_1_Result_1_Unit_ =
 {
     return Async__protectedCont$FSharpOption_1_Result_1_Unit_FSharpOption_1_Result_1_Unit_((function(k)
     {
-      var _2765;
-      var patternInput = f(_2765);
+      var _1796;
+      var patternInput = f(_1796);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -622,8 +622,8 @@ AsyncBuilder__Delay$Object___Object___ = (function(x,f)
 {
     return Async__protectedCont$Object___Object___((function(k)
     {
-      var _1921;
-      var patternInput = f(_1921);
+      var _6236;
+      var patternInput = f(_6236);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -632,8 +632,8 @@ AsyncBuilder__Delay$String___String___ = (function(x,f)
 {
     return Async__protectedCont$String___String___((function(k)
     {
-      var _1069;
-      var patternInput = f(_1069);
+      var _1528;
+      var patternInput = f(_1528);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -642,8 +642,8 @@ AsyncBuilder__Delay$Unit_Unit_ = (function(x,f)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _2085;
-      var patternInput = f(_2085);
+      var _3877;
+      var patternInput = f(_3877);
       var r = patternInput.Item;
       return r(k);
     }));
@@ -761,8 +761,8 @@ AsyncBuilder__Zero$ = (function(x,unitVar1)
 {
     return Async__protectedCont$Unit_Unit_((function(k)
     {
-      var _1947;
-      return Async__invokeCont$Unit_Unit_(k, _1947);
+      var _3854;
+      return Async__invokeCont$Unit_Unit_(k, _3854);
     }));
 });
 AsyncBuilder___ctor$ = (function(unitVar0)
@@ -876,17 +876,17 @@ Async_1_Object____ContObject___ = (function(Item)
 });
 Async_1_StartImmediate$ = (function(workflow,cancellationToken)
 {
-    var _2093;
+    var _2763;
     if ((cancellationToken.Tag == 1.000000)) 
     {
       var v = Option__GetValue$CancellationToken_CancellationToken_(cancellationToken);
-      _2093 = v;
+      _2763 = v;
     }
     else
     {
-      _2093 = (new CancellationToken___ctor$({Tag: 0.000000}));
+      _2763 = (new CancellationToken___ctor$({Tag: 0.000000}));
     };
-    var token = _2093;
+    var token = _2763;
     var f = workflow.Item;
     var aux = (new AsyncParamsAux___ctor$({contents: 0}, (function(value)
     {
@@ -1355,27 +1355,27 @@ ErrorLinterProvider__lint$ = (function(editor)
         var result = _arg1;
         var result_ = {Tag: 0.000000};
         var linter = (((window.atom).config).get("texton.UseLinter"));
-        var _1412;
+        var _5727;
         var matchValue = (new TupleFSharpOption_1_Result_1_Error____FSharpOption_1_Result_1_LintWarning___(result, result_));
         if ((matchValue.Items[0.000000].Tag == 0.000000)) 
         {
           if ((matchValue.Items[1.000000].Tag == 0.000000)) 
           {
-            _1412 = [];
+            _5727 = [];
           }
           else
           {
             var n = Option__GetValue$Result_1_LintWarning___Result_1_LintWarning___(matchValue.Items[1.000000]);
             if (linter) 
             {
-              _1412 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
+              _5727 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
               {
                 return ErrorLinterProvider__mapLint$(editor, item);
               }), n.Data);
             }
             else
             {
-              _1412 = [];
+              _5727 = [];
             };
           };
         }
@@ -1384,7 +1384,7 @@ ErrorLinterProvider__lint$ = (function(editor)
           if ((matchValue.Items[1.000000].Tag == 0.000000)) 
           {
             var _n = Option__GetValue$Result_1_Error___Result_1_Error___(matchValue.Items[0.000000]);
-            _1412 = Array__Map$Error__Object_Error__Object_((function(item)
+            _5727 = Array__Map$Error__Object_Error__Object_((function(item)
             {
               return ErrorLinterProvider__mapError$(editor, item);
             }), _n.Data);
@@ -1397,23 +1397,23 @@ ErrorLinterProvider__lint$ = (function(editor)
             {
               return ErrorLinterProvider__mapError$(editor, item);
             }), __n.Data);
-            var _1596;
+            var _5911;
             if (linter) 
             {
-              _1596 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
+              _5911 = Array__Map$LintWarning__Object_LintWarning__Object_((function(item)
               {
                 return ErrorLinterProvider__mapLint$(editor, item);
               }), n_.Data);
             }
             else
             {
-              _1596 = [];
+              _5911 = [];
             };
-            var r_ = _1596;
-            _1412 = Array__Concat$Object_Object_(Seq__OfList$Object___Object___(List__CreateCons$Object___Object___(r, List__CreateCons$Object___Object___(r_, List__Empty$Object___Object___()))));
+            var r_ = _5911;
+            _5727 = Array__Concat$Object_Object_(Seq__OfList$Object___Object___(List__CreateCons$Object___Object___(r, List__CreateCons$Object___Object___(r_, List__Empty$Object___Object___()))));
           };
         };
-        return AsyncBuilder__Return$Object___Object___(Async__get_async$(), _1412);
+        return AsyncBuilder__Return$Object___Object___(Async__get_async$(), _5727);
       }));
     })));
 });
@@ -1460,8 +1460,8 @@ GeneratorPane__copyToClipboard$ = (function(output)
       {
         return o.Value;
       }), output))));
-      var _5771;
-      return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5771);
+      var _4966;
+      return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4966);
     })), {Tag: 0.000000});
 });
 GeneratorPane__divContent$ = (function(unitVar0)
@@ -1580,21 +1580,21 @@ GeneratorPane__navigateToAttribute$ = (function(fileName,attributeName)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_NavigateData__Unit_FSharpOption_1_Result_1_NavigateData__Unit_(Async__get_async$(), LanguageService__navigateToAttribute$(fileName, attributeName), (function(_arg1)
       {
         var navigationResult = _arg1;
-        var _4796;
+        var _3991;
         if (Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_(navigationResult)) 
         {
           var data = Option__GetValue$Result_1_NavigateData_Result_1_NavigateData_(navigationResult).Data;
           GeneratorPane__navigateToEditor$(data.FileName, (data.LineNumber - 1), (data.Location - 1));
-          _4796 = AsyncBuilder__Zero$(Async__get_async$());
+          _3991 = AsyncBuilder__Zero$(Async__get_async$());
         }
         else
         {
-          _4796 = AsyncBuilder__Zero$(Async__get_async$());
+          _3991 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _4796, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _3991, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _4833;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4833);
+          var _4028;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4028);
         })));
       }));
     })), {Tag: 0.000000});
@@ -1603,7 +1603,7 @@ GeneratorPane__navigateToEditor$ = (function(file,line,col)
 {
     var found = false;
     var arr = (((window.atom).workspace).getPanes());
-    for (var _4661 = 0; _4661 <= (Array__Length$IPane_IPane_(arr) - 1); _4661++)
+    for (var _3840 = 0; _3840 <= (Array__Length$IPane_IPane_(arr) - 1); _3840++)
     {
       (function(idx)
       {
@@ -1611,7 +1611,7 @@ GeneratorPane__navigateToEditor$ = (function(file,line,col)
         if ((!found)) 
         {
           var _arr = (pane.getItems());
-          for (var _4660 = 0; _4660 <= (Array__Length$Object_Object_(_arr) - 1); _4660++)
+          for (var _3839 = 0; _3839 <= (Array__Length$Object_Object_(_arr) - 1); _3839++)
           {
             (function(_idx)
             {
@@ -1642,14 +1642,14 @@ GeneratorPane__navigateToEditor$ = (function(file,line,col)
               {
                 ;
               };
-            })(_4660);
+            })(_3839);
           };
         }
         else
         {
           ;
         };
-      })(_4661);
+      })(_3840);
     };
     if ((!found)) 
     {
@@ -1675,21 +1675,21 @@ GeneratorPane__navigateToFunction$ = (function(fileName,functionName)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_NavigateData__Unit_FSharpOption_1_Result_1_NavigateData__Unit_(Async__get_async$(), LanguageService__navigateToFunction$(fileName, functionName), (function(_arg1)
       {
         var navigationResult = _arg1;
-        var _4589;
+        var _3768;
         if (Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_(navigationResult)) 
         {
           var data = Option__GetValue$Result_1_NavigateData_Result_1_NavigateData_(navigationResult).Data;
           GeneratorPane__navigateToEditor$(data.FileName, (data.LineNumber - 1), (data.Location - 1));
-          _4589 = AsyncBuilder__Zero$(Async__get_async$());
+          _3768 = AsyncBuilder__Zero$(Async__get_async$());
         }
         else
         {
-          _4589 = AsyncBuilder__Zero$(Async__get_async$());
+          _3768 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _4589, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _3768, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _4684;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4684);
+          var _3870;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _3870);
         })));
       }));
     })), {Tag: 0.000000});
@@ -1701,21 +1701,21 @@ GeneratorPane__navigateToVariable$ = (function(fileName,variableName)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_NavigateData__Unit_FSharpOption_1_Result_1_NavigateData__Unit_(Async__get_async$(), LanguageService__navigateToVariable$(fileName, variableName), (function(_arg1)
       {
         var navigationResult = _arg1;
-        var _5231;
+        var _4426;
         if (Option__IsSome$Result_1_NavigateData_Result_1_NavigateData_(navigationResult)) 
         {
           var data = Option__GetValue$Result_1_NavigateData_Result_1_NavigateData_(navigationResult).Data;
           GeneratorPane__navigateToEditor$(data.FileName, (data.LineNumber - 1), (data.Location - 1));
-          _5231 = AsyncBuilder__Zero$(Async__get_async$());
+          _4426 = AsyncBuilder__Zero$(Async__get_async$());
         }
         else
         {
-          _5231 = AsyncBuilder__Zero$(Async__get_async$());
+          _4426 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _5231, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _4426, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _5268;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5268);
+          var _4463;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4463);
         })));
       }));
     })), {Tag: 0.000000});
@@ -1733,8 +1733,8 @@ GeneratorPane__openTextOnGeneratorPane$ = (function(closeIfNotFound)
       {
         var ignored0 = (prevPane.activate());
         var _ignored0 = (prevPane.activateItem(prevItem));
-        var _2418;
-        return cont(_2418);
+        var _742;
+        return cont(_742);
       });
       var matchValue = GeneratorPane__tryFindTextOnGeneratorPane$(closeIfNotFound);
       if ((matchValue.Tag == 0.000000)) 
@@ -1743,8 +1743,8 @@ GeneratorPane__openTextOnGeneratorPane$ = (function(closeIfNotFound)
         {
           return ((((window.atom).workspace).open("TextOn Generator", (new OpenEditorOptions___ctor$("right")))).done((function(ed)
           {
-            var _3583;
-            return activateAndCont(_3583);
+            var _2614;
+            return activateAndCont(_2614);
           })));
         }
         else
@@ -1758,8 +1758,8 @@ GeneratorPane__openTextOnGeneratorPane$ = (function(closeIfNotFound)
         var item = Option__GetValue$Tuple_2_IPane__Object_Tuple_2_IPane__Object_(matchValue).Items[1.000000];
         var ignored0 = (pane.activateItem(item));
         var _ignored0 = (pane.activate());
-        var _3598;
-        return activateAndCont(_3598);
+        var _2629;
+        return activateAndCont(_2629);
       };
     }));
 });
@@ -1770,24 +1770,24 @@ GeneratorPane__performGeneration$ = (function(unitVar0)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_GeneratorData__Unit_FSharpOption_1_Result_1_GeneratorData__Unit_(Async__get_async$(), LanguageService__generate$(), (function(_arg3)
       {
         var generatorData = _arg3;
-        var _5463;
+        var _4658;
         if (Option__IsSome$Result_1_GeneratorData_Result_1_GeneratorData_(generatorData)) 
         {
           var data = Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_(generatorData).Data;
-          _5463 = AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__replaceTextOnGeneratorHtmlPanel$(data), (function(_arg4)
+          _4658 = AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__replaceTextOnGeneratorHtmlPanel$(data), (function(_arg4)
           {
-            var _5484;
-            return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5484);
+            var _4679;
+            return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4679);
           }));
         }
         else
         {
-          _5463 = AsyncBuilder__Zero$(Async__get_async$());
+          _4658 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _5463, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _4658, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _5496;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5496);
+          var _4691;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4691);
         })));
       }));
     })), {Tag: 0.000000});
@@ -1864,29 +1864,29 @@ GeneratorPane__replaceTextOnGeneratorHtmlPanel$ = (function(res)
         var paddedCopyToClipboardButton = (GeneratorPane__divContent$().append(copyToClipboardButton));
         return ((GeneratorPane__divInsetPadded$().append(paddedOutput)).append(paddedCopyToClipboardButton));
       });
-      var _5791;
-      var q = ((((TextOnViewHelpers__jq$((("\u003catom-panel id=\u0027" + identity(_5791)) + "\u0027 /\u003e")).addClass("top texton-block texton-html-block")).append((GeneratorPane__divPadded$().append(paddedTitle)))).append((GeneratorPane__divPadded$().append(paddedAttributes)))).append((GeneratorPane__divPadded$().append(paddedVariables))));
-      var _5804;
+      var _4986;
+      var q = ((((TextOnViewHelpers__jq$((("\u003catom-panel id=\u0027" + identity(_4986)) + "\u0027 /\u003e")).addClass("top texton-block texton-html-block")).append((GeneratorPane__divPadded$().append(paddedTitle)))).append((GeneratorPane__divPadded$().append(paddedAttributes)))).append((GeneratorPane__divPadded$().append(paddedVariables))));
+      var _4999;
       if (res.CanGenerate) 
       {
-        var _5813;
-        _5804 = (q.append((GeneratorPane__divPadded$().append(makePaddedGeneratorButton(_5813)))));
+        var _5008;
+        _4999 = (q.append((GeneratorPane__divPadded$().append(makePaddedGeneratorButton(_5008)))));
       }
       else
       {
-        _5804 = q;
+        _4999 = q;
       };
-      var _q = _5804;
-      var _5814;
+      var _q = _4999;
+      var _5009;
       if ((Array__BoxedLength$(res.Output) > 0)) 
       {
-        _5814 = (_q.append((GeneratorPane__divPadded$().append(makePaddedGeneratorOutput(res.Output)))));
+        _5009 = (_q.append((GeneratorPane__divPadded$().append(makePaddedGeneratorOutput(res.Output)))));
       }
       else
       {
-        _5814 = _q;
+        _5009 = _q;
       };
-      var __q = _5814;
+      var __q = _5009;
       var _ignored0 = (__q.appendTo(TextOnViewHelpers__jq$(".texton")));
       return AsyncBuilder__Zero$(Async__get_async$());
     }));
@@ -1919,8 +1919,8 @@ GeneratorPane__sendToTextOnGenerator$ = (function(closeIfNotFound)
             {
               return AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__sendToGenerator$(Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_(res).Data), (function(_arg3)
               {
-                var _5849;
-                return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5849);
+                var _5044;
+                return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5044);
               }));
             }
             else
@@ -1993,24 +1993,24 @@ GeneratorPane__valueSet$ = (function(ty,name,value)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_GeneratorData__Unit_FSharpOption_1_Result_1_GeneratorData__Unit_(Async__get_async$(), LanguageService__generatorValueSet$(ty, name, value), (function(_arg1)
       {
         var generatorData = _arg1;
-        var _5034;
+        var _4229;
         if (Option__IsSome$Result_1_GeneratorData_Result_1_GeneratorData_(generatorData)) 
         {
           var data = Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_(generatorData).Data;
-          _5034 = AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__replaceTextOnGeneratorHtmlPanel$(data), (function(_arg2)
+          _4229 = AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__replaceTextOnGeneratorHtmlPanel$(data), (function(_arg2)
           {
-            var _5055;
-            return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5055);
+            var _4250;
+            return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4250);
           }));
         }
         else
         {
-          _5034 = AsyncBuilder__Zero$(Async__get_async$());
+          _4229 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _5034, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _4229, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _5067;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5067);
+          var _4262;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _4262);
         })));
       }));
     })), {Tag: 0.000000});
@@ -3037,7 +3037,7 @@ List__Head$String___String___ = (function(_arg1)
 });
 List__IterateIndexed$String_1String = (function(f,xs)
 {
-    var _719;
+    var _1178;
     return List__FoldIndexed$String_1_Unit_String_Unit_((function(i)
     {
       return (function(unitVar1)
@@ -3047,7 +3047,7 @@ List__IterateIndexed$String_1String = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _719, xs);
+    }), _1178, xs);
 });
 List__Length$String_1String = (function(xs)
 {
@@ -3654,16 +3654,16 @@ Seq__Delay$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Obje
 {
     return Seq__FromFactory$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object_((function(unitVar0)
     {
-      var _3140;
-      return Seq__Enumerator$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object_(f(_3140));
+      var _2171;
+      return Seq__Enumerator$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane__Object_(f(_2171));
     }));
 });
 Seq__Delay$Tuple_2_IPane__Object_Tuple_2_IPane__Object_ = (function(f)
 {
     return Seq__FromFactory$Tuple_2_IPane__Object_Tuple_2_IPane__Object_((function(unitVar0)
     {
-      var _3287;
-      return Seq__Enumerator$Tuple_2_IPane__Object_Tuple_2_IPane__Object_(f(_3287));
+      var _2318;
+      return Seq__Enumerator$Tuple_2_IPane__Object_Tuple_2_IPane__Object_(f(_2318));
     }));
 });
 Seq__Empty$Tuple_2_IPane__Object_Tuple_2_IPane__Object_ = (function()
@@ -3803,8 +3803,8 @@ Seq__FromFactory$Disposable_Disposable_ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _6157;
-        return __.factory(_6157);
+        var _101;
+        return __.factory(_101);
       })(impl, unitVar1);
     })};
 });
@@ -3816,8 +3816,8 @@ Seq__FromFactory$IEnumerable_1_Tuple_2_IPane__Object_IEnumerable_1_Tuple_2_IPane
     {
       return (function(__,unitVar1)
       {
-        var _3132;
-        return __.factory(_3132);
+        var _2163;
+        return __.factory(_2163);
       })(impl, unitVar1);
     })};
 });
@@ -3829,8 +3829,8 @@ Seq__FromFactory$IPane_IPane_ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _3362;
-        return __.factory(_3362);
+        var _2393;
+        return __.factory(_2393);
       })(impl, unitVar1);
     })};
 });
@@ -3842,8 +3842,8 @@ Seq__FromFactory$Object_Object_ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _3052;
-        return __.factory(_3052);
+        var _2083;
+        return __.factory(_2083);
       })(impl, unitVar1);
     })};
 });
@@ -3855,8 +3855,8 @@ Seq__FromFactory$Object___Object___ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _1709;
-        return __.factory(_1709);
+        var _6024;
+        return __.factory(_6024);
       })(impl, unitVar1);
     })};
 });
@@ -3868,8 +3868,8 @@ Seq__FromFactory$String___String___ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _182;
-        return __.factory(_182);
+        var _455;
+        return __.factory(_455);
       })(impl, unitVar1);
     })};
 });
@@ -3881,25 +3881,25 @@ Seq__FromFactory$Tuple_2_IPane__Object_Tuple_2_IPane__Object_ = (function(f)
     {
       return (function(__,unitVar1)
       {
-        var _2913;
-        return __.factory(_2913);
+        var _1944;
+        return __.factory(_1944);
       })(impl, unitVar1);
     })};
 });
 Seq__Iterate$Disposable_Disposable_ = (function(f,xs)
 {
-    var _6165;
+    var _109;
     return Seq__Fold$Disposable__Unit_Disposable__Unit_((function(unitVar0)
     {
       return (function(x)
       {
         return f(x);
       });
-    }), _6165, xs);
+    }), _109, xs);
 });
 Seq__IterateIndexed$Object___Object___ = (function(f,xs)
 {
-    var _1729;
+    var _6044;
     return Seq__FoldIndexed$Object____Unit_Object____Unit_((function(i)
     {
       return (function(unitVar1)
@@ -3909,11 +3909,11 @@ Seq__IterateIndexed$Object___Object___ = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _1729, xs);
+    }), _6044, xs);
 });
 Seq__IterateIndexed$String___String___ = (function(f,xs)
 {
-    var _202;
+    var _475;
     return Seq__FoldIndexed$String____Unit_String____Unit_((function(i)
     {
       return (function(unitVar1)
@@ -3923,7 +3923,7 @@ Seq__IterateIndexed$String___String___ = (function(f,xs)
           return f(i)(x);
         });
       });
-    }), _202, xs);
+    }), _475, xs);
 });
 Seq__Map$IPane__IEnumerable_1_Tuple_2_IPane__Object_IPane__IEnumerable_1_Tuple_2_IPane__Object_ = (function(f,xs)
 {
@@ -4096,6 +4096,12 @@ Seq__Unfold$Boolean__Tuple_2_IPane__Object_Boolean_Tuple_2_IPane__Object_ = (fun
         {
           return __.current;
         })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
+        })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
         return (function(__,unitVar1)
@@ -4121,8 +4127,8 @@ Seq__Unfold$Boolean__Tuple_2_IPane__Object_Boolean_Tuple_2_IPane__Object_ = (fun
           });
           return (Option__IsSome$Boolean_Boolean(__.acc) && (function()
           {
-            var _2957;
-            return next(_2957);
+            var _1988;
+            return next(_1988);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4131,12 +4137,6 @@ Seq__Unfold$Boolean__Tuple_2_IPane__Object_Boolean_Tuple_2_IPane__Object_ = (fun
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4152,6 +4152,12 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4178,8 +4184,8 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
           });
           return (Option__IsSome$FSharpList_1_Object___FSharpList_1_Object___(__.acc) && (function()
           {
-            var _1687;
-            return next(_1687);
+            var _6002;
+            return next(_6002);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4188,12 +4194,6 @@ Seq__Unfold$FSharpList_1_Object____Object___FSharpList_1_Object____Object___ = (
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4209,6 +4209,12 @@ Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___ = (
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4235,8 +4241,8 @@ Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___ = (
           });
           return (Option__IsSome$FSharpList_1_String___FSharpList_1_String___(__.acc) && (function()
           {
-            var _2335;
-            return next(_2335);
+            var _659;
+            return next(_659);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4245,12 +4251,6 @@ Seq__Unfold$FSharpList_1_String____String___FSharpList_1_String____String___ = (
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4266,6 +4266,12 @@ Seq__Unfold$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__O
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4292,8 +4298,8 @@ Seq__Unfold$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__O
           });
           return (Option__IsSome$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object_(__.acc) && (function()
           {
-            var _3264;
-            return next(_3264);
+            var _2295;
+            return next(_2295);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4302,12 +4308,6 @@ Seq__Unfold$FSharpOption_1_IEnumerator_1_Tuple_2_IPane__Object__Tuple_2_IPane__O
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4323,6 +4323,12 @@ Seq__Unfold$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOp
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4349,8 +4355,8 @@ Seq__Unfold$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOp
           });
           return (Option__IsSome$FSharpOption_1_Tuple_2_IPane__Object_FSharpOption_1_Tuple_2_IPane__Object_(__.acc) && (function()
           {
-            var _2891;
-            return next(_2891);
+            var _1922;
+            return next(_1922);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4359,12 +4365,6 @@ Seq__Unfold$FSharpOption_1_Tuple_2_IPane__Object__Tuple_2_IPane__Object_FSharpOp
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4380,6 +4380,12 @@ Seq__Unfold$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4406,8 +4412,8 @@ Seq__Unfold$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator
           });
           return (Option__IsSome$IEnumerator_1_IPane_IEnumerator_1_IPane_(__.acc) && (function()
           {
-            var _3420;
-            return next(_3420);
+            var _2451;
+            return next(_2451);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4416,12 +4422,6 @@ Seq__Unfold$IEnumerator_1_IPane__IEnumerable_1_Tuple_2_IPane__Object_IEnumerator
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4437,6 +4437,12 @@ Seq__Unfold$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_IEnumerato
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4463,8 +4469,8 @@ Seq__Unfold$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_IEnumerato
           });
           return (Option__IsSome$IEnumerator_1_Object_IEnumerator_1_Object_(__.acc) && (function()
           {
-            var _3110;
-            return next(_3110);
+            var _2141;
+            return next(_2141);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4473,12 +4479,6 @@ Seq__Unfold$IEnumerator_1_Object__IEnumerable_1_Tuple_2_IPane__Object_IEnumerato
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4494,6 +4494,12 @@ Seq__Unfold$Int32__Disposable_Int32_Disposable_ = (function(f,seed)
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4520,8 +4526,8 @@ Seq__Unfold$Int32__Disposable_Int32_Disposable_ = (function(f,seed)
           });
           return (Option__IsSome$Int32_Int32(__.acc) && (function()
           {
-            var _6135;
-            return next(_6135);
+            var _79;
+            return next(_79);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4530,12 +4536,6 @@ Seq__Unfold$Int32__Disposable_Int32_Disposable_ = (function(f,seed)
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4551,6 +4551,12 @@ Seq__Unfold$Int32__IPane_Int32_IPane_ = (function(f,seed)
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4577,8 +4583,8 @@ Seq__Unfold$Int32__IPane_Int32_IPane_ = (function(f,seed)
           });
           return (Option__IsSome$Int32_Int32(__.acc) && (function()
           {
-            var _3340;
-            return next(_3340);
+            var _2371;
+            return next(_2371);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4587,12 +4593,6 @@ Seq__Unfold$Int32__IPane_Int32_IPane_ = (function(f,seed)
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4608,6 +4608,12 @@ Seq__Unfold$Int32__Object_Int32_Object_ = (function(f,seed)
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4634,8 +4640,8 @@ Seq__Unfold$Int32__Object_Int32_Object_ = (function(f,seed)
           });
           return (Option__IsSome$Int32_Int32(__.acc) && (function()
           {
-            var _3030;
-            return next(_3030);
+            var _2061;
+            return next(_2061);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4644,12 +4650,6 @@ Seq__Unfold$Int32__Object_Int32_Object_ = (function(f,seed)
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4665,6 +4665,12 @@ Seq__Unfold$Int32__String___Int32_String___ = (function(f,seed)
         return (function(__,unitVar1)
         {
           return __.current;
+        })(impl, unitVar1);
+      }), Dispose: (function(unitVar1)
+      {
+        return (function(__,unitVar1)
+        {
+          ;
         })(impl, unitVar1);
       }), MoveNext: (function(unitVar1)
       {
@@ -4691,8 +4697,8 @@ Seq__Unfold$Int32__String___Int32_String___ = (function(f,seed)
           });
           return (Option__IsSome$Int32_Int32(__.acc) && (function()
           {
-            var _160;
-            return next(_160);
+            var _433;
+            return next(_433);
           })());
         })(impl, unitVar1);
       }), Reset: (function(unitVar1)
@@ -4701,12 +4707,6 @@ Seq__Unfold$Int32__String___Int32_String___ = (function(f,seed)
         {
           __.acc = {Tag: 1.000000, Value: __.seed};
           __.current = null;
-        })(impl, unitVar1);
-      }), Dispose: (function(unitVar1)
-      {
-        return (function(__,unitVar1)
-        {
-          ;
         })(impl, unitVar1);
       })};
     }));
@@ -4780,8 +4780,8 @@ String__StartsWith$ = (function(s,search)
 });
 TextOnCommands__openSettings$ = (function(unitVar0)
 {
-    var _6240;
-    return (((window.atom).workspace).open("atom://config/packages/texton", _6240));
+    var _5271;
+    return (((window.atom).workspace).open("atom://config/packages/texton", _5271));
 });
 TextOnGenerator___ctor$ = (function(unitVar0)
 {
@@ -4830,8 +4830,8 @@ TextOnGenerator__activate$ = (function(x,state)
       {
         x.sub = {Tag: 1.000000, Value: TextOnViewHelpers__OnCursorStopMoving$Object_Object_(e, 100.000000, (function(_arg1)
         {
-          var _5889;
-          var arg10_ = _5889;
+          var _5077;
+          var arg10_ = _5077;
           return TextOnGenerator__updateGenerator$(x);
         }))};
       }
@@ -4862,24 +4862,24 @@ TextOnGenerator__updateGenerator$ = (function(_this,unitVar0)
       return AsyncBuilder__Bind$FSharpOption_1_Result_1_GeneratorData__Unit_FSharpOption_1_Result_1_GeneratorData__Unit_(Async__get_async$(), LanguageService__updateGenerator$(), (function(_arg1)
       {
         var generatorData = _arg1;
-        var _5978;
+        var _5166;
         if (Option__IsSome$Result_1_GeneratorData_Result_1_GeneratorData_(generatorData)) 
         {
           var data = Option__GetValue$Result_1_GeneratorData_Result_1_GeneratorData_(generatorData).Data;
-          _5978 = AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__replaceTextOnGeneratorHtmlPanel$(data), (function(_arg2)
+          _5166 = AsyncBuilder__Bind$Unit__Unit_Unit__Unit_(Async__get_async$(), GeneratorPane__replaceTextOnGeneratorHtmlPanel$(data), (function(_arg2)
           {
-            var _5999;
-            return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5999);
+            var _5187;
+            return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5187);
           }));
         }
         else
         {
-          _5978 = AsyncBuilder__Zero$(Async__get_async$());
+          _5166 = AsyncBuilder__Zero$(Async__get_async$());
         };
-        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _5978, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
+        return AsyncBuilder__Combine$Unit_Unit_(Async__get_async$(), _5166, AsyncBuilder__Delay$Unit_Unit_(Async__get_async$(), (function(_unitVar)
         {
-          var _6011;
-          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _6011);
+          var _5199;
+          return AsyncBuilder__Return$Unit_Unit_(Async__get_async$(), _5199);
         })));
       }));
     })), {Tag: 0.000000});
@@ -4903,8 +4903,8 @@ TextOnIDE__activate$ = (function(x,state)
       ;
     };
     LanguageService__start$();
-    var _2386;
-    TextOnGenerator__activate$(x.generator, _2386);
+    var _710;
+    TextOnGenerator__activate$(x.generator, _710);
     x.subscriptions.push(Control__IConfig_onDidChange$ConfigChange_1_Boolean_ConfigChange_1_Boolean_(((window.atom).config), "texton.DeveloperMode", (function(n)
     {
       if (n.newValue) 
@@ -4972,37 +4972,37 @@ TextOnProcess__isWin$ = (function(unitVar0)
 });
 TextOnProcess__spawn$ = (function(location,linuxCmd,cmd)
 {
-    var _2225;
+    var _343;
     if ((cmd == "")) 
     {
-      _2225 = [];
+      _343 = [];
     }
     else
     {
-      _2225 = String__SplitWithoutOptions$(cmd, [" "]);
+      _343 = String__SplitWithoutOptions$(cmd, [" "]);
     };
-    var cmd_ = _2225;
+    var cmd_ = _343;
     var cwd = TextOnProcess__getCwd$();
-    var _2242;
+    var _566;
     try
     {
-      _2242 = (new Options___ctor$(cwd));
+      _566 = (new Options___ctor$(cwd));
     }
     catch(matchValue){
-      _2242 = (new Options___ctor$(null));
+      _566 = (new Options___ctor$(null));
     };
-    var options = _2242;
-    var _2247;
+    var options = _566;
+    var _571;
     if (TextOnProcess__isWin$()) 
     {
-      _2247 = (child_process.spawn(location, cmd_, options));
+      _571 = (child_process.spawn(location, cmd_, options));
     }
     else
     {
       var prms = Array__Concat$String_1String(Seq__OfList$String___String___(List__CreateCons$String___String___([location], List__CreateCons$String___String___(cmd_, List__Empty$String___String___()))));
-      _2247 = (child_process.spawn(linuxCmd, prms, options));
+      _571 = (child_process.spawn(linuxCmd, prms, options));
     };
-    var procs = _2247;
+    var procs = _571;
     return procs;
 });
 TextOnProcess__textonPath$ = (function(unitVar0)
@@ -5319,16 +5319,16 @@ WebRequest__AsyncGetResponse$ = (function(req,unitVar1)
       {
         return onError(null);
       });
-      var _566;
+      var _1025;
       if ((WebRequest__get_Method$(req) == "GET")) 
       {
-        _566 = null;
+        _1025 = null;
       }
       else
       {
-        _566 = UTF8Encoding__GetString$(Replacements__utf8Encoding$(), Stream__get_Contents$(req.requestStream));
+        _1025 = UTF8Encoding__GetString$(Replacements__utf8Encoding$(), Stream__get_Contents$(req.requestStream));
       };
-      var body = _566;
+      var body = _1025;
       return Web__sendRequest$Unit_Unit_(WebRequest__get_Method$(req), req.url, WebHeaderCollection__get_Keys$(WebRequest__get_Headers$(req)), WebHeaderCollection__get_Values$(WebRequest__get_Headers$(req)), body, onReceived, onErrorReceived);
     }));
 });
@@ -5517,19 +5517,19 @@ list_1_Tuple_2_String__String__NilTuple_2_String__String_ = (function()
     __this.Tag = 0.000000;
     __this._CaseName = "Nil";
 });
-LanguageService__port = LanguageService__get_port$();
 Logger__active = Logger__get_active$();
-Logger__fullLog = Logger__get_fullLog$();
 Logger__logPath = Logger__get_logPath$();
 Logger__editor = Logger__get_editor$();
 Logger__subscriptions = Logger__get_subscriptions$();
 LanguageService__service = LanguageService__get_service$();
+Logger__fullLog = Logger__get_fullLog$();
+LanguageService__port = LanguageService__get_port$();
 return [(function(ign)
 {
     return (new TextOnIDE___ctor$());
 }), (function(_this)
 {
-    return TextOnIDE__provideErrors$(_this);
+    return TextOnIDE__deactivate$(_this);
 }), (function(_this)
 {
     return (function(p0)
@@ -5538,18 +5538,18 @@ return [(function(ign)
     });
 }), (function(_this)
 {
-    return TextOnIDE__deactivate$(_this);
+    return TextOnIDE__provideErrors$(_this);
 })]
  }
 var _funcs = wrappedFunScript();
 var _self = _funcs[0]();
 
 module.exports = TextOn = {
-provideErrors: function() {
+deactivate: function() {
   return _funcs[1](_self); },
 activate: function(p1) {
   return _funcs[2](_self)(p1); },
-deactivate: function() {
+provideErrors: function() {
   return _funcs[3](_self); },
 config:  {
                 UseLinter: {type: 'boolean', 'default': true},

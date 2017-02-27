@@ -1,6 +1,8 @@
 ﻿namespace TextOn.Atom
 
 open TextOn.Atom.DTO.DTO
+open System
+open System.IO
 
 type GeneratorStartResult =
     | CompilationFailure of CompilationError[]
@@ -44,7 +46,7 @@ type GeneratorServer(file, name) =
                                 let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
                                 let value = attributeValuesByIndex |> Map.tryFind att.Index
                                 let value =
-                                    if value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
+                                    if value.IsSome && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
                                         attributeValues <- attributeValues |> Map.remove att.Name
                                         None
                                     else
@@ -52,14 +54,15 @@ type GeneratorServer(file, name) =
                                 let newValue, newSuggestions =
                                     if value.IsNone && suggestions.Length > 0 then
                                         attributeValues <- attributeValues |> Map.add att.Name suggestions.[0]
-                                        Some suggestions.[0], suggestions
+                                        suggestions.[0], suggestions
                                     else if value.IsSome then
-                                        value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                        // Put the current value at the front.
+                                        value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
                                     else
-                                        None, [||]
+                                        "", [|""|]
                                 {
                                     Name = att.Name
-                                    Value = newValue |> defaultArg <| ""
+                                    Value = newValue
                                     Suggestions = newSuggestions
                                     IsEditable = true
                                 }
@@ -80,24 +83,32 @@ type GeneratorServer(file, name) =
                             else
                                 let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
                                 let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let suggestions = var.Values |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
                                 let value = variableValuesByIndex |> Map.tryFind var.Index
+                                let suggestions =
+                                    if haveSeenEmpty then
+                                        [||]
+                                    else
+                                        var.Values
+                                        |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition)
+                                        |> Array.map (fun a -> a.Value)
                                 let value =
-                                    if value.IsSome && (not var.PermitsFreeValue) && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
+                                    if value.IsSome && (not var.PermitsFreeValue) && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
                                         variableValues <- variableValues |> Map.remove var.Name
                                         None
                                     else
                                         value
                                 let newValue, newSuggestions =
                                     if value.IsNone && suggestions.Length > 0 then
-                                        Some suggestions.[0], suggestions
+                                        variableValues <- variableValues |> Map.add var.Name suggestions.[0]
+                                        suggestions.[0], suggestions
                                     else if value.IsSome then
-                                        value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                        // Put the current value at the front.
+                                        value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
                                     else
-                                        None, [|""|]
+                                        "", [|""|]
                                 {
                                     Name = var.Name
-                                    Value = newValue |> defaultArg <| ""
+                                    Value = newValue
                                     Suggestions = newSuggestions
                                     IsEditable = true
                                     Text = var.Text
