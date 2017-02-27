@@ -31,7 +31,8 @@ type GeneratorServer(file, name) =
                     | Choice1Of2 att ->
                         let data =
                             if haveSeenEmpty then
-                                attributeValues |> Map.remove att.Name |> ignore
+                                // I cannot know if this value is valid, so remove it.
+                                attributeValues <- attributeValues |> Map.remove att.Name
                                 {
                                     GeneratorAttribute.Name = att.Name
                                     Value = ""
@@ -45,26 +46,35 @@ type GeneratorServer(file, name) =
                                 let value =
                                     if value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
                                         attributeValues <- attributeValues |> Map.remove att.Name
-                                        ""
+                                        None
                                     else
-                                        value |> defaultArg <| ""
+                                        value
+                                let newValue, newSuggestions =
+                                    if value.IsNone && suggestions.Length > 0 then
+                                        attributeValues <- attributeValues |> Map.add att.Name suggestions.[0]
+                                        Some suggestions.[0], suggestions
+                                    else if value.IsSome then
+                                        value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                    else
+                                        None, [||]
                                 {
                                     Name = att.Name
-                                    Value = value
-                                    Suggestions = suggestions
+                                    Value = newValue |> defaultArg <| ""
+                                    Suggestions = newSuggestions
                                     IsEditable = true
                                 }
                         (haveSeenFilled || data.Value <> "", haveSeenEmpty || data.Value = "", (Some (Choice1Of2 data)))
                     | Choice2Of2 var ->
                         let data =
-                            if haveSeenEmpty then
-                                variableValues |> Map.remove var.Name |> ignore
+                            if haveSeenEmpty && (not var.PermitsFreeValue) then
+                                // I cannot know if this value is valid, so remove it.
+                                variableValues <- variableValues |> Map.remove var.Name
                                 {
                                     GeneratorVariable.Name = var.Name
-                                    Text = var.Text
                                     Value = ""
-                                    Suggestions = [||]
+                                    Suggestions = [|""|]
                                     IsEditable = false
+                                    Text = var.Text
                                     IsFree = var.PermitsFreeValue
                                 }
                             else
@@ -73,17 +83,24 @@ type GeneratorServer(file, name) =
                                 let suggestions = var.Values |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
                                 let value = variableValuesByIndex |> Map.tryFind var.Index
                                 let value =
-                                    if (not (var.PermitsFreeValue)) && value.IsSome && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
+                                    if value.IsSome && (not var.PermitsFreeValue) && suggestions |> Array.tryFind (fun x -> x = value.Value) |> Option.isNone then
                                         variableValues <- variableValues |> Map.remove var.Name
-                                        ""
+                                        None
                                     else
-                                        value |> defaultArg <| ""
+                                        value
+                                let newValue, newSuggestions =
+                                    if value.IsNone && suggestions.Length > 0 then
+                                        Some suggestions.[0], suggestions
+                                    else if value.IsSome then
+                                        value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                    else
+                                        None, [|""|]
                                 {
                                     Name = var.Name
-                                    Text = var.Text
-                                    Value = value
-                                    Suggestions = suggestions
+                                    Value = newValue |> defaultArg <| ""
+                                    Suggestions = newSuggestions
                                     IsEditable = true
+                                    Text = var.Text
                                     IsFree = var.PermitsFreeValue
                                 }
                         (haveSeenFilled || data.Value <> "", haveSeenEmpty || data.Value = "", (Some (Choice2Of2 data))))

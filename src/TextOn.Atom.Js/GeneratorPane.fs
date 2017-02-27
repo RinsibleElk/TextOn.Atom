@@ -186,11 +186,6 @@ and private copyToClipboard(output:OutputString[]) =
     |> box
 
 and private makeCombobox ty name value options =
-    let options =
-        if value = "" then
-            "" :: options
-        else
-            value :: ("" :: (options |> List.filter (fun o -> o <> value)))
     let q =
         options
         |> List.fold
