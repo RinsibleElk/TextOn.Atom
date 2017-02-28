@@ -8,23 +8,25 @@ module TextOnErrorInfo =
         match error with
         | ParserError(e) ->
             {
-                StartLine = e.LineNumber
-                EndLine = e.LineNumber
-                StartColumn = e.StartLocation
-                EndColumn = e.EndLocation
-                Severity = "Error"
-                Message = e.ErrorText
-                Subcategory = "Parser"
+                range =
+                    [|
+                        [|(float (e.LineNumber - 1));(float (e.StartLocation - 1))|]
+                        [|(float (e.LineNumber - 1));(float (e.EndLocation))|]
+                    |]
+                ``type`` = "Error"
+                text = e.ErrorText
+                filePath = e.File
             }
         | GeneralError(e) ->
             {
-                StartLine = 1
-                EndLine = 1
-                StartColumn = 1
-                EndColumn = 1
-                Severity = "Error"
-                Message = e.ErrorText
-                Subcategory = "General"
+                range =
+                    [|
+                        [|0.0;0.0|]
+                        [|0.0;1.0|]
+                    |]
+                filePath = e.File
+                text = e.ErrorText
+                ``type`` = "Error"
             }
 
 [<RequireQualifiedAccess>]

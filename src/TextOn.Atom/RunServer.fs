@@ -40,7 +40,7 @@ module internal RunServer =
 
         let app =
             choose [
-                path "/parse" >=> handler (fun (data : ParseRequest) -> commands.Parse data.FileName (data.Lines |> List.ofArray))
+                path "/parse" >=> handler (fun (data : ParseRequest) -> commands.Parse data.FileName data.Lines)
                 path "/lint" >=> handler (fun (data : LintRequest) -> commands.Lint data.FileName)
                 path "/generatorstart" >=> handler (fun (data : GeneratorStartRequest) -> commands.GenerateStart data.FileName (data.Lines |> List.ofArray) (data.LineNumber))
                 path "/generatorstop" >=> handler (fun (data : GeneratorStopRequest) -> commands.GenerateStop ())

@@ -1,4 +1,4 @@
-textOnCore = require('./texton-core.coffee')
+textOnCore = require './texton-core.coffee'
 
 module.exports =
   activate: ->
@@ -7,7 +7,6 @@ module.exports =
   deactivate: ->
     textOnCore.kill()
   provideErrors: ->
-    console.log("Asked me for my provider")
     return require('./texton-linter.coffee')
   config:
     UseLinter:

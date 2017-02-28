@@ -65,6 +65,7 @@ type Commands (serialize : Serializer) =
 
     member __.Parse file lines =
         async {
+            let lines = lines |> List.ofArray
             let fi = Path.GetFullPath file |> FileInfo
             return! parse' file fi.Directory.FullName lines }
 

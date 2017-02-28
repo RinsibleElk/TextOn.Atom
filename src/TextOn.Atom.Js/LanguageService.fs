@@ -80,7 +80,7 @@ module LanguageService =
 
     let parse path (text : string) =
         let lines = text.Replace("\uFEFF", "").Split('\n')
-        {DTO.ParseRequest.FileName = path; DTO.ParseRequest.Lines = lines; DTO.ParseRequest.IsAsync = true }
+        {DTO.ParseRequest.FileName = path; DTO.ParseRequest.Lines = lines }
         |> request (url "parse")
         |> send<DTO.Error[]> 0
 

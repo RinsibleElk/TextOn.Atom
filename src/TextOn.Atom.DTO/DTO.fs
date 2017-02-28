@@ -2,7 +2,7 @@
 
 [<ReflectedDefinition>]
 module DTO =
-    type ParseRequest = { FileName : string; IsAsync : bool; Lines : string[]}
+    type ParseRequest = { FileName : string; Lines : string[]}
     type ProjectRequest = { FileName : string}
     type DeclarationsRequest = {FileName : string}
     type HelptextRequest = {Symbol : string}
@@ -27,20 +27,14 @@ module DTO =
         Comment: string }
 
     type Error = {
-        /// 1-indexed first line of the error block
-        StartLine : int
-        /// 1-indexed first column of the error block
-        StartColumn : int
-        /// 1-indexed last line of the error block
-        EndLine : int
-        /// 1-indexed last column of the error block
-        EndColumn : int
+        // { { Start line (0-based), Start column (0-based) }, { End line (0-based), End column (1-based) } }
+        range : float [] []
         /// Description of the error
-        Message : string
-        /// The severity - "Error" or "Warning".
-        Severity : string
+        text : string
         /// Type of the Error
-        Subcategory : string }
+        ``type`` : string
+        // The file.
+        filePath : string }
 
     type Declaration = {
         File : string

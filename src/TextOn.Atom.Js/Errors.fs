@@ -24,15 +24,7 @@ module ErrorLinterProvider =
         range    : float[][]
     }
 
-    let mapError (editor : IEditor) (item : DTO.Error)  =
-        let range = [|[|float (item.StartLine - 1); float (item.StartColumn - 1)|];
-                      [|float (item.EndLine - 1);  float (item.EndColumn)|]|]
-        let error =
-            {   ``type`` = item.Severity
-                text = item.Message.Replace("\n", "")
-                filePath = editor.buffer.file.path
-                range = range
-            }
+    let mapError (editor : IEditor) (error : DTO.Error)  =
         Logger.logf "Service" "Got error %A" [|error|]
         error :> obj
 
@@ -48,17 +40,11 @@ module ErrorLinterProvider =
     let lint (editor : IEditor) =
         async {
             let! result = LanguageService.parseEditor editor
-            let result' : DTO.LintWarning[] DTO.Result option = None
             let linter = Globals.atom.config.get("texton.UseLinter") |> unbox<bool>
             return
-                match result, result' with
-                | Some n, Some n' ->
-                    let r = n.Data |> Array.map (mapError editor)
-                    let r' = if linter then n'.Data |> Array.map (mapLint editor) else [||]
-                    Array.concat [r; r']
-                | Some n, None -> n.Data |> Array.map (mapError editor)
-                | None, Some n -> if linter then n.Data |> Array.map (mapLint editor) else [||]
-                | None, None -> [||]
+                match result with
+                | Some n -> n.Data |> Array.map (mapError editor)
+                | None -> [||]
         } |> Async.StartAsPromise
 
     let create () = [| { grammarScopes = [|"source.texton"|]; scope = "file"; lint = lint; lintOnFly = true} |]
