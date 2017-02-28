@@ -47,6 +47,7 @@ let funcText =
 
 let exampleFileName = "example.texton"
 let exampleDirectory = @"D:\Example"
+let fullExampleFile = Path.Combine(exampleDirectory, exampleFileName)
 
 let expected =
     {Attributes = [||];
@@ -399,4 +400,39 @@ let ``Test not eager on condition errors``() =
                         ErrorText = "Undefined attribute Unknown2"
                     }
             |]
+    test <@ result = expected @>
+
+[<Test>]
+let ``Test invoking a function from within a function``() =
+    let lines =
+        "@func @func1 {
+  Hello world.
+}
+@func @func2 {
+  @func1
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationSuccess
+            {   Attributes = [||];
+                Variables = [||];
+                Functions =
+                    [|
+                        {   Name = "func1";
+                            Index = 0;
+                            File = fullExampleFile
+                            StartLine = 1;
+                            EndLine = 3;
+                            Tree =
+                                Seq
+                                    [|
+                                        (Sentence ("D:\Example\example.texton", 2, SimpleText "Hello world."), True)
+                                    |]
+                        }
+                        {   Name = "func2";
+                            Index = 1;
+                            File = fullExampleFile
+                            StartLine = 4;
+                            EndLine = 6;
+                            Tree = Seq [|(Function 0, True)|];}|];}
     test <@ result = expected @>

@@ -186,16 +186,23 @@ and private copyToClipboard(output:OutputString[]) =
     |> box
 
 and private makeCombobox ty name value options =
-    let q =
+    let editor =
+        jq("<atom-text-editor mini />")
+        |> fun q ->
+            q.change
+                (fun o ->
+                    let value = unbox <| q._val()
+                    valueSet ty name value)
+    let selectList =
         options
+        |> List.mapi (fun i x -> (i,x))
         |> List.fold
-            (fun (q:JQuery) o -> q.append("<option>" + o + "</option>"))
-            (jq("<select id=\"" + name + "\" />"))
-    q
-        .change
-            (fun o ->
-                let value = unbox <| q._val()
-                valueSet ty name value)
+            (fun (q:JQuery) (i,o) ->
+                if i = 0 then q.append("<li class='selected'>" + o + "</li>")
+                else q.append("<li>" + o + "</li>"))
+            (jq("<ol class='list-group' />"))
+    let div = jq("<div />")
+    div.addClass("select-list").addClass("popover-list").append(editor).append(selectList)
 
 and private makeLinkForAttribute fileName (attribute:string) =
     jq("<a />")
