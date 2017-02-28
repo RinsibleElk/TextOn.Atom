@@ -28,7 +28,7 @@ module.exports =
   spawn: ->
     textOnPath = window.atom.config.get("texton.TextOnPath")
     if isWin() then spawnWin(textOnPath)
-    else spawnMono(window.atom.config.get("texton.MonoPath"), textOnPath)
+    else spawnMono(textOnPath, window.atom.config.get("texton.MonoPath"))
   kill: ->
     child?.kill("SIGKILL")
   isTextOnEditor: (editor) ->
