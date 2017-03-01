@@ -1,7 +1,7 @@
 /** @babel */
 /** @jsx etch.dom */
 
-import SelectListView from 'atom-select-list'
+import ComboboxView from './combobox-view'
 import etch from 'etch'
 
 export default class ValueInputView {
@@ -31,9 +31,10 @@ export default class ValueInputView {
   render () {
     return (
       <atom-panel className='popover'>
-        <SelectListView
+        <ComboboxView
           items={this.props.items}
           maxResults={this.props.maxResults}
+          itemsClassList={['collapsed']}
           didChangeQuery={this.didChangeQuery.bind(this)}
           elementForItem={this.elementForItem.bind(this)}
           onDidConfirmSelection={this.didConfirmSelection.bind(this)}
