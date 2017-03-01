@@ -17,15 +17,13 @@ export default class ValueInputView {
   }
 
   didConfirmSelection (item) {
-    console.log('confirmed', item)
+    console.log('Jonas : we confirmed this:', item)
   }
 
   didCancelSelection () {
-    console.log('cancelled')
   }
 
   didChangeQuery (query) {
-    console.log("current query is " + query)
   }
 
   render () {

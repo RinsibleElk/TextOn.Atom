@@ -61,7 +61,6 @@ module.exports = class ComboboxView {
         event.stopPropagation()
       },
       'core:confirm': (event) => {
-        console.log('core:confirm')
         if (this.props.permitsFreeValue) {
           this.confirmText()
         } else {
@@ -70,7 +69,6 @@ module.exports = class ComboboxView {
         event.stopPropagation()
       },
       'core:cancel': (event) => {
-        console.log('core:cancel')
         this.cancelSelection()
         event.stopPropagation()
       }
@@ -217,7 +215,6 @@ module.exports = class ComboboxView {
   }
 
   didClickItem (itemIndex) {
-    console.log('Clicked')
     this.selectIndex(itemIndex)
     this.confirmSelection()
   }
@@ -293,9 +290,7 @@ module.exports = class ComboboxView {
 
   confirmText () {
     const selectedItem = this.getQuery()
-    console.log('Confirmed text')
     if (this.props.didConfirmSelection) {
-      console.log('Calling teh callback')
       this.props.didConfirmSelection(selectedItem)
     }
   }
@@ -303,13 +298,10 @@ module.exports = class ComboboxView {
   confirmSelection () {
     const selectedItem = this.getSelectedItem()
     if (selectedItem != null) {
-      console.log('Not null')
       if (this.props.didConfirmSelection) {
-        console.log('Calling callback')
         this.props.didConfirmSelection(selectedItem)
       }
     } else {
-      console.log('Null')
       if (this.props.didConfirmSelection) {
         this.props.didConfirmSelection('')
       }
