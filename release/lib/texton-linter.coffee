@@ -1,3 +1,7 @@
+###
+  Implements API for linter.
+###
+
 # Should this just be about errors?
 linter = window.atom.config.get("texton.UseLinter")
 textOnCore = require './texton-core'
@@ -16,4 +20,5 @@ module.exports = new class # This only needs to be a class to bind lint()
     data =
       FileName: fileName
       Lines: text.split(["\n"])
+    # Technically I should probably receive lint as well here?
     textOnCore.send("parse", "errors", data)

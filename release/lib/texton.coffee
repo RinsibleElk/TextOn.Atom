@@ -1,3 +1,7 @@
+###
+  Main.
+###
+
 textOnCore = require './texton-core'
 generatorPane = require './generator-pane'
 
@@ -10,7 +14,7 @@ module.exports =
     generatorPane.deactivate()
     textOnCore.kill()
   provideErrors: ->
-    return require('./texton-linter.coffee')
+    return require('./texton-linter')
   config:
     UseLinter:
       type: 'boolean'

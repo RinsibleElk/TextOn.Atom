@@ -1,3 +1,7 @@
+###
+  Manages the Generator Pane.
+###
+
 {CompositeDisposable} = require 'atom'
 GeneratorPaneTitle = 'TextOn Generator'
 

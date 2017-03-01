@@ -69,11 +69,6 @@ type Commands (serialize : Serializer) =
             let fi = Path.GetFullPath file |> FileInfo
             return! parse' file fi.Directory.FullName lines }
 
-    member __.Lint (file: SourceFilePath) = async {
-        let file = Path.GetFullPath file
-        let res = [ CommandResponse.lint serialize [] ]
-        return res }
-
     member __.GenerateStart (file:SourceFilePath) lines line = async {
         let fi = Path.GetFullPath file |> FileInfo
         let! result = doGenerateStart file fi.Directory.FullName lines line

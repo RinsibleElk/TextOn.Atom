@@ -1,3 +1,7 @@
+###
+  Logging component for developer mode.
+###
+
 debug = window.atom.config.get("texton.DeveloperMode")
 module.exports =
   logf: (category, format, data) ->

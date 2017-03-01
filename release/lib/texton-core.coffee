@@ -1,3 +1,7 @@
+###
+  Core component for messaging to the TextOn process.
+###
+
 path = require 'path'
 
 child_process = require('child_process')

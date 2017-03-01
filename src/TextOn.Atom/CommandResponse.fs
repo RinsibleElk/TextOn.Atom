@@ -36,12 +36,8 @@ module CommandResponse =
                     Data = errors
                            |> Array.filter (function | ParserError(e) -> e.File = file | _ -> true)
                            |> Array.map TextOnErrorInfo.OfCompilationError }
-    let info (serialize : Serializer) (s: string) = serialize { Kind = "info"; Data = s }
-    let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = s }
-    let lint (serialize : Serializer) (warnings : LintWarning list) =
-        let data = warnings |> List.toArray
-        serialize { Kind = "lint"; Data = data }
+    let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = [|s|] }
     let generatorSetup (serialize : Serializer) (generatorData:GeneratorData) =
-        serialize { Kind = "generatorSetup" ; Data = generatorData }
+        serialize { Kind = "generatorSetup" ; Data = [|generatorData|] }
     let navigate (serialize : Serializer) (data:NavigateData) =
-        serialize { Kind = "navigate" ; Data = data }
+        serialize { Kind = "navigate" ; Data = [|data|] }

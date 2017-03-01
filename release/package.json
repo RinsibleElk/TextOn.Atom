@@ -11,6 +11,7 @@
     "dependencies": {
         "request": "*",
         "request-promise": "*",
+        "etch":  "*", 
         "atom-space-pen-views": "2.0.5",
         "path": "*",
         "event-kit": "*"
