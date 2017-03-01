@@ -32,4 +32,4 @@ module.exports =
 
   createGeneratorPane: ->
     GeneratorPaneView = require './generator-pane-view'
-    new GeneratorPaneView()
+    new GeneratorPaneView({ collapsedSections : [] })

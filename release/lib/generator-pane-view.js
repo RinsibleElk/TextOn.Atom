@@ -5,16 +5,30 @@ import etch from 'etch'
 import ValueInputView from './value-input-view'
 
 export default class GeneratorPaneView {
-  constructor () {
-    etch.initialize(this)
+  constructor (props) {
+    this.collapsedSections = props.collapsedSections ? new Set(props.collapsedSections) : new Set();
+    this.sections = [];
+    etch.initialize(this);
+    for (const section of this.sections) {
+      if (this.collapsedSections.has(section.name)) {
+        section.collapse();
+      } else {
+        section.expand();
+      }
+    }
   }
 
   destroy () {
+    for (const section of this.sections) {
+      section.destroy();
+    }
+    this.sections = null;
   }
 
   serialize () {
     return {
       deserializer: this.constructor.name,
+      collapsedSections: this.sections.filter((s) => s.collapsed).map((s) => s.name)
     }
   }
 
@@ -23,7 +37,15 @@ export default class GeneratorPaneView {
   }
 
   getTitle () {
-    return 'TextOn Generator'
+    return 'TextOn Generator';
+  }
+
+  didInitializeSection (section) {
+    this.sections.push(section);
+  }
+
+  isEqual (other) {
+    return other instanceof GeneratorPaneView;
   }
 
   render () {
@@ -36,14 +58,12 @@ export default class GeneratorPaneView {
           <p>This one does not permit free value.</p>
           <ValueInputView
             className='texton-sections-settable'
-            maxResults={4}
             permitsFreeValue={false}
             items={['one', 'two', 'three', 'four', 'five', 'six']} />
           <p>This one does permit free value.</p>
           <ValueInputView
             className='texton-sections-settable'
             permitsFreeValue={true}
-            maxResults={4}
             items={['eight','nine','ten','eleven']} />
         </main>
       </div>

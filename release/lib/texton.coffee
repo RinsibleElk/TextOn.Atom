@@ -32,11 +32,16 @@ module.exports =
       type: 'object'
       properties:
         NumSpacesBetweenSentences:
+          title: 'Number of spaces between sentences'
           type: 'number'
+          enum: [1,2]
           default: 2
         NumBlankLinesBetweenParagraphs:
+          title: 'Number of blank lines between paragraphs'
           type: 'number'
+          enum: [1,2]
           default: 1
         WindowsLineEndings:
+          title: 'Use Windows line endings?'
           type: 'boolean'
           default: false

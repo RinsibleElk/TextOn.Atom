@@ -1,82 +1,82 @@
-const {Disposable, CompositeDisposable, TextEditor} = require('atom')
-const etch = require('etch')
-const $ = etch.dom
-const fuzzaldrin = require('fuzzaldrin')
-const path = require('path')
+const {Disposable, CompositeDisposable, TextEditor} = require('atom');
+const etch = require('etch');
+const $ = etch.dom;
+const fuzzaldrin = require('fuzzaldrin');
+const path = require('path');
 
 module.exports = class ComboboxView {
   constructor (props) {
-    this.props = props
-    this.computeItems(false)
-    this.disposables = new CompositeDisposable()
-    etch.initialize(this)
-    this.element.classList.add('select-list')
+    this.props = props;
+    this.computeItems(false);
+    this.disposables = new CompositeDisposable();
+    etch.initialize(this);
+    this.element.classList.add('select-list');
     this.disposables.add(this.refs.queryEditor.onDidChange(this.didChangeQuery.bind(this)))
     if (!props.skipCommandsRegistration) {
-      this.disposables.add(this.registerAtomCommands())
+      this.disposables.add(this.registerAtomCommands());
     }
-    const editorElement = this.refs.queryEditor.element
-    const didLoseFocus = this.didLoseFocus.bind(this)
+    const editorElement = this.refs.queryEditor.element;
+    const didLoseFocus = this.didLoseFocus.bind(this);
     editorElement.addEventListener('blur', didLoseFocus)
     this.disposables.add(new Disposable(() => { editorElement.removeEventListener('blur', didLoseFocus) }))
   }
 
   focus () {
-    this.refs.queryEditor.element.focus()
+    this.refs.queryEditor.element.focus();
   }
 
   didLoseFocus (event) {
     if (this.element.contains(event.relatedTarget)) {
-      this.refs.queryEditor.element.focus()
+      this.refs.queryEditor.element.focus();
     } else {
-      this.cancelSelection()
+      this.cancelSelection();
     }
   }
 
   reset () {
-    this.refs.queryEditor.setText('')
+    this.refs.queryEditor.setText('');
   }
 
   destroy () {
-    this.disposables.dispose()
-    return etch.destroy(this)
+    this.disposables.dispose();
+    return etch.destroy(this);
   }
 
   registerAtomCommands () {
     return global.atom.commands.add(this.element, {
       'core:move-up': (event) => {
-        this.selectPrevious()
-        event.stopPropagation()
+        this.selectPrevious();
+        event.stopPropagation();
       },
       'core:move-down': (event) => {
-        this.selectNext()
-        event.stopPropagation()
+        this.selectNext();
+        event.stopPropagation();
       },
       'core:move-to-top': (event) => {
-        this.selectFirst()
-        event.stopPropagation()
+        this.selectFirst();
+        event.stopPropagation();
       },
       'core:move-to-bottom': (event) => {
-        this.selectLast()
-        event.stopPropagation()
+        this.selectLast();
+        event.stopPropagation();
       },
       'core:confirm': (event) => {
         if (this.props.permitsFreeValue) {
-          this.confirmText()
+          this.confirmText();
         } else {
-          this.confirmSelection()
+          this.confirmSelection();
         }
-        event.stopPropagation()
+        event.stopPropagation();
       },
       'core:cancel': (event) => {
-        this.cancelSelection()
-        event.stopPropagation()
+        this.cancelSelection();
+        event.stopPropagation();
       }
     })
   }
 
   update (props = {}) {
-    let shouldComputeItems = false
+    let shouldComputeItems = false;
 
     if (props.hasOwnProperty('items')) {
       this.props.items = props.items
