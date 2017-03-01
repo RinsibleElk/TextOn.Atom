@@ -34,8 +34,8 @@ export default class GeneratorPaneView {
           <h1>TextOn Generator</h1>
         </header>
         <main className='texton-sections'>
-          <ValueInputView />
-          <ValueInputView />
+          <ValueInputView maxResults={2} />
+          <ValueInputView maxResults={0} />
         </main>
       </div>
     )
