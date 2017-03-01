@@ -163,6 +163,9 @@ module Bindings =
         [<FunScript.JSEmitInline "({0}.getElement().screenPositionForPixelPosition({1}))">]
         member __.getScreenPositionForPixelPosition(o : obj) : obj = failwith "JS"
 
+        [<FunScript.JSEmitInline "({0}.onDidStopChanging({1}))">]
+        member __.onDidStopChanging (callback:Function) : Disposable = failwith "JS"
+
     type stream.Writable with
         [<FunScript.JSEmitInline "({0}.setEncoding({1}))">]
         member __.setEncoding(v : string) : unit = failwith "JS"

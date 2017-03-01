@@ -347,7 +347,7 @@ type TextOnGenerator() =
                                         sub <- None
                                         let e = Globals.atom.workspace.getActiveTextEditor()
                                         if isTextOnEditor e then
-                                            sub <- (Some (OnCursorStopMoving e 100.0 (fun _ -> updateGenerator())))))
+                                            sub <- (Some (e.onDidStopChanging (unbox (fun _ -> updateGenerator()))))))
 
     member x.deactivate() =
         Logger.deactivate ()
