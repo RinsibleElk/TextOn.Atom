@@ -283,11 +283,11 @@ let ``Declare the same variable twice``() =
 [<Test>]
 let ``Declare the same attribute twice``() =
     let lines =
-        "@att %AttName
+        "@att %AttName = \"This is an attribute\"
   {
     \"Hello\"
   }
-@att %AttName
+@att %AttName = \"This is an attribute\"
   {
     \"Hello\"
   }

@@ -34,12 +34,23 @@ module internal AttributeDefinitionParser =
             EndLocation = endLocation
             ErrorText = errorText }
 
-    let private parseFirstLine (firstLine:AttributedTokenizedLine) =
-        // Basically @att %AttName
+    let private parseFirstLine' (firstLine:AttributedTokenizedLine) =
+        // Basically @var (@free)? $VarName = ("Some text")?
         let tokens = firstLine.Tokens |> List.map (fun attToken -> attToken.Token)
         match tokens with
-        | [Att;AttributeName name] -> (name, None)
-        | _ -> ("<unknown>", Some "Invalid attribute declaration")
+        | [Var;VariableName name;Equals] -> (name, None, false, None)
+        | [Var;Free;VariableName name;Equals] -> (name, None, true, None)
+        | [Var;VariableName name;Equals;QuotedString text] -> (name, Some text, false, None)
+        | [Var;Free;VariableName name;Equals;QuotedString text] -> (name, Some text, true, None)
+        | _ -> ("<unknown>", None, false, Some "Invalid variable declaration")
+
+    let private parseFirstLine (firstLine:AttributedTokenizedLine) =
+        // Basically @att %AttName = ("Some description")?
+        let tokens = firstLine.Tokens |> List.map (fun attToken -> attToken.Token)
+        match tokens with
+        | [Att;AttributeName name;Equals] -> (name, None, None)
+        | [Att;AttributeName name;Equals;QuotedString text] -> (name, Some text, None)
+        | _ -> ("<unknown>", None, Some "Invalid attribute declaration")
 
     type private ParsedSuggestionResult =
         | ParsedAttributeValueSuccess of ParsedAttributeValue
@@ -83,10 +94,10 @@ module internal AttributeDefinitionParser =
         match lines with
         | [] -> failwith "Internal error"
         | firstLine::remainingLines ->
-            let (name, error) = parseFirstLine firstLine
+            let (name, text, error) = parseFirstLine firstLine
             if error |> Option.isSome then
                 makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) error.Value)|])
-            else
+            else if text |> Option.isSome then
                 match remainingLines with
                 | [] -> makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber firstLine.Tokens.[0].TokenStartLocation firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation "No attribute values given")|])
                 | h::t ->
@@ -98,3 +109,22 @@ module internal AttributeDefinitionParser =
                             makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
                         else
                             makeAttributeDefinitionWithValues tokenSet.File (makeAttributeDefinition tokenSet name) (t |> List.take (t.Length - 1))
+            else
+                match remainingLines with
+                | [] -> makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
+                | h::t ->
+                    match (h.Tokens |> List.map (fun t -> t.Token)) with
+                    | [QuotedString text] ->
+                        match t with
+                        | [] -> makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "No values defined for attribute")|])
+                        | h::t ->
+                            if h.Tokens.Length > 1 || h.Tokens.[0].Token <> OpenCurly then
+                                makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
+                            else
+                                let l = t |> List.last
+                                if l.Tokens.Length > 1 || l.Tokens.[0].Token <> CloseCurly then
+                                    makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
+                                else
+                                    makeAttributeDefinitionWithValues tokenSet.File (makeAttributeDefinition tokenSet name) (t |> List.take (t.Length - 1))
+                    | _ ->
+                        makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber (h.Tokens.[0].TokenStartLocation) (h.Tokens.[h.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])

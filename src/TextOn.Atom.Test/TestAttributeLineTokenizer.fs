@@ -38,7 +38,7 @@ let test lines =
 let ``Correctly formatted attribute definition``() =
     let lines =
         [
-            ("@att %Gender", [{TokenStartLocation = 1;TokenEndLocation = 4;Token = Att};{TokenStartLocation = 6;TokenEndLocation = 12;Token = AttributeName "Gender"}])
+            ("@att %Gender = \"What is the gender of your target audience?\"", [{TokenStartLocation = 1;TokenEndLocation = 4;Token = Att};{TokenStartLocation = 6;TokenEndLocation = 12;Token = AttributeName "Gender"};{TokenStartLocation = 14;TokenEndLocation = 14;Token = Equals};{TokenStartLocation = 16;TokenEndLocation = 60;Token = QuotedString "What is the gender of your target audience?"}])
             ("  {", [{TokenStartLocation = 3;TokenEndLocation = 3;Token = OpenCurly}])
             ("    \"Male\"", [{TokenStartLocation = 5;TokenEndLocation = 10;Token = QuotedString "Male"}])
             ("    \"Female\"", [{TokenStartLocation = 5;TokenEndLocation = 12;Token = QuotedString "Female"}])

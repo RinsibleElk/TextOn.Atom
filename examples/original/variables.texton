@@ -1,4 +1,4 @@
-@att %Gender
+@att %Gender = "What is the gender of your target audience?"
 {
   "Male"
   "Female"

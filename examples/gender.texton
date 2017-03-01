@@ -1,9 +1,9 @@
-@att %Gender
+@att %Gender = "What is the gender of your target audience?"
   {
     "Male"
     "Female"
   }
-@att %Pronoun
+@att %Pronoun = "What is the pronoun of your target audience?"
   {
     "He" [%Gender = "Male"]
     "She" [%Gender = "Female"]
