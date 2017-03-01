@@ -37,8 +37,9 @@ export default class ValueInputView {
           itemsClassList={['collapsed']}
           didChangeQuery={this.didChangeQuery.bind(this)}
           elementForItem={this.elementForItem.bind(this)}
-          onDidConfirmSelection={this.didConfirmSelection.bind(this)}
-          onDidCancelSelection={this.didCancelSelection.bind(this)} />
+          permitsFreeValue={this.props.permitsFreeValue}
+          didConfirmSelection={this.didConfirmSelection.bind(this)}
+          didCancelSelection={this.didCancelSelection.bind(this)} />
       </atom-panel>
     )
   }

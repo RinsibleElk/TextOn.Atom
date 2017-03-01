@@ -33,8 +33,18 @@ export default class GeneratorPaneView {
           <h1>TextOn Generator</h1>
         </header>
         <main className='texton-sections'>
-          <ValueInputView maxResults={2} items={['one', 'two', 'three', 'four', 'five', 'six']} />
-          <ValueInputView maxResults={1} items={['eight']} />
+          <p>This one does not permit free value.</p>
+          <ValueInputView
+            className='texton-sections-settable'
+            maxResults={4}
+            permitsFreeValue={false}
+            items={['one', 'two', 'three', 'four', 'five', 'six']} />
+          <p>This one does permit free value.</p>
+          <ValueInputView
+            className='texton-sections-settable'
+            permitsFreeValue={true}
+            maxResults={4}
+            items={['eight','nine','ten','eleven']} />
         </main>
       </div>
     )

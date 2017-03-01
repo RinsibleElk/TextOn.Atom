@@ -1,17 +1,3 @@
-// Take atom-select-view and build/remove functionality as needed.
-// class ComboboxView
-// props:
-//  value (string)
-//  suggestions (string [])
-//  permitsFreeValue (bool)
-//  collapsed (bool)
-//  focussed (bool) - ? user uses this mechanism with update/render to give focus to text editor??? does that even work???
-//  onFocused (unit -> unit) - user expected to update this one with collapsed:false, and all others with collapsed:true
-//  onConfirmed (string -> unit) - value has changed, user expected to propagate that on to any listeners
-//  onCancelled (unit -> unit) - user expected to collapse
-// methods:
-//  update, render, etc
-
 const {Disposable, CompositeDisposable, TextEditor} = require('atom')
 const etch = require('etch')
 const $ = etch.dom
@@ -75,10 +61,16 @@ module.exports = class ComboboxView {
         event.stopPropagation()
       },
       'core:confirm': (event) => {
-        this.confirmSelection()
+        console.log('core:confirm')
+        if (this.props.permitsFreeValue) {
+          this.confirmText()
+        } else {
+          this.confirmSelection()
+        }
         event.stopPropagation()
       },
       'core:cancel': (event) => {
+        console.log('core:cancel')
         this.cancelSelection()
         event.stopPropagation()
       }
@@ -134,6 +126,10 @@ module.exports = class ComboboxView {
 
     if (props.hasOwnProperty('itemsClassList')) {
       this.props.itemsClassList = props.itemsClassList
+    }
+
+    if (props.hasOwnProperty('permitsFreeValue')) {
+      this.props.permitsFreeValue = props.permitsFreeValue
     }
 
     if (shouldComputeItems) {
@@ -221,6 +217,7 @@ module.exports = class ComboboxView {
   }
 
   didClickItem (itemIndex) {
+    console.log('Clicked')
     this.selectIndex(itemIndex)
     this.confirmSelection()
   }
@@ -294,24 +291,27 @@ module.exports = class ComboboxView {
     }
   }
 
-  selectItem (item) {
-    const index = this.items.indexOf(item)
-    if (index === -1) {
-      throw new Error('Cannot select the specified item because it does not exist.')
-    } else {
-      return this.selectIndex(index)
+  confirmText () {
+    const selectedItem = this.getQuery()
+    console.log('Confirmed text')
+    if (this.props.didConfirmSelection) {
+      console.log('Calling teh callback')
+      this.props.didConfirmSelection(selectedItem)
     }
   }
 
   confirmSelection () {
     const selectedItem = this.getSelectedItem()
     if (selectedItem != null) {
+      console.log('Not null')
       if (this.props.didConfirmSelection) {
+        console.log('Calling callback')
         this.props.didConfirmSelection(selectedItem)
       }
     } else {
-      if (this.props.didConfirmEmptySelection) {
-        this.props.didConfirmEmptySelection()
+      console.log('Null')
+      if (this.props.didConfirmSelection) {
+        this.props.didConfirmSelection('')
       }
     }
   }
