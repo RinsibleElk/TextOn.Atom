@@ -11,10 +11,11 @@
     "dependencies": {
         "request": "*",
         "request-promise": "*",
-        "etch":  "*", 
-        "atom-space-pen-views": "2.0.5",
+        "etch":  "*",
+        "atom-select-list": "*",
         "path": "*",
-        "event-kit": "*"
+        "event-kit": "*",
+        "atom-space-pen-views": "2.0.5"
     },
     "package-deps": [
       "linter"

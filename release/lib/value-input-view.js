@@ -3,7 +3,6 @@
 
 import SelectListView from 'atom-select-list'
 import etch from 'etch'
-import dedent from 'dedent'
 
 export default class ValueInputView {
   constructor (props) {
@@ -33,7 +32,7 @@ export default class ValueInputView {
     return (
       <atom-panel className='popover'>
         <SelectListView
-          items={['one', 'two', 'three', 'four', 'five', 'six']}
+          items={this.props.items}
           maxResults={this.props.maxResults}
           didChangeQuery={this.didChangeQuery.bind(this)}
           elementForItem={this.elementForItem.bind(this)}
@@ -41,6 +40,12 @@ export default class ValueInputView {
           onDidCancelSelection={this.didCancelSelection.bind(this)} />
       </atom-panel>
     )
+  }
+
+  serialize () {
+    return {
+      deserializer: this.constructor.name,
+    }
   }
 
   update () {
