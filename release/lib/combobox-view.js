@@ -83,25 +83,6 @@ module.exports = class ComboboxView {
       shouldComputeItems = true
     }
 
-    if (props.hasOwnProperty('maxResults')) {
-      this.props.maxResults = props.maxResults
-      shouldComputeItems = true
-    }
-
-    if (props.hasOwnProperty('filter')) {
-      this.props.filter = props.filter
-      shouldComputeItems = true
-    }
-
-    if (props.hasOwnProperty('filterQuery')) {
-      this.props.filterQuery = props.filterQuery
-      shouldComputeItems = true
-    }
-
-    if (props.hasOwnProperty('order')) {
-      this.props.order = props.order
-    }
-
     if (props.hasOwnProperty('emptyMessage')) {
       this.props.emptyMessage = props.emptyMessage
     }
@@ -154,7 +135,7 @@ module.exports = class ComboboxView {
       return $.ol(
         {className, ref: 'items'},
         ...this.items.map((item, index) => $(ListItemView, {
-          element: this.props.elementForItem(item),
+          element: this.props.elementForItem(item.value),
           selected: this.getSelectedItem() === item,
           onclick: () => this.didClickItem(index)
         }))
@@ -203,7 +184,7 @@ module.exports = class ComboboxView {
   }
 
   getFilterQuery () {
-    return this.props.filterQuery ? this.props.filterQuery(this.getQuery()) : this.getQuery()
+    return this.getQuery();
   }
 
   didChangeQuery () {
@@ -219,16 +200,25 @@ module.exports = class ComboboxView {
     this.confirmSelection()
   }
 
-  computeItems (updateComponent) {
-    const filterFn = this.props.filter || this.fuzzyFilter.bind(this)
-    this.items = filterFn(this.props.items.slice(), this.getFilterQuery())
-    if (this.props.order) {
-      this.items.sort(this.props.order)
+  containsExactMatch (value) {
+    for (var i = 0; i < this.items.length; i++) {
+      const item = this.items[i];
+      const string = this.props.filterKeyForItem ? this.props.filterKeyForItem(item.value) : item.value
+      if (string === value) {
+        return true;
+      }
     }
-    if (this.props.maxResults) {
-      this.items.splice(this.props.maxResults, this.items.length - this.props.maxResults)
-    }
+    return false;
+  }
 
+  computeItems (updateComponent) {
+    const filterFn = this.fuzzyFilter.bind(this)
+    this.items = filterFn(this.props.items.slice(), this.getFilterQuery()).map(function(item) {
+      return { value : item, isQuery : false };
+    });
+    if (this.props.permitsFreeValue && !this.containsExactMatch(this.getFilterQuery())) {
+      this.items.unshift({ value : this.getFilterQuery(), isQuery : true });
+    }
     this.selectIndex(0, updateComponent)
   }
 
