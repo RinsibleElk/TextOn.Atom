@@ -11,6 +11,9 @@ module.exports = class ComboboxView {
     this.computeItems(false);
     this.disposables = new CompositeDisposable();
     etch.initialize(this);
+    if (this.props.value) {
+      this.refs.queryEditor.setText(this.props.value);
+    }
     this.element.classList.add('select-list');
     this.disposables.add(this.refs.queryEditor.onDidChange(this.didChangeQuery.bind(this)))
     if (!props.skipCommandsRegistration) {
@@ -34,8 +37,7 @@ module.exports = class ComboboxView {
       focus ();
     } else {
       this.cancelSelection();
-      this.collapsed = true;
-      this.computeItems()
+      this.reset();
     }
   }
 
@@ -45,7 +47,11 @@ module.exports = class ComboboxView {
   }
 
   reset () {
-    this.refs.queryEditor.setText('');
+    if (this.props.value) {
+      this.refs.queryEditor.setText(this.props.value);
+    } else {
+      this.refs.queryEditor.setText('');
+    }
     this.collapsed = true;
     this.computeItems()
   }
@@ -92,6 +98,11 @@ module.exports = class ComboboxView {
       shouldComputeItems = true
     }
 
+    if (props.hasOwnProperty('value')) {
+      this.props.value = props.value
+      shouldComputeItems = true
+    }
+
     if (props.hasOwnProperty('emptyMessage')) {
       this.props.emptyMessage = props.emptyMessage
     }
@@ -124,7 +135,11 @@ module.exports = class ComboboxView {
       this.computeItems()
     }
 
-    return etch.update(this)
+    return etch.update(this).then(function () {
+      if (this.propse.value) {
+        this.refs.queryEditor.setText(this.props.value);
+      }
+    });
   }
 
   render () {
@@ -135,7 +150,7 @@ module.exports = class ComboboxView {
       this.renderInfoMessage(),
       this.renderErrorMessage(),
       this.renderItems()
-    )
+    );
   }
 
   renderItems () {

@@ -31,6 +31,7 @@ export default class ValueInputView {
     return (
       <atom-panel className='popover'>
         <ComboboxView
+          value={this.props.value}
           items={this.props.items}
           didChangeQuery={this.didChangeQuery.bind(this)}
           elementForItem={this.elementForItem.bind(this)}
