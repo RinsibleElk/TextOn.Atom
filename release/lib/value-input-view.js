@@ -26,12 +26,12 @@ export default class ValueInputView {
   didChangeQuery (query) {
   }
 
+  // not sure about these class names yet...
   render () {
     return (
       <atom-panel className='popover'>
         <ComboboxView
           items={this.props.items}
-          itemsClassList={['collapsed']}
           didChangeQuery={this.didChangeQuery.bind(this)}
           elementForItem={this.elementForItem.bind(this)}
           permitsFreeValue={this.props.permitsFreeValue}

@@ -7,6 +7,7 @@ const path = require('path');
 module.exports = class ComboboxView {
   constructor (props) {
     this.props = props;
+    this.collapsed = true;
     this.computeItems(false);
     this.disposables = new CompositeDisposable();
     etch.initialize(this);
@@ -18,7 +19,10 @@ module.exports = class ComboboxView {
     const editorElement = this.refs.queryEditor.element;
     const didLoseFocus = this.didLoseFocus.bind(this);
     editorElement.addEventListener('blur', didLoseFocus)
+    const didGainFocus = this.didGainFocus.bind(this);
+    editorElement.addEventListener('focus', didGainFocus)
     this.disposables.add(new Disposable(() => { editorElement.removeEventListener('blur', didLoseFocus) }))
+    this.disposables.add(new Disposable(() => { editorElement.removeEventListener('focus', didGainFocus) }))
   }
 
   focus () {
@@ -27,14 +31,23 @@ module.exports = class ComboboxView {
 
   didLoseFocus (event) {
     if (this.element.contains(event.relatedTarget)) {
-      this.refs.queryEditor.element.focus();
+      focus ();
     } else {
       this.cancelSelection();
+      this.collapsed = true;
+      this.computeItems()
     }
+  }
+
+  didGainFocus (event) {
+    this.collapsed = false;
+    this.computeItems()
   }
 
   reset () {
     this.refs.queryEditor.setText('');
+    this.collapsed = true;
+    this.computeItems()
   }
 
   destroy () {
@@ -127,7 +140,7 @@ module.exports = class ComboboxView {
 
   renderItems () {
     if (this.items.length > 0) {
-      const className = ['list-group'].concat(this.props.itemsClassList || []).join(' ')
+      const className = (this.collapsed ? ['list-group','collapsed'] : ['list-group']).concat(this.props.itemsClassList || []).join(' ')
       return $.ol(
         {className, ref: 'items'},
         ...this.items.map((item, index) => $(ListItemView, {

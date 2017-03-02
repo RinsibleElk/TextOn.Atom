@@ -50,7 +50,7 @@ export default class GeneratorPaneView {
 
   render () {
     return (
-      <div className='texton texton-generator pane-item' tabIndex='-1'>
+      <div className='texton-generator pane-item' tabIndex='-1'>
         <header className='texton-header'>
           <h1>TextOn Generator</h1>
         </header>

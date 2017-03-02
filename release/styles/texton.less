@@ -1,10 +1,7 @@
 @import "ui-variables";
 @import "syntax-variables";
 
-@texton-spacing: @component-padding *1.5;
-@texton-bg: darken(@base-background-color, 2%);
-
-.texton {
+.texton-generator {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -12,83 +9,9 @@
   a {
     text-decoration: underline;
   }
-}
-
-.texton-controls {
-  position: absolute;
-  right: @component-padding;
-  top: @component-padding;
-  z-index: 100;
-}
-
-.texton-header {
-  padding: @texton-spacing;
-  border-bottom: 1px solid @base-border-color;
-  h1 {
-    font-size: 2em;
-    margin: 0 0 .5em 0;
-    color: @text-color-highlight;
-  }
-  p {
-    font-size: 1.2em;
-    &:last-of-type {
-      margin-bottom: 0;
+  .texton-sections {
+    .collapsed {
+      display : none;
     }
-  }
-}
-
-.texton-sections {
-  flex: 1;
-  overflow: auto;
-
-  & > section {
-    background-color: @texton-bg;
-    padding: 0;
-    border-bottom: 1px solid @base-border-color;
-    border-top: none;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-
-    &.collapsed {
-      background-color: @base-background-color;
-      > .section-heading {
-        display: block;
-        margin: 0;
-        padding-bottom: @texton-spacing;
-        color: @text-color;
-        &:hover {
-          color: @text-color-highlight;
-          background-color: @background-color-highlight;
-        }
-        &:active {
-          background-color: @base-background-color;
-        }
-      }
-      > * {
-        display: none
-      }
-    }
-  }
-
-  .section-heading.section-heading {
-    padding: @texton-spacing @texton-spacing 0 @texton-spacing;
-    cursor: pointer;
-    font-weight: normal;
-    font-size: 1.8em;
-    color: @text-color-highlight;
-  }
-
-  section > h2 {
-    font-size: 1.5em;
-    line-height: 1.2;
-    margin: 1em @texton-spacing 0 @texton-spacing;
-    color: @text-color-highlight;
-  }
-
-  section > p {
-    font-size: 1.1em;
-    margin: .5em @texton-spacing 1em @texton-spacing;
   }
 }
