@@ -66,6 +66,19 @@ export default class GeneratorPaneView {
         })));
   }
 
+  renderVariables () {
+    return $.div(
+      {},
+      ...this.props.variables.map((att, index) => $(ValueInputView, {
+            name: att.name,
+            value: att.value,
+            text: att.text,
+            className: 'texton-sections-settable',
+            permitsFreeValue: att.permitsFreeValue,
+            items: att.items
+        })));
+  }
+
   render () {
     return (
       <div className='texton-generator pane-item' tabIndex='-1'>
@@ -77,27 +90,7 @@ export default class GeneratorPaneView {
             {this.renderAttributes()}
           </ValueInputSectionView>
           <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
-            <ValueInputView
-              name='Number 4'
-              text='This one does not permit free value. Start value: three.'
-              value='three'
-              className='texton-sections-settable'
-              permitsFreeValue={false}
-              items={['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight','nine','ten','eleven']} />
-            <ValueInputView
-              name='Number 5'
-              text='This one does permit free value. Start value: eighteen.'
-              value='eighteen'
-              className='texton-sections-settable'
-              permitsFreeValue={true}
-              items={['eight','nine','ten','eleven']} />
-            <ValueInputView
-              name='Number 6'
-              text='This one permits free value and has no suggestions. Start value: Elk.'
-              value='Elk'
-              className='texton-sections-settable'
-              permitsFreeValue={true}
-              items={[]} />
+            {this.renderVariables()}
           </ValueInputSectionView>
         </main>
       </div>
