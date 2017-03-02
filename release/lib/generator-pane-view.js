@@ -10,6 +10,7 @@ import TextOnCore from './texton-core'
 export default class GeneratorPaneView {
   constructor (props) {
     this.collapsedSections = props.collapsedSections ? new Set(props.collapsedSections) : new Set();
+    this.inputs = [];
     this.sections = [];
     this.props = props;
     etch.initialize(this);
@@ -23,9 +24,13 @@ export default class GeneratorPaneView {
   }
 
   destroy () {
+    for (const input of this.inputs) {
+      input.destroy();
+    }
     for (const section of this.sections) {
       section.destroy();
     }
+    this.inputs = null;
     this.sections = null;
   }
 
@@ -37,7 +42,6 @@ export default class GeneratorPaneView {
   }
 
   update () {
-
     return etch.update(this)
   }
 
@@ -47,6 +51,10 @@ export default class GeneratorPaneView {
 
   didInitializeSection (section) {
     this.sections.push(section);
+  }
+
+  didInitializeInput (input) {
+    this.inputs.push(input);
   }
 
   isEqual (other) {
@@ -60,9 +68,10 @@ export default class GeneratorPaneView {
             name: att.name,
             value: att.value,
             text: att.text,
-            className: 'texton-sections-settable',
+            className: 'texton-sections-settable padded',
             permitsFreeValue: false,
-            items: att.items
+            items: att.items,
+            onDidInitialize: this.didInitializeInput.bind(this)
         })));
   }
 
@@ -73,9 +82,10 @@ export default class GeneratorPaneView {
             name: att.name,
             value: att.value,
             text: att.text,
-            className: 'texton-sections-settable',
+            className: 'texton-sections-settable padded',
             permitsFreeValue: att.permitsFreeValue,
-            items: att.items
+            items: att.items,
+            onDidInitialize: this.didInitializeInput.bind(this)
         })));
   }
 

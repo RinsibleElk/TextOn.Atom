@@ -7,7 +7,11 @@ import etch from 'etch'
 export default class ValueInputView {
   constructor (props) {
     this.props = props
+    this.comboboxes = []
     etch.initialize(this)
+    if (props.onDidInitialize) {
+      props.onDidInitialize(this)
+    }
   }
 
   elementForItem (item) {
@@ -30,8 +34,16 @@ export default class ValueInputView {
 
   }
 
-  destroy () {
+  didInitializeCombobox (combobox) {
+    this.comboboxes.push(combobox);
+  }
 
+  destroy () {
+    for (const combobox of this.comboboxes) {
+      combobox.destroy();
+    }
+    this.comboboxes = null;
+    return etch.destroy(this);
   }
 
   // not sure about these class names yet...
@@ -47,6 +59,7 @@ export default class ValueInputView {
             <ComboboxView
               value={this.props.value}
               items={this.props.items}
+              onDidInitialize={this.didInitializeCombobox.bind(this)}
               didChangeQuery={this.didChangeQuery.bind(this)}
               elementForItem={this.elementForItem.bind(this)}
               permitsFreeValue={this.props.permitsFreeValue}

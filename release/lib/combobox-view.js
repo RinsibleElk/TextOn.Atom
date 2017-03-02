@@ -11,6 +11,9 @@ module.exports = class ComboboxView {
     this.computeItems(false);
     this.disposables = new CompositeDisposable();
     etch.initialize(this);
+    if (props.onDidInitialize) {
+      props.onDidInitialize(this)
+    }
     if (this.props.value) {
       this.refs.queryEditor.setText(this.props.value);
     }
@@ -232,7 +235,6 @@ module.exports = class ComboboxView {
   }
 
   computeItems (updateComponent) {
-    console.log('computing items', this.props)
     const filterFn = this.fuzzyFilter.bind(this)
     this.items = filterFn(this.props.items.slice(), this.getFilterQuery()).map(function(item) {
       return { value : item, isQuery : false };
