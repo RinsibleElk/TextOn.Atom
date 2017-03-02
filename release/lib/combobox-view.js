@@ -61,11 +61,7 @@ module.exports = class ComboboxView {
         event.stopPropagation();
       },
       'core:confirm': (event) => {
-        if (this.props.permitsFreeValue) {
-          this.confirmText();
-        } else {
-          this.confirmSelection();
-        }
+        this.confirmSelection();
         event.stopPropagation();
       },
       'core:cancel': (event) => {
@@ -278,22 +274,15 @@ module.exports = class ComboboxView {
     }
   }
 
-  confirmText () {
-    const selectedItem = this.getQuery()
-    if (this.props.didConfirmSelection) {
-      this.props.didConfirmSelection(selectedItem)
-    }
-  }
-
   confirmSelection () {
     const selectedItem = this.getSelectedItem()
     if (selectedItem != null) {
       if (this.props.didConfirmSelection) {
-        this.props.didConfirmSelection(selectedItem)
+        this.props.didConfirmSelection(selectedItem.value)
       }
     } else {
-      if (this.props.didConfirmSelection) {
-        this.props.didConfirmSelection('')
+      if (this.props.didConfirmEmptySelection) {
+        this.props.didConfirmEmptySelection()
       }
     }
   }
