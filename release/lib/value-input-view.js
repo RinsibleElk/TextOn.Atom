@@ -29,7 +29,7 @@ export default class ValueInputView {
   // not sure about these class names yet...
   render () {
     return (
-      <atom-panel className='popover'>
+      <atom-panel className='padded'>
         <ComboboxView
           value={this.props.value}
           items={this.props.items}
