@@ -33,7 +33,7 @@ export default class ValueInputView {
   // not sure about these class names yet...
   render () {
     return (
-      <atom-panel className='padded'>
+      <atom-panel className={this.props.className}>
         <div class="inset-panel">
           <div class="panel-heading">
             <a>{this.props.name}</a>

@@ -5,13 +5,68 @@
   position: relative;
   display: flex;
   flex-direction: column;
+}
 
-  a {
-    text-decoration: underline;
+.texton-sections {
+  flex: 1;
+  overflow: auto;
+
+  & > section {
+    background-color: @base-background-color;
+    padding: 0;
+    border-bottom: 1px solid @base-border-color;
+    border-top: none;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &.collapsed {
+      background-color: @base-background-color;
+      > .section-heading {
+        display: block;
+        margin: 0;
+        padding-bottom: @component-padding;
+        color: @text-color;
+        &:hover {
+          color: @text-color-highlight;
+          background-color: @background-color-highlight;
+        }
+        &:active {
+          background-color: @base-background-color;
+        }
+      }
+      > * {
+        display: none
+      }
+    }
   }
-  .texton-sections {
-    .collapsed {
-      display : none;
+
+  .section-heading.section-heading {
+    padding: @component-padding @component-padding 0 @component-padding;
+    cursor: pointer;
+    font-weight: normal;
+    font-size: 1.8em;
+    color: @text-color-highlight;
+  }
+
+  section > h2 {
+    font-size: 1.5em;
+    line-height: 1.2;
+    margin: 1em @component-padding 0 @component-padding;
+    color: @text-color-highlight;
+  }
+
+  section > p {
+    font-size: 1.1em;
+    margin: .5em @component-padding 1em @component-padding;
+  }
+
+  .texton-sections-settable {
+    .select-list {
+      .collapsed {
+        display: none;
+      }
     }
   }
 }
