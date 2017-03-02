@@ -70,4 +70,8 @@ export default class ValueInputSectionView {
     this.collapsed = true
     return etch.update(this)
   }
+
+  destroy () {
+    this.children = null;
+  }
 }

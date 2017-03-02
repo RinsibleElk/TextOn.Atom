@@ -30,6 +30,10 @@ export default class ValueInputView {
 
   }
 
+  destroy () {
+    
+  }
+
   // not sure about these class names yet...
   render () {
     return (

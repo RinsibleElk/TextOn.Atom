@@ -70,4 +70,8 @@ export default class GeneratorPaneSection {
     this.collapsed = true
     return etch.update(this)
   }
+
+  destroy () {
+    
+  }
 }
