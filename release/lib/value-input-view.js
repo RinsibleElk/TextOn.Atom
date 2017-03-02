@@ -26,18 +26,34 @@ export default class ValueInputView {
   didChangeQuery (query) {
   }
 
+  linkClicked () {
+
+  }
+
   // not sure about these class names yet...
   render () {
     return (
       <atom-panel className='padded'>
-        <ComboboxView
-          value={this.props.value}
-          items={this.props.items}
-          didChangeQuery={this.didChangeQuery.bind(this)}
-          elementForItem={this.elementForItem.bind(this)}
-          permitsFreeValue={this.props.permitsFreeValue}
-          didConfirmSelection={this.didConfirmSelection.bind(this)}
-          didCancelSelection={this.didCancelSelection.bind(this)} />
+        <div class="inset-panel">
+          <div class="panel-heading">
+            <a>{this.props.name}</a>
+          </div>
+          <div class="panel-body padded">
+            <div class='block'>
+              <label>{this.props.text}</label>
+            </div>
+            <div class='block'>
+              <ComboboxView
+                value={this.props.value}
+                items={this.props.items}
+                didChangeQuery={this.didChangeQuery.bind(this)}
+                elementForItem={this.elementForItem.bind(this)}
+                permitsFreeValue={this.props.permitsFreeValue}
+                didConfirmSelection={this.didConfirmSelection.bind(this)}
+                didCancelSelection={this.didCancelSelection.bind(this)} />
+            </div>
+          </div>
+        </div>
       </atom-panel>
     )
   }

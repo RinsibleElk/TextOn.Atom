@@ -56,45 +56,51 @@ export default class GeneratorPaneView {
         </header>
         <main className='texton-sections'>
           <div class='block'>
-            <p>This one does not permit free value.</p>
             <ValueInputView
+              name='Number 1'
+              text='This one does not permit free value.'
               className='texton-sections-settable'
               permitsFreeValue={false}
               items={['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight','nine','ten','eleven']} />
           </div>
           <div class='block'>
-            <p>This one does permit free value.</p>
             <ValueInputView
+              name='Number 2'
+              text='This one does permit free value.'
               className='texton-sections-settable'
               permitsFreeValue={true}
               items={['eight','nine','ten','eleven']} />
           </div>
           <div class='block'>
-          <p>This one permits free value and has no suggestions.</p>
             <ValueInputView
+              name='Number 3'
+              text='This one permits free value and has no suggestions.'
               className='texton-sections-settable'
               permitsFreeValue={true}
               items={[]} />
           </div>
           <div class='block'>
-            <p>This one does not permit free value. Start value: 'three'.</p>
             <ValueInputView
+              name='Number 4'
+              text='This one does not permit free value. Start value: three.'
               value='three'
               className='texton-sections-settable'
               permitsFreeValue={false}
               items={['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight','nine','ten','eleven']} />
           </div>
           <div class='block'>
-            <p>This one does permit free value. Start value: 'eighteen'.</p>
             <ValueInputView
+              name='Number 5'
+              text='This one does permit free value. Start value: eighteen.'
               value='eighteen'
               className='texton-sections-settable'
               permitsFreeValue={true}
               items={['eight','nine','ten','eleven']} />
           </div>
           <div class='block'>
-            <p>This one permits free value and has no suggestions. Start value: 'Elk'.</p>
             <ValueInputView
+              name='Number 6'
+              text='This one permits free value and has no suggestions. Start value: Elk.'
               value='Elk'
               className='texton-sections-settable'
               permitsFreeValue={true}
