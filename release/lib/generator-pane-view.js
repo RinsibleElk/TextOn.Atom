@@ -57,6 +57,10 @@ export default class GeneratorPaneView {
     this.inputs.push(input);
   }
 
+  didConfirmSelection (type, name, value) {
+    console.log('Selected: ', type, name, value)
+  }
+
   isEqual (other) {
     return other instanceof GeneratorPaneView;
   }
@@ -65,13 +69,15 @@ export default class GeneratorPaneView {
     return $.div(
       {},
       ...this.props.attributes.map((att, index) => $(ValueInputView, {
+            type: 'Attribute',
             name: att.name,
             value: att.value,
             text: att.text,
             className: 'texton-sections-settable padded',
             permitsFreeValue: false,
             items: att.items,
-            onDidInitialize: this.didInitializeInput.bind(this)
+            onDidInitialize: this.didInitializeInput.bind(this),
+            onDidConfirmSelection: this.didConfirmSelection.bind(this)
         })));
   }
 
@@ -79,13 +85,15 @@ export default class GeneratorPaneView {
     return $.div(
       {},
       ...this.props.variables.map((att, index) => $(ValueInputView, {
+            type: 'Variable',
             name: att.name,
             value: att.value,
             text: att.text,
             className: 'texton-sections-settable padded',
             permitsFreeValue: att.permitsFreeValue,
             items: att.items,
-            onDidInitialize: this.didInitializeInput.bind(this)
+            onDidInitialize: this.didInitializeInput.bind(this),
+            onDidConfirmSelection: this.didConfirmSelection.bind(this)
         })));
   }
 

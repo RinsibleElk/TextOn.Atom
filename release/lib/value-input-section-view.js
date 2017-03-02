@@ -9,6 +9,7 @@ export default class ValueInputSectionView {
     this.title = props.title
     this.name = props.name
     this.children = children
+    this.props = props
     etch.initialize(this)
     if (props.onDidInitialize) {
       props.onDidInitialize(this)

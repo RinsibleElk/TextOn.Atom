@@ -21,7 +21,9 @@ export default class ValueInputView {
   }
 
   didConfirmSelection (item) {
-    console.log('Jonas : we confirmed this:', item)
+    if (this.props.onDidConfirmSelection) {
+      this.props.onDidConfirmSelection(this.props.type, this.props.name, item)
+    }
   }
 
   didCancelSelection () {
