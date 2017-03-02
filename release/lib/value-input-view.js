@@ -31,7 +31,7 @@ export default class ValueInputView {
   }
 
   destroy () {
-    
+
   }
 
   // not sure about these class names yet...
@@ -42,20 +42,16 @@ export default class ValueInputView {
           <div class="panel-heading">
             <a>{this.props.name}</a>
           </div>
-          <div class="panel-body padded">
-            <div class='block'>
-              <label>{this.props.text}</label>
-            </div>
-            <div class='block'>
-              <ComboboxView
-                value={this.props.value}
-                items={this.props.items}
-                didChangeQuery={this.didChangeQuery.bind(this)}
-                elementForItem={this.elementForItem.bind(this)}
-                permitsFreeValue={this.props.permitsFreeValue}
-                didConfirmSelection={this.didConfirmSelection.bind(this)}
-                didCancelSelection={this.didCancelSelection.bind(this)} />
-            </div>
+          <div class="panel-body">
+            <label>{this.props.text}</label>
+            <ComboboxView
+              value={this.props.value}
+              items={this.props.items}
+              didChangeQuery={this.didChangeQuery.bind(this)}
+              elementForItem={this.elementForItem.bind(this)}
+              permitsFreeValue={this.props.permitsFreeValue}
+              didConfirmSelection={this.didConfirmSelection.bind(this)}
+              didCancelSelection={this.didCancelSelection.bind(this)} />
           </div>
         </div>
       </atom-panel>

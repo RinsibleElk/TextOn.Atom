@@ -2,13 +2,16 @@
 /** @jsx etch.dom */
 
 import etch from 'etch'
+const $ = etch.dom
 import ValueInputSectionView from './value-input-section-view'
 import ValueInputView from './value-input-view'
+import TextOnCore from './texton-core'
 
 export default class GeneratorPaneView {
   constructor (props) {
     this.collapsedSections = props.collapsedSections ? new Set(props.collapsedSections) : new Set();
     this.sections = [];
+    this.props = props;
     etch.initialize(this);
     for (const section of this.sections) {
       if (this.collapsedSections.has(section.name)) {
@@ -34,7 +37,8 @@ export default class GeneratorPaneView {
   }
 
   update () {
-    // intentionally empty.
+
+    return etch.update(this)
   }
 
   getTitle () {
@@ -49,6 +53,19 @@ export default class GeneratorPaneView {
     return other instanceof GeneratorPaneView;
   }
 
+  renderAttributes () {
+    return $.div(
+      {},
+      ...this.props.attributes.map((att, index) => $(ValueInputView, {
+            name: att.name,
+            value: att.value,
+            text: att.text,
+            className: 'texton-sections-settable',
+            permitsFreeValue: false,
+            items: att.items
+        })));
+  }
+
   render () {
     return (
       <div className='texton-generator pane-item' tabIndex='-1'>
@@ -57,24 +74,7 @@ export default class GeneratorPaneView {
         </header>
         <main className='texton-sections'>
           <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
-            <ValueInputView
-              name='Number 1'
-              text='This one does not permit free value.'
-              className='texton-sections-settable'
-              permitsFreeValue={false}
-              items={['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight','nine','ten','eleven']} />
-            <ValueInputView
-              name='Number 2'
-              text='This one does permit free value.'
-              className='texton-sections-settable'
-              permitsFreeValue={true}
-              items={['eight','nine','ten','eleven']} />
-            <ValueInputView
-              name='Number 3'
-              text='This one permits free value and has no suggestions.'
-              className='texton-sections-settable'
-              permitsFreeValue={true}
-              items={[]} />
+            {this.renderAttributes()}
           </ValueInputSectionView>
           <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
             <ValueInputView

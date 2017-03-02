@@ -33,12 +33,8 @@ module.exports = class ComboboxView {
   }
 
   didLoseFocus (event) {
-    if (this.element.contains(event.relatedTarget)) {
-      focus ();
-    } else {
-      this.cancelSelection();
-      this.reset();
-    }
+    this.cancelSelection();
+    this.reset();
   }
 
   didGainFocus (event) {
@@ -136,7 +132,7 @@ module.exports = class ComboboxView {
     }
 
     return etch.update(this).then(function () {
-      if (this.propse.value) {
+      if (this.props.value) {
         this.refs.queryEditor.setText(this.props.value);
       }
     });
@@ -236,6 +232,7 @@ module.exports = class ComboboxView {
   }
 
   computeItems (updateComponent) {
+    console.log('computing items', this.props)
     const filterFn = this.fuzzyFilter.bind(this)
     this.items = filterFn(this.props.items.slice(), this.getFilterQuery()).map(function(item) {
       return { value : item, isQuery : false };

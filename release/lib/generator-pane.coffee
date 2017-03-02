@@ -32,4 +32,21 @@ module.exports =
 
   createGeneratorPane: ->
     GeneratorPaneView = require './generator-pane-view'
-    new GeneratorPaneView({ collapsedSections : [] })
+    new GeneratorPaneView(
+        {
+          collapsedSections : [],
+          attributes : [
+            {
+              name : 'attOne'
+              text : 'Some info about this attribute.'
+              value : 'four'
+              items : ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight','nine','ten','eleven']
+            },
+            {
+              name : 'attTwo'
+              text : 'Some more info.'
+              value : ''
+              items : ['eight','nine','ten','eleven']
+            }
+          ]
+        })
