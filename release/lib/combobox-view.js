@@ -239,7 +239,7 @@ module.exports = class ComboboxView {
     this.items = filterFn(this.props.items.slice(), this.getFilterQuery()).map(function(item) {
       return { value : item, isQuery : false };
     });
-    if (this.props.permitsFreeValue && !this.containsExactMatch(this.getFilterQuery())) {
+    if (this.props.permitsFreeValue && this.getFilterQuery() !== '' && !this.containsExactMatch(this.getFilterQuery())) {
       this.items.unshift({ value : this.getFilterQuery(), isQuery : true });
     }
     this.selectIndex(0, updateComponent)
