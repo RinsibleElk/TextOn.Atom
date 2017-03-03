@@ -1,28 +1,35 @@
 {
-    "name": "texton",
-    "main": "./lib/texton",
-    "version": "0.0.0",
-    "description": "Core plugin for TextOn development",
-    "repository": "https://github.com/RinsibleElk/TextOn.Atom",
-    "license": "Appache 2.0",
-    "engines": {
-        "atom": ">=0.174.0 <2.0.0"
-    },
-    "dependencies": {
-        "jquery": "2.1.3",
-        "jquery-ui": "*",
-        "atom-space-pen-views": "2.0.5",
-        "path": "*",
-        "event-kit": "*"
-    },
-    "consumedServices": {
-    },
-    "providedServices": {
-        "linter": {
-            "versions": {
-                "1.0.0": "provideErrors"
-            }
-        }
-
+  "name": "texton",
+  "main": "./lib/texton",
+  "version": "0.0.0",
+  "description": "Core plugin for TextOn development",
+  "repository": "https://github.com/RinsibleElk/TextOn.Atom",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+    "request": "*",
+    "request-promise": "*",
+    "etch": "*",
+    "atom-select-list": "*",
+    "path": "*",
+    "event-kit": "*",
+    "atom-space-pen-views": "2.0.5"
+  },
+  "package-deps": [
+    "linter"
+  ],
+  "consumedServices": {},
+  "providedServices": {
+    "linter": {
+      "versions": {
+        "1.0.0": "provideErrors"
+      }
     }
+  },
+  "devDependencies": {
+    "eslint": "^3.16.1",
+    "eslint-config-google": "^0.7.1"
+  }
 }

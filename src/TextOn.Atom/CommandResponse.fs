@@ -8,23 +8,25 @@ module TextOnErrorInfo =
         match error with
         | ParserError(e) ->
             {
-                StartLine = e.LineNumber
-                EndLine = e.LineNumber
-                StartColumn = e.StartLocation
-                EndColumn = e.EndLocation
-                Severity = "Error"
-                Message = e.ErrorText
-                Subcategory = "Parser"
+                range =
+                    [|
+                        [|(float (e.LineNumber - 1));(float (e.StartLocation - 1))|]
+                        [|(float (e.LineNumber - 1));(float (e.EndLocation))|]
+                    |]
+                ``type`` = "Error"
+                text = e.ErrorText
+                filePath = e.File
             }
         | GeneralError(e) ->
             {
-                StartLine = 1
-                EndLine = 1
-                StartColumn = 1
-                EndColumn = 1
-                Severity = "Error"
-                Message = e.ErrorText
-                Subcategory = "General"
+                range =
+                    [|
+                        [|0.0;0.0|]
+                        [|0.0;1.0|]
+                    |]
+                filePath = e.File
+                text = e.ErrorText
+                ``type`` = "Error"
             }
 
 [<RequireQualifiedAccess>]
@@ -34,12 +36,8 @@ module CommandResponse =
                     Data = errors
                            |> Array.filter (function | ParserError(e) -> e.File = file | _ -> true)
                            |> Array.map TextOnErrorInfo.OfCompilationError }
-    let info (serialize : Serializer) (s: string) = serialize { Kind = "info"; Data = s }
-    let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = s }
-    let lint (serialize : Serializer) (warnings : LintWarning list) =
-        let data = warnings |> List.toArray
-        serialize { Kind = "lint"; Data = data }
+    let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = [|s|] }
     let generatorSetup (serialize : Serializer) (generatorData:GeneratorData) =
-        serialize { Kind = "generatorSetup" ; Data = generatorData }
+        serialize { Kind = "generatorSetup" ; Data = [|generatorData|] }
     let navigate (serialize : Serializer) (data:NavigateData) =
-        serialize { Kind = "navigate" ; Data = data }
+        serialize { Kind = "navigate" ; Data = [|data|] }

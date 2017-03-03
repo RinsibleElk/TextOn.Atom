@@ -12,7 +12,7 @@
     "Paris"
   }
 
-@var $P2 = "Which district?"
+@var @free $P2 = "Which district?"
   {
     "Enfield" [$MÄRKE = "London"]
     "Montparnasse" [$MÄRKE = "Paris"]

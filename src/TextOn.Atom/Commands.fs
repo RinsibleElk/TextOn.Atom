@@ -65,13 +65,9 @@ type Commands (serialize : Serializer) =
 
     member __.Parse file lines =
         async {
+            let lines = lines |> List.ofArray
             let fi = Path.GetFullPath file |> FileInfo
             return! parse' file fi.Directory.FullName lines }
-
-    member __.Lint (file: SourceFilePath) = async {
-        let file = Path.GetFullPath file
-        let res = [ CommandResponse.lint serialize [] ]
-        return res }
 
     member __.GenerateStart (file:SourceFilePath) lines line = async {
         let fi = Path.GetFullPath file |> FileInfo
@@ -141,9 +137,9 @@ type Commands (serialize : Serializer) =
                         let errors = [||]
                         let f =
                             match ty with
-                            | "NavigateToFunction" -> template.Functions |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
-                            | "NavigateToVariable" -> template.Variables |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
-                            | "NavigateToAttribute" -> template.Attributes |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "Function" -> template.Functions |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "Variable" -> template.Variables |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "Attribute" -> template.Attributes |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
                             | _ -> failwith "Internal error"
                         if f |> Option.isNone then
                             [ CommandResponse.error serialize "Function not found" ]

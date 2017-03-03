@@ -2,15 +2,14 @@
 
 [<ReflectedDefinition>]
 module DTO =
-    type ParseRequest = { FileName : string; IsAsync : bool; Lines : string[]}
-    type ProjectRequest = { FileName : string}
-    type DeclarationsRequest = {FileName : string}
-    type HelptextRequest = {Symbol : string}
-    type PositionRequest = {FileName : string; Line : int; Column : int; Filter : string}
-    type LintRequest = {FileName : string}
-    type CompletionRequest = {FileName : string; SourceLine : string; Line : int; Column : int; Filter : string}
-    type GeneratorStartRequest = {FileName : string; LineNumber : int; Lines : string[] }
-    type GeneratorStopRequest = {Blank:string}
+    type ParseRequest = { FileName : string; Lines : string[] }
+    type GeneratorStartRequest =
+        {
+            FileName : string
+            LineNumber : int
+            Lines : string[]
+        }
+    type GeneratorStopRequest = { Blank : string }
     type GeneratorConfiguration =
         {
             NumSpacesBetweenSentences : int
@@ -18,109 +17,43 @@ module DTO =
             WindowsLineEndings : bool
         }
     type GenerateRequest = {Config:GeneratorConfiguration}
-    type NavigateRequest = {FileName : string ; NavigateType : string ; Name : string }
-    type GeneratorValueSetRequest = {Type:string;Name:string;Value:string}
-    type UpdateGeneratorRequest = {Blank:string}
-
-    type OverloadSignature = {
-        Signature: string
-        Comment: string }
+    type NavigateRequest = { FileName : string ; NavigateType : string ; Name : string }
+    type GeneratorValueSetRequest = { Type : string ; Name : string ; Value : string }
+    type UpdateGeneratorRequest = { Blank : string }
 
     type Error = {
-        /// 1-indexed first line of the error block
-        StartLine : int
-        /// 1-indexed first column of the error block
-        StartColumn : int
-        /// 1-indexed last line of the error block
-        EndLine : int
-        /// 1-indexed last column of the error block
-        EndColumn : int
+        // { { Start line (0-based), Start column (0-based) }, { End line (0-based), End column (1-based) } }
+        range : float [] []
         /// Description of the error
-        Message : string
-        /// The severity - "Error" or "Warning".
-        Severity : string
+        text : string
         /// Type of the Error
-        Subcategory : string }
+        ``type`` : string
+        // The file.
+        filePath : string }
 
-    type Declaration = {
-        File : string
-        Line : int
-        Column : int }
-
-    type Completion = {
-        Name : string
-        ReplacementText: string
-        Glyph : string
-        GlyphChar: string
-    }
-
-    type SymbolUse = {
-      Filename : string
-      StartLine : int
-      StartColumn : int
-      EndLine : int
-      EndColumn : int
-      IsFromDefinition : bool
-      IsFromAttribute : bool
-      IsFromComputationExpression : bool
-      IsFromDispatchSlotImplementation : bool
-      IsFromPattern : bool
-      IsFromType : bool }
-
-    type SymbolUses = {
-        Name : string
-        Uses : SymbolUse array }
-
-    type Helptext = {
-        Name : string
-        Overloads: OverloadSignature [] [] }
-
-    type LintWarning =
+    type GeneratorInput =
         {
-            /// Warning to display to the user.
-            Info: string
-            /// 1-indexed first line of the lint block
-            StartLine : int
-            /// 1-indexed first column of the lint block
-            StartColumn : int
-            /// 1-indexed last line of the lint block
-            EndLine : int
-            /// 1-indexed last column of the lint block
-            EndColumn : int
-            /// Entire input file, needed to display where in the file the error occurred.
-            Input: string }
-
-    type GeneratorAttribute =
-        {
-            Name : string
-            Value : string
-            Suggestions : string[]
-            IsEditable : bool
-        }
-    type GeneratorVariable =
-        {
-            Name : string
-            Text : string
-            Value : string
-            Suggestions : string[]
-            IsEditable : bool
-            IsFree : bool
+            name : string
+            text : string
+            value : string
+            items : string[]
+            permitsFreeValue : bool
         }
 
     type OutputString = {
         File : string
         LineNumber : int
         Value : string
-        IsPb : bool }
+        IsParagraphBreak : bool }
 
     type GeneratorData =
         {
-            FileName : string
-            FunctionName : string
-            Attributes : GeneratorAttribute[]
-            Variables : GeneratorVariable[]
-            CanGenerate : bool
-            Output : OutputString[]
+            fileName : string
+            functionName : string
+            attributes : GeneratorInput[]
+            variables : GeneratorInput[]
+            canGenerate : bool
+            output : OutputString[]
         }
 
     type NavigateData =
@@ -130,13 +63,7 @@ module DTO =
             Location : int
         }
 
-    type Result<'T> = {Kind : string; Data : 'T}
-    type HelptextResult = Result<Helptext>
-    type CompletionResult = Result<Completion[]>
-    type SymbolUseResult = Result<SymbolUses>
-    type TooltipResult = Result<OverloadSignature[][]>
-    type ParseResult = Result<Error[]>
-    type FindDeclarationResult = Result<Declaration>
-    type LintResult = Result<LintWarning[]>
+    type Result<'T> = { Kind : string ; Data : 'T[] }
+    type ParseResult = Result<Error>
     type GeneratorStartResult = Result<GeneratorData>
     type NavigateResult = Result<NavigateData>

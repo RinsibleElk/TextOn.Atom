@@ -1,7 +1,5 @@
 source https://nuget.org/api/v2
 
-nuget FAKE
-nuget FunScript
 nuget Suave
 nuget Newtonsoft.Json
 nuget FSharp.Core ~> 4
