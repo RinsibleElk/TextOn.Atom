@@ -140,11 +140,19 @@ export default class GeneratorPaneView {
         (item.IsParagraphBreak) ?
           $.br()
           : $.a(
-              {},
+              {
+                onClick: () => this.didClickOutputLink(index)
+              },
               item.Value
             )
         )
     );
+  }
+
+  didClickOutputLink(index) {
+    if (this.props.output.length > index) {
+      this.props.onDidClickSimpleLink(this.props.output[index])
+    }
   }
 
   didClickCopyToClipboard() {
@@ -160,13 +168,13 @@ export default class GeneratorPaneView {
       if (this.props.output.length === 0) {
         return (
           <div class='block'>
-            <button class='btn btn-lg' onClick={this.didClickGenerate.bind(this)}>Generate</button>
+            <button class='btn btn' onClick={this.didClickGenerate.bind(this)}>Generate</button>
           </div>
         );
       } else {
         return (
           <div class='block'>
-            <button class='btn btn-lg' onClick={this.didClickGenerate.bind(this)}>Generate</button>
+            <button class='btn btn' onClick={this.didClickGenerate.bind(this)}>Generate</button>
             {this.renderOutput()}
             <button class='btn' onClick={this.didClickCopyToClipboard.bind(this)}>Copy to clipboard</button>
           </div>

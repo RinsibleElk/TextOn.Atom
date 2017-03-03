@@ -120,4 +120,10 @@ module.exports =
           onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
           onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
           onDidClickGenerate : -> generate()
+          onDidClickSimpleLink : (item) ->
+            data =
+              FileName : item.File
+              LineNumber : item.LineNumber
+              Location : 1
+            textOnCore.navigate(data)
         })
