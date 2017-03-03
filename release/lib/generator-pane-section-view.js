@@ -3,7 +3,7 @@
 
 import etch from 'etch'
 
-export default class ValueInputSectionView {
+export default class GeneratorPaneSectionView {
   constructor (props, children) {
     this.collapsed = props.collapsed
     this.title = props.title

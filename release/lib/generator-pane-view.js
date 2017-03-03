@@ -3,7 +3,7 @@
 
 import etch from 'etch'
 const $ = etch.dom
-import ValueInputSectionView from './value-input-section-view'
+import GeneratorPaneSectionView from './generator-pane-section-view'
 import ValueInputView from './value-input-view'
 import TextOnCore from './texton-core'
 
@@ -84,7 +84,6 @@ export default class GeneratorPaneView {
   }
 
   didConfirmSelection (type, name, value) {
-    console.log('Selected: ', type, name, value)
     this.props.onDidConfirmSelection (type, name, value)
   }
 
@@ -128,6 +127,10 @@ export default class GeneratorPaneView {
         })));
   }
 
+  renderGenerator () {
+
+  }
+
   didClickFunctionLink () {
     this.props.onDidClickSmartLink ('Function', this.props.fileName, this.props.functionName)
     return false
@@ -150,12 +153,12 @@ export default class GeneratorPaneView {
           <h1>TextOn Generator for <a onClick={this.didClickFunctionLink}>{this.props.functionName}</a></h1>
         </header>
         <main className='texton-sections'>
-          <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
+          <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
             {this.renderAttributes()}
-          </ValueInputSectionView>
-          <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
+          </GeneratorPaneSectionView>
+          <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
             {this.renderVariables()}
-          </ValueInputSectionView>
+          </GeneratorPaneSectionView>
         </main>
       </div>
     )
