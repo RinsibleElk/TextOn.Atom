@@ -52,7 +52,12 @@ module.exports =
     window.atom.workspace.open(fileName,
       initialLine : lineNumber
       initialColumn : location)
-
+  generatorConfig: ->
+    o =
+      NumSpacesBetweenSentences: window.atom.config.get("texton.GeneratorConfig.NumSpacesBetweenSentences")
+      NumBlankLinesBetweenParagraphs: window.atom.config.get("texton.GeneratorConfig.NumBlankLinesBetweenParagraphs")
+      WindowsLineEndings: window.atom.config.get("texton.GeneratorConfig.WindowsLineEndings")
+    o
   send: (requestKind, responseKind, data) ->
     Logger.logf("Service", "Sending #{requestKind} request", [data])
     options =

@@ -69,6 +69,14 @@ requestUpdate = ->
     if data.length > 0
       updateGeneratorPane (data[0])
 
+generate = ->
+  req =
+    Config : textOnCore.generatorConfig()
+  p = textOnCore.send('generate', 'generatorSetup', req)
+  p.then (data) ->
+    if data.length > 0
+      updateGeneratorPane (data[0])
+
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
@@ -110,4 +118,5 @@ module.exports =
           variables : []
           onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
           onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
+          onDidClickGenerate : -> generate()
         })

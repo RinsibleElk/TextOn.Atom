@@ -14,6 +14,7 @@ export default class GeneratorPaneView {
     this.sections = [];
     this.attributes = [];
     this.variables = [];
+    this.output = [];
     this.props = props;
     etch.initialize(this);
     for (const section of this.sections) {
@@ -66,6 +67,9 @@ export default class GeneratorPaneView {
       return item;
     });
     this.variables = this.props.variables.map((item) => {
+      return item;
+    });
+    this.output = this.props.output.map((item) => {
       return item;
     });
     return etch.update(this)
@@ -127,8 +131,43 @@ export default class GeneratorPaneView {
         })));
   }
 
-  renderGenerator () {
+  renderOutput () {
+    return $.div(
+      {}
+    )
+  }
 
+  didClickCopyToClipboard() {
+
+  }
+
+  didClickGenerate() {
+    console.log('Clicked generate.')
+    this.props.onDidClickGenerate();
+  }
+
+  renderGenerator () {
+    if (this.props.canGenerate) {
+      if (this.props.output.length === 0) {
+        return (
+          <div class='block'>
+            <button class='btn btn-lg' onClick={this.didClickGenerate.bind(this)}>Generate</button>
+          </div>
+        );
+      } else {
+        return (
+          <div class='block'>
+            <button class='btn btn-lg' onClick={this.didClickGenerate.bind(this)}>Generate</button>
+            {this.renderOutput()}
+            <button class='btn' onClick={this.didClickCopyToClipboard.bind(this)}>Copy to clipboard</button>
+          </div>
+        );
+      }
+    } else {
+      return (
+        <p>Nothing to generate.</p>
+      )
+    }
   }
 
   didClickFunctionLink () {
@@ -150,7 +189,7 @@ export default class GeneratorPaneView {
     return (
       <div className='texton-generator pane-item' tabIndex='-1'>
         <header className='texton-header'>
-          <h1>TextOn Generator for <a onClick={this.didClickFunctionLink}>{this.props.functionName}</a></h1>
+          <h1>TextOn Generator for <a onClick={this.didClickFunctionLink.bind(this)}>{this.props.functionName}</a></h1>
         </header>
         <main className='texton-sections'>
           <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
@@ -158,6 +197,9 @@ export default class GeneratorPaneView {
           </GeneratorPaneSectionView>
           <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
             {this.renderVariables()}
+          </GeneratorPaneSectionView>
+          <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='generator' title='Generator'>
+            {this.renderGenerator()}
           </GeneratorPaneSectionView>
         </main>
       </div>
