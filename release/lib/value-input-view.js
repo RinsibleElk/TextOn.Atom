@@ -7,7 +7,7 @@ import etch from 'etch'
 export default class ValueInputView {
   constructor (props) {
     this.props = props
-    this.comboboxes = []
+    this.combobox = null;
     etch.initialize(this)
     if (props.onDidInitialize) {
       props.onDidInitialize(this)
@@ -37,14 +37,17 @@ export default class ValueInputView {
   }
 
   didInitializeCombobox (combobox) {
-    this.comboboxes.push(combobox);
+    if (this.combobox != null) {
+      throw 'Fuck you'
+    }
+    this.combobox = combobox;
   }
 
   destroy () {
-    for (const combobox of this.comboboxes) {
-      combobox.destroy();
+    if (this.combobox != null) {
+      this.combobox.destroy();
     }
-    this.comboboxes = null;
+    this.combobox = null;
     return etch.destroy(this);
   }
 
@@ -79,7 +82,13 @@ export default class ValueInputView {
     }
   }
 
-  update () {
-
+  update (props) {
+    console.log('Updating a value input view', props)
+    this.props = props
+    this.combobox.update ({
+      value : this.props.value,
+      items : this.props.items
+    })
+    etch.update(this)
   }
 }

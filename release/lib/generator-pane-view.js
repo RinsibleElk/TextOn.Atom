@@ -12,6 +12,8 @@ export default class GeneratorPaneView {
     this.collapsedSections = props.collapsedSections ? new Set(props.collapsedSections) : new Set();
     this.inputs = [];
     this.sections = [];
+    this.attributes = [];
+    this.variables = [];
     this.props = props;
     etch.initialize(this);
     for (const section of this.sections) {
@@ -48,6 +50,13 @@ export default class GeneratorPaneView {
     if (props.hasOwnProperty('variables')) {
       this.props.variables = props.variables
     }
+    this.attributes = this.props.attributes.map((item) => {
+      return item;
+    });
+    this.variables = this.props.variables.map((item) => {
+      return item;
+    });
+    console.log('At inputs: ', this.inputs)
     return etch.update(this)
   }
 
@@ -74,7 +83,8 @@ export default class GeneratorPaneView {
   renderAttributes () {
     return $.div(
       {},
-      ...this.props.attributes.map((att, index) => $(ValueInputView, {
+      ...this.attributes.map((att, index) => $(ValueInputView, {
+            ref: 'attributes',
             type: 'Attribute',
             name: att.name,
             value: att.value,
@@ -90,7 +100,8 @@ export default class GeneratorPaneView {
   renderVariables () {
     return $.div(
       {},
-      ...this.props.variables.map((att, index) => $(ValueInputView, {
+      ...this.variables.map((att, index) => $(ValueInputView, {
+            ref: 'variables',
             type: 'Variable',
             name: att.name,
             value: att.value,

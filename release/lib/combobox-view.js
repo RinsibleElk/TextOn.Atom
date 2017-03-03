@@ -92,6 +92,10 @@ module.exports = class ComboboxView {
   update (props = {}) {
     let shouldComputeItems = false;
 
+    if (this.props === null) {
+      throw 'Wtf??'
+    }
+
     if (props.hasOwnProperty('items')) {
       this.props.items = props.items
       shouldComputeItems = true
@@ -134,11 +138,12 @@ module.exports = class ComboboxView {
       this.computeItems()
     }
 
-    return etch.update(this).then(function () {
-      if (this.props.value) {
+    if (this.props.value) {
         this.refs.queryEditor.setText(this.props.value);
-      }
-    });
+    } else {
+        this.refs.queryEditor.setText('');
+    }
+    return etch.update(this)
   }
 
   render () {
