@@ -41,6 +41,16 @@ sendToTextOnGenerator = ->
       if data.length is 1
         updateGeneratorPane (data[0])
 
+valueset = (type, name, value) ->
+  req =
+    Type : type
+    Name : name
+    Value : value
+  p = textOnCore.send('generatorvalueset', 'generatorSetup', req)
+  p.then (data) ->
+    if data.length > 0
+      updateGeneratorPane (data[0])
+
 navigate = (type, fileName, name) ->
   req =
     FileName : fileName
@@ -74,4 +84,5 @@ module.exports =
           attributes : []
           variables : []
           onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
+          onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
         })

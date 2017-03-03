@@ -88,7 +88,6 @@ export default class ValueInputView {
   }
 
   update (props) {
-    console.log('Updating a value input view', props)
     this.props = props
     this.combobox.update ({
       value : this.props.value,

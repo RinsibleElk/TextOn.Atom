@@ -68,7 +68,6 @@ export default class GeneratorPaneView {
     this.variables = this.props.variables.map((item) => {
       return item;
     });
-    console.log('At inputs: ', this.inputs)
     return etch.update(this)
   }
 
@@ -86,6 +85,7 @@ export default class GeneratorPaneView {
 
   didConfirmSelection (type, name, value) {
     console.log('Selected: ', type, name, value)
+    this.props.onDidConfirmSelection (type, name, value)
   }
 
   isEqual (other) {
@@ -129,19 +129,16 @@ export default class GeneratorPaneView {
   }
 
   didClickFunctionLink () {
-    console.log('Navigating to function ', this.props.functionName)
     this.props.onDidClickSmartLink ('Function', this.props.fileName, this.props.functionName)
     return false
   }
 
   didClickVariableLink (variableName) {
-    console.log('Navigating to variable ', variableName)
     this.props.onDidClickSmartLink ('Variable', this.props.fileName, variableName)
     return false
   }
 
   didClickAttributeLink (attributeName) {
-    console.log('Navigating to attribute ', attributeName)
     this.props.onDidClickSmartLink ('Attribute', this.props.fileName, attributeName)
     return false
   }
