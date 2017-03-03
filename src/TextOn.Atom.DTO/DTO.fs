@@ -3,7 +3,12 @@
 [<ReflectedDefinition>]
 module DTO =
     type ParseRequest = { FileName : string; Lines : string[] }
-    type GeneratorStartRequest = { FileName : string; LineNumber : int; Lines : string[] }
+    type GeneratorStartRequest =
+        {
+            FileName : string
+            LineNumber : int
+            Lines : string[]
+        }
     type GeneratorStopRequest = { Blank : string }
     type GeneratorConfiguration =
         {
@@ -26,21 +31,13 @@ module DTO =
         // The file.
         filePath : string }
 
-    type GeneratorAttribute =
+    type GeneratorInput =
         {
-            Name : string
-            Value : string
-            Suggestions : string[]
-            IsEditable : bool
-        }
-    type GeneratorVariable =
-        {
-            Name : string
-            Text : string
-            Value : string
-            Suggestions : string[]
-            IsEditable : bool
-            IsFree : bool
+            name : string
+            text : string
+            value : string
+            items : string[]
+            permitsFreeValue : bool
         }
 
     type OutputString = {
@@ -51,12 +48,12 @@ module DTO =
 
     type GeneratorData =
         {
-            FileName : string
-            FunctionName : string
-            Attributes : GeneratorAttribute[]
-            Variables : GeneratorVariable[]
-            CanGenerate : bool
-            Output : OutputString[]
+            fileName : string
+            functionName : string
+            attributes : GeneratorInput[]
+            variables : GeneratorInput[]
+            canGenerate : bool
+            output : OutputString[]
         }
 
     type NavigateData =
