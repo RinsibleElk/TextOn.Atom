@@ -1,6 +1,6 @@
 #include "gender.texton"
 
-@var @free $Country = "Which country are you writing about?"
+@var $Country = "Which country are you writing about?"
   {
     "U.K."
     "Germany"
@@ -41,10 +41,12 @@
     "Tokyo" [$Country = "Japan"]
     "Lyon" [$Country = "France"]
   }
-@var @free $FreeVariable = "This is a completely free variable."
-@var $ConstrainedVariable = "This is a constrained variable."
+
+@var @free $ConstrainedVariable = "This is a constrained variable."
   {
     "Foo"
     "Bar"
     "Baz"
   }
+
+@var @free $FreeVariable = "This is a completely free variable."
