@@ -41,7 +41,7 @@
 
 @var @free $FreeVariable = "This is a completely free variable."
 
-@var @free $City = "Which city are you writing about?"
+@var $City = "Which city are you writing about?"
   {
     "London" [$Country = "U.K."]
     "Berlin" [$Country = "Germany"]
@@ -52,4 +52,5 @@
     "Cardiff" [$Country = "U.K."]
     "Tokyo" [$Country = "Japan"]
     "Lyon" [$Country = "France"]
+    "Berlin" [$Country = "Germany"]
   }
