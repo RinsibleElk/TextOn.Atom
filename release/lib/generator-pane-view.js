@@ -138,11 +138,10 @@ export default class GeneratorPaneView {
   }
 
   didClickCopyToClipboard() {
-
+    atom.clipboard.write(this.props.output.map((item) => item.Value).join(''));
   }
 
   didClickGenerate() {
-    console.log('Clicked generate.')
     this.props.onDidClickGenerate();
   }
 
