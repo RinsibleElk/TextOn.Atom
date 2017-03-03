@@ -4,10 +4,47 @@
   {
     "U.K."
     "Germany"
+    "France"
+    "Sweden"
+    "Belgium"
+    "Netherlands"
+    "Ethiopia"
+    "Australia"
+    "Cuba"
+    "Egypt"
+    "Albania"
+    "Macedonia"
+    "Burkina Faso"
+    "Japan"
+    "Switzerland"
+    "Thailand"
+    "Vietnam"
+    "Cambodia"
+    "China"
+    "India"
+    "Brazil"
+    "Peru"
+    "Argentina"
+    "Canada"
+    "U.S.A."
+    "Saudi Arabia"
   }
 @var @free $City = "Which city are you writing about?"
   {
     "London" [$Country = "U.K."]
-    "Berlin" [$Country = "Germany" && %Gender = "Male"]
-    "Paris" [$Country <> "Germany" && $Country <> "U.K."]
+    "Berlin" [$Country = "Germany"]
+    "Paris" [$Country = "France"]
+    "Birmingham" [$Country = "U.K." || $Country = "U.S.A."]
+    "New York" [$Country = "U.S.A."]
+    "York" [$Country = "U.K."]
+    "Cardiff" [$Country = "U.K."]
+    "Tokyo" [$Country = "Japan"]
+    "Lyon" [$Country = "France"]
+  }
+@var @free $FreeVariable = "This is a completely free variable."
+@var $ConstrainedVariable = "This is a constrained variable."
+  {
+    "Foo"
+    "Bar"
+    "Baz"
   }

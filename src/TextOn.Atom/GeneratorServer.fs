@@ -36,10 +36,11 @@ type GeneratorServer(file, name) =
                                 // I cannot know if this value is valid, so remove it.
                                 attributeValues <- attributeValues |> Map.remove att.Name
                                 {
-                                    GeneratorAttribute.Name = att.Name
-                                    Value = ""
-                                    Suggestions = [||]
-                                    IsEditable = false
+                                    name = att.Name
+                                    text = att.Text
+                                    value = ""
+                                    items = [||]
+                                    permitsFreeValue = false
                                 }
                             else
                                 let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
@@ -61,24 +62,24 @@ type GeneratorServer(file, name) =
                                     else
                                         "", [|""|]
                                 {
-                                    Name = att.Name
-                                    Value = newValue
-                                    Suggestions = newSuggestions
-                                    IsEditable = true
+                                    name = att.Name
+                                    value = newValue
+                                    items = newSuggestions
+                                    text = att.Text
+                                    permitsFreeValue = false
                                 }
-                        (haveSeenFilled || data.Value <> "", haveSeenEmpty || data.Value = "", (Some (Choice1Of2 data)))
+                        (haveSeenFilled || data.value <> "", haveSeenEmpty || data.value = "", (Some (Choice1Of2 data)))
                     | Choice2Of2 var ->
                         let data =
                             if haveSeenEmpty && (not var.PermitsFreeValue) then
                                 // I cannot know if this value is valid, so remove it.
                                 variableValues <- variableValues |> Map.remove var.Name
                                 {
-                                    GeneratorVariable.Name = var.Name
-                                    Value = ""
-                                    Suggestions = [|""|]
-                                    IsEditable = false
-                                    Text = var.Text
-                                    IsFree = var.PermitsFreeValue
+                                    name = var.Name
+                                    value = ""
+                                    items = [|""|]
+                                    text = var.Text
+                                    permitsFreeValue = var.PermitsFreeValue
                                 }
                             else
                                 let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
@@ -107,14 +108,13 @@ type GeneratorServer(file, name) =
                                     else
                                         "", [|""|]
                                 {
-                                    Name = var.Name
-                                    Value = newValue
-                                    Suggestions = newSuggestions
-                                    IsEditable = true
-                                    Text = var.Text
-                                    IsFree = var.PermitsFreeValue
+                                    name = var.Name
+                                    value = newValue
+                                    items = newSuggestions
+                                    text = var.Text
+                                    permitsFreeValue = var.PermitsFreeValue
                                 }
-                        (haveSeenFilled || data.Value <> "", haveSeenEmpty || data.Value = "", (Some (Choice2Of2 data))))
+                        (haveSeenFilled || data.value <> "", haveSeenEmpty || data.value = "", (Some (Choice2Of2 data))))
                     (false, false, None)
             |> Array.skip 1
             |> Array.map (fun (_,e,o) -> (e,o.Value))
@@ -124,12 +124,12 @@ type GeneratorServer(file, name) =
                 let haveSeenEmpty = a |> Array.map fst |> List.ofArray |> List.tryLast |> defaultArg <| false
                 (haveSeenEmpty, attributes, variables)
         {
-            FileName = file
-            FunctionName = name
-            Attributes = attributes
-            Variables = variables
-            CanGenerate = (not haveSeenEmpty)
-            Output = if haveSeenEmpty || lastResult.IsNone then [||] else lastResult.Value
+            fileName = file
+            functionName = name
+            attributes = attributes
+            variables = variables
+            canGenerate = (not haveSeenEmpty)
+            output = if haveSeenEmpty || lastResult.IsNone then [||] else lastResult.Value
         }
     member __.SetValue ty name value =
         if ty = "Variable" then

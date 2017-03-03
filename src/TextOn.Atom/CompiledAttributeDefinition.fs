@@ -11,6 +11,7 @@ type CompiledAttributeValue =
 type CompiledAttributeDefinition =
     {
         Name : string
+        Text : string
         Index : int
         File : string
         StartLine : int

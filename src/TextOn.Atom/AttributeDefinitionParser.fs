@@ -16,15 +16,17 @@ type ParsedAttributeDefinition = {
     Index : int
     HasErrors : bool
     Name : ParsedAttributeName
+    Text : string
     Result : ParsedAttributeResult }
 
 module internal AttributeDefinitionParser =
-    let private makeAttributeDefinition (tokenSet:CategorizedAttributedTokenSet) name result =
+    let private makeAttributeDefinition (tokenSet:CategorizedAttributedTokenSet) name text result =
         {   StartLine = tokenSet.StartLine
             EndLine = tokenSet.EndLine
             Index = tokenSet.Index
             HasErrors = match result with | ParsedAttributeErrors _ -> true | _ -> false
             Name = name
+            Text = text
             Result = result }
 
     let private makeParseError file line startLocation endLocation errorText =
@@ -96,35 +98,36 @@ module internal AttributeDefinitionParser =
         | firstLine::remainingLines ->
             let (name, text, error) = parseFirstLine firstLine
             if error |> Option.isSome then
-                makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) error.Value)|])
+                makeAttributeDefinition tokenSet name (text |> defaultArg <| "") (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) error.Value)|])
             else if text |> Option.isSome then
+                let text = text.Value
                 match remainingLines with
-                | [] -> makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber firstLine.Tokens.[0].TokenStartLocation firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation "No attribute values given")|])
+                | [] -> makeAttributeDefinition tokenSet name text (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber firstLine.Tokens.[0].TokenStartLocation firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation "No attribute values given")|])
                 | h::t ->
                     if h.Tokens.Length > 1 || h.Tokens.[0].Token <> OpenCurly then
-                        makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
+                        makeAttributeDefinition tokenSet name text (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
                     else
                         let l = t |> List.last
                         if l.Tokens.Length > 1 || l.Tokens.[0].Token <> CloseCurly then
-                            makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
+                            makeAttributeDefinition tokenSet name text (ParsedAttributeErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
                         else
-                            makeAttributeDefinitionWithValues tokenSet.File (makeAttributeDefinition tokenSet name) (t |> List.take (t.Length - 1))
+                            makeAttributeDefinitionWithValues tokenSet.File (makeAttributeDefinition tokenSet name text) (t |> List.take (t.Length - 1))
             else
                 match remainingLines with
-                | [] -> makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
+                | [] -> makeAttributeDefinition tokenSet name "" (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
                 | h::t ->
                     match (h.Tokens |> List.map (fun t -> t.Token)) with
                     | [QuotedString text] ->
                         match t with
-                        | [] -> makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "No values defined for attribute")|])
+                        | [] -> makeAttributeDefinition tokenSet name text (ParsedAttributeErrors [|(makeParseError tokenSet.File firstLine.LineNumber (firstLine.Tokens.[0].TokenStartLocation) (firstLine.Tokens.[firstLine.Tokens.Length - 1].TokenEndLocation) "No values defined for attribute")|])
                         | h::t ->
                             if h.Tokens.Length > 1 || h.Tokens.[0].Token <> OpenCurly then
-                                makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
+                                makeAttributeDefinition tokenSet name text (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber h.Tokens.[0].TokenStartLocation h.Tokens.[h.Tokens.Length - 1].TokenEndLocation "Expected '{'")|])
                             else
                                 let l = t |> List.last
                                 if l.Tokens.Length > 1 || l.Tokens.[0].Token <> CloseCurly then
-                                    makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
+                                    makeAttributeDefinition tokenSet name text (ParsedAttributeErrors [|(makeParseError tokenSet.File l.LineNumber l.Tokens.[0].TokenStartLocation l.Tokens.[l.Tokens.Length - 1].TokenEndLocation "Expected '}'")|])
                                 else
-                                    makeAttributeDefinitionWithValues tokenSet.File (makeAttributeDefinition tokenSet name) (t |> List.take (t.Length - 1))
+                                    makeAttributeDefinitionWithValues tokenSet.File (makeAttributeDefinition tokenSet name text) (t |> List.take (t.Length - 1))
                     | _ ->
-                        makeAttributeDefinition tokenSet name (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber (h.Tokens.[0].TokenStartLocation) (h.Tokens.[h.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])
+                        makeAttributeDefinition tokenSet name "" (ParsedAttributeErrors [|(makeParseError tokenSet.File h.LineNumber (h.Tokens.[0].TokenStartLocation) (h.Tokens.[h.Tokens.Length - 1].TokenEndLocation) "Expected quoted string")|])

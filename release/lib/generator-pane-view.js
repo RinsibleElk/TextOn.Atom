@@ -41,7 +41,13 @@ export default class GeneratorPaneView {
     }
   }
 
-  update () {
+  update (props) {
+    if (props.hasOwnProperty('attributes')) {
+      this.props.attributes = props.attributes
+    }
+    if (props.hasOwnProperty('variables')) {
+      this.props.variables = props.variables
+    }
     return etch.update(this)
   }
 

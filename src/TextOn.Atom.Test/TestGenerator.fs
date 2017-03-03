@@ -155,6 +155,7 @@ let makeSingleAttributeTemplate node = {
         [|
             {
                 Name = "Gender"
+                Text = "What is the gender of the target audience?"
                 Index = 0
                 File = exampleFileName
                 StartLine = exampleLineNumber

@@ -175,7 +175,7 @@ module Compiler =
         | ParsedParagraphBreak(lineNumber) ->
             Result (ParagraphBreak(file, lineNumber))
         | _ -> failwith "Internal error"
-    let private compileAttribute (file:string) index startLine endLine name (attributeDefinitions:Map<ParsedAttributeName, CompiledAttributeDefinition>) (parsedAttributeValues:ParsedAttributeValue[]) : CompiledAttributeDefinition ResultOrErrors =
+    let private compileAttribute (file:string) index startLine endLine name text (attributeDefinitions:Map<ParsedAttributeName, CompiledAttributeDefinition>) (parsedAttributeValues:ParsedAttributeValue[]) : CompiledAttributeDefinition ResultOrErrors =
         let existing = attributeDefinitions |> Map.tryFind name
         if existing |> Option.isSome then
             Errors ([|(makeParseError file startLine 1 4 (sprintf "Duplicate definition of attribute %s" name))|])
@@ -200,6 +200,7 @@ module Compiler =
                 Result
                     {
                         Name = name
+                        Text = text
                         Index = index
                         File = file
                         StartLine = startLine
@@ -287,7 +288,7 @@ module Compiler =
                         | ParsedAttributeErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
                     else
-                        match (compileAttribute h.File a.Index a.StartLine a.EndLine a.Name attributeDefinitions (match a.Result with | ParsedAttributeSuccess a -> a | _ -> failwith "Internal error")) with
+                        match (compileAttribute h.File a.Index a.StartLine a.EndLine a.Name a.Text attributeDefinitions (match a.Result with | ParsedAttributeSuccess a -> a | _ -> failwith "Internal error")) with
                         | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                         | Result r -> (variableDefinitions, (attributeDefinitions |> Map.add a.Name r), functionDefinitions, errors)
                 | ParsedVariable v ->
