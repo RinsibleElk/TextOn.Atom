@@ -105,7 +105,8 @@ export default class GeneratorPaneView {
             permitsFreeValue: false,
             items: att.items,
             onDidInitialize: this.didInitializeInput.bind(this),
-            onDidConfirmSelection: this.didConfirmSelection.bind(this)
+            onDidConfirmSelection: this.didConfirmSelection.bind(this),
+            onDidClickLink: this.didClickAttributeLink.bind(this)
         })));
   }
 
@@ -122,15 +123,34 @@ export default class GeneratorPaneView {
             permitsFreeValue: att.permitsFreeValue,
             items: att.items,
             onDidInitialize: this.didInitializeInput.bind(this),
-            onDidConfirmSelection: this.didConfirmSelection.bind(this)
+            onDidConfirmSelection: this.didConfirmSelection.bind(this),
+            onDidClickLink: this.didClickVariableLink.bind(this)
         })));
+  }
+
+  didClickFunctionLink () {
+    console.log('Navigating to function ', this.props.functionName)
+    this.props.onDidClickSmartLink ('Function', this.props.fileName, this.props.functionName)
+    return false
+  }
+
+  didClickVariableLink (variableName) {
+    console.log('Navigating to variable ', variableName)
+    this.props.onDidClickSmartLink ('Variable', this.props.fileName, variableName)
+    return false
+  }
+
+  didClickAttributeLink (attributeName) {
+    console.log('Navigating to attribute ', attributeName)
+    this.props.onDidClickSmartLink ('Attribute', this.props.fileName, attributeName)
+    return false
   }
 
   render () {
     return (
       <div className='texton-generator pane-item' tabIndex='-1'>
         <header className='texton-header'>
-          <h1>TextOn Generator for <a>{this.props.functionName}</a></h1>
+          <h1>TextOn Generator for <a onClick={this.didClickFunctionLink}>{this.props.functionName}</a></h1>
         </header>
         <main className='texton-sections'>
           <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>

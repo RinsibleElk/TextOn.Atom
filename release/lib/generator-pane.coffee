@@ -41,6 +41,16 @@ sendToTextOnGenerator = ->
       if data.length is 1
         updateGeneratorPane (data[0])
 
+navigate = (type, fileName, name) ->
+  req =
+    FileName : fileName
+    NavigateType : type
+    Name : name
+  p = textOnCore.send('navigaterequest', 'navigate', req)
+  p.then (data) ->
+    if data.length is 1
+      textOnCore.navigate data[0]
+
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
@@ -63,4 +73,5 @@ module.exports =
           fileName : []
           attributes : []
           variables : []
+          onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
         })

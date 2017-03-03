@@ -51,13 +51,18 @@ export default class ValueInputView {
     return etch.destroy(this);
   }
 
+  didClickLink () {
+    this.props.onDidClickLink(this.props.name)
+    return false;
+  }
+
   // not sure about these class names yet...
   render () {
     return (
       <atom-panel className={this.props.className}>
         <div class="inset-panel">
           <div class="panel-heading">
-            <a>{this.props.name}</a>
+            <a onClick={this.didClickLink.bind(this)}>{this.props.name}</a>
           </div>
           <div class="panel-body">
             <label>{this.props.text}</label>

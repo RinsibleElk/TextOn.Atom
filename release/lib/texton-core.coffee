@@ -38,6 +38,21 @@ module.exports =
     child?.kill("SIGKILL")
   isTextOnEditor: (editor) ->
     editor?.getGrammar().name.indexOf("texton") >= 0
+  navigate: (data) ->
+    fileName = data.FileName
+    lineNumber = data.LineNumber - 1
+    location = data.Location - 1
+    for pane in window.atom.workspace.getPanes()
+      for item in pane.getItems()
+        if item.getPath?() is fileName
+          pane.activate()
+          pane.activateItem(item)
+          item.setCursorBufferPosition([lineNumber, location])
+          return
+    window.atom.workspace.open(fileName,
+      initialLine : lineNumber
+      initialColumn : location)
+
   send: (requestKind, responseKind, data) ->
     Logger.logf("Service", "Sending #{requestKind} request", [data])
     options =
