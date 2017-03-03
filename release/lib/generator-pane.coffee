@@ -56,9 +56,11 @@ module.exports =
     GeneratorPaneView = require './generator-pane-view'
     generator = new GeneratorPaneView(
         {
-          collapsedSections : [],
-          attributes : [
-          ]
-          variables : [
-          ]
+          collapsedSections : []
+          functionName : ''
+          canGenerate : false
+          output : []
+          fileName : []
+          attributes : []
+          variables : []
         })

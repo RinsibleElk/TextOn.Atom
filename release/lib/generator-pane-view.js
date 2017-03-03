@@ -50,6 +50,18 @@ export default class GeneratorPaneView {
     if (props.hasOwnProperty('variables')) {
       this.props.variables = props.variables
     }
+    if (props.hasOwnProperty('functionName')) {
+      this.props.functionName = props.functionName
+    }
+    if (props.hasOwnProperty('fileName')) {
+      this.props.fileName = props.fileName
+    }
+    if (props.hasOwnProperty('canGenerate')) {
+      this.props.canGenerate = props.canGenerate
+    }
+    if (props.hasOwnProperty('output')) {
+      this.props.output = props.output
+    }
     this.attributes = this.props.attributes.map((item) => {
       return item;
     });
@@ -118,7 +130,7 @@ export default class GeneratorPaneView {
     return (
       <div className='texton-generator pane-item' tabIndex='-1'>
         <header className='texton-header'>
-          <h1>TextOn Generator</h1>
+          <h1>TextOn Generator for <a>{this.props.functionName}</a></h1>
         </header>
         <main className='texton-sections'>
           <ValueInputSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
