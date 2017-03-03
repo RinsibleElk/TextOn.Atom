@@ -67,7 +67,8 @@ requestUpdate = ->
   p = textOnCore.send('updategenerator', 'generatorSetup', req)
   p.then (data) ->
     if data.length > 0
-      updateGeneratorPane (data[0])
+      # We take care _not_ to open the generator here - that would be annoying.
+      generator.update (data[0])
 
 generate = ->
   req =

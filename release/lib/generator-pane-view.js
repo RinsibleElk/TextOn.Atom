@@ -133,8 +133,18 @@ export default class GeneratorPaneView {
 
   renderOutput () {
     return $.div(
-      {}
-    )
+      {
+        className: 'texton-sections-output padded'
+      },
+      ...this.output.map((item, index) =>
+        (item.IsParagraphBreak) ?
+          $.br()
+          : $.a(
+              {},
+              item.Value
+            )
+        )
+    );
   }
 
   didClickCopyToClipboard() {

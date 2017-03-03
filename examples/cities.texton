@@ -50,5 +50,3 @@
     "Bar"
     "Baz"
   }
-
-@var @free $FreeVariable = "This is a completely free variable."
