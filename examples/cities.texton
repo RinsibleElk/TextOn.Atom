@@ -31,17 +31,7 @@
     "Hello"
   }
 
-
-@var @free $ConstrainedVariable = "This is a constrained variable."
-  {
-    "Foo"
-    "Bar"
-    "Baz"
-  }
-
-@var @free $FreeVariable = "This is a completely free variable."
-
-@var $City = "Which city are you writing about?"
+@var @free $City = "Which city are you writing about?"
   {
     "London" [$Country = "U.K."]
     "Berlin" [$Country = "Germany"]
@@ -52,5 +42,13 @@
     "Cardiff" [$Country = "U.K."]
     "Tokyo" [$Country = "Japan"]
     "Lyon" [$Country = "France"]
-    "Berlin" [$Country = "Germany"]
   }
+
+@var $ConstrainedVariable = "This is a constrained variable."
+  {
+    "Foo"
+    "Bar"
+    "Baz"
+  }
+
+@var @free $FreeVariable = "This is a completely free variable."

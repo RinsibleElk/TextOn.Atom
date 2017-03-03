@@ -61,6 +61,14 @@ navigate = (type, fileName, name) ->
     if data.length is 1
       textOnCore.navigate data[0]
 
+requestUpdate = ->
+  req =
+    Blank : ""
+  p = textOnCore.send('updategenerator', 'generatorSetup', req)
+  p.then (data) ->
+    if data.length > 0
+      updateGeneratorPane (data[0])
+
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
@@ -68,8 +76,25 @@ module.exports =
       @createGeneratorPane() if isGeneratorPane filePath
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Send-To-Generator', ->
       sendToTextOnGenerator()
+    @disp = null
+    @subscriptions.add atom.workspace.onDidStopChangingActivePaneItem (item) ->
+      @disp?.dispose()
+      @disp = null
+      if generator?
+        if atom.workspace.isTextEditor item
+          if textOnCore.isTextOnEditor item
+            @disp = item.onDidStopChanging ->
+              requestUpdate()
+    @subscriptions.add atom.workspace.onDidDestroyPaneItem (event) =>
+      item = event.item
+      if item is generator
+        @disp?.dispose()
+        @disp = null
+        generator = null
+      return
 
   deactivate: ->
+    @disp?.dispose()
     @subscriptions.dispose()
 
   createGeneratorPane: ->
