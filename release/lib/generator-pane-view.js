@@ -167,13 +167,13 @@ export default class GeneratorPaneView {
     if (this.props.canGenerate) {
       if (this.props.output.length === 0) {
         return (
-          <div class='block'>
+          <div class='block padded'>
             <button class='btn btn' onClick={this.didClickGenerate.bind(this)}>Generate</button>
           </div>
         );
       } else {
         return (
-          <div class='block'>
+          <div class='block padded'>
             <button class='btn btn' onClick={this.didClickGenerate.bind(this)}>Generate</button>
             {this.renderOutput()}
             <button class='btn' onClick={this.didClickCopyToClipboard.bind(this)}>Copy to clipboard</button>
