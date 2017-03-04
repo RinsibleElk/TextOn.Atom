@@ -102,6 +102,7 @@
     <None Include="regex.fsx" />
     <None Include="Agent.fsx" />
     <None Include="SuaveTesting.fsx" />
+    <None Include="CompilationBenchmark.fsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
