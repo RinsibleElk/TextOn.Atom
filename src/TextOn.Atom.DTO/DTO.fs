@@ -22,6 +22,7 @@ module DTO =
     type UpdateGeneratorRequest = { Blank : string }
 
     type Error = {
+        // OPS It's weird that I am using Points here no?
         // { { Start line (0-based), Start column (0-based) }, { End line (0-based), End column (1-based) } }
         range : float [] []
         /// Description of the error
