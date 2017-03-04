@@ -175,6 +175,23 @@ module internal FunctionDefinitionParser =
                         match sentenceNode with
                         | ParsedSentenceErrors errors -> ParseErrors errors
                         | _ -> parseSequentialOrChoiceInner file makeNode ((ParsedSentence(line.LineNumber, sentenceNode), condition.Condition)::output) t
+    and private findCloseCurly (s:AttributedTokenizedLine list) =
+        s
+        |> List.scan
+            (fun (bracketCount, isCloseCurly) x ->
+                // To determine if it's an open or close curly, you basically need to say that either the entire line is an open or close curly
+                // plus optionally a condition, or that the entire line is @seq { or @choice {.
+                if x.Tokens.Length = 1 then
+                    if x.Tokens.[0].Token = OpenCurly then (bracketCount + 1, false)
+                    else if x.Tokens.[0].Token = CloseCurly then (bracketCount - 1, true)
+                    else (bracketCount, false)
+                else if x.Tokens.[0].Token = CloseCurly then (bracketCount - 1, true)
+                else if x.Tokens.[0].Token <> Choice && x.Tokens.[0].Token <> Sequential then (bracketCount, false)
+                else if x.Tokens.[1].Token = OpenCurly then (bracketCount + 1, false)
+                else (bracketCount, false))
+            (1, false)
+        |> List.skip 1
+        |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
     and private findEndOfSeqOrChoice file makeNode line remainingLines =
         // Either the open brace is on this line or is the only thing on the next line.
         let lineTokens = line.Tokens
@@ -187,22 +204,7 @@ module internal FunctionDefinitionParser =
                 if line2.Tokens.Length <> 1 || line2.Tokens.[0].Token <> OpenCurly then
                     (0, ParseErrors([|(makeParseError file line2.LineNumber line2.Tokens.[0].TokenStartLocation line2.Tokens.[0].TokenEndLocation "Invalid token")|]), ParsedUnconditional)
                 else
-                    let closeCurlyIndex =
-                        t2
-                        |> List.scan
-                            (fun (bracketCount, isCloseCurly) x ->
-                                // To determine if it's an open or close curly, you basically need to say that either the entire line is an open or close curly, or that the entire line is @seq { or @choice {.
-                                if x.Tokens.Length > 2 then (bracketCount, false)
-                                else if x.Tokens.Length = 1 then
-                                    if x.Tokens.[0].Token = OpenCurly then (bracketCount + 1, false)
-                                    else if x.Tokens.[0].Token = CloseCurly then (bracketCount - 1, true)
-                                    else (bracketCount, false)
-                                else if x.Tokens.[0].Token <> Choice && x.Tokens.[0].Token <> Sequential then (bracketCount, false)
-                                else if x.Tokens.[1].Token = OpenCurly then (bracketCount + 1, false)
-                                else (bracketCount, false))
-                            (1, false)
-                        |> List.skip 1
-                        |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
+                    let closeCurlyIndex = findCloseCurly t2
                     if closeCurlyIndex |> Option.isNone then
                         (0, ParseErrors([|(makeParseError file line2.LineNumber line2.Tokens.[0].TokenStartLocation line2.Tokens.[0].TokenEndLocation "Unmatched {")|]), ParsedUnconditional)
                     else
@@ -221,22 +223,7 @@ module internal FunctionDefinitionParser =
         else if lineTokens.[1].Token <> OpenCurly then
             (0, ParseErrors([|(makeParseError file line.LineNumber lineTokens.[1].TokenStartLocation lineTokens.[1].TokenEndLocation "Invalid token")|]), ParsedUnconditional)
         else
-            let closeCurlyIndex =
-                remainingLines
-                |> List.scan
-                    (fun (bracketCount, isCloseCurly) x ->
-                        // To determine if it's an open or close curly, you basically need to say that either the entire line is an open or close curly, or that the entire line is @seq { or @choice {.
-                        if x.Tokens.Length > 2 then (bracketCount, false)
-                        else if x.Tokens.Length = 1 then
-                            if x.Tokens.[0].Token = OpenCurly then (bracketCount + 1, false)
-                            else if x.Tokens.[0].Token = CloseCurly then (bracketCount - 1, true)
-                            else (bracketCount, false)
-                        else if x.Tokens.[0].Token <> Choice && x.Tokens.[0].Token <> Sequential then (bracketCount, false)
-                        else if x.Tokens.[1].Token = OpenCurly then (bracketCount + 1, false)
-                        else (bracketCount, false))
-                    (1, false)
-                |> List.skip 1
-                |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
+            let closeCurlyIndex = findCloseCurly remainingLines
             if closeCurlyIndex |> Option.isNone then
                 (0, ParseErrors([|(makeParseError file line.LineNumber line.Tokens.[0].TokenStartLocation line.Tokens.[1].TokenEndLocation "Unmatched {")|]), ParsedUnconditional)
             else

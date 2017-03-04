@@ -426,7 +426,7 @@ let ``Test invoking a function from within a function``() =
                             Tree =
                                 Seq
                                     [|
-                                        (Sentence ("D:\Example\example.texton", 2, SimpleText "Hello world."), True)
+                                        (Sentence (fullExampleFile, 2, SimpleText "Hello world."), True)
                                     |]
                         }
                         {   Name = "func2";
@@ -435,4 +435,110 @@ let ``Test invoking a function from within a function``() =
                             StartLine = 4;
                             EndLine = 6;
                             Tree = Seq [|(Function 0, True)|];}|];}
+    test <@ result = expected @>
+
+[<Test>]
+let ``Test filtering out an entire seq block``() =
+    let lines =
+        "@att %Gender = \"Something\"
+  {
+    \"Male\"
+    \"Female\"
+  }
+@func @main
+{
+  @seq {
+    Blah.
+  } [%Gender = \"Male\"]
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationSuccess
+            {   Attributes =
+                    [|
+                        {
+                            Name = "Gender"
+                            Text = "Something"
+                            Index = 0
+                            File = fullExampleFile
+                            StartLine = 1
+                            EndLine = 5
+                            Values =
+                                [|
+                                    { Value = "Male"; Condition = True }
+                                    { Value = "Female"; Condition = True }
+                                |]
+                        }
+                    |]
+                Variables = [||]
+                Functions =
+                    [|
+                        {   Name = "main"
+                            Index = 1
+                            File = fullExampleFile
+                            StartLine = 6
+                            EndLine = 11
+                            Tree =
+                                Seq
+                                    [|
+                                        (Seq
+                                            [|
+                                                (Sentence (fullExampleFile, 9, SimpleText "Blah."), True)
+                                            |], AreEqual(0, "Male"))
+                                    |]
+                        }
+                    |] }
+    test <@ result = expected @>
+
+[<Test>]
+let ``Test filtering out an entire choice block``() =
+    let lines =
+        "@att %Gender = \"Something\"
+  {
+    \"Male\"
+    \"Female\"
+  }
+@func @main
+{
+  @choice {
+    Blah.
+  } [%Gender = \"Male\"]
+}"
+    let result = lines |> compileLines
+    let expected =
+        CompilationSuccess
+            {   Attributes =
+                    [|
+                        {
+                            Name = "Gender"
+                            Text = "Something"
+                            Index = 0
+                            File = fullExampleFile
+                            StartLine = 1
+                            EndLine = 5
+                            Values =
+                                [|
+                                    { Value = "Male"; Condition = True }
+                                    { Value = "Female"; Condition = True }
+                                |]
+                        }
+                    |]
+                Variables = [||]
+                Functions =
+                    [|
+                        {   Name = "main"
+                            Index = 1
+                            File = fullExampleFile
+                            StartLine = 6
+                            EndLine = 11
+                            Tree =
+                                Seq
+                                    [|
+                                        (Choice
+                                            [|
+                                                (Sentence (fullExampleFile, 9, SimpleText "Blah."), True)
+                                            |], AreEqual(0, "Male"))
+                                    |]
+                        }
+                    |] }
     test <@ result = expected @>
