@@ -1,6 +1,6 @@
 ﻿namespace TextOn.Atom
 
-open System.Text.RegularExpressions
+open System
 open System.IO
 
 /// Service to resolve a file. Can be used in testing to not actually bother having real files lying around.
@@ -32,13 +32,21 @@ type PreprocessedSourceLine = {
 [<RequireQualifiedAccess>]
 module Preprocessor =
     /// Regular expression to extract the file name from the #include directive.
-    let private includeRegex = Regex("^#include\\s+\"(.+)\"\s*$")
+    let private includeLine = @"#include"
 
     /// Stateful container for files that have already been included, earlier in the document (recursively).
     type private IncludedFilesContainer() =
         let mutable includedFiles = Set.empty
         member __.AlreadyIncluded (s:string) = includedFiles |> Set.contains s
         member __.Add s = includedFiles <- includedFiles |> Set.add s
+
+    let private eatWhitespaceAtBeginning n (l:string) =
+        seq [ n .. l.Length - 1 ]
+        |> Seq.tryFind (fun i -> (not (Char.IsWhiteSpace (l.[i]))))
+
+    let private eatWhitespaceAtEnd (l:string) =
+        seq [ l.Length - 1 .. -1 .. 0 ]
+        |> Seq.tryFind (fun i -> (not (Char.IsWhiteSpace (l.[i]))))
 
     /// Perform the preprocessing.
     let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string) (includedFilesContainer:IncludedFilesContainer) (lines:string list) =
@@ -52,9 +60,21 @@ module Preprocessor =
                         CurrentFileLineNumber = currentFileLineNumber
                         CurrentFile = Path.Combine(currentDirectory, currentFile)
                         Contents = PreprocessorLine line }
+                else if (not (line.StartsWith("#include"))) || line.Length <= 8 || (not (Char.IsWhiteSpace (line.[8]))) then
+                    yield {
+                        TopLevelFileLineNumber = topLevelFileLineNumber
+                        CurrentFileLineNumber = currentFileLineNumber
+                        CurrentFile = Path.Combine(currentDirectory, currentFile)
+                        Contents = PreprocessorError {
+                            StartLocation = 1
+                            EndLocation = line.Length
+                            ErrorText = (line |> sprintf "Not a valid #include directive: %s") } }
                 else
-                    let includeMatch = includeRegex.Match(line)
-                    if (not (includeMatch.Success)) then
+                    let offsetToFile = eatWhitespaceAtBeginning 8 line
+                    let endOfFile = eatWhitespaceAtEnd line
+                    match (offsetToFile, endOfFile) with
+                    | (None, _)
+                    | (_, None) ->
                         yield {
                             TopLevelFileLineNumber = topLevelFileLineNumber
                             CurrentFileLineNumber = currentFileLineNumber
@@ -63,23 +83,33 @@ module Preprocessor =
                                 StartLocation = 1
                                 EndLocation = line.Length
                                 ErrorText = (line |> sprintf "Not a valid #include directive: %s") } }
-                    else
-                        let includeFileUnresolved = includeMatch.Groups.[1].Value
-                        let resolvedFile = fileResolver includeFileUnresolved currentDirectory
-                        if (resolvedFile |> Option.isNone) then
+                    | (Some s, Some e) ->
+                        if s >= e || line.[s] <> '"' || line.[e] <> '"' then
                             yield {
                                 TopLevelFileLineNumber = topLevelFileLineNumber
                                 CurrentFileLineNumber = currentFileLineNumber
                                 CurrentFile = Path.Combine(currentDirectory, currentFile)
                                 Contents = PreprocessorError {
-                                    StartLocation = 1 + line.IndexOf("\"")
+                                    StartLocation = 1
                                     EndLocation = line.Length
-                                    ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
+                                    ErrorText = (line |> sprintf "Not a valid #include directive: %s") } }
                         else
-                            let (includeFileResolved, includeDirectory, includeLines) = resolvedFile |> Option.get
-                            if (not (includedFilesContainer.AlreadyIncluded includeFileResolved)) then
-                                includedFilesContainer.Add includeFileResolved
-                                yield! preprocessInner false topLevelFileLineNumber 1 includeFileResolved fileResolver includeDirectory includedFilesContainer includeLines
+                            let includeFileUnresolved = line.Substring(s + 1, e - 1 - s)
+                            let resolvedFile = fileResolver includeFileUnresolved currentDirectory
+                            if (resolvedFile |> Option.isNone) then
+                                yield {
+                                    TopLevelFileLineNumber = topLevelFileLineNumber
+                                    CurrentFileLineNumber = currentFileLineNumber
+                                    CurrentFile = Path.Combine(currentDirectory, currentFile)
+                                    Contents = PreprocessorError {
+                                        StartLocation = 1 + line.IndexOf("\"")
+                                        EndLocation = line.Length
+                                        ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
+                            else
+                                let (includeFileResolved, includeDirectory, includeLines) = resolvedFile |> Option.get
+                                if (not (includedFilesContainer.AlreadyIncluded includeFileResolved)) then
+                                    includedFilesContainer.Add includeFileResolved
+                                    yield! preprocessInner false topLevelFileLineNumber 1 includeFileResolved fileResolver includeDirectory includedFilesContainer includeLines
                 yield! (preprocessInner inTopLevelFile (if inTopLevelFile then (topLevelFileLineNumber + 1) else topLevelFileLineNumber) (currentFileLineNumber + 1) currentFile fileResolver currentDirectory includedFilesContainer remaining) }
 
     /// Get a "real" file resolver.
