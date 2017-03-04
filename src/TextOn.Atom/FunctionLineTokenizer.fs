@@ -6,7 +6,7 @@ open System.Text.RegularExpressions
 [<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a function definition and tokenize it.
 module internal FunctionLineTokenizer =
-    // OPS This is surely horrendous perf wise?
+    
     let private conditionMatches =
         [
             // Match "  %SomeAttribute " at the start of a string.

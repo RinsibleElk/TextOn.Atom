@@ -1,7 +1,6 @@
 ﻿namespace TextOn.Atom
 
 open System
-open System.Text.RegularExpressions
 
 [<RequireQualifiedAccess>]
 /// Tokenize pre-categorized data.
