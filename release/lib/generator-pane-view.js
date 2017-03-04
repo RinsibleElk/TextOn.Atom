@@ -37,13 +37,6 @@ export default class GeneratorPaneView {
     this.sections = null;
   }
 
-  serialize () {
-    return {
-      deserializer: this.constructor.name,
-      collapsedSections: this.sections.filter((s) => s.collapsed).map((s) => s.name)
-    }
-  }
-
   update (props) {
     if (props.hasOwnProperty('attributes')) {
       this.props.attributes = props.attributes
