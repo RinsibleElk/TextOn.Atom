@@ -40,3 +40,21 @@ let ``Test funny symbol``() =
     let result = FunctionLineTokenizer.tokenizeLine "   \\|" |> Seq.toList
     let expected = [{TokenStartLocation=4;TokenEndLocation=5;Token=RawText "|"}]
     test <@ expected = result @>
+
+[<Test>]
+let ``Line ending with backslash``() =
+    let result = FunctionLineTokenizer.tokenizeLine @"Blah. \" |> Seq.toList
+    let expected =
+        [
+            {
+                TokenStartLocation = 1
+                TokenEndLocation = 6
+                Token = RawText "Blah. "
+            }
+            {
+                TokenStartLocation = 7
+                TokenEndLocation = 7
+                Token = InvalidUnrecognised @"\"
+            }
+        ]
+    test <@ expected = result @>
