@@ -41,8 +41,11 @@ module Preprocessor =
         member __.Add s = includedFiles <- includedFiles |> Set.add s
 
     let private eatWhitespaceAtBeginning n (l:string) =
-        seq [ n .. l.Length - 1 ]
-        |> Seq.tryFind (fun i -> (not (Char.IsWhiteSpace (l.[i]))))
+        let mutable i = n
+        let e = l.Length - 1
+        while i <= e && (Char.IsWhiteSpace(l.[i])) do
+            i <- i + 1
+        if i >= e then None else Some i
 
     let private eatWhitespaceAtEnd (l:string) =
         seq [ l.Length - 1 .. -1 .. 0 ]

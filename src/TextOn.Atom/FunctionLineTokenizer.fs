@@ -6,7 +6,13 @@ open System.Text.RegularExpressions
 [<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a function definition and tokenize it.
 module internal FunctionLineTokenizer =
-    
+    let private eatWhitespaceAtBeginning n (l:string) =
+        let mutable i = n
+        let e = l.Length - 1
+        while i <= e && (Char.IsWhiteSpace(l.[i])) do
+            i <- i + 1
+        if i >= e then None else Some i
+
     let private conditionMatches =
         [
             // Match "  %SomeAttribute " at the start of a string.
@@ -109,7 +115,7 @@ module internal FunctionLineTokenizer =
                 Seq.singleton attributedToken
         else
             tokenizeMainInner n strippedLine
-    let private funcDefinitionRegex = Regex("^@func\s+")
+    let private funcDefinition = @"@func"
     let private openCurlyRegex = Regex("^(\\s*)\\{\\s*$")
     let private closeCurlyRegex = Regex("^(\\s*)\\}\\s*$")
     let private unescapedOpenBraceRegex = Regex("^(\\s*)(([^\[\\\\]+|\\\\\[|\\\\\\\\)*)(\[.*)?$")
@@ -117,27 +123,31 @@ module internal FunctionLineTokenizer =
     let private leadingWhitespaceRegex = Regex("^(\\s*)")
     /// Tokenize a single line of source that has been categorized to lie within a function definition.
     let tokenizeLine (line:string) =
-        let funcDefinitionMatch = funcDefinitionRegex.Match(line)
-        if funcDefinitionMatch.Success then
+        if line.StartsWith("@func") then
             let funcDefinitionToken = {TokenStartLocation = 1;TokenEndLocation = 5;Token = Func}
-            let funcNameMatch = funcNameRegex.Match(line.Substring(funcDefinitionMatch.Length))
-            if funcNameMatch.Success then
-                let funcName = funcNameMatch.Groups.[1].Value
-                let funcNameToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = funcDefinitionMatch.Length + funcNameMatch.Length;Token = (match funcName with | "break" | "var" | "att" | "func" | "free" | "seq" | "choice" -> InvalidReservedToken(funcName) | _ -> FunctionName(funcName))}
-                let openCurlyToken =
-                    if funcNameMatch.Groups.[3].Success then
-                        let index = funcDefinitionMatch.Length + funcNameMatch.Groups.[1].Length + funcNameMatch.Groups.[2].Length + 1
-                        Seq.singleton {TokenStartLocation = index;TokenEndLocation = index;Token = OpenCurly}
-                    else
-                        Seq.empty
-                seq { yield funcDefinitionToken; yield funcNameToken; yield! openCurlyToken }
-            else if funcDefinitionMatch.Length >= line.Length then
+            let nonWhitespaceOffset = eatWhitespaceAtBeginning 5 line
+            if nonWhitespaceOffset.IsNone then
                 Seq.singleton funcDefinitionToken
             else
-                let unrecognisedToken = {TokenStartLocation = funcDefinitionMatch.Length + 1;TokenEndLocation = line.Length;Token = InvalidUnrecognised (line.Substring(funcDefinitionMatch.Length + 1)) }
-                seq {
-                    yield funcDefinitionToken
-                    yield unrecognisedToken }
+                let nonWhitespaceOffset = nonWhitespaceOffset.Value
+                let funcNameMatch = funcNameRegex.Match(line.Substring(nonWhitespaceOffset))
+                if funcNameMatch.Success then
+                    let funcName = funcNameMatch.Groups.[1].Value
+                    let funcNameToken = {TokenStartLocation = nonWhitespaceOffset + 1;TokenEndLocation = nonWhitespaceOffset + funcNameMatch.Length;Token = (match funcName with | "break" | "var" | "att" | "func" | "free" | "seq" | "choice" -> InvalidReservedToken(funcName) | _ -> FunctionName(funcName))}
+                    let openCurlyToken =
+                        if funcNameMatch.Groups.[3].Success then
+                            let index = nonWhitespaceOffset + funcNameMatch.Groups.[1].Length + funcNameMatch.Groups.[2].Length + 1
+                            Seq.singleton {TokenStartLocation = index;TokenEndLocation = index;Token = OpenCurly}
+                        else
+                            Seq.empty
+                    seq { yield funcDefinitionToken; yield funcNameToken; yield! openCurlyToken }
+                else if nonWhitespaceOffset >= line.Length then
+                    Seq.singleton funcDefinitionToken
+                else
+                    let unrecognisedToken = {TokenStartLocation = nonWhitespaceOffset + 1;TokenEndLocation = line.Length;Token = InvalidUnrecognised (line.Substring(nonWhitespaceOffset + 1)) }
+                    seq {
+                        yield funcDefinitionToken
+                        yield unrecognisedToken }
         else
             // Find the first unescaped '['.
             let unescapedOpenBraceMatch = unescapedOpenBraceRegex.Match(line)
