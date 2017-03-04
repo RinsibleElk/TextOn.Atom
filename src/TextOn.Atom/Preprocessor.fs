@@ -33,6 +33,7 @@ type PreprocessedSourceLine = {
 module Preprocessor =
     /// Regular expression to extract the file name from the #include directive.
     let private includeLine = @"#include"
+    let private doubleQuoteChar = '"'
 
     /// Stateful container for files that have already been included, earlier in the document (recursively).
     type private IncludedFilesContainer() =
@@ -45,11 +46,13 @@ module Preprocessor =
         let e = l.Length - 1
         while i <= e && (Char.IsWhiteSpace(l.[i])) do
             i <- i + 1
-        if i >= e then None else Some i
+        if i > e then None else Some i
 
     let private eatWhitespaceAtEnd (l:string) =
-        seq [ l.Length - 1 .. -1 .. 0 ]
-        |> Seq.tryFind (fun i -> (not (Char.IsWhiteSpace (l.[i]))))
+        let mutable i = l.Length - 1
+        while i >= 0 && (Char.IsWhiteSpace(l.[i])) do
+            i <- i - 1
+        if i < 0 then None else Some i
 
     /// Perform the preprocessing.
     let rec private preprocessInner inTopLevelFile topLevelFileLineNumber currentFileLineNumber currentFile (fileResolver:PreprocessorFileResolver) (currentDirectory:string) (includedFilesContainer:IncludedFilesContainer) (lines:string list) =
@@ -63,7 +66,7 @@ module Preprocessor =
                         CurrentFileLineNumber = currentFileLineNumber
                         CurrentFile = Path.Combine(currentDirectory, currentFile)
                         Contents = PreprocessorLine line }
-                else if (not (line.StartsWith("#include"))) || line.Length <= 8 || (not (Char.IsWhiteSpace (line.[8]))) then
+                else if (not (line.StartsWith(includeLine))) || line.Length <= 8 || (not (Char.IsWhiteSpace (line.[8]))) then
                     yield {
                         TopLevelFileLineNumber = topLevelFileLineNumber
                         CurrentFileLineNumber = currentFileLineNumber
@@ -87,7 +90,7 @@ module Preprocessor =
                                 EndLocation = line.Length
                                 ErrorText = (line |> sprintf "Not a valid #include directive: %s") } }
                     | (Some s, Some e) ->
-                        if s >= e || line.[s] <> '"' || line.[e] <> '"' then
+                        if s >= e || line.[s] <> doubleQuoteChar || line.[e] <> doubleQuoteChar then
                             yield {
                                 TopLevelFileLineNumber = topLevelFileLineNumber
                                 CurrentFileLineNumber = currentFileLineNumber
@@ -105,7 +108,7 @@ module Preprocessor =
                                     CurrentFileLineNumber = currentFileLineNumber
                                     CurrentFile = Path.Combine(currentDirectory, currentFile)
                                     Contents = PreprocessorError {
-                                        StartLocation = 1 + line.IndexOf("\"")
+                                        StartLocation = 1 + line.IndexOf(doubleQuoteChar)
                                         EndLocation = line.Length
                                         ErrorText = (includeFileUnresolved |> sprintf "Unable to resolve file: %s") } }
                             else

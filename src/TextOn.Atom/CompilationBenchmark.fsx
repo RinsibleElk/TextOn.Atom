@@ -38,8 +38,8 @@ let meanAndStdev l =
     l
     |> List.fold (fun (s,ss,n) x -> (s + x, ss + x * x, n + 1.0)) (0.0,0.0,0.0)
     |> fun (s,ss,n) -> ((s/n),(ss/n)) |> fun (e,e2) -> (e,(sqrt (e2 - e * e)))
-let resultsTokenized = [ 0 .. 999 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
-let resultsStripped = [ 0 .. 999 ] |> List.map (fun _ -> timeStripped()) |> meanAndStdev
+let resultsTokenized = [ 0 .. 99 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
+let resultsStripped = [ 0 .. 99 ] |> List.map (fun _ -> timeStripped()) |> meanAndStdev
 
 // Master (Oliver's PC):
 // val resultsTokenized : float * float = (6.2361054, 1.924761209)
