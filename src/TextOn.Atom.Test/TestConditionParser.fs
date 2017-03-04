@@ -198,7 +198,6 @@ let ``Test multiple ands``() =
                         ParsedAreEqual(2, 77, 83, att "Gender", "Other")))) }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
-// OPS I'm not actually sure this is the correct precedence, but I implemented a precedence anyway, can easily be reversed.
 [<Test>]
 let ``Test and/or precedence``() =
     let makeToken s e t = { TokenStartLocation = s ; TokenEndLocation = e ; Token = t }
@@ -225,18 +224,19 @@ let ``Test and/or precedence``() =
     let expected = {
         HasErrors = false
         Condition =
-            ParsedAnd(
-                ParsedAreEqual (2, 2, 8, att "Gender","Male"),
+            ParsedOr(
                 ParsedAnd(
-                    ParsedOr(
-                        ParsedAreEqual (2, 22, 28, att "Gender","Female"),
-                        ParsedAreEqual (2, 44, 50, att "Gender","Attack helicopter")),
+                    ParsedAreEqual (2, 2, 8, att "Gender","Male"),
+                    ParsedAreEqual (2, 22, 28, att "Gender","Female")),
+                ParsedAnd(
+                    ParsedAreEqual (2, 44, 50, att "Gender","Attack helicopter"),
                     ParsedAreEqual (2, 77, 83, att "Gender","Other"))) }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
 [<Test>]
 let ``Test brackets``() =
     let makeToken s e t = { TokenStartLocation = s ; TokenEndLocation = e ; Token = t }
+    // [(%Gender = "Male" || %Gender = "Female") || %Gender = "Attack helicopter" && %Gender = "Other"]
     let tokens =
         [
             makeToken 1 1 OpenBrace
@@ -244,7 +244,7 @@ let ``Test brackets``() =
             makeToken 3 9 (AttributeName "Gender")
             makeToken 11 11 Equals
             makeToken 13 18 (QuotedString "Male")
-            makeToken 20 21 And
+            makeToken 20 21 Or
             makeToken 23 29 (AttributeName "Gender")
             makeToken 31 31 Equals
             makeToken 33 40 (QuotedString "Female")
@@ -262,12 +262,12 @@ let ``Test brackets``() =
     let expected = {
         HasErrors = false
         Condition =
-            ParsedAnd(
+            ParsedOr(
                 ParsedOr(
-                    ParsedAnd(
-                        ParsedAreEqual (2, 3, 9, att "Gender","Male"),
-                        ParsedAreEqual (2, 23, 29, att "Gender","Female")),
-                    ParsedAreEqual (2, 46, 52, att "Gender","Attack helicopter")),
-                ParsedAreEqual (2, 79, 85, att "Gender","Other")) }
+                    ParsedAreEqual (2, 3, 9, att "Gender","Male"),
+                    ParsedAreEqual (2, 23, 29, att "Gender","Female")),
+                ParsedAnd(
+                    ParsedAreEqual (2, 46, 52, att "Gender","Attack helicopter"),
+                    ParsedAreEqual (2, 79, 85, att "Gender","Other"))) }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 

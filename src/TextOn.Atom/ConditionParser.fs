@@ -39,7 +39,7 @@ module ConditionParser =
         if conditionTokens |> List.isEmpty then
             { HasErrors = true; Condition = ParsedConditionError [|(makeParseError file line position position "Invalid empty condition")|] }
         else
-            // Find the first And at root (0 brackets) level.
+            // Find the first Or at root (0 brackets) level.
             let li =
                 conditionTokens
                 |> List.scan
@@ -49,11 +49,11 @@ module ConditionParser =
                         else (bracketCount, index + 1, Some attToken))
                     (0, -1, None)
                 |> List.skip 1
-            let rootAnd =
+            let rootOr =
                 li
-                |> List.tryFind (fun (a, _, ao) -> a = 0 && ao.Value.Token = And)
-            if rootAnd |> Option.isSome then
-                let (_, index, _) = rootAnd.Value
+                |> List.tryFind (fun (a, _, ao) -> a = 0 && ao.Value.Token = Or)
+            if rootOr |> Option.isSome then
+                let (_, index, _) = rootOr.Value
                 let left = parseConditionInner file line position variablesAreAllowed (conditionTokens |> List.take index)
                 let right = parseConditionInner file line (position + index + 1) variablesAreAllowed (conditionTokens |> List.skip (index + 1))
                 let hasErrors = left.HasErrors || right.HasErrors
@@ -64,15 +64,15 @@ module ConditionParser =
                                 (match left.Condition with | ParsedConditionError(errors) -> errors | _ -> [||])
                                 (match right.Condition with | ParsedConditionError(errors) -> errors | _ -> [||]))
                     else
-                        ParsedAnd(left.Condition, right.Condition)
+                        ParsedOr(left.Condition, right.Condition)
                 {   HasErrors = hasErrors
                     Condition = condition }
             else
-                let rootOr =
+                let rootAnd =
                     li
-                    |> List.tryFind (fun (a, _, ao) -> a = 0 && ao.Value.Token = Or)
-                if rootOr |> Option.isSome then
-                    let (_, index, _) = rootOr.Value
+                    |> List.tryFind (fun (a, _, ao) -> a = 0 && ao.Value.Token = And)
+                if rootAnd |> Option.isSome then
+                    let (_, index, _) = rootAnd.Value
                     let left = parseConditionInner file line position variablesAreAllowed (conditionTokens |> List.take index)
                     let right = parseConditionInner file line (position + index + 1) variablesAreAllowed (conditionTokens |> List.skip (index + 1))
                     let hasErrors = left.HasErrors || right.HasErrors
@@ -83,7 +83,7 @@ module ConditionParser =
                                     (match left.Condition with | ParsedConditionError(errors) -> errors | _ -> [||])
                                     (match right.Condition with | ParsedConditionError(errors) -> errors | _ -> [||]))
                         else
-                            ParsedOr(left.Condition, right.Condition)
+                            ParsedAnd(left.Condition, right.Condition)
                     {   HasErrors = hasErrors
                         Condition = condition }
                 else
