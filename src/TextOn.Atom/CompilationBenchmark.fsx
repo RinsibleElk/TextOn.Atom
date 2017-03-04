@@ -7,15 +7,22 @@ open System.Diagnostics
 open System.IO
 open System.Text.RegularExpressions
 
-let fileName = Path.Combine(__SOURCE_DIRECTORY__, @"Benchmarking.texton")
-let directory = @""
+let file =
+    [
+        @"D:\NodeJs\TextOn.Atom\src\TextOn.Atom\Benchmarking.texton"
+        @"/Users/Oliver/Projects/TextOn.Atom/src/TextOn.Atom/Benchmarking.texton"
+        @"/Users/jonaskiessling/Documents/src/TextOn.Atom/Benchmarking.texton"
+    ]
+    |> List.find File.Exists
+    |> FileInfo
+let fileName = Path.Combine(file.Directory.FullName, file.Name)
+let directory = file.Directory.FullName
 let lines =
     fileName
     |> File.ReadAllLines
     |> List.ofArray
-
 let makeTokenized() =
-    Preprocessor.preprocess (fun _ _ -> failwith "") fileName directory lines
+    Preprocessor.preprocess (fun _ _ -> failwith "") file.Name directory lines
     |> CommentStripper.stripComments
     |> LineCategorizer.categorize
     |> List.map Tokenizer.tokenize
@@ -61,5 +68,8 @@ let resultsCategorized = [ 0 .. 99 ] |> List.map (fun _ -> timeCategorized()) |>
 // val resultsStripped : float * float = (0.36916, 0.07727673389)
 // val resultsCategorized : float * float = (0.652632, 0.1008072883)
 
-
+// IrregularExpressions (Oliver's Mac):
+// val resultsTokenized : float * float = (53.326875, 16.15775433) - yikes
+// val resultsStripped : float * float = (0.812813, 0.4466267669)
+// val resultsCategorized : float * float = (2.345453, 0.622461468)
 
