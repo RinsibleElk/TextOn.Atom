@@ -7,16 +7,15 @@ open System.Diagnostics
 open System.IO
 open System.Text.RegularExpressions
 
-let file =
-    [
-        @"D:\NodeJs\TextOn.Atom\examples\original\sixt.texton"
-        @"/Users/Oliver/Projects/TextOn.Atom/TextOn.Atom/examples/original/sixt.texton"
-        @"/Users/jonaskiessling/Documents/TextOn.Atom/examples/original/sixt.texton"
-    ]
-    |> List.find File.Exists
-    |> FileInfo
+let fileName = Path.Combine(__SOURCE_DIRECTORY__, @"Benchmarking.texton")
+let directory = @""
+let lines =
+    fileName
+    |> File.ReadAllLines
+    |> List.ofArray
+
 let makeTokenized() =
-    Preprocessor.preprocess Preprocessor.realFileResolver file.Name file.Directory.FullName (file.FullName |> File.ReadAllLines |> List.ofArray)
+    Preprocessor.preprocess (fun _ _ -> failwith "") fileName directory lines
     |> CommentStripper.stripComments
     |> LineCategorizer.categorize
     |> List.map Tokenizer.tokenize
@@ -26,13 +25,24 @@ let timeTokenized() =
     makeTokenized() |> ignore
     sw.Stop()
     sw.Elapsed.TotalMilliseconds
+let makeStripped() =
+    Preprocessor.preprocess (fun _ _ -> failwith "") fileName directory lines
+    |> CommentStripper.stripComments
+let timeStripped() =
+    let sw = Stopwatch()
+    sw.Start()
+    makeStripped() |> ignore
+    sw.Stop()
+    sw.Elapsed.TotalMilliseconds
 let meanAndStdev l =
     l
     |> List.fold (fun (s,ss,n) x -> (s + x, ss + x * x, n + 1.0)) (0.0,0.0,0.0)
     |> fun (s,ss,n) -> ((s/n),(ss/n)) |> fun (e,e2) -> (e,(sqrt (e2 - e * e)))
-let results = [ 0 .. 999 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
+let resultsTokenized = [ 0 .. 999 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
+let resultsStripped = [ 0 .. 999 ] |> List.map (fun _ -> timeStripped()) |> meanAndStdev
 
 // Master (Oliver's PC):
-// Cold: val results : float * float = (7.4268538, 2.246032421)
-// Hot: val results : float * float = (7.2207699, 0.9147641481)
+// val resultsTokenized : float * float = (6.2361054, 1.924761209)
+// val resultsStripped : float * float = (0.4971996, 0.07256326729)
+
 
