@@ -9,13 +9,10 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "fuzzaldrin": "*",
     "request": "*",
     "request-promise": "*",
-    "etch": "*",
-    "atom-select-list": "*",
-    "path": "*",
-    "event-kit": "*",
-    "atom-space-pen-views": "2.0.5"
+    "etch": "*"
   },
   "package-deps": [
     "linter"
@@ -27,9 +24,5 @@
         "1.0.0": "provideErrors"
       }
     }
-  },
-  "devDependencies": {
-    "eslint": "^3.16.1",
-    "eslint-config-google": "^0.7.1"
   }
 }
