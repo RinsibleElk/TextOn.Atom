@@ -25,6 +25,16 @@ let timeTokenized() =
     makeTokenized() |> ignore
     sw.Stop()
     sw.Elapsed.TotalMilliseconds
+let makeCategorized() =
+    Preprocessor.preprocess (fun _ _ -> failwith "") fileName directory lines
+    |> CommentStripper.stripComments
+    |> LineCategorizer.categorize
+let timeCategorized() =
+    let sw = Stopwatch()
+    sw.Start()
+    makeCategorized() |> ignore
+    sw.Stop()
+    sw.Elapsed.TotalMilliseconds
 let makeStripped() =
     Preprocessor.preprocess (fun _ _ -> failwith "") fileName directory lines
     |> CommentStripper.stripComments
@@ -40,9 +50,16 @@ let meanAndStdev l =
     |> fun (s,ss,n) -> ((s/n),(ss/n)) |> fun (e,e2) -> (e,(sqrt (e2 - e * e)))
 let resultsTokenized = [ 0 .. 99 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
 let resultsStripped = [ 0 .. 99 ] |> List.map (fun _ -> timeStripped()) |> meanAndStdev
+let resultsCategorized = [ 0 .. 99 ] |> List.map (fun _ -> timeCategorized()) |> meanAndStdev
 
 // Master (Oliver's PC):
 // val resultsTokenized : float * float = (6.2361054, 1.924761209)
 // val resultsStripped : float * float = (0.4971996, 0.07256326729)
+
+// IrregularExpressions (Oliver's PC):
+// val resultsTokenized : float * float = (6.843914, 4.429226291)
+// val resultsStripped : float * float = (0.36916, 0.07727673389)
+// val resultsCategorized : float * float = (0.652632, 0.1008072883)
+
 
 
