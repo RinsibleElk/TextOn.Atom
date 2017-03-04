@@ -70,6 +70,20 @@ module.exports = class ComboboxView {
         this.selectNext();
         event.stopPropagation();
       },
+      'core:page-up': (event) => {
+        var i;
+        for (i = 0; i < 8; i++) {
+          this.selectPrevious();
+        }
+        event.stopPropagation();
+      },
+      'core:page-down': (event) => {
+        var i;
+        for (i = 0; i < 8; i++) {
+          this.selectNext();
+        }
+        event.stopPropagation();
+      },
       'core:move-to-top': (event) => {
         this.selectFirst();
         event.stopPropagation();
