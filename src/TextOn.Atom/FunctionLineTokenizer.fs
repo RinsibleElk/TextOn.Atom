@@ -6,12 +6,65 @@ open System.Text.RegularExpressions
 [<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a function definition and tokenize it.
 module internal FunctionLineTokenizer =
-    let private eatWhitespaceAtBeginning n (l:string) =
+    let private eatWhitespaceAtBeginning n e (l:string) =
         let mutable i = n
-        let e = l.Length - 1
         while i <= e && (Char.IsWhiteSpace(l.[i])) do
             i <- i + 1
         if i >= e then None else Some i
+
+    let private expectWord makeToken n e (l:string) =
+        let mutable i = n
+        while i <= e && (Char.IsLetterOrDigit(l.[i])) do
+            i <- i + 1
+        (i, makeToken (i - 1) (l.Substring(n, i - n)))
+ 
+    type private State =
+        | Root
+    
+    let private makeAtToken startLocation endLocation s =
+        {
+            TokenStartLocation = startLocation
+            TokenEndLocation = endLocation
+            Token =
+                (   match s with
+                    | "" -> Token.InvalidUnrecognised("@")
+                    | "seq" -> Token.Sequential
+                    | "choice" -> Token.Choice
+                    | "break" -> Token.Break
+                    | "var" -> Token.Var
+                    | "att" -> Token.Att
+                    | "func" -> Token.Func
+                    | _ -> Token.FunctionName(s))
+        }
+           
+    // Special characters depend on context.
+    // In condition: '(', ')', '&', '|', '=', '<', '%', '['; ']' changes context
+    // Start: '@', '{', '}'; anything else changes context
+    // In text: '\', '{', '|', '}', '$'; '[' changes context
+    let tokenize (line:string) =
+        let lastChar = line.Length - 1
+        let io = eatWhitespaceAtBeginning 0 lastChar line
+        if io.IsNone then failwith "Internal error" // Blank line filtered out already
+        let mutable i = io.Value
+        let mutable state = Root
+        let tokens = System.Collections.Generic.List<AttributedToken>()
+        let l = line.Length
+        while i < l do
+            match state with
+            | Root ->
+                match line.[i] with
+                | '{' ->
+                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = OpenCurly })
+                    i <- i + 1
+                | '}' ->
+                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = CloseCurly })
+                    i <- i + 1
+                | '@' ->
+                    expectWord (makeAtToken i) (i + 1) lastChar line
+                    |> fun (newi, token) ->
+                        i <- if newi = i then i + 1 else newi
+                        tokens.Add(token)
+        ()
 
     let private conditionMatches =
         [
@@ -123,9 +176,10 @@ module internal FunctionLineTokenizer =
     let private leadingWhitespaceRegex = Regex("^(\\s*)")
     /// Tokenize a single line of source that has been categorized to lie within a function definition.
     let tokenizeLine (line:string) =
+        let lastChar = line.Length - 1
         if line.StartsWith("@func") then
             let funcDefinitionToken = {TokenStartLocation = 1;TokenEndLocation = 5;Token = Func}
-            let nonWhitespaceOffset = eatWhitespaceAtBeginning 5 line
+            let nonWhitespaceOffset = eatWhitespaceAtBeginning 5 lastChar line
             if nonWhitespaceOffset.IsNone then
                 Seq.singleton funcDefinitionToken
             else
