@@ -3,9 +3,9 @@
 @func @stycke20160914_0
 {
   @choice {
-    {Letar|söker} du efter en {prisvärd|central|centralt belägen} biluthyrning i $MÄRKE?
+    {Letar|Söker} du efter en {prisvärd|central|centralt belägen} biluthyrning i $MÄRKE?
     Från vår centralt belägna biluthyrning i $MÄRKE har du nära till det mesta.
-    {Starta|påbörja} din resa från vår centralt belägna biluthyrning i $MÄRKE.
+    {Starta|Påbörja} din resa från vår centralt belägna biluthyrning i $MÄRKE.
     Att {starta|påbörja} resa på vår biluthyrning i $MÄRKE är ett smart val.
     Låt din resa {börja|starta} på vår biluthyrning i $MÄRKE.
   }
@@ -14,15 +14,15 @@
 @func @stycke20160914_1
 {
   @choice {
-    Vårt {uthyrningskontor|vårt kontor|kontoret} ett perfekt läge vid.. , härifrån av avståndet {kort|inte långt} till några av stadens mest kända {besöksmål|turistmål|attraktioner}.
-    {Uthyrningskontoret|vårt kontor|kontoret} har ett perfekt läge vid..på {kort avstånd från|nära} några av stadens mest kända {besöksmål|turistmål|attraktioner}.
+    Vårt {uthyrningskontor|vårt kontor|kontoret} ett perfekt läge vid.., härifrån av avståndet {kort|inte långt} till några av stadens mest kända {besöksmål|turistmål|attraktioner}.
+    {Uthyrningskontoret|Vårt kontor|Kontoret} har ett perfekt läge vid.. på {kort avstånd från|nära} några av stadens mest kända {besöksmål|turistmål|attraktioner}.
   }
 }
 
 @func @stycke20160914_2
 {
   @choice {
-    Härifrån ta du dig även {snabbt|enkelt} vidare ut på vägarna,,
+    Härifrån ta du dig även {snabbt|enkelt} vidare ut på vägarna.
     Det är även ett {bra|perfekt} utgångsläge för fortsatta resor i {regionen|området|angränsande städer}.
     Läget är även {utmärkt|perfekt} för fortsatta resor i {regionen|området|angränsande städer}.
   }
