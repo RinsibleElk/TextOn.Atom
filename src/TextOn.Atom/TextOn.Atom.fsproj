@@ -77,8 +77,6 @@
     <Compile Include="ConditionTokenizer.fs" />
     <Compile Include="FunctionLineTokenizer.fs" />
     <Compile Include="VariableOrAttributeLineTokenizer.fs" />
-    <Compile Include="VariableLineTokenizer.fs" />
-    <Compile Include="AttributeLineTokenizer.fs" />
     <Compile Include="Tokenizer.fs" />
     <Compile Include="ConditionParser.fs" />
     <Compile Include="FunctionDefinitionParser.fs" />

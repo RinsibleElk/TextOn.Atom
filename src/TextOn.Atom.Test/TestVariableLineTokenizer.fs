@@ -41,7 +41,7 @@ let ``Correctly formatted variable definition``() =
         ]
     let tokens =
         lines
-        |> Seq.map (fst >> VariableLineTokenizer.tokenizeLine >> List.ofSeq)
+        |> Seq.map (fst >> VariableOrAttributeLineTokenizer.tokenizeLine >> List.ofSeq)
     let expected =
         lines
         |> Seq.map snd
@@ -61,7 +61,7 @@ let ``Correctly formatted variable definition with funky characters``() =
         ]
     let tokens =
         lines
-        |> Seq.map (fst >> VariableLineTokenizer.tokenizeLine >> List.ofSeq)
+        |> Seq.map (fst >> VariableOrAttributeLineTokenizer.tokenizeLine)
     let expected =
         lines
         |> Seq.map snd
@@ -71,11 +71,11 @@ let ``Correctly formatted variable definition with funky characters``() =
 let ``Bad variable lines``() =
     let lines =
         [
-            ("    \"London", [{TokenStartLocation = 1;TokenEndLocation = 11;Token = InvalidUnrecognised "    \"London"}])
+            ("    \"London", [{TokenStartLocation = 5;TokenEndLocation = 11;Token = InvalidUnrecognised "\"London"}])
         ]
     let tokens =
         lines
-        |> Seq.map (fst >> VariableLineTokenizer.tokenizeLine >> List.ofSeq)
+        |> Seq.map (fst >> VariableOrAttributeLineTokenizer.tokenizeLine)
     let expected =
         lines
         |> Seq.map snd

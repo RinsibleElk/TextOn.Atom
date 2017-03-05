@@ -11,7 +11,7 @@ open TextOn.Atom
 let test lines =
     let received =
         lines
-        |> Seq.map (fst >> AttributeLineTokenizer.tokenizeLine >> List.ofSeq)
+        |> Seq.map (fst >> VariableOrAttributeLineTokenizer.tokenizeLine)
     let expected =
         lines
         |> Seq.map snd

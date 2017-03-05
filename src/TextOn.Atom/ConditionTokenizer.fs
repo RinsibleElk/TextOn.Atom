@@ -17,72 +17,74 @@ module internal ConditionTokenizer =
             else
                 match c with
                 | '=' ->
-                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = Equals })
+                    tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = Equals })
                     i <- i + 1
                 | '<' ->
                     if i = lastIndex then
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = lastIndex ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
                         i <- lastIndex + 1
                     else if line.[i + 1] <> '>' then
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = lastIndex ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
                         i <- lastIndex + 1
                     else
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i + 1 ; Token = NotEquals })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 + 1 ; Token = NotEquals })
+                        i <- i + 2
+                | '&' ->
+                    if i = lastIndex then
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        i <- lastIndex + 1
+                    else if line.[i + 1] <> '&' then
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        i <- lastIndex + 1
+                    else
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 + 1 ; Token = And })
+                        i <- i + 2
+                | '|' ->
+                    if i = lastIndex then
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        i <- lastIndex + 1
+                    else if line.[i + 1] <> '|' then
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        i <- lastIndex + 1
+                    else
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 + 1 ; Token = Or })
                         i <- i + 2
                 | '[' ->
-                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = OpenBrace })
+                    tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = OpenBrace })
                     i <- i + 1
                 | ']' ->
-                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = CloseBrace })
+                    tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = CloseBrace })
                     i <- i + 1
                 | '(' ->
-                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = OpenBracket })
+                    tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = OpenBracket })
                     i <- i + 1
                 | ')' ->
-                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = CloseBracket })
+                    tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = CloseBracket })
                     i <- i + 1
                 | '%' ->
                     let len = IdentifierTokenizer.findLengthOfWord (i + 1) lastIndex line
                     if len = 0 then
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = InvalidUnrecognised("%") })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = InvalidUnrecognised("%") })
                         i <- i + 1
                     else
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i + len ; Token = AttributeName(line.Substring(i + 1, len)) })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 + len ; Token = AttributeName(line.Substring(i + 1, len)) })
                         i <- i + len + 1
                 | '$' ->
                     let len = IdentifierTokenizer.findLengthOfWord (i + 1) lastIndex line
                     if len = 0 then
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i ; Token = InvalidUnrecognised("%") })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 ; Token = InvalidUnrecognised("$") })
                         i <- i + 1
                     else
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = i + len ; Token = VariableName(line.Substring(i + 1, len)) })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = i + 1 + len ; Token = VariableName(line.Substring(i + 1, len)) })
                         i <- i + len + 1
                 | '"' ->
-                    let sb = StringBuilder()
-                    let startIndex = i
-                    i <- i + 1
-                    while i <= lastIndex && line.[i] <> '"' do
-                        if line.[i] = '\\' then
-                            if i = lastIndex then
-                                // Will add unrecognised at end.
-                                i <- i + 1
-                            else
-                                sb.Append(line.[i + 1]) |> ignore
-                                i <- i + 2
-                        else
-                            sb.Append(line.[i]) |> ignore
-                            i <- i + 1
-                    if i > lastIndex then
-                        tokens.Add({ TokenStartLocation = startIndex ; TokenEndLocation = lastIndex ; Token = InvalidUnrecognised(line.Substring(startIndex, lastIndex - startIndex)) })
-                    else
-                        tokens.Add({ TokenStartLocation = startIndex ; TokenEndLocation = i ; Token = QuotedString(sb.ToString()) })
-                        i <- i + 1
+                    i <- IdentifierTokenizer.tokenizeQuotedString tokens i lastIndex line
                 | '/' ->
                     if i = lastIndex || line.[i + 1] <> '/' then
-                        tokens.Add({ TokenStartLocation = i ; TokenEndLocation = lastIndex ; Token = InvalidUnrecognised(line.Substring(i)) })
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
                     // Comments don't need tokenizing.
                     i <- lastIndex + 1
                 | _ ->
-                    tokens.Add({ TokenStartLocation = i ; TokenEndLocation = lastIndex ; Token = InvalidUnrecognised(line.Substring(i)) })
+                    tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
                     i <- lastIndex + 1
         tokens |> Seq.toList

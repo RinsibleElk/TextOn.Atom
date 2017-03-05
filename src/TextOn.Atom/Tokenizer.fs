@@ -30,7 +30,7 @@ module Tokenizer =
                             return
                                 {
                                     LineNumber = line.CurrentFileLineNumber
-                                    Tokens = match line.Contents with | PreprocessorLine line -> VariableLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized variable definition %A" line.Contents
+                                    Tokens = match line.Contents with | PreprocessorLine line -> VariableOrAttributeLineTokenizer.tokenizeLine line | _ -> failwithf "Unexpected line contents for categorized variable definition %A" line.Contents
                                 } })
                 |> Async.Parallel
                 |> Async.RunSynchronously
@@ -43,7 +43,7 @@ module Tokenizer =
                             return
                                 {
                                     LineNumber = line.CurrentFileLineNumber
-                                    Tokens = match line.Contents with | PreprocessorLine line -> AttributeLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized attribute definition %A" line.Contents
+                                    Tokens = match line.Contents with | PreprocessorLine line -> VariableOrAttributeLineTokenizer.tokenizeLine line | _ -> failwithf "Unexpected line contents for categorized attribute definition %A" line.Contents
                                 } })
                 |> Async.Parallel
                 |> Async.RunSynchronously
