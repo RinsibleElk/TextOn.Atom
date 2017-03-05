@@ -4,7 +4,6 @@
 open TextOn.Atom
 open System
 open System.IO
-open System.Text.RegularExpressions
 
 // Jonas: here's the pipeline so far. I want to test this with more complex examples like the original ones, once we've converted.
 let file =

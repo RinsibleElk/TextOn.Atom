@@ -73,9 +73,10 @@
     <Compile Include="CommentStripper.fs" />
     <Compile Include="LineCategorizer.fs" />
     <Compile Include="Tokens.fs" />
+    <Compile Include="IdentifierTokenizer.fs" />
+    <Compile Include="ConditionTokenizer.fs" />
     <Compile Include="FunctionLineTokenizer.fs" />
-    <Compile Include="VariableLineTokenizer.fs" />
-    <Compile Include="AttributeLineTokenizer.fs" />
+    <Compile Include="VariableOrAttributeLineTokenizer.fs" />
     <Compile Include="Tokenizer.fs" />
     <Compile Include="ConditionParser.fs" />
     <Compile Include="FunctionDefinitionParser.fs" />

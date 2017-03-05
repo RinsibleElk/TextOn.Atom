@@ -2,7 +2,6 @@
 open TextOn.Atom
 open System
 open System.IO
-open System.Text.RegularExpressions
 
 type Message<'a,'b> =
     | Quit

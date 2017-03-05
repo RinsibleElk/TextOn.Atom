@@ -58,3 +58,31 @@ let ``Line ending with backslash``() =
             }
         ]
     test <@ expected = result @>
+
+[<Test>]
+let ``Variable at start of a sentence``() =
+    let result = FunctionLineTokenizer.tokenizeLine @"  $City is in $Country.  "
+    let expected =
+        [
+            {
+                TokenStartLocation = 3
+                TokenEndLocation = 7
+                Token = VariableName "City"
+            }
+            {
+                TokenStartLocation = 8
+                TokenEndLocation = 14
+                Token = RawText @" is in "
+            }
+            {
+                TokenStartLocation = 15
+                TokenEndLocation = 22
+                Token = VariableName "Country"
+            }
+            {
+                TokenStartLocation = 23
+                TokenEndLocation = 23
+                Token = RawText "."
+            }
+        ]
+    test <@ expected = result @>

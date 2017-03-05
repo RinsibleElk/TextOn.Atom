@@ -220,7 +220,7 @@ let rec compareTemplates t e =
 
 [<Test>]
 let ``End to end test``() =
-    let funcLines = funcText.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray
+    let funcLines = funcText.Split([|'\r';'\n'|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray
     let compiled =
         funcLines
         |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
@@ -249,7 +249,7 @@ let ``End to end test``() =
                     compareTemplates t.Tree e.Tree)
 
 let compileLines (lines:string) =
-    lines.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
+    lines.Split([|'\r';'\n'|], StringSplitOptions.RemoveEmptyEntries)
     |> List.ofArray
     |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
     |> CommentStripper.stripComments

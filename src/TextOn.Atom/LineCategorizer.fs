@@ -1,7 +1,6 @@
 ﻿namespace TextOn.Atom
 
 open System
-open System.Text.RegularExpressions
 
 /// The output for the LineCategorizer.
 type Category =
@@ -23,9 +22,9 @@ type CategorizedLines = {
 [<RequireQualifiedAccess>]
 /// Maps groups of preprocessed lines into categories.
 module LineCategorizer =
-    let private funcDefinitionRegex = Regex("^@func\s+")
-    let private varDefinitionRegex = Regex("^@var\s+")
-    let private attDefinitionRegex = Regex("^@att\s+")
+    let private funcDefinition = "@func"
+    let private varDefinition = "@var"
+    let private attDefinition = "@att"
     type private State =
         | Root of int
         | Context of Category * int * string * int * int * PreprocessedSourceLine list
@@ -76,8 +75,7 @@ module LineCategorizer =
                                         Lines = List.singleton line } ]))
                 | PreprocessorLine(text) ->
                     // Whatever state we're in, we're looking for one of the root definitions above.
-                    let funcMatch = funcDefinitionRegex.Match(text)
-                    if (funcMatch.Success) then
+                    if (text.StartsWith(funcDefinition)) then
                         match state with
                         | Root(nextIndex) ->
                             (Context(CategorizedFuncDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
@@ -91,14 +89,45 @@ module LineCategorizer =
                                             StartLine = startLine
                                             EndLine = endLine
                                             Lines = preprocessedSourceLines }))
+                    else if text.StartsWith(varDefinition) then
+                        match state with
+                        | Root(nextIndex) ->
+                            (Context(CategorizedVarDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
+                        | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
+                            (Context(CategorizedVarDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line),
+                                Some
+                                    (Seq.singleton
+                                        {   Category = category
+                                            Index = nextIndex
+                                            File = file
+                                            StartLine = startLine
+                                            EndLine = endLine
+                                            Lines = preprocessedSourceLines }))
+                    else if text.StartsWith(attDefinition) then
+                        match state with
+                        | Root(nextIndex) ->
+                            (Context(CategorizedAttDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
+                        | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
+                            (Context(CategorizedAttDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line),
+                                Some
+                                    (Seq.singleton
+                                        {   Category = category
+                                            Index = nextIndex
+                                            File = file
+                                            StartLine = startLine
+                                            EndLine = endLine
+                                            Lines = preprocessedSourceLines }))
                     else
-                        let varMatch = varDefinitionRegex.Match(text)
-                        if (varMatch.Success) then
-                            match state with
-                            | Root(nextIndex) ->
-                                (Context(CategorizedVarDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
-                            | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
-                                (Context(CategorizedVarDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line),
+                        // Root : start CategorizationError region
+                        // Other : if file has changed, then output the previous and start a new CategorizationError region, else continue the current region
+                        match state with
+                        | Root(nextIndex) ->
+                            (Context(CategorizationError, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
+                        | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
+                            if file = line.CurrentFile then
+                                (Context(category, nextIndex, file, startLine, line.CurrentFileLineNumber, List.append preprocessedSourceLines [line]), None)
+                            else
+                                (Context(CategorizationError, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line),
                                     Some
                                         (Seq.singleton
                                             {   Category = category
@@ -107,41 +136,6 @@ module LineCategorizer =
                                                 StartLine = startLine
                                                 EndLine = endLine
                                                 Lines = preprocessedSourceLines }))
-                        else
-                            let attMatch = attDefinitionRegex.Match(text)
-                            if (attMatch.Success) then
-                                match state with
-                                | Root(nextIndex) ->
-                                    (Context(CategorizedAttDefinition, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
-                                | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
-                                    (Context(CategorizedAttDefinition, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line),
-                                        Some
-                                            (Seq.singleton
-                                                {   Category = category
-                                                    Index = nextIndex
-                                                    File = file
-                                                    StartLine = startLine
-                                                    EndLine = endLine
-                                                    Lines = preprocessedSourceLines }))
-                            else
-                                // Root : start CategorizationError region
-                                // Other : if file has changed, then output the previous and start a new CategorizationError region, else continue the current region
-                                match state with
-                                | Root(nextIndex) ->
-                                    (Context(CategorizationError, nextIndex, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line), None)
-                                | Context(category, nextIndex, file, startLine, endLine, preprocessedSourceLines) ->
-                                    if file = line.CurrentFile then
-                                        (Context(category, nextIndex, file, startLine, line.CurrentFileLineNumber, List.append preprocessedSourceLines [line]), None)
-                                    else
-                                        (Context(CategorizationError, nextIndex + 1, line.CurrentFile, line.CurrentFileLineNumber, line.CurrentFileLineNumber, List.singleton line),
-                                            Some
-                                                (Seq.singleton
-                                                    {   Category = category
-                                                        Index = nextIndex
-                                                        File = file
-                                                        StartLine = startLine
-                                                        EndLine = endLine
-                                                        Lines = preprocessedSourceLines }))
             seq {
                 if output |> Option.isSome then yield! output.Value
                 yield! (categorizeInner nextState remaining) }

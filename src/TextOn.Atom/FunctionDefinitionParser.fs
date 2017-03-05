@@ -1,7 +1,6 @@
 ﻿namespace TextOn.Atom
 
 open System
-open System.Text.RegularExpressions
 
 type ParsedVariableName = string
 type ParsedFunctionName = string

@@ -27,7 +27,7 @@ let ``Test choice parsing``() =
     {för en längre eller kortare tid|för en längre eller kortare period|för en längre eller kortare tidsperiod|för en lång eller kort tid|för en längre eller kortare tid|för en lång eller kort tidsperiod}.
     }
 }"
-        |> fun s -> s.Split([|'\n'|], StringSplitOptions.RemoveEmptyEntries)
+        |> fun s -> s.Split([|'\r';'\n'|], StringSplitOptions.RemoveEmptyEntries)
         |> List.ofArray
         |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
         |> CommentStripper.stripComments
