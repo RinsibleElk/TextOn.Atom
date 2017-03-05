@@ -55,18 +55,23 @@ let meanAndStdev l =
     l
     |> List.fold (fun (s,ss,n) x -> (s + x, ss + x * x, n + 1.0)) (0.0,0.0,0.0)
     |> fun (s,ss,n) -> ((s/n),(ss/n)) |> fun (e,e2) -> (e,(sqrt (e2 - e * e)))
-let resultsTokenized = [ 0 .. 999 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
-let resultsStripped = [ 0 .. 999 ] |> List.map (fun _ -> timeStripped()) |> meanAndStdev
-let resultsCategorized = [ 0 .. 999 ] |> List.map (fun _ -> timeCategorized()) |> meanAndStdev
+let resultsTokenized = [ 0 .. 9999 ] |> List.map (fun _ -> timeTokenized()) |> meanAndStdev
+let resultsStripped = [ 0 .. 9999 ] |> List.map (fun _ -> timeStripped()) |> meanAndStdev
+let resultsCategorized = [ 0 .. 9999 ] |> List.map (fun _ -> timeCategorized()) |> meanAndStdev
 
 // Master (Oliver's PC):
 // val resultsTokenized : float * float = (6.2361054, 1.924761209)
 // val resultsStripped : float * float = (0.4971996, 0.07256326729)
 
 // IrregularExpressions (Oliver's PC):
+// Before:
 // val resultsTokenized : float * float = (6.843914, 4.429226291)
 // val resultsStripped : float * float = (0.36916, 0.07727673389)
 // val resultsCategorized : float * float = (0.652632, 0.1008072883)
+// After:
+// val resultsTokenized : float * float = (2.77200399, 0.7997408253)
+// val resultsStripped : float * float = (0.48383633, 0.09888293877)
+// val resultsCategorized : float * float = (0.77728132, 0.1367111263)
 
 // IrregularExpressions (Oliver's Mac):
 // val resultsTokenized : float * float = (53.326875, 16.15775433) - yikes
