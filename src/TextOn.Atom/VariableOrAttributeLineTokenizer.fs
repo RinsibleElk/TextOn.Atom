@@ -19,28 +19,18 @@ module internal VariableOrAttributeLineTokenizer =
                 | '[' ->
                     tokens.AddRange(ConditionTokenizer.tokenizeCondition i lastIndex line)
                     i <- lastIndex + 1
+                | '/' ->
+                    if i = lastIndex || line.[i + 1] <> '/' then
+                        tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
+                    // Comments don't need tokenizing.
+                    i <- lastIndex + 1
                 | '=' ->
                     tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = (i + 1) ; Token = Equals })
                     i <- i + 1
                 | '"' ->
                     i <- IdentifierTokenizer.tokenizeQuotedString tokens i lastIndex line
                 | '@' ->
-                    let len = IdentifierTokenizer.findLengthOfWord (i + 1) lastIndex line
-                    if len = 0 then
-                        tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = (i + 1) ; Token = InvalidUnrecognised("@") })
-                        i <- i + 1
-                    else
-                        let name = line.Substring(i + 1, len)
-                        match name with
-                        | "var" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Var })
-                        | "att" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Att })
-                        | "func" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Func })
-                        | "free" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Free })
-                        | "break" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Break })
-                        | "choice" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Choice })
-                        | "seq" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Sequential })
-                        | _ -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = InvalidUnrecognised("@" + name) })
-                        i <- i + len + 1
+                    i <- IdentifierTokenizer.tokenizeFunctionName tokens i lastIndex line
                 | '$' ->
                     let len = IdentifierTokenizer.findLengthOfWord (i + 1) lastIndex line
                     if len = 0 then

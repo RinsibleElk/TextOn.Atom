@@ -17,7 +17,7 @@ module Tokenizer =
                             return
                                 {
                                     LineNumber = line.CurrentFileLineNumber
-                                    Tokens = match line.Contents with | PreprocessorLine line -> FunctionLineTokenizer.tokenizeLine line |> Seq.toList | _ -> failwithf "Unexpected line contents for categorized func definition %A" line.Contents
+                                    Tokens = match line.Contents with | PreprocessorLine line -> FunctionLineTokenizer.tokenizeLine line | _ -> failwithf "Unexpected line contents for categorized func definition %A" line.Contents
                                 } })
                 |> Async.Parallel
                 |> Async.RunSynchronously
