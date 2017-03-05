@@ -14,7 +14,7 @@ type GeneratorServer(file, name) =
     let mutable currentTemplate = None
     let mutable lastResult = None
     let mutable attributeValues = Map.empty
-    let mutable variableValues = Map.empty
+    let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
     member __.File = file |> System.IO.FileInfo
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =
@@ -83,8 +83,14 @@ type GeneratorServer(file, name) =
                                 }
                             else
                                 let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let value = variableValuesByIndex |> Map.tryFind var.Index
+                                let (currentValue, userChoseThisValue) = variableValues |> Map.tryFind var.Name |> fun o -> if o.IsSome then (Some (o.Value |> fst), o.Value |> snd) else (None, false)
+                                let value =
+                                    if (not userChoseThisValue) then
+                                        variableValues <- variableValues |> Map.remove var.Name
+                                        None
+                                    else
+                                        currentValue
+                                let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,(v,_)) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
                                 let suggestions =
                                     if haveSeenEmpty then
                                         [||]
@@ -92,6 +98,7 @@ type GeneratorServer(file, name) =
                                         var.Values
                                         |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition)
                                         |> Array.map (fun a -> a.Value)
+                                // We remove the choice if it is invalid, or if it was system generated.
                                 let value =
                                     if value.IsSome && (not var.PermitsFreeValue) && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
                                         variableValues <- variableValues |> Map.remove var.Name
@@ -100,7 +107,7 @@ type GeneratorServer(file, name) =
                                         value
                                 let newValue, newSuggestions =
                                     if value.IsNone && suggestions.Length > 0 then
-                                        variableValues <- variableValues |> Map.add var.Name suggestions.[0]
+                                        variableValues <- variableValues |> Map.add var.Name (suggestions.[0], false) // I chose this one.
                                         suggestions.[0], suggestions
                                     else if value.IsSome then
                                         // Put the current value at the front.
@@ -133,7 +140,7 @@ type GeneratorServer(file, name) =
         }
     member __.SetValue ty name value =
         if ty = "Variable" then
-            variableValues <- variableValues |> Map.add name value
+            variableValues <- variableValues |> Map.add name (value, true) // The user chose this one.
         else
             attributeValues <- attributeValues |> Map.add name value
     member __.Generate (config:GeneratorConfiguration) =
@@ -143,7 +150,7 @@ type GeneratorServer(file, name) =
                             NumBlankLinesBetweenParagraphs = config.NumBlankLinesBetweenParagraphs
                             LineEnding = (if config.WindowsLineEndings then CRLF else LF) }
                 Attributes = currentTemplate.Value.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Name })
-                Variables = currentTemplate.Value.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name })
+                Variables = currentTemplate.Value.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name |> fst })
                 Function = Some name }
         match (Generator.generate generatorInput currentTemplate.Value) with
         | GeneratorError _ -> lastResult <- None
