@@ -13,50 +13,10 @@ module internal FunctionLineTokenizer =
             i <- i + 1
         if i >= e then None else Some i
 
-    let private makeAtToken startLocation endLocation s =
-        {
-            TokenStartLocation = startLocation
-            TokenEndLocation = endLocation
-            Token =
-                (   match s with
-                    | "" -> Token.InvalidUnrecognised("@")
-                    | "seq" -> Token.Sequential
-                    | "choice" -> Token.Choice
-                    | "break" -> Token.Break
-                    | "var" -> Token.Var
-                    | "att" -> Token.Att
-                    | "func" -> Token.Func
-                    | _ -> Token.FunctionName(s))
-        }
-
-    let private makeDollarToken startLocation endLocation s =
-        {
-            TokenStartLocation = startLocation
-            TokenEndLocation = endLocation
-            Token =
-                (   match s with
-                    | "" -> Token.InvalidUnrecognised("$")
-                    | _ -> Token.VariableName(s))
-        }
-
-    let private expectWord makeToken n e (l:string) =
-        let mutable i = n
-        while i <= e && (Char.IsLetterOrDigit(l.[i]) || l.[i] = '_') do
-            i <- i + 1
-        (i, makeToken (i - 1) (l.Substring(n, i - n)))
-
-    let private expectRawText tokens makeToken n e (l:string) =
-        let mutable i = n
-        let sb = StringBuilder()
-        while i <= e do
-            let c = l.[i]
-            match c with
-            | _ ->
-                sb.Append(c) |> ignore
-                i <- i + 1
+    
 
     // Special characters depend on context.
-    // In condition: '(', ')', '&', '|', '=', '<', '%', '['; ']' changes context
+    // In condition: '(', ')', '&', '|', '=', '<', '>', '%', '['; ']' changes context
     // Start: '@', '{', '}'; anything else changes context
     // In text: '\', '{', '|', '}', '$'; '[' changes context
     let tokenize (line:string) =

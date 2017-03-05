@@ -39,7 +39,7 @@ module.exports =
         NumBlankLinesBetweenParagraphs:
           title: 'Number of blank lines between paragraphs'
           type: 'number'
-          enum: [1,2]
+          enum: [0,1]
           default: 1
         WindowsLineEndings:
           title: 'Use Windows line endings?'
