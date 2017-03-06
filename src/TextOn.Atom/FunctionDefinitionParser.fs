@@ -19,7 +19,7 @@ type ParsedNode =
 
 type ParsedNodeWithDependencies =
     {
-        Dependencies : ParsedAttributeOrVariable[]
+        Dependencies : ParsedAttributeOrVariableOrFunction[]
         Node : ParsedNode
     }
 
@@ -35,7 +35,7 @@ type ParsedFunctionDefinition = {
     Index : int
     HasErrors : bool
     Name : string
-    Dependencies : ParsedAttributeOrVariable[]
+    Dependencies : ParsedAttributeOrVariableOrFunction[]
     Tree : ParsedNode }
 
 [<RequireQualifiedAccess>]
@@ -135,7 +135,7 @@ module internal FunctionDefinitionParser =
 
     let private makeParsedFunctionInvocation lineNumber startLocation endLocation functionName =
         {
-            Dependencies = [||]
+            Dependencies = [|ParsedFunctionRef functionName|]
             Node = ParsedFunctionInvocation(lineNumber, startLocation, endLocation, functionName)
         }
 
@@ -152,9 +152,18 @@ module internal FunctionDefinitionParser =
             Node = ParseErrors(errors)
         }
 
+    let private mapToFunctionRef a =
+        match a with
+        | ParsedAttributeName a -> ParsedAttributeRef a
+        | ParsedVariableName v -> ParsedVariableRef v
+
     let private makeParsedMultiple makeNode (nodes:(ParsedNodeWithDependencies * ConditionParseResults)[]) : ParsedNodeWithDependencies =
         {
-            Dependencies = nodes |> Seq.collect (fun (n,c) -> Set.union (n.Dependencies |> Set.ofArray) (c.Dependencies |> Set.ofArray)) |> Set.ofSeq |> Set.toArray
+            Dependencies =
+                nodes
+                |> Seq.collect (fun (n,c) -> Set.union (n.Dependencies |> Set.ofArray) (c.Dependencies |> Array.map mapToFunctionRef |> Set.ofArray))
+                |> Set.ofSeq
+                |> Set.toArray
             Node = nodes |> Array.map (fun (n,c) -> n.Node, c.Condition) |> makeNode
         }
 
@@ -170,7 +179,7 @@ module internal FunctionDefinitionParser =
     let private makeParsedSentence lineNumber sentenceNode =
         {
             Node = ParsedSentence(lineNumber, sentenceNode.SentenceNode)
-            Dependencies = sentenceNode.Dependencies
+            Dependencies = sentenceNode.Dependencies |> Array.map mapToFunctionRef
         }
 
     /// Name of the function and closing bracket and stuff already dealt with.

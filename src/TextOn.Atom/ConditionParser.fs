@@ -6,6 +6,11 @@ type ParsedAttributeOrVariable =
     | ParsedAttributeName of string
     | ParsedVariableName of string
 
+type ParsedAttributeOrVariableOrFunction =
+    | ParsedAttributeRef of string
+    | ParsedVariableRef of string
+    | ParsedFunctionRef of string
+
 type ParseError = {
     File : string
     LineNumber : int

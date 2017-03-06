@@ -303,8 +303,8 @@ module Compiler =
                             match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
                             | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                             | Result r ->
-                                let directAttributeDependencies = (f.Dependencies |> Array.choose (function | ParsedAttributeName n -> attributeDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
-                                let directVariableDependencies = (f.Dependencies |> Array.choose (function | ParsedVariableName n -> variableDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                                let directAttributeDependencies = f.Dependencies |> Array.collect (function | ParsedAttributeRef n -> attributeDefinitions |> Map.tryFind n |> Option.map (fun a -> [|a.Index|]) |> defaultArg <| [||] | ParsedFunctionRef n -> functionDefinitions.[n].AttributeDependencies | _ -> [||])
+                                let directVariableDependencies = f.Dependencies |> Array.collect (function | ParsedVariableRef n -> variableDefinitions |> Map.tryFind n |> Option.map (fun v -> [|v.Index|]) |> defaultArg <| [||] | ParsedFunctionRef n -> functionDefinitions.[n].VariableDependencies | _ -> [||])
                                 let attributesByIndex = attributeDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let variablesByIndex = variableDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let fn = {
