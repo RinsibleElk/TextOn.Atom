@@ -65,10 +65,13 @@ module.exports = new class # This only needs to be a class to bind getSuggestion
     else
       return []
     p.then((res) =>
-      scoredItems = []
-      for item in res
-        score = fuzzaldrin.score(item.text, prefix)
-        if score > 0
-          scoredItems.push({item, score})
-      scoredItems.sort((a, b) => b.score - a.score)
-      scoredItems.map((res) => mapResult(res.item)))
+      if prefix.length is 0
+        res.map((r) => mapResult(r))
+      else
+        scoredItems = []
+        for item in res
+          score = fuzzaldrin.score(item.text, prefix)
+          if score > 0
+            scoredItems.push({item, score})
+        scoredItems.sort((a, b) => b.score - a.score)
+        scoredItems.map((res) => mapResult(res.item)))
