@@ -28,7 +28,6 @@
     "Canada"
     "U.S.A."
     "Saudi Arabia"
-    "Hello"
   }
 
 @var @free $City = "Which city are you writing about?"
