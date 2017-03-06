@@ -36,6 +36,7 @@ module CommandResponse =
                     Data = errors
                            |> Array.filter (function | ParserError(e) -> e.File = file | _ -> true)
                            |> Array.map TextOnErrorInfo.OfCompilationError }
+    let suggestions (serialize : Serializer) (s: Suggestion[]) = serialize { Kind = "suggestion"; Data = s }
     let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = [|s|] }
     let generatorSetup (serialize : Serializer) (generatorData:GeneratorData) =
         serialize { Kind = "generatorSetup" ; Data = [|generatorData|] }

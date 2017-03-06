@@ -2,9 +2,11 @@
 
 open System
 open System.IO
+open System.Collections.Concurrent
 
 type Commands (serialize : Serializer) =
-    let fileLinesMap = System.Collections.Concurrent.ConcurrentDictionary<string, string list>()
+    let fileLinesMap = ConcurrentDictionary<string, string list>()
+    let fileTemplateMap = ConcurrentDictionary<string, CompiledTemplate>()
     //TODO: Make thread-safe.
     let mutable generator = None
     let add fileName directory lines =
@@ -27,6 +29,9 @@ type Commands (serialize : Serializer) =
             let tokens = groups |> List.map Tokenizer.tokenize
             let source = tokens |> List.map Parser.parse
             let output = Compiler.compile source
+            match output with
+            | CompilationSuccess template -> fileTemplateMap.[fileName] <- template
+            | _ -> ()
             return Success output }
     let parse' fileName directory lines =
         async {
@@ -42,6 +47,18 @@ type Commands (serialize : Serializer) =
                     | _ ->
                         let errors = [||]
                         [ CommandResponse.errors serialize (errors, fileName) ] }
+
+    let keywords =
+        [|
+            ("var",     "Define a new variable")
+            ("att",     "Define a new attribute")
+            ("func",    "Define a new function")
+            ("free",    "Allow a variable to take any user value")
+            ("break",   "Insert a paragraph break")
+            ("choice",  "Define a new random choice")
+            ("seq",     "Define a new sequence of sentences")
+        |]
+        |> Array.map (fun (x,d) -> { text = x ; ``type`` = "keyword" ; description = d } : DTO.DTO.Suggestion)
 
     let doGenerateStart fileName directory lines line = async {
         add fileName directory lines
@@ -119,6 +136,24 @@ type Commands (serialize : Serializer) =
                 | _ -> return []
             else return []
         else return [] }
+
+    member __.GetCompletions fileName ty = async {
+        let template = fileTemplateMap.TryFind(fileName)
+        if template.IsNone then
+            return [ CommandResponse.suggestions serialize [||] ]
+        else
+            let template = template.Value
+            match ty with
+            | "Function" ->
+                // We add the keywords to this list.
+                let functions = template.Functions |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)
+                return [ CommandResponse.suggestions serialize (Array.append functions keywords) ]
+            | "Variable" ->
+                return [ CommandResponse.suggestions serialize (template.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = "Variable $" + x.Name })) ]
+            | "Attribute" ->
+                return [ CommandResponse.suggestions serialize (template.Attributes |> Array.map (fun x -> { text = x.Name ; ``type`` = "attribute" ; description = "Attribute %" + x.Name })) ]
+            | _ ->
+                return [ CommandResponse.error serialize "Unexpected type" ] }
 
     member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo

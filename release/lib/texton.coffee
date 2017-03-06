@@ -15,6 +15,8 @@ module.exports =
     textOnCore.kill()
   provideErrors: ->
     return require('./texton-linter')
+  provideCompletions: ->
+    return require('./texton-autocomplete')
   config:
     UseLinter:
       type: 'boolean'

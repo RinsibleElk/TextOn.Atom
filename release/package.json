@@ -23,6 +23,12 @@
       "versions": {
         "1.0.0": "provideErrors"
       }
+    },
+    "autocomplete.provider": {
+      "description": "A TextOn autocomplete-plus provider.",
+      "versions": {
+        "2.0.0": "provideCompletions"
+      }
     }
   }
 }
