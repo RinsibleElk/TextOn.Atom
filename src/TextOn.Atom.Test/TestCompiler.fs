@@ -632,3 +632,127 @@ let ``Test variable dependency chain``() =
                                                     |]), True)
                                     |] } |] }
     test <@ result = expected @>
+
+[<Test>]
+let ``Test function dependency chain with variables``() =
+    let text = "@var $Country = \"Which country are you writing about?\"
+  {
+    \"U.K.\"
+  }
+@var $City = \"Which city are you writing about?\"
+  {
+    \"London\" [$Country = \"U.K.\"]
+  }
+@func @inner {
+  $City
+}
+@func @outer {
+  @inner
+}"
+    let result = text |> compileLines
+    let expected =
+        CompilationSuccess
+            {   Attributes = [||];
+                Variables =
+                    [|{Name = "Country";
+                       Index = 0;
+                       File = fullExampleFile;
+                       StartLine = 1;
+                       EndLine = 4;
+                       PermitsFreeValue = false;
+                       Text = "Which country are you writing about?";
+                       AttributeDependencies = [||];
+                       VariableDependencies = [||];
+                       Values = [|{Value = "U.K.";
+                                   Condition = VarTrue;}|];};
+                      {Name = "City";
+                       Index = 1;
+                       File = fullExampleFile
+                       StartLine = 5;
+                       EndLine = 8;
+                       PermitsFreeValue = false;
+                       Text = "Which city are you writing about?";
+                       AttributeDependencies = [||];
+                       VariableDependencies = [|0|];
+                       Values = [|{Value = "London";
+                                   Condition = VarAreEqual (Variable 0,"U.K.");}|];}|];
+                Functions =
+                    [|{Name = "inner";
+                       Index = 2;
+                       File = fullExampleFile
+                       StartLine = 9;
+                       EndLine = 11;
+                       AttributeDependencies = [||];
+                       VariableDependencies = [|0; 1|];
+                       Tree =
+                        Seq
+                          [|(Sentence (fullExampleFile, 10, VariableValue 1), True)|];};
+                      {Name = "outer";
+                       Index = 3;
+                       File = fullExampleFile
+                       StartLine = 12;
+                       EndLine = 14;
+                       AttributeDependencies = [||];
+                       VariableDependencies = [|0; 1|];
+                       Tree = Seq [|(Function 2, True)|];}|];}
+    test <@ result = expected @>
+ 
+[<Test>]
+let ``Test function dependency chain with attributes``() =
+     let text = "@att %Country = \"Which country are you writing about?\"
+   {
+     \"U.K.\"
+   }
+@att %City = \"Which city are you writing about?\"
+   {
+     \"London\" [%Country = \"U.K.\"]
+   }
+@func @inner {
+   Some text. [%City = \"London\"]
+}
+@func @outer {
+   @inner
+}"
+     let result = text |> compileLines
+     let expected =
+        CompilationSuccess
+            {   Attributes =
+                    [|{Name = "Country";
+                       Text = "Which country are you writing about?";
+                       Index = 0;
+                       File = fullExampleFile;
+                       StartLine = 1;
+                       EndLine = 4;
+                       AttributeDependencies = [||];
+                       Values = [|{Value = "U.K.";
+                                   Condition = True;}|];};
+                      {Name = "City";
+                       Text = "Which city are you writing about?";
+                       Index = 1;
+                       File = fullExampleFile;
+                       StartLine = 5;
+                       EndLine = 8;
+                       AttributeDependencies = [|0|];
+                       Values = [|{Value = "London";
+                                   Condition = AreEqual (0,"U.K.");}|];}|];
+                Variables = [||];
+                Functions =
+                    [|{Name = "inner";
+                       Index = 2;
+                       File = fullExampleFile;
+                       StartLine = 9;
+                       EndLine = 11;
+                       AttributeDependencies = [|0; 1|];
+                       VariableDependencies = [||];
+                       Tree =
+                        Seq
+                          [|(Sentence (fullExampleFile, 10, SimpleText "Some text."),
+                             AreEqual (1,"London"))|];}; {Name = "outer";
+                                                          Index = 3;
+                                                          File = fullExampleFile;
+                                                          StartLine = 12;
+                                                          EndLine = 14;
+                                                          AttributeDependencies = [|0; 1|];
+                                                          VariableDependencies = [||];
+                                                          Tree = Seq [|(Function 2, True)|];}|];}
+     test <@ result = expected @>
