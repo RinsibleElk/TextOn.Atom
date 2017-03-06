@@ -36,16 +36,29 @@ module.exports = new class # This only needs to be a class to bind getSuggestion
       data =
         fileName: textEditor.getPath()
         type: 'Function'
+        line: line
+        column: col - 1
       p = textOnCore.send("autocomplete", "suggestion", data)
     else if c is '%'
       data =
         fileName: textEditor.getPath()
         type: 'Attribute'
+        line: line
+        column: col - 1
       p = textOnCore.send("autocomplete", "suggestion", data)
     else if c is '$'
       data =
         fileName: textEditor.getPath()
         type: 'Variable'
+        line: line
+        column: col - 1
+      p = textOnCore.send("autocomplete", "suggestion", data)
+    else if c is '"'
+      data =
+        fileName: textEditor.getPath()
+        type: 'QuotedString'
+        line: line
+        column: col - 1
       p = textOnCore.send("autocomplete", "suggestion", data)
     else
       return []

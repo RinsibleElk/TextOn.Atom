@@ -20,7 +20,7 @@ module DTO =
     type NavigateRequest = { FileName : string ; NavigateType : string ; Name : string }
     type GeneratorValueSetRequest = { Type : string ; Name : string ; Value : string }
     type UpdateGeneratorRequest = { Blank : string }
-    type SuggestionRequest = { fileName : string ; ``type`` : string } // type will be "Function", "Attribute" or "Variable"
+    type SuggestionRequest = { fileName : string ; ``type`` : string ; line : string ; column : int } // type will be "Function", "Attribute", "Variable" or "QuotedString"
 
     type Error = {
         // OPS It's weird that I am using Points here no?

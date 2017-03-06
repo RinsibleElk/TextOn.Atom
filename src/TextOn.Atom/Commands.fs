@@ -137,7 +137,7 @@ type Commands (serialize : Serializer) =
             else return []
         else return [] }
 
-    member __.GetCompletions fileName ty = async {
+    member __.GetCompletions fileName ty (line:string) (col:int) = async {
         let template = fileTemplateMap.TryFind(fileName)
         if template.IsNone then
             return [ CommandResponse.suggestions serialize [||] ]
@@ -152,6 +152,44 @@ type Commands (serialize : Serializer) =
                 return [ CommandResponse.suggestions serialize (template.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = "Variable $" + x.Name })) ]
             | "Attribute" ->
                 return [ CommandResponse.suggestions serialize (template.Attributes |> Array.map (fun x -> { text = x.Name ; ``type`` = "attribute" ; description = "Attribute %" + x.Name })) ]
+            | "QuotedString" ->
+                // Bit of work to do. We need to backtrack to try and find a '%' or a '$' character, then try and tokenize just the named value after that point.
+                let mutable name = []
+                let mutable i = col
+                while i >= 0 && line.[i] <> '"' do
+                    i <- i - 1
+                while i >= 0 && (not (Char.IsLetterOrDigit line.[i])) && (line.[i] <> '_') do
+                    i <- i - 1
+                if i < 0 then
+                    return [ CommandResponse.suggestions serialize [||] ]
+                else
+                    while i >= 0 && ((Char.IsLetterOrDigit line.[i]) || (line.[i] = '_')) do
+                        name <- line.[i]::name
+                        i <- i - 1
+                    if i < 0 || (line.[i] <> '$' && line.[i] <> '%') then
+                        return [ CommandResponse.suggestions serialize [||] ]
+                    else
+                        let actualName = String.Join("", name |> List.toArray)
+                        let values =
+                            if line.[i] = '$' then
+                                template.Variables
+                                |> Array.tryFind (fun v -> v.Name = actualName)
+                                |> Option.map
+                                    (fun v ->
+                                        let description = sprintf "Value for variable $%s - %s" v.Name
+                                        v.Values
+                                        |> Array.map (fun x -> x.Value, description x.Value))
+                                |> defaultArg <| [||]
+                            else
+                                template.Attributes
+                                |> Array.tryFind (fun v -> v.Name = actualName)
+                                |> Option.map
+                                    (fun v ->
+                                        let description = sprintf "Value for attribute %%%s - %s" v.Name
+                                        v.Values
+                                        |> Array.map (fun x -> x.Value, description x.Value))
+                                |> defaultArg <| [||]
+                        return [ CommandResponse.suggestions serialize (values |> Array.map (fun (value, desc) -> { text = value ; description = desc ; ``type`` = "value" })) ]
             | _ ->
                 return [ CommandResponse.error serialize "Unexpected type" ] }
 

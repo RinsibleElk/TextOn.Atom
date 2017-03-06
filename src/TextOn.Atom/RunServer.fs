@@ -47,7 +47,7 @@ module internal RunServer =
                 path "/generatorvalueset" >=> handler (fun (data : GeneratorValueSetRequest) -> commands.GeneratorValueSet data.Type data.Name data.Value)
                 path "/generate" >=> handler (fun (data : GenerateRequest) -> commands.Generate data.Config)
                 path "/updategenerator" >=> handler (fun (data : UpdateGeneratorRequest) -> commands.UpdateGenerator())
-                path "/autocomplete" >=> handler (fun (data : SuggestionRequest) -> commands.GetCompletions data.fileName data.``type``)
+                path "/autocomplete" >=> handler (fun (data : SuggestionRequest) -> commands.GetCompletions data.fileName data.``type`` data.line data.column)
             ]
 
         let port = serverModeConfig.Port
