@@ -11,6 +11,10 @@
   }
 }
 
+@func @dependsOnCity {
+  The city is $City.
+}
+
 // Every full TextOn script must have a main function.
 @func @main
 {

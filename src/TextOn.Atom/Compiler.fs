@@ -29,6 +29,29 @@ module Compiler =
                 StartLocation = s
                 EndLocation = e
                 ErrorText = t }
+    let rec private findAttributeDependencies (attributeDefinitions:Map<int, CompiledAttributeDefinition>) dependencies =
+        Array.append
+            dependencies
+            (dependencies |> Array.collect (fun dep -> attributeDefinitions.[dep].AttributeDependencies))
+        |> Set.ofArray
+        |> Set.toArray
+    let rec private findVariableAttributeDependencies (attributeDefinitions:Map<int, CompiledAttributeDefinition>) (variableDefinitions:Map<int, CompiledVariableDefinition>) attributeDependencies variableDependencies =
+        Array.concat
+            [|
+                attributeDependencies
+                (attributeDependencies |> Array.collect (fun dep -> attributeDefinitions.[dep].AttributeDependencies))
+                (variableDependencies |> Array.collect (fun dep -> variableDefinitions.[dep].AttributeDependencies))
+            |]
+        |> Set.ofArray
+        |> Set.toArray
+    let rec private findVariableVariableDependencies (variableDefinitions:Map<int, CompiledVariableDefinition>) variableDependencies =
+        Array.concat
+            [|
+                variableDependencies
+                (variableDependencies |> Array.collect (fun dep -> variableDefinitions.[dep].VariableDependencies))
+            |]
+        |> Set.ofArray
+        |> Set.toArray
     let rec private compileCondition file attributeDefinitions condition =
         match condition with
         | ParsedUnconditional -> Result True
@@ -196,6 +219,7 @@ module Compiler =
                 let values =
                     values
                     |> Array.map (function | Result r -> r | _ -> failwith "Internal error")
+                let attributesByIndex = attributeDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                 Result
                     {
                         Name = name
@@ -204,7 +228,7 @@ module Compiler =
                         File = file
                         StartLine = startLine
                         EndLine = endLine
-                        AttributeDependencies = (dependencies |> Array.map (function | ParsedAttributeName n -> attributeDefinitions |> Map.find n | _ -> failwith "Invalid variable dependency from an attribute") |> Array.map (fun x -> x.Index))
+                        AttributeDependencies = (findAttributeDependencies attributesByIndex (dependencies |> Array.map (function | ParsedAttributeName n -> attributeDefinitions |> Map.find n | _ -> failwith "Invalid variable dependency from an attribute") |> Array.map (fun x -> x.Index)))
                         Values = values
                     }
     let private compileVariable (file:string) index startLine endLine name text supportsFreeValue attributeDependencies variableDependencies (variableDefinitions:Map<string, CompiledVariableDefinition>) (attributeDefinitions:Map<string, CompiledAttributeDefinition>) (parsedSuggestedValues:ParsedVariableSuggestedValue[]) : CompiledVariableDefinition ResultOrErrors =
@@ -229,6 +253,10 @@ module Compiler =
                 let values =
                     suggestedValues
                     |> Array.map (function | Result r -> r | _ -> failwith "Internal error")
+                let directAttributeDependencies = (attributeDependencies |> Array.choose (function | ParsedAttributeName n -> attributeDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                let directVariableDependencies = (variableDependencies |> Array.choose (function | ParsedVariableName n -> variableDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                let attributesByIndex = attributeDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
+                let variablesByIndex = variableDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                 Result
                     {
                         Name = name
@@ -238,24 +266,10 @@ module Compiler =
                         EndLine = endLine
                         PermitsFreeValue = supportsFreeValue
                         Text = text
-                        AttributeDependencies = (attributeDependencies |> Array.choose (function | ParsedAttributeName n -> attributeDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
-                        VariableDependencies = (variableDependencies |> Array.choose (function | ParsedVariableName n -> variableDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                        AttributeDependencies = (findVariableAttributeDependencies attributesByIndex variablesByIndex directAttributeDependencies directVariableDependencies)
+                        VariableDependencies = (findVariableVariableDependencies variablesByIndex directVariableDependencies)
                         Values = values
                     }
-    let rec private findAttributeDependencies cache (attributeDefinitions:Map<int, CompiledAttributeDefinition>) attributeIndex =
-        if cache |> Set.contains attributeIndex then [||]
-        else
-            let definition = attributeDefinitions |> Map.find attributeIndex
-            definition.AttributeDependencies
-            |> Set.ofArray
-            |> Set.toArray
-            |> Array.fold
-                (fun (cache,s) index ->
-                    let a = findAttributeDependencies cache attributeDefinitions index
-                    (cache |> Set.add index, Array.append s a))
-                (cache, [||])
-            |> snd
-            |> Array.append definition.AttributeDependencies
     let rec private compileInner variableDefinitions attributeDefinitions functionDefinitions errors (elements:ParsedElement list) =
         match elements with
         | [] ->
@@ -289,35 +303,18 @@ module Compiler =
                             match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
                             | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                             | Result r ->
-                                let findAttributeDependencies (a:string) =
-                                    attributeDefinitions.[a].AttributeDependencies
-                                    |> List.ofArray
-                                let findAttributeDependenciesFromVariable v =
-                                    variableDefinitions.[v].AttributeDependencies
-                                    |> List.ofArray
-                                let findVariableDependencies v =
-                                    variableDefinitions.[v].VariableDependencies
-                                    |> List.ofArray
-                                let attributeDependencies =
-                                    f.Dependencies
-                                    |> List.ofArray
-                                    |> List.collect (function | ParsedAttributeName a -> ((attributeDefinitions.[a].Index)::findAttributeDependencies a) | ParsedVariableName v -> findAttributeDependenciesFromVariable v)
-                                    |> Set.ofList
-                                    |> Set.toArray
-                                let variableDependencies =
-                                    f.Dependencies
-                                    |> List.ofArray
-                                    |> List.collect (function | ParsedAttributeName a -> ((attributeDefinitions.[a].Index)::findAttributeDependencies a) | ParsedVariableName v -> findAttributeDependenciesFromVariable v)
-                                    |> Set.ofList
-                                    |> Set.toArray
+                                let directAttributeDependencies = (f.Dependencies |> Array.choose (function | ParsedAttributeName n -> attributeDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                                let directVariableDependencies = (f.Dependencies |> Array.choose (function | ParsedVariableName n -> variableDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                                let attributesByIndex = attributeDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
+                                let variablesByIndex = variableDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let fn = {
                                     Name = f.Name
                                     Index = f.Index
                                     File = h.File
                                     StartLine = f.StartLine
                                     EndLine = f.EndLine
-                                    AttributeDependencies = attributeDependencies
-                                    VariableDependencies = variableDependencies
+                                    AttributeDependencies = (findVariableAttributeDependencies attributesByIndex variablesByIndex directAttributeDependencies directVariableDependencies)
+                                    VariableDependencies = (findVariableVariableDependencies variablesByIndex directVariableDependencies)
                                     Tree = r }
                                 (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name fn), errors)
                 | ParsedAttribute a ->
