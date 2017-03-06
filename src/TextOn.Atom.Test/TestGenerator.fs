@@ -162,6 +162,7 @@ let makeSingleAttributeTemplate node = {
                 File = exampleFileName
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
+                AttributeDependencies= [||]
                 Values =
                     [|
                         { Value = "Male"; Condition = True }
@@ -265,6 +266,8 @@ let makeSingleVariableTemplate node = {
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
                 PermitsFreeValue = true
+                AttributeDependencies = [||]
+                VariableDependencies = [||]
                 Values =
                     [|
                         { Value = "U.K."; Condition = VarTrue }

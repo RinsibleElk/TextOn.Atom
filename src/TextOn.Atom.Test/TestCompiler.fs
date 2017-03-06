@@ -58,6 +58,8 @@ let expected =
                     EndLine = 1
                     PermitsFreeValue = true
                     Text = "Hello world"
+                    AttributeDependencies = [||]
+                    VariableDependencies = [||]
                     Values = [||] }|]
      Functions =
       [|{Name = "main";
@@ -469,6 +471,7 @@ let ``Test filtering out an entire seq block``() =
                             File = fullExampleFile
                             StartLine = 1
                             EndLine = 5
+                            AttributeDependencies = [||]
                             Values =
                                 [|
                                     { Value = "Male"; Condition = True }
@@ -524,6 +527,7 @@ let ``Test filtering out an entire choice block``() =
                             File = fullExampleFile
                             StartLine = 1
                             EndLine = 5
+                            AttributeDependencies = [||]
                             Values =
                                 [|
                                     { Value = "Male"; Condition = True }
@@ -585,6 +589,8 @@ let ``Test variable dependency chain``() =
                             EndLine = 5;
                             PermitsFreeValue = false;
                             Text = "Which country are you writing about?";
+                            AttributeDependencies = [||]
+                            VariableDependencies = [||]
                             Values =
                                 [|
                                     {Value = "U.K."; Condition = VarTrue }
@@ -597,6 +603,8 @@ let ``Test variable dependency chain``() =
                             EndLine = 10;
                             PermitsFreeValue = true;
                             Text = "Which city are you writing about?";
+                            AttributeDependencies = [||]
+                            VariableDependencies = [|0|]
                             Values =
                                 [|
                                     {Value = "London"; Condition = VarAreEqual (Variable 0,"U.K.") }

@@ -50,6 +50,7 @@ let ``Free variable with no suggestions``() =
         Name = "Country"
         Text = text
         SupportsFreeValue = true
+        Dependencies = [||]
         Result = ParsedVariableSuccess [||] }
     test <@ VariableDefinitionParser.parseVariableDefinition tokens = expected @>
 
@@ -81,5 +82,6 @@ let ``Two line free variable with no suggestions``() =
         Name = "Country"
         Text = text
         SupportsFreeValue = true
+        Dependencies = [||]
         Result = ParsedVariableSuccess [||] }
     test <@ VariableDefinitionParser.parseVariableDefinition (makeTokenSet [tokens1;tokens2]) = expected @>
