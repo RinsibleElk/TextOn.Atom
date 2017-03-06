@@ -11,6 +11,8 @@ mapResult = (result) ->
     c = '$'
   else if result.type is 'attribute'
     c = '%'
+  else if result.type is 'value'
+    c = ''
   else
     c = '@'
   data =

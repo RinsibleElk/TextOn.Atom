@@ -42,6 +42,8 @@
     "Cardiff" [$Country = "U.K."]
     "Tokyo" [$Country = "Japan"]
     "Lyon" [$Country = "France"]
+    "Kyoto" [$Country = "Japan"]
+    "Hamburg" [$Country = "Germany"]
   }
 
 @var $ConstrainedVariable = "This is a constrained variable."
