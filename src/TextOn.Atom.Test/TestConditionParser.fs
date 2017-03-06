@@ -27,6 +27,7 @@ let ``Test simple equals``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition = ParsedAreEqual(2, 2, 8, att "Gender", "Male") }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
@@ -43,6 +44,7 @@ let ``Test simple not equals``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition = ParsedAreNotEqual(2, 2, 8, att "Gender", "Male") }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
@@ -61,6 +63,7 @@ let ``Test bracketed equals``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition = ParsedAreEqual(2, 3, 9, att "Gender", "Male") }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
@@ -79,6 +82,7 @@ let ``Test bracketed not equals``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition = ParsedAreNotEqual(2, 3, 9, att "Gender", "Male") }
     test <@ ConditionParser.parseCondition exampleFileName 2 false tokens = expected @>
 
@@ -99,6 +103,7 @@ let ``Test single or``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition =
             ParsedOr(
                 ParsedAreEqual(2, 2, 8, att "Gender", "Male"),
@@ -130,6 +135,7 @@ let ``Test multiple ors``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition =
             ParsedOr(
                 ParsedAreEqual(2, 2, 8, att "Gender", "Male"),
@@ -157,6 +163,7 @@ let ``Test single and``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition =
             ParsedAnd(
                 ParsedAreEqual(2, 2, 8, att "Gender", "Male"),
@@ -188,6 +195,7 @@ let ``Test multiple ands``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition =
             ParsedAnd(
                 ParsedAreEqual(2, 2, 8, att "Gender", "Male"),
@@ -223,6 +231,7 @@ let ``Test and/or precedence``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition =
             ParsedOr(
                 ParsedAnd(
@@ -261,6 +270,7 @@ let ``Test brackets``() =
         ]
     let expected = {
         HasErrors = false
+        Dependencies = [|att "Gender"|]
         Condition =
             ParsedOr(
                 ParsedOr(

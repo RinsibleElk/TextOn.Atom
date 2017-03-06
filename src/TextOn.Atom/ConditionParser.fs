@@ -23,6 +23,7 @@ type ParsedCondition =
 
 type ConditionParseResults = {
     HasErrors : bool
+    Dependencies : ParsedAttributeOrVariable[]
     Condition : ParsedCondition }
 
 [<RequireQualifiedAccess>]
@@ -36,7 +37,7 @@ module ConditionParser =
 
     let rec private parseConditionInner file line position variablesAreAllowed conditionTokens =
         if conditionTokens |> List.isEmpty then
-            { HasErrors = true; Condition = ParsedConditionError [|(makeParseError file line position position "Invalid empty condition")|] }
+            { HasErrors = true; Dependencies = [||]; Condition = ParsedConditionError [|(makeParseError file line position position "Invalid empty condition")|] }
         else
             // Find the first Or at root (0 brackets) level.
             let li =
@@ -65,6 +66,7 @@ module ConditionParser =
                     else
                         ParsedOr(left.Condition, right.Condition)
                 {   HasErrors = hasErrors
+                    Dependencies = (Set.union (left.Dependencies |> Set.ofArray) (right.Dependencies |> Set.ofArray) |> Set.toArray)
                     Condition = condition }
             else
                 let rootAnd =
@@ -84,28 +86,29 @@ module ConditionParser =
                         else
                             ParsedAnd(left.Condition, right.Condition)
                     {   HasErrors = hasErrors
+                        Dependencies = (Set.union (left.Dependencies |> Set.ofArray) (right.Dependencies |> Set.ofArray) |> Set.toArray)
                         Condition = condition }
                 else
                     if conditionTokens.Length = 3 then
                         match (conditionTokens.[0].Token, conditionTokens.[1].Token, conditionTokens.[2].Token) with
                         | (AttributeName name, Equals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedAttributeName name, value) }
+                            { HasErrors = false; Dependencies = [|ParsedAttributeName name|] ; Condition = ParsedAreEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedAttributeName name, value) }
                         | (AttributeName name, NotEquals, QuotedString value) ->
-                            { HasErrors = false; Condition = ParsedAreNotEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedAttributeName name, value) }
+                            { HasErrors = false; Dependencies = [|ParsedAttributeName name|] ; Condition = ParsedAreNotEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedAttributeName name, value) }
                         | (VariableName name, Equals, QuotedString value) ->
                             if variablesAreAllowed then
-                                { HasErrors = false; Condition = ParsedAreEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedVariableName name, value) }
+                                { HasErrors = false; Dependencies = [|ParsedVariableName name|] ; Condition = ParsedAreEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedVariableName name, value) }
                             else
-                                { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
+                                { HasErrors = true; Dependencies = [||]; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
                         | (VariableName name, NotEquals, QuotedString value) ->
                             if variablesAreAllowed then
-                                { HasErrors = false; Condition = ParsedAreNotEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedVariableName name, value) }
+                                { HasErrors = false; Dependencies = [|ParsedVariableName name|] ; Condition = ParsedAreNotEqual(line, conditionTokens.[0].TokenStartLocation, conditionTokens.[0].TokenEndLocation, ParsedVariableName name, value) }
                             else
-                                { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
+                                { HasErrors = true; Dependencies = [||] ; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[0].TokenEndLocation "Invalid reference to variable in attribute-based condition")|]) }
                         | _ ->
-                            { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[2].TokenEndLocation "Invalid condition")|]) }
+                            { HasErrors = true; Dependencies = [||] ; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[2].TokenEndLocation "Invalid condition")|]) }
                     else if (conditionTokens.[0].Token <> OpenBracket) || (conditionTokens.[conditionTokens.Length - 1].Token <> CloseBracket) then
-                        { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[conditionTokens.Length - 1].TokenEndLocation "Invalid condition")|]) }
+                        { HasErrors = true; Dependencies = [||] ; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[conditionTokens.Length - 1].TokenEndLocation "Invalid condition")|]) }
                     else
                         parseConditionInner file line conditionTokens.[0].TokenStartLocation variablesAreAllowed (conditionTokens |> List.skip 1 |> List.take (conditionTokens.Length - 2))
 
@@ -113,7 +116,5 @@ module ConditionParser =
     let parseCondition file line variablesAreAllowed (conditionTokens:AttributedToken list) =
         // It is known that the first is an OpenBrace. If the last is not a CloseBrace, it's an error.
         if conditionTokens.[conditionTokens.Length - 1].Token <> CloseBrace then
-                { HasErrors = true; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[conditionTokens.Length - 1].TokenEndLocation "Invalid condition")|]) }
+            { HasErrors = true; Dependencies = [||] ; Condition = ParsedConditionError ([|(makeParseError file line conditionTokens.[0].TokenStartLocation conditionTokens.[conditionTokens.Length - 1].TokenEndLocation "Invalid condition")|]) }
         else parseConditionInner file line conditionTokens.[0].TokenStartLocation variablesAreAllowed (conditionTokens |> List.skip 1 |> List.take (conditionTokens.Length - 2))
-
-

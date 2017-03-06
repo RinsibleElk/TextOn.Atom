@@ -16,5 +16,6 @@ type CompiledAttributeDefinition =
         File : string
         StartLine : int
         EndLine : int
+        AttributeDependencies : int[]
         Values : CompiledAttributeValue[]
     }

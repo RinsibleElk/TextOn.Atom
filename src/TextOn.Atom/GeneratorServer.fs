@@ -24,9 +24,12 @@ type GeneratorServer(file, name) =
             attributeValues <- attributeValues |> Map.filter (fun k _ -> k |> attributeNameToIndex |> Option.isSome)
             let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
             variableValues <- variableValues |> Map.filter (fun k _ -> k |> variableNameToIndex |> Option.isSome)
+            let functionDef = currentTemplate.Functions |> Array.find (fun functionDef -> functionDef.Name = name)
+            let requiredAttributes = functionDef.AttributeDependencies |> Array.map (fun i -> currentTemplate.Attributes |> Array.find (fun a -> a.Index = i))
+            let requiredVariables = functionDef.VariableDependencies |> Array.map (fun i -> currentTemplate.Variables |> Array.find (fun a -> a.Index = i))
             Array.append
-                (currentTemplate.Attributes |> Array.map Choice1Of2)
-                (currentTemplate.Variables |> Array.map Choice2Of2)
+                (requiredAttributes |> Array.map Choice1Of2)
+                (requiredVariables |> Array.map Choice2Of2)
             |> Array.scan
                 (fun (haveSeenFilled, haveSeenEmpty, _) value ->
                     match value with
@@ -144,14 +147,18 @@ type GeneratorServer(file, name) =
         else
             attributeValues <- attributeValues |> Map.add name value
     member __.Generate (config:GeneratorConfiguration) =
+        // OPS Super unsafe.
+        let functionDef = currentTemplate.Value.Functions |> Array.find (fun functionDef -> functionDef.Name = name)
+        let requiredAttributes = functionDef.AttributeDependencies |> Array.map (fun i -> currentTemplate.Value.Attributes |> Array.find (fun a -> a.Index = i))
+        let requiredVariables = functionDef.VariableDependencies |> Array.map (fun i -> currentTemplate.Value.Variables |> Array.find (fun a -> a.Index = i))
         let generatorInput =
             {   RandomSeed = NoSeed
                 Config = {  NumSpacesBetweenSentences = config.NumSpacesBetweenSentences
                             NumBlankLinesBetweenParagraphs = config.NumBlankLinesBetweenParagraphs
                             LineEnding = (if config.WindowsLineEndings then CRLF else LF) }
-                Attributes = currentTemplate.Value.Attributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Name })
-                Variables = currentTemplate.Value.Variables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name |> fst })
-                Function = Some name }
+                Attributes  = requiredAttributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Name })
+                Variables   = requiredVariables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name |> fst })
+                Function = name }
         match (Generator.generate generatorInput currentTemplate.Value) with
         | GeneratorError _ -> lastResult <- None
         | GeneratorSuccess r -> lastResult <- Some (r.Text |> Array.map (fun a -> {File = a.InputFile ; LineNumber = a.InputLineNumber ; Value = a.Value ; IsParagraphBreak = a.IsPb }))

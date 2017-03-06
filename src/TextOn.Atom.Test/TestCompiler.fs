@@ -51,20 +51,22 @@ let fullExampleFile = Path.Combine(exampleDirectory, exampleFileName)
 
 let expected =
     {Attributes = [||];
-     Variables = [|{Name = "SomeVar";
-                    Index = 0;
-                    File = Path.Combine(exampleDirectory, exampleFileName);
-                    StartLine = 1;
-                    EndLine = 1;
-                    PermitsFreeValue = true;
-                    Text = "Hello world";
-                    Values = [||];}|];
+     Variables = [|{Name = "SomeVar"
+                    Index = 0
+                    File = Path.Combine(exampleDirectory, exampleFileName)
+                    StartLine = 1
+                    EndLine = 1
+                    PermitsFreeValue = true
+                    Text = "Hello world"
+                    Values = [||] }|]
      Functions =
       [|{Name = "main";
          Index = 1;
          File = Path.Combine(exampleDirectory, exampleFileName);
-         StartLine = 2;
-         EndLine = 33;
+         StartLine = 2
+         EndLine = 33
+         AttributeDependencies = [||]
+         VariableDependencies = [|0|]
          Tree =
           Seq
             [|(Choice
@@ -418,11 +420,13 @@ let ``Test invoking a function from within a function``() =
                 Variables = [||];
                 Functions =
                     [|
-                        {   Name = "func1";
-                            Index = 0;
+                        {   Name = "func1"
+                            Index = 0
                             File = fullExampleFile
-                            StartLine = 1;
-                            EndLine = 3;
+                            StartLine = 1
+                            EndLine = 3
+                            AttributeDependencies = [||]
+                            VariableDependencies = [||]
                             Tree =
                                 Seq
                                     [|
@@ -434,6 +438,8 @@ let ``Test invoking a function from within a function``() =
                             File = fullExampleFile
                             StartLine = 4;
                             EndLine = 6;
+                            AttributeDependencies = [||]
+                            VariableDependencies = [||]
                             Tree = Seq [|(Function 0, True)|];}|];}
     test <@ result = expected @>
 
@@ -478,6 +484,8 @@ let ``Test filtering out an entire seq block``() =
                             File = fullExampleFile
                             StartLine = 6
                             EndLine = 11
+                            AttributeDependencies = [|0|]
+                            VariableDependencies = [||]
                             Tree =
                                 Seq
                                     [|
@@ -531,6 +539,8 @@ let ``Test filtering out an entire choice block``() =
                             File = fullExampleFile
                             StartLine = 6
                             EndLine = 11
+                            AttributeDependencies = [|0|]
+                            VariableDependencies = [||]
                             Tree =
                                 Seq
                                     [|
@@ -541,4 +551,76 @@ let ``Test filtering out an entire choice block``() =
                                     |]
                         }
                     |] }
+    test <@ result = expected @>
+
+[<Test>]
+let ``Test variable dependency chain``() =
+    let text = "@var $Country = \"Which country are you writing about?\"
+  {
+    \"U.K.\"
+    \"Germany\"
+  }
+
+@var @free $City = \"Which city are you writing about?\"
+  {
+    \"London\" [$Country = \"U.K.\"]
+    \"Berlin\" [$Country = \"Germany\"]
+  }
+
+@func @dependsOnCity
+{
+  I just need city here : $City.
+}
+"
+    let result = text |> compileLines
+    let expected =
+        CompilationSuccess
+            {   Attributes = [||]
+                Variables =
+                    [|
+                        {   Name = "Country"
+                            Index = 0;
+                            File = fullExampleFile
+                            StartLine = 1;
+                            EndLine = 5;
+                            PermitsFreeValue = false;
+                            Text = "Which country are you writing about?";
+                            Values =
+                                [|
+                                    {Value = "U.K."; Condition = VarTrue }
+                                    {Value = "Germany"; Condition = VarTrue }
+                                |] }
+                        {   Name = "City";
+                            Index = 1;
+                            File = fullExampleFile
+                            StartLine = 6;
+                            EndLine = 10;
+                            PermitsFreeValue = true;
+                            Text = "Which city are you writing about?";
+                            Values =
+                                [|
+                                    {Value = "London"; Condition = VarAreEqual (Variable 0,"U.K.") }
+                                    {Value = "Berlin"; Condition = VarAreEqual (Variable 0,"Germany") }
+                                |]
+                        }
+                    |]
+                Functions =
+                    [|
+                        {   Name = "dependsOnCity"
+                            Index = 2;
+                            File = fullExampleFile
+                            StartLine = 11;
+                            EndLine = 14;
+                            AttributeDependencies = [||];
+                            VariableDependencies = [|0;1|];
+                            Tree =
+                                Seq
+                                    [|
+                                        (Sentence
+                                            (fullExampleFile, 13,
+                                                SimpleSeq
+                                                    [|  SimpleText "I just need city here : "; VariableValue 1;
+                                                        SimpleText "."
+                                                    |]), True)
+                                    |] } |] }
     test <@ result = expected @>

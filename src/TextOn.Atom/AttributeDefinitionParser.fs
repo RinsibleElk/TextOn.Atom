@@ -1,6 +1,8 @@
 ﻿namespace TextOn.Atom
 
-type ParsedAttributeName = string
+type ParsedAttributeValueResult = {
+    Value : string
+    Condition : ConditionParseResults }
 
 type ParsedAttributeValue = {
     Value : string
@@ -8,26 +10,36 @@ type ParsedAttributeValue = {
 
 type ParsedAttributeResult =
     | ParsedAttributeErrors of ParseError[]
-    | ParsedAttributeSuccess of ParsedAttributeValue[]
+    | ParsedAttributeSuccess of ParsedAttributeValueResult[]
+
+type ParsedAttribute =
+    | Errors of ParseError[]
+    | Success of ParsedAttributeValue[]
 
 type ParsedAttributeDefinition = {
     StartLine : int
     EndLine : int
     Index : int
     HasErrors : bool
-    Name : ParsedAttributeName
+    Name : string
     Text : string
-    Result : ParsedAttributeResult }
+    Dependencies : ParsedAttributeOrVariable[]
+    Result : ParsedAttribute }
 
 module internal AttributeDefinitionParser =
     let private makeAttributeDefinition (tokenSet:CategorizedAttributedTokenSet) name text result =
+        let dependencies =
+            match result with
+            | ParsedAttributeErrors(_) -> [||]
+            | ParsedAttributeSuccess(s) -> s |> Array.collect (fun a -> a.Condition.Dependencies) |> Set.ofArray |> Set.toArray
         {   StartLine = tokenSet.StartLine
             EndLine = tokenSet.EndLine
             Index = tokenSet.Index
             HasErrors = match result with | ParsedAttributeErrors _ -> true | _ -> false
             Name = name
             Text = text
-            Result = result }
+            Dependencies = dependencies
+            Result = (match result with | ParsedAttributeErrors e -> Errors e | ParsedAttributeSuccess r -> r |> Array.map (fun r -> { Value = r.Value ; Condition = r.Condition.Condition }) |> Success) }
 
     let private makeParseError file line startLocation endLocation errorText =
         {   File = file
@@ -55,8 +67,15 @@ module internal AttributeDefinitionParser =
         | _ -> ("<unknown>", None, Some "Invalid attribute declaration")
 
     type private ParsedSuggestionResult =
-        | ParsedAttributeValueSuccess of ParsedAttributeValue
+        | ParsedAttributeValueSuccess of ParsedAttributeValueResult
         | ParsedAttributeValueError of ParseError[]
+
+    let private unconditional =
+        {
+            HasErrors = false
+            Dependencies = [||]
+            Condition = ParsedUnconditional
+        }
 
     let private parseAttributeValue file (valueLine:AttributedTokenizedLine) =
         let tokens = valueLine.Tokens
@@ -64,7 +83,7 @@ module internal AttributeDefinitionParser =
         | [] -> failwith "Internal error"
         | [textToken] ->
             match textToken.Token with
-            | QuotedString value -> ParsedAttributeValueSuccess { Value = value ; Condition = ParsedUnconditional }
+            | QuotedString value -> ParsedAttributeValueSuccess { Value = value ; Condition = unconditional }
             | _ -> ParsedAttributeValueError [|(makeParseError file valueLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]
         | textToken::conditionTokens ->
             match textToken.Token with
@@ -77,7 +96,7 @@ module internal AttributeDefinitionParser =
                         let parsedCondition = ConditionParser.parseCondition file valueLine.LineNumber false conditionTokens
                         match parsedCondition.Condition with
                         | ParsedCondition.ParsedConditionError errors -> ParsedAttributeValueError errors
-                        | _ -> ParsedAttributeValueSuccess { Value = value ; Condition = parsedCondition.Condition }
+                        | _ -> ParsedAttributeValueSuccess { Value = value ; Condition = parsedCondition }
                     | _ ->
                         ParsedAttributeValueError [|(makeParseError file valueLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected '['")|]
             | _ -> ParsedAttributeValueError [|(makeParseError file valueLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]

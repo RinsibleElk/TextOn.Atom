@@ -44,6 +44,7 @@ let ``Test choice parsing``() =
                         Index = 0
                         HasErrors = false
                         Name = "stycke20160823_6"
+                        Dependencies = [|ParsedVariableName "MÄRKE"|]
                         Tree =
                             ParsedSeq
                                 [|

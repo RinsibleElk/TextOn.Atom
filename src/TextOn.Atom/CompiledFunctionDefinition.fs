@@ -8,5 +8,7 @@ type CompiledFunctionDefinition =
         File : string
         StartLine : int
         EndLine : int
+        AttributeDependencies : int[]
+        VariableDependencies : int[]
         Tree : CompiledDefinitionNode
     }

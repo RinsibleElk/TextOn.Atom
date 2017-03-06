@@ -152,6 +152,7 @@ let ``Test sentence with condition``() =
         Index = 0
         HasErrors = false
         Name = "main"
+        Dependencies = [|ParsedAttributeName "SomeAttribute"|]
         Tree =
             ParsedSeq
                 [|

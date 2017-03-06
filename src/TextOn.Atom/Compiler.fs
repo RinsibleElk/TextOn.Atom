@@ -93,7 +93,7 @@ module Compiler =
             | None -> Errors [|(makeParseError file line startLocation endLocation (sprintf "Undefined variable %s" variable))|]
             | Some att -> Result (VarAreNotEqual(AttributeOrVariableIdentity.Variable att.Index, value)) // OPS Missing validation.
         | _ -> failwith "Internal error"
-    let rec private compileSentence file line (variableDefinitions:Map<ParsedVariableName, CompiledVariableDefinition>) sentence =
+    let rec private compileSentence file line (variableDefinitions:Map<string, CompiledVariableDefinition>) sentence =
         match sentence with
         | ParsedStringValue(text) -> Result(SimpleText(text))
         | ParsedSimpleVariable(startLocation, endLocation, variableName) ->
@@ -174,7 +174,7 @@ module Compiler =
         | ParsedParagraphBreak(lineNumber) ->
             Result (ParagraphBreak(file, lineNumber))
         | _ -> failwith "Internal error"
-    let private compileAttribute (file:string) index startLine endLine name text (attributeDefinitions:Map<ParsedAttributeName, CompiledAttributeDefinition>) (parsedAttributeValues:ParsedAttributeValue[]) : CompiledAttributeDefinition ResultOrErrors =
+    let private compileAttribute (file:string) index startLine endLine name text dependencies (attributeDefinitions:Map<string, CompiledAttributeDefinition>) (parsedAttributeValues:ParsedAttributeValue[]) : CompiledAttributeDefinition ResultOrErrors =
         let existing = attributeDefinitions |> Map.tryFind name
         if existing |> Option.isSome then
             Errors ([|(makeParseError file startLine 1 4 (sprintf "Duplicate definition of attribute %s" name))|])
@@ -204,9 +204,10 @@ module Compiler =
                         File = file
                         StartLine = startLine
                         EndLine = endLine
+                        AttributeDependencies = (dependencies |> Array.map (function | ParsedAttributeName n -> attributeDefinitions |> Map.find n | _ -> failwith "Invalid variable dependency from an attribute") |> Array.map (fun x -> x.Index))
                         Values = values
                     }
-    let private compileVariable (file:string) index startLine endLine name text supportsFreeValue (variableDefinitions:Map<ParsedVariableName, CompiledVariableDefinition>) (attributeDefinitions:Map<ParsedAttributeName, CompiledAttributeDefinition>) (parsedSuggestedValues:ParsedVariableSuggestedValue[]) : CompiledVariableDefinition ResultOrErrors =
+    let private compileVariable (file:string) index startLine endLine name text supportsFreeValue attributeDependencies variableDependencies (variableDefinitions:Map<string, CompiledVariableDefinition>) (attributeDefinitions:Map<string, CompiledAttributeDefinition>) (parsedSuggestedValues:ParsedVariableSuggestedValue[]) : CompiledVariableDefinition ResultOrErrors =
         let existing = variableDefinitions |> Map.tryFind name
         if existing |> Option.isSome then
             Errors ([|(makeParseError file startLine 1 4 (sprintf "Duplicate definition of variable %s" name))|])
@@ -215,7 +216,7 @@ module Compiler =
                 parsedSuggestedValues
                 |> Array.map
                     (fun suggestedValue ->
-                        match (compileVariableCondition file variableDefinitions attributeDefinitions suggestedValue.Condition) with
+                        match (compileVariableCondition file variableDefinitions attributeDefinitions suggestedValue.Condition.Condition) with
                         | Errors e -> Errors e
                         | Result condition -> Result { Value = suggestedValue.Value ; Condition = condition })
             let errors =
@@ -237,8 +238,24 @@ module Compiler =
                         EndLine = endLine
                         PermitsFreeValue = supportsFreeValue
                         Text = text
+                        AttributeDependencies = (attributeDependencies |> Array.choose (function | ParsedAttributeName n -> attributeDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
+                        VariableDependencies = (variableDependencies |> Array.choose (function | ParsedVariableName n -> variableDefinitions |> Map.tryFind n | _ -> None) |> Array.map (fun x -> x.Index))
                         Values = values
                     }
+    let rec private findAttributeDependencies cache (attributeDefinitions:Map<int, CompiledAttributeDefinition>) attributeIndex =
+        if cache |> Set.contains attributeIndex then [||]
+        else
+            let definition = attributeDefinitions |> Map.find attributeIndex
+            definition.AttributeDependencies
+            |> Set.ofArray
+            |> Set.toArray
+            |> Array.fold
+                (fun (cache,s) index ->
+                    let a = findAttributeDependencies cache attributeDefinitions index
+                    (cache |> Set.add index, Array.append s a))
+                (cache, [||])
+            |> snd
+            |> Array.append definition.AttributeDependencies
     let rec private compileInner variableDefinitions attributeDefinitions functionDefinitions errors (elements:ParsedElement list) =
         match elements with
         | [] ->
@@ -272,22 +289,45 @@ module Compiler =
                             match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
                             | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                             | Result r ->
+                                let findAttributeDependencies (a:string) =
+                                    attributeDefinitions.[a].AttributeDependencies
+                                    |> List.ofArray
+                                let findAttributeDependenciesFromVariable v =
+                                    variableDefinitions.[v].AttributeDependencies
+                                    |> List.ofArray
+                                let findVariableDependencies v =
+                                    variableDefinitions.[v].VariableDependencies
+                                    |> List.ofArray
+                                let attributeDependencies =
+                                    f.Dependencies
+                                    |> List.ofArray
+                                    |> List.collect (function | ParsedAttributeName a -> ((attributeDefinitions.[a].Index)::findAttributeDependencies a) | ParsedVariableName v -> findAttributeDependenciesFromVariable v)
+                                    |> Set.ofList
+                                    |> Set.toArray
+                                let variableDependencies =
+                                    f.Dependencies
+                                    |> List.ofArray
+                                    |> List.collect (function | ParsedAttributeName a -> ((attributeDefinitions.[a].Index)::findAttributeDependencies a) | ParsedVariableName v -> findAttributeDependenciesFromVariable v)
+                                    |> Set.ofList
+                                    |> Set.toArray
                                 let fn = {
                                     Name = f.Name
                                     Index = f.Index
                                     File = h.File
                                     StartLine = f.StartLine
                                     EndLine = f.EndLine
+                                    AttributeDependencies = attributeDependencies
+                                    VariableDependencies = variableDependencies
                                     Tree = r }
                                 (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name fn), errors)
                 | ParsedAttribute a ->
                     // Traverse through replacing variable & attribute references and inlining function references.
                     if a.HasErrors then
                         match a.Result with
-                        | ParsedAttributeErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
+                        | ParsedAttribute.Errors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
                     else
-                        match (compileAttribute h.File a.Index a.StartLine a.EndLine a.Name a.Text attributeDefinitions (match a.Result with | ParsedAttributeSuccess a -> a | _ -> failwith "Internal error")) with
+                        match (compileAttribute h.File a.Index a.StartLine a.EndLine a.Name a.Text a.Dependencies attributeDefinitions (match a.Result with | ParsedAttribute.Success a -> a | _ -> failwith "Internal error")) with
                         | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                         | Result r -> (variableDefinitions, (attributeDefinitions |> Map.add a.Name r), functionDefinitions, errors)
                 | ParsedVariable v ->
@@ -297,7 +337,7 @@ module Compiler =
                         | ParsedVariableErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
                     else
-                        match (compileVariable h.File v.Index v.StartLine v.EndLine v.Name v.Text v.SupportsFreeValue variableDefinitions attributeDefinitions (match v.Result with | ParsedVariableSuccess v -> v | _ -> failwith "Internal error")) with
+                        match (compileVariable h.File v.Index v.StartLine v.EndLine v.Name v.Text v.SupportsFreeValue (v.Dependencies |> Array.filter (function | ParsedAttributeName _ -> true | _ -> false)) (v.Dependencies |> Array.filter (function | ParsedAttributeName _ -> false | _ -> true)) variableDefinitions attributeDefinitions (match v.Result with | ParsedVariableSuccess v -> v | _ -> failwith "Internal error")) with
                         | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                         | Result r -> ((variableDefinitions |> Map.add v.Name r), attributeDefinitions, functionDefinitions, errors)
             compileInner v a f e t

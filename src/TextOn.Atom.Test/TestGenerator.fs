@@ -17,7 +17,7 @@ let noVariablesInput = {
                 LineEnding = CRLF }
     Attributes = []
     Variables = []
-    Function = None }
+    Function = "main" }
 
 let exampleFileName = "example.texton"
 let exampleLineNumber = 1
@@ -32,6 +32,8 @@ let makeNoVariablesTemplate node = {
                 File = exampleFileName
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
+                AttributeDependencies = [||]
+                VariableDependencies = [||]
                 Tree = Seq [| (node, True) |]
             }
         |] }
@@ -176,6 +178,8 @@ let makeSingleAttributeTemplate node = {
                 File = exampleFileName
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
+                AttributeDependencies = [|0|]
+                VariableDependencies = [||]
                 Tree = Seq [| (node, True) |]
             }
         |] }
@@ -187,7 +191,7 @@ let makeSingleAttributeInput gender = {
                 LineEnding = CRLF }
     Attributes = [{Name = "Gender";Value = gender}]
     Variables = []
-    Function = None }
+    Function = "main" }
 
 [<Test>]
 let ``Test successful condition``() =
@@ -276,6 +280,8 @@ let makeSingleVariableTemplate node = {
                 File = exampleFileName
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
+                AttributeDependencies = [||]
+                VariableDependencies = [|0|]
                 Tree = Seq [| (node, True) |]
             }
         |] }
@@ -287,7 +293,7 @@ let makeSingleVariableInput country = {
                 LineEnding = CRLF }
     Attributes = []
     Variables = [{Name = "Country";Value = country}]
-    Function = None }
+    Function = "main" }
 
 [<Test>]
 let ``Test variable replacement``() =
@@ -313,7 +319,7 @@ let makeNoVariablesInputWithSeed seed = {
                 LineEnding = CRLF }
     Attributes = []
     Variables = []
-    Function = None }
+    Function = "main" }
 
 [<Test>]
 let ``Test using same seed gets same value``() =

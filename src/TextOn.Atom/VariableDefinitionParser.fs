@@ -2,7 +2,7 @@
 
 type ParsedVariableSuggestedValue = {
     Value : string
-    Condition : ParsedCondition }
+    Condition : ConditionParseResults }
 
 type ParsedVariableResult =
     | ParsedVariableErrors of ParseError[]
@@ -13,9 +13,10 @@ type ParsedVariableDefinition = {
     EndLine : int
     Index : int
     HasErrors : bool
-    Name : ParsedVariableName
+    Name : string
     Text : string
     SupportsFreeValue : bool
+    Dependencies : ParsedAttributeOrVariable[]
     Result : ParsedVariableResult }
 
 module internal VariableDefinitionParser =
@@ -23,6 +24,10 @@ module internal VariableDefinitionParser =
         | ParsedSuggestionSuccess of ParsedVariableSuggestedValue
         | ParsedSuggestionError of ParseError[]
     let private makeVariableDefinition (tokenSet:CategorizedAttributedTokenSet) name text freeValue result =
+        let dependencies =
+            match result with
+            | ParsedVariableErrors(_) -> [||]
+            | ParsedVariableSuccess(s) -> s |> Array.collect (fun a -> a.Condition.Dependencies) |> Set.ofArray |> Set.toArray
         {   StartLine = tokenSet.StartLine
             EndLine = tokenSet.EndLine
             Index = tokenSet.Index
@@ -30,6 +35,7 @@ module internal VariableDefinitionParser =
             Name = name
             Text = text
             SupportsFreeValue = freeValue
+            Dependencies = dependencies
             Result = result }
     let private makeParseError file line startLocation endLocation errorText =
         {   File = file
@@ -47,13 +53,20 @@ module internal VariableDefinitionParser =
         | [Var;Free;VariableName name;Equals;QuotedString text] -> (name, Some text, true, None)
         | _ -> ("<unknown>", None, false, Some "Invalid variable declaration")
 
+    let private unconditional =
+        {
+            HasErrors = false
+            Dependencies = [||]
+            Condition = ParsedUnconditional
+        }
+
     let private parseSuggestion file (suggestionLine:AttributedTokenizedLine) =
         let tokens = suggestionLine.Tokens
         match tokens with
         | [] -> failwith "Internal error"
         | [textToken] ->
             match textToken.Token with
-            | QuotedString suggestedValue -> ParsedSuggestionSuccess { Value = suggestedValue ; Condition = ParsedUnconditional }
+            | QuotedString suggestedValue -> ParsedSuggestionSuccess { Value = suggestedValue ; Condition = unconditional }
             | _ -> ParsedSuggestionError [|(makeParseError file suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]
         | textToken::conditionTokens ->
             match textToken.Token with
@@ -66,7 +79,7 @@ module internal VariableDefinitionParser =
                         let parsedCondition = ConditionParser.parseCondition file suggestionLine.LineNumber true conditionTokens
                         match parsedCondition.Condition with
                         | ParsedCondition.ParsedConditionError errors -> ParsedSuggestionError errors
-                        | _ -> ParsedSuggestionSuccess { Value = suggestedValue ; Condition = parsedCondition.Condition }
+                        | _ -> ParsedSuggestionSuccess { Value = suggestedValue ; Condition = parsedCondition }
                     | _ ->
                         ParsedSuggestionError [|(makeParseError file suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected '['")|]
             | _ -> ParsedSuggestionError [|(makeParseError file suggestionLine.LineNumber textToken.TokenStartLocation textToken.TokenEndLocation "Invalid token - expected a quoted string")|]

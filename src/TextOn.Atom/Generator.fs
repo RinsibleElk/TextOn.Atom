@@ -42,8 +42,8 @@ type GeneratorInput = {
     Attributes : StringNameValuePair list
     /// Variable values.
     Variables : StringNameValuePair list
-    /// The function to generate text for. Default: "main".
-    Function : string option }
+    /// The function to generate text for.
+    Function : string }
 
 type AttributedOutputString = {
     InputFile : string
@@ -106,9 +106,15 @@ module Generator =
             | SpecificValue seed -> seed
             | NoSeed -> Random().Next()
         let random = Random(randomSeed)
+        let functionDef = compiledTemplate.Functions |> Array.find (fun f -> f.Name = input.Function)
         let attributeValues, attributeError =
             // Need to do a check that the user has provided values for all attribute values.
-            let requiredAttributes = compiledTemplate.Attributes |> Array.map (fun x -> x.Name) |> Set.ofArray
+            let attributeRequired = functionDef.AttributeDependencies |> Set.ofArray |> fun s i -> s |> Set.contains i
+            let requiredAttributes =
+                compiledTemplate.Attributes
+                |> Array.filter (fun a -> a.Index |> attributeRequired)
+                |> Array.map (fun x -> x.Name)
+                |> Set.ofArray
             let givenAttributes = input.Attributes |> List.map (fun x -> x.Name) |> Set.ofList
             let extraAttributes = Set.difference givenAttributes requiredAttributes
             let missingAttributes = Set.difference requiredAttributes givenAttributes
@@ -129,7 +135,12 @@ module Generator =
                 (attributeValues, None)
         let variableValues, variableError =
             // Need to do a check that the user has provided values for all variable values.
-            let requiredVariables = compiledTemplate.Variables |> Array.map (fun x -> x.Name) |> Set.ofArray
+            let variableRequired = functionDef.VariableDependencies |> Set.ofArray |> fun s i -> s |> Set.contains i
+            let requiredVariables =
+                compiledTemplate.Variables
+                |> Array.filter (fun a -> a.Index |> variableRequired)
+                |> Array.map (fun x -> x.Name)
+                |> Set.ofArray
             let givenVariables = input.Variables |> List.map (fun x -> x.Name) |> Set.ofList
             let extraVariables = Set.difference givenVariables requiredVariables
             let missingVariables = Set.difference requiredVariables givenVariables
@@ -152,7 +163,7 @@ module Generator =
         | (Some e, _)
         | (_, Some e) -> GeneratorError e
         | _ ->
-            let functionName = input.Function |> defaultArg <| "main"
+            let functionName = input.Function
             let mainFunction = compiledTemplate.Functions |> Array.tryFind (fun f -> f.Name = functionName)
             if mainFunction.IsNone then GeneratorError (sprintf "Function \"%s\" is not defined - nothing to generate" functionName)
             else

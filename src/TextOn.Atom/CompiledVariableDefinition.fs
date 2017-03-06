@@ -17,5 +17,7 @@ type CompiledVariableDefinition =
         EndLine : int
         PermitsFreeValue : bool
         Text : string
+        AttributeDependencies : int[]
+        VariableDependencies : int[]
         Values : CompiledVariableValue[]
     }

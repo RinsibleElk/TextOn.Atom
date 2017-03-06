@@ -37,7 +37,7 @@ module Parser =
             let parsedAtt = AttributeDefinitionParser.parseAttributeDefinition tokenSet
             let result =
                 match parsedAtt.Result with
-                | ParsedAttributeErrors errors -> ParserErrors errors
+                | ParsedAttribute.Errors errors -> ParserErrors errors
                 | _ -> ParsedAttribute parsedAtt
             {   File = tokenSet.File
                 Result = result }
