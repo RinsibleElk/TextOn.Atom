@@ -193,6 +193,44 @@ type Commands (serialize : Serializer) =
             | _ ->
                 return [ CommandResponse.error serialize "Unexpected type" ] }
 
+    member __.NavigateToSymbol (file:SourceFilePath) (line:string) column = async {
+        let template = fileTemplateMap.TryFind(file)
+        if template.IsNone then
+            return [ CommandResponse.error serialize "Cannot find symbol" ]
+        else
+            let forwardCharacters =
+                let mutable i = column + 1
+                let mutable l = []
+                while i < line.Length && ((Char.IsLetterOrDigit line.[i]) || line.[i] = '_') do
+                    l <- line.[i]::l
+                    i <- i + 1
+                l |> List.rev
+            let backwardCharacters =
+                let mutable i = column
+                let mutable l = []
+                while i >= 0 && ((Char.IsLetterOrDigit line.[i]) || line.[i] = '_') do
+                    l <- line.[i] :: l
+                    i <- i - 1
+                if i < 0 then None else Some (line.[i], l)
+            let fileAndLine =
+                match backwardCharacters with
+                | None -> None
+                | (Some ('@', l)) ->
+                    let functionName = String.Join("", l@forwardCharacters)
+                    template.Value.Functions |> Array.tryFind (fun f -> f.Name = functionName) |> Option.map (fun f -> f.File, f.StartLine)
+                | (Some ('$', l)) ->
+                    let variableName = String.Join("", l@forwardCharacters)
+                    template.Value.Variables |> Array.tryFind (fun f -> f.Name = variableName) |> Option.map (fun f -> f.File, f.StartLine)
+                | (Some ('%', l)) ->
+                    let attributeName = String.Join("", l@forwardCharacters)
+                    template.Value.Attributes |> Array.tryFind (fun f -> f.Name = attributeName) |> Option.map (fun f -> f.File, f.StartLine)
+                | _ -> None
+            if fileAndLine.IsSome then
+                let (file, line) = fileAndLine.Value
+                return [ CommandResponse.navigate serialize { FileName = file ; LineNumber = line ; Location = 1 } ]
+            else
+                return [ CommandResponse.error serialize "Cannot find symbol" ] }
+
     member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo
         let lines = fileResolver fi.Name fi.Directory.FullName

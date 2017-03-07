@@ -2,17 +2,38 @@
   Main.
 ###
 
+{CompositeDisposable} = require 'atom'
 textOnCore = require './texton-core'
 generatorPane = require './generator-pane'
 
+gotoDefinition = ->
+  editor = atom.workspace.getActiveTextEditor()
+  isTextOn = textOnCore.isTextOnEditor editor
+  if isTextOn && editor.buffer.file?
+    row = editor.getCursorBufferPosition().row
+    column = editor.getCursorBufferPosition().column
+    line = editor.buffer.lines[row]
+    req =
+      FileName : editor.getPath()
+      Line : line
+      Column : column - 1
+    p = textOnCore.send('navigatetosymbol', 'navigate', req)
+    p.then (data) ->
+      if data.length is 1
+        textOnCore.navigate data[0]
+
 module.exports =
   activate: ->
-    window.atom.commands.add("atom-workspace", "TextOn:Settings", -> window.atom.workspace.open "atom://config/packages/texton")
+    @subscriptions = new CompositeDisposable
+    @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Go-To-Definition', ->
+      gotoDefinition()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'TextOn:Settings', -> atom.workspace.open "atom://config/packages/texton"
     generatorPane.activate()
     textOnCore.spawn()
   deactivate: ->
     generatorPane.deactivate()
     textOnCore.kill()
+    @subscriptions.dispose()
   provideErrors: ->
     return require('./texton-linter')
   provideCompletions: ->
