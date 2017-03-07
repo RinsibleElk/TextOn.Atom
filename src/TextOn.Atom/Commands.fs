@@ -149,9 +149,9 @@ type Commands (serialize : Serializer) =
                 let functions = template.Functions |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)
                 return [ CommandResponse.suggestions serialize (Array.append functions keywords) ]
             | "Variable" ->
-                return [ CommandResponse.suggestions serialize (template.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = "Variable $" + x.Name })) ]
+                return [ CommandResponse.suggestions serialize (template.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = sprintf "$%s: %s" x.Name x.Text })) ]
             | "Attribute" ->
-                return [ CommandResponse.suggestions serialize (template.Attributes |> Array.map (fun x -> { text = x.Name ; ``type`` = "attribute" ; description = "Attribute %" + x.Name })) ]
+                return [ CommandResponse.suggestions serialize (template.Attributes |> Array.map (fun x -> { text = x.Name ; ``type`` = "attribute" ; description = sprintf "%%%s: %s" x.Name x.Text })) ]
             | "QuotedString" ->
                 // Bit of work to do. We need to backtrack to try and find a '%' or a '$' character, then try and tokenize just the named value after that point.
                 let mutable name = []
