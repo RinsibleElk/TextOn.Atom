@@ -1,0 +1,10 @@
+'context-menu':
+  'atom-text-editor': [
+    {
+      label: 'TextOn'
+      submenu: [
+        {label: 'Send To Generator', command: 'TextOn:Send-To-Generator'},
+        {label: 'Go To Definition', command: 'TextOn:Go-To-Definition'}
+      ]
+    }
+  ]
