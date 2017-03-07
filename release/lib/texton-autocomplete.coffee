@@ -13,6 +13,8 @@ mapResult = (result) ->
     c = '%'
   else if result.type is 'value'
     c = ''
+  else if result.type is 'include'
+    c = ''
   else
     c = '@'
   data =

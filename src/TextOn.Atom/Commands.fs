@@ -166,19 +166,25 @@ type Commands (serialize : Serializer) =
                     while i >= 0 && ((Char.IsLetterOrDigit line.[i]) || (line.[i] = '_')) do
                         name <- line.[i]::name
                         i <- i - 1
-                    if i < 0 || (line.[i] <> '$' && line.[i] <> '%') then
+                    if i < 0 || (line.[i] <> '$' && line.[i] <> '%' && line.[i] <> '#') then
                         return [ CommandResponse.suggestions serialize [||] ]
                     else
                         let actualName = String.Join("", name |> List.toArray)
                         let values =
-                            if line.[i] = '$' then
+                            if line.[i] = '#' then
+                                // We add the directory contents.
+                                let fi = FileInfo fileName
+                                fi.Directory.GetFiles("*.texton")
+                                |> Array.filter (fun a -> a.Name.ToUpper() <> fi.Name.ToUpper())
+                                |> Array.map (fun f -> f.Name, "Include the contents of " + f.Name, "include")
+                            else if line.[i] = '$' then
                                 template.Variables
                                 |> Array.tryFind (fun v -> v.Name = actualName)
                                 |> Option.map
                                     (fun v ->
                                         let description = sprintf "Value for variable $%s - %s" v.Name
                                         v.Values
-                                        |> Array.map (fun x -> x.Value, description x.Value))
+                                        |> Array.map (fun x -> x.Value, description x.Value, "value"))
                                 |> defaultArg <| [||]
                             else
                                 template.Attributes
@@ -187,9 +193,9 @@ type Commands (serialize : Serializer) =
                                     (fun v ->
                                         let description = sprintf "Value for attribute %%%s - %s" v.Name
                                         v.Values
-                                        |> Array.map (fun x -> x.Value, description x.Value))
+                                        |> Array.map (fun x -> x.Value, description x.Value, "value"))
                                 |> defaultArg <| [||]
-                        return [ CommandResponse.suggestions serialize (values |> Array.map (fun (value, desc) -> { text = value ; description = desc ; ``type`` = "value" })) ]
+                        return [ CommandResponse.suggestions serialize (values |> Array.map (fun (value, desc, ty) -> { text = value ; description = desc ; ``type`` = ty })) ]
             | _ ->
                 return [ CommandResponse.error serialize "Unexpected type" ] }
 
