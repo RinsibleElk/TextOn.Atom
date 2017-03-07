@@ -28,12 +28,26 @@ module.exports =
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Go-To-Definition', ->
       gotoDefinition()
     @subscriptions.add atom.commands.add 'atom-workspace', 'TextOn:Settings', -> atom.workspace.open "atom://config/packages/texton"
+    @subscriptions.add atom.contextMenu.add
+      'atom-text-editor': [
+        {
+          label: 'TextOn'
+          submenu: [
+            {label: 'Send To Generator', command: 'TextOn:Send-To-Generator'},
+            {label: 'Go To Definition', command: 'TextOn:Go-To-Definition'}
+          ]
+          shouldDisplay: (event) => @shouldDisplayContextMenu(event)
+        }
+      ]
     generatorPane.activate()
     textOnCore.spawn()
   deactivate: ->
     generatorPane.deactivate()
     textOnCore.kill()
     @subscriptions.dispose()
+  shouldDisplayContextMenu: (event) ->
+    editor = atom.workspace.getActiveTextEditor()
+    textOnCore.isTextOnEditor editor
   provideErrors: ->
     return require('./texton-linter')
   provideCompletions: ->
