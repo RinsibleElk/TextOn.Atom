@@ -15,6 +15,8 @@ mapResult = (result) ->
     c = ''
   else if result.type is 'include'
     c = ''
+  else if result.type is 'directory'
+    c = ''
   else
     c = '@'
   data =
@@ -58,6 +60,13 @@ module.exports = new class # This only needs to be a class to bind getSuggestion
         column: col - 1
       p = textOnCore.send("autocomplete", "suggestion", data)
     else if c is '"'
+      data =
+        fileName: textEditor.getPath()
+        type: 'QuotedString'
+        line: line
+        column: col - 1
+      p = textOnCore.send("autocomplete", "suggestion", data)
+    else if c is '/'
       data =
         fileName: textEditor.getPath()
         type: 'QuotedString'

@@ -151,8 +151,10 @@ type Commands (serialize : Serializer) =
         | "QuotedString" ->
             // Bit of work to do. We need to backtrack to try and find a '%' or a '$' character, then try and tokenize just the named value after that point.
             let mutable name = []
+            let mutable prefix = []
             let mutable i = col
             while i >= 0 && line.[i] <> '"' do
+                prefix <- line.[i]::prefix
                 i <- i - 1
             while i >= 0 && (not (Char.IsLetterOrDigit line.[i])) && (line.[i] <> '_') do
                 i <- i - 1
@@ -165,15 +167,27 @@ type Commands (serialize : Serializer) =
                 if i < 0 || (line.[i] <> '$' && line.[i] <> '%' && line.[i] <> '#') then
                     return [ CommandResponse.suggestions serialize [||] ]
                 else
-                    let actualName = String.Join("", name |> List.toArray)
                     let values =
                         if line.[i] = '#' then
                             // We add the directory contents.
                             let fi = FileInfo fileName
-                            fi.Directory.GetFiles("*.texton")
-                            |> Array.filter (fun a -> a.Name.ToUpper() <> fi.Name.ToUpper())
-                            |> Array.map (fun f -> f.Name, "Include the contents of " + f.Name, "include")
+                            if fi.Exists |> not then [||]
+                            else
+                                // We want to look at the given prefix, and find the right set of suggested directory contents to send back.
+                                let existingQuery = String.Join("", prefix)
+                                let existingDirectory =
+                                    let i = existingQuery.LastIndexOf('/')
+                                    if i >= 0 then
+                                        DirectoryInfo(Path.Combine(fi.Directory.FullName, existingQuery.Substring(0, i + 1)))
+                                    else
+                                        fi.Directory
+                                let files = existingDirectory.GetFiles("*.texton") |> Array.filter (fun f -> f.FullName.ToUpper() <> fi.FullName.ToUpper())
+                                let directories = existingDirectory.GetDirectories()
+                                Array.append
+                                    (files |> Array.map (fun f -> f.Name, "Include the contents of " + f.Name, "include"))
+                                    (directories |> Array.map (fun f -> f.Name + "/", "Subdirectory " + f.Name, "directory"))
                         else if line.[i] = '$' then
+                            let actualName = String.Join("", name |> List.toArray)
                             template
                             |> Option.bind (fun t -> t.Variables |> Array.tryFind (fun v -> v.Name = actualName))
                             |> Option.map
@@ -183,6 +197,7 @@ type Commands (serialize : Serializer) =
                                     |> Array.map (fun x -> x.Value, description x.Value, "value"))
                             |> defaultArg <| [||]
                         else
+                            let actualName = String.Join("", name |> List.toArray)
                             template
                             |> Option.bind (fun t -> t.Attributes |> Array.tryFind (fun v -> v.Name = actualName))
                             |> Option.map
