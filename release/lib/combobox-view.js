@@ -45,7 +45,6 @@ module.exports = class ComboboxView {
 
   reset () {
     this.refs.queryEditor.setText('');
-    const editorElement = this.refs.queryEditor.element;
     this.collapsed = true;
     this.computeItems()
   }
@@ -148,7 +147,6 @@ module.exports = class ComboboxView {
     }
 
     this.refs.queryEditor.setText('');
-    const editorElement = this.refs.queryEditor.element;
     return etch.update(this)
   }
 
