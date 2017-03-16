@@ -132,10 +132,10 @@ type Commands (serialize : Serializer) =
                         generator.UpdateTemplate template
                         return
                             [ CommandResponse.generatorSetup serialize generator.Data ]
-                    | _ -> return []
-                | _ -> return []
-            else return []
-        else return [] }
+                    | _ -> return [ CommandResponse.error serialize "Nothing to generate" ]
+                | _ -> return [ CommandResponse.error serialize "Nothing to generate" ]
+            else return [ CommandResponse.error serialize "Nothing to generate" ]
+        else return [ CommandResponse.error serialize "Nothing to generate" ] }
 
     member __.GetCompletions fileName ty (line:string) (col:int) = async {
         let template = fileTemplateMap.TryFind(fileName)
