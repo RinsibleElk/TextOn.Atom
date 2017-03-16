@@ -14,15 +14,13 @@ module.exports = class ComboboxView {
     if (props.onDidInitialize) {
       props.onDidInitialize(this)
     }
-    if (this.props.value) {
-      this.refs.queryEditor.setText(this.props.value);
-    }
     this.element.classList.add('select-list');
     this.disposables.add(this.refs.queryEditor.onDidChange(this.didChangeQuery.bind(this)))
     if (!props.skipCommandsRegistration) {
       this.disposables.add(this.registerAtomCommands());
     }
     const editorElement = this.refs.queryEditor.element;
+    this.refs.queryEditor.setText('');
     const didLoseFocus = this.didLoseFocus.bind(this);
     editorElement.addEventListener('blur', didLoseFocus)
     const didGainFocus = this.didGainFocus.bind(this);
@@ -46,11 +44,8 @@ module.exports = class ComboboxView {
   }
 
   reset () {
-    if (this.props.value) {
-      this.refs.queryEditor.setText(this.props.value);
-    } else {
-      this.refs.queryEditor.setText('');
-    }
+    this.refs.queryEditor.setText('');
+    const editorElement = this.refs.queryEditor.element;
     this.collapsed = true;
     this.computeItems()
   }
@@ -152,18 +147,15 @@ module.exports = class ComboboxView {
       this.computeItems()
     }
 
-    if (this.props.value) {
-        this.refs.queryEditor.setText(this.props.value);
-    } else {
-        this.refs.queryEditor.setText('');
-    }
+    this.refs.queryEditor.setText('');
+    const editorElement = this.refs.queryEditor.element;
     return etch.update(this)
   }
 
   render () {
     return $.div(
       {},
-      $(TextEditor, {ref: 'queryEditor', mini: true}),
+      $(TextEditor, {ref: 'queryEditor', mini: true, placeholderText: this.props.value}),
       this.renderLoadingMessage(),
       this.renderInfoMessage(),
       this.renderErrorMessage(),
