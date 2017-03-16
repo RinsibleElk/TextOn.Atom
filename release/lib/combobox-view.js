@@ -45,6 +45,7 @@ module.exports = class ComboboxView {
 
   reset () {
     this.refs.queryEditor.setText('');
+    const editorElement = this.refs.queryEditor.element;
     this.collapsed = true;
     this.computeItems()
   }
@@ -114,26 +115,6 @@ module.exports = class ComboboxView {
       shouldComputeItems = true
     }
 
-    if (props.hasOwnProperty('emptyMessage')) {
-      this.props.emptyMessage = props.emptyMessage
-    }
-
-    if (props.hasOwnProperty('errorMessage')) {
-      this.props.errorMessage = props.errorMessage
-    }
-
-    if (props.hasOwnProperty('infoMessage')) {
-      this.props.infoMessage = props.infoMessage
-    }
-
-    if (props.hasOwnProperty('loadingMessage')) {
-      this.props.loadingMessage = props.loadingMessage
-    }
-
-    if (props.hasOwnProperty('loadingBadge')) {
-      this.props.loadingBadge = props.loadingBadge
-    }
-
     if (props.hasOwnProperty('itemsClassList')) {
       this.props.itemsClassList = props.itemsClassList
     }
@@ -147,6 +128,7 @@ module.exports = class ComboboxView {
     }
 
     this.refs.queryEditor.setText('');
+    const editorElement = this.refs.queryEditor.element;
     return etch.update(this)
   }
 
@@ -154,9 +136,6 @@ module.exports = class ComboboxView {
     return $.div(
       {},
       $(TextEditor, {ref: 'queryEditor', mini: true, placeholderText: this.props.value}),
-      this.renderLoadingMessage(),
-      this.renderInfoMessage(),
-      this.renderErrorMessage(),
       this.renderItems()
     );
   }
@@ -172,38 +151,8 @@ module.exports = class ComboboxView {
           onclick: () => this.didClickItem(index)
         }))
       )
-    } else if (!this.props.loadingMessage && this.props.emptyMessage) {
-      return $.span({ref: 'emptyMessage'}, this.props.emptyMessage)
     } else {
       return ""
-    }
-  }
-
-  renderErrorMessage () {
-    if (this.props.errorMessage) {
-      return $.span({ref: 'errorMessage'}, this.props.errorMessage)
-    } else {
-      return ''
-    }
-  }
-
-  renderInfoMessage () {
-    if (this.props.infoMessage) {
-      return $.span({ref: 'infoMessage'}, this.props.infoMessage)
-    } else {
-      return ''
-    }
-  }
-
-  renderLoadingMessage () {
-    if (this.props.loadingMessage) {
-      return $.div(
-        {className: 'loading'},
-        $.span({ref: 'loadingMessage', className: 'loading-message'}, this.props.loadingMessage),
-        this.props.loadingBadge ? $.span({ref: 'loadingBadge', className: 'badge'}, this.props.loadingBadge) : ''
-      )
-    } else {
-      return ''
     }
   }
 
