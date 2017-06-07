@@ -1,0 +1,3 @@
+###
+  Manages the Browser Panel.
+###
