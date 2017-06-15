@@ -4,6 +4,10 @@ open TextOn.Atom.DTO.DTO
 open System
 open System.IO
 
+type BrowserStartResult =
+    | CompilationFailure of CompilationError[]
+    | BrowserStarted of BrowserUpdate
+
 [<Sealed>]
 type BrowserServer(file) =
     let mutable currentTemplate = None

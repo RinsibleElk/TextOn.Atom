@@ -103,6 +103,23 @@ type Commands (serialize : Serializer) =
         generator <- None
         return [] }
 
+    member __.BrowserStart (file:SourceFilePath) lines = async {
+        let fi = Path.GetFullPath file |> FileInfo
+        let! result = doBrowserStart file fi.Directory.FullName lines
+        return
+            match result with
+            | Failure e -> [CommandResponse.error serialize e]
+            | Success (generateStartResult) ->
+                match generateStartResult with
+                | BrowserStartResult.CompilationFailure(errors) ->
+                    [ CommandResponse.error serialize "Nothing to browse"]
+                | BrowserStartResult.BrowserStarted(browserUpdate) ->
+                    [ CommandResponse.browserUpdate serialize browserUpdate ] }
+
+    member __.GenerateStop () = async {
+        generator <- None
+        return [] }
+
     member __.GeneratorValueSet ty name value = async {
         return
             if generator.IsSome then
