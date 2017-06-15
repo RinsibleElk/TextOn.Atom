@@ -10,6 +10,13 @@ module DTO =
             Lines : string[]
         }
     type GeneratorStopRequest = { Blank : string }
+    type BrowserStartRequest =
+        {
+            FileName : string
+            LineNumber : int
+            Lines : string[]
+        }
+    type BrowserStopRequest = { Blank : string }
     type GeneratorConfiguration =
         {
             NumSpacesBetweenSentences : int
@@ -58,7 +65,22 @@ module DTO =
             canGenerate : bool
             output : OutputString[]
         }
-
+    type BrowserNode =
+        {
+            text : string
+            index : int
+            isCollapsible : bool
+            file : string
+            line : int
+            children : BrowserNode[]
+        }
+    type BrowserUpdate =
+        {
+            attributes : GeneratorInput[]
+            variables : GeneratorInput[]
+            nodes : BrowserNode[]
+        }
+    
     type NavigateData =
         {
             FileName : string
@@ -72,3 +94,4 @@ module DTO =
     type GeneratorStartResult = Result<GeneratorData>
     type NavigateResult = Result<NavigateData>
     type SuggestionResult = Result<Suggestion>
+    type BrowserUpdateResult = Result<BrowserUpdate>

@@ -11,3 +11,4 @@
 'atom-workspace atom-text-editor:not([mini])[data-grammar~=texton]':
     'alt-enter': 'TextOn:Send-To-Generator'
     'ctrl-d': 'TextOn:Go-To-Definition'
+    'alt-b': 'TextOn:View-Browser'

@@ -34,7 +34,7 @@ module.exports =
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.workspace.addOpener (filePath) =>
       @createBrowserPanel() if isBrowserPanel filePath
-    @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Send-To-Browser', ->
+    @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:View-Browser', ->
       sendToTextOnBrowser()
     @disp = null
     @subscriptions.add atom.workspace.onDidStopChangingActivePaneItem (item) ->

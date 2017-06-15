@@ -36,6 +36,7 @@ module.exports =
           submenu: [
             {label: 'Send To Generator', command: 'TextOn:Send-To-Generator'},
             {label: 'Go To Definition', command: 'TextOn:Go-To-Definition'}
+            {label: 'View Browser Panel', command: 'TextOn:View-Browser'}
           ]
           shouldDisplay: (event) => @shouldDisplayContextMenu(event)
         }

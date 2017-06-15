@@ -49,6 +49,8 @@ module internal RunServer =
                 path "/updategenerator" >=> handler (fun (data : UpdateGeneratorRequest) -> commands.UpdateGenerator())
                 path "/autocomplete" >=> handler (fun (data : SuggestionRequest) -> commands.GetCompletions data.fileName data.``type`` data.line data.column)
                 path "/navigatetosymbol" >=> handler (fun (data : NavigateToSymbolRequest) -> commands.NavigateToSymbol data.FileName data.Line data.Column)
+                path "/browserstart" >=> handler (fun (data : BrowserStartRequest) -> commands.BrowserStart data.FileName (data.Lines |> List.ofArray))
+                path "/browserstop" >=> handler (fun (data : BrowserStopRequest) -> commands.BrowserStop ())
             ]
 
         let port = serverModeConfig.Port
