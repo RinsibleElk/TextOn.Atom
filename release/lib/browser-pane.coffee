@@ -1,39 +1,48 @@
 ###
-  Manages the Browser Panel.
+  Manages the Browser Pane.
 ###
 
 {CompositeDisposable} = require 'atom'
-BrowserPanelTitle = 'TextOn Browser'
 textOnCore = require './texton-core'
-
-findOrOpenBrowserPanelView = ->
-  for pane in window.atom.workspace.getPanes()
-    for item in pane.getItems()
-      if item.getTitle() is BrowserPanelTitle
-        pane.activateItem item
-        pane.activate()
-        return item
-  window.atom.workspace.open(BrowserPanelTitle, {split: 'bottom'})
-
-isBrowserPanel = (filePath) ->
-  offset = filePath.length - BrowserPanelTitle.length
-  index = filePath.indexOf(BrowserPanelTitle, offset)
-  index is offset
-
+Logger = require './texton-logger'
 browser = null
 
-updateBrowserPanel = ->
-  findOrOpenBrowserPanelView()
+createBrowserPane = ->
+  BrowserPaneView = require './browser-pane-view'
+  browser = new BrowserPaneView(
+      {
+        name : 'World'
+      })
+
+showBrowser = ->
+  paneContainer = atom.workspace.paneContainerForURI(browser.getURI())
+  if paneContainer?
+    paneContainer.show()
+    pane = atom.workspace.paneForItem(browser)
+    if pane?
+      pane.activateItemForURI(browser.getURI())
+
+findOrOpenBrowserPaneView = ->
+  if browser?
+      showBrowser()
+  else
+    createBrowserPane()
+    atom.workspace.open(browser, {
+      activatePane: false,
+      activateItem: false
+    }).then () ->
+      showBrowser()
+
+updateBrowserPane = ->
+  findOrOpenBrowserPaneView()
   browser.update({name:'Updated'})
 
 sendToTextOnBrowser = ->
-  updateBrowserPanel()
+  updateBrowserPane()
 
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.workspace.addOpener (filePath) =>
-      @createBrowserPanel() if isBrowserPanel filePath
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:View-Browser', ->
       sendToTextOnBrowser()
     @disp = null
@@ -56,10 +65,3 @@ module.exports =
   deactivate: ->
     @disp?.dispose()
     @subscriptions.dispose()
-
-  createBrowserPanel: ->
-    BrowserPanelView = require './browser-panel-view'
-    browser = new BrowserPanelView(
-        {
-          name : 'World'
-        })

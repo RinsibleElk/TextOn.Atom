@@ -5,22 +5,50 @@
 {CompositeDisposable} = require 'atom'
 GeneratorPaneTitle = 'TextOn Generator'
 textOnCore = require './texton-core'
+Logger = require './texton-logger'
+generator = null
+
+createGeneratorPane = ->
+  Logger.logf("Generator", "Creating", [])
+  GeneratorPaneView = require './generator-pane-view'
+  generator = new GeneratorPaneView(
+      {
+        collapsedSections : []
+        functionName : ''
+        canGenerate : false
+        output : []
+        fileName : []
+        attributes : []
+        variables : []
+        onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
+        onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
+        onDidClickGenerate : -> generate()
+        onDidClickSimpleLink : (item) ->
+          data =
+            FileName : item.File
+            LineNumber : item.LineNumber
+            Location : 1
+          textOnCore.navigate(data)
+      })
+
+showGenerator = ->
+  paneContainer = atom.workspace.paneContainerForURI(generator.getURI())
+  if paneContainer?
+    paneContainer.show()
+    pane = atom.workspace.paneForItem(generator)
+    if pane?
+      pane.activateItemForURI(generator.getURI())
 
 findOrOpenGeneratorPaneView = ->
-  for pane in window.atom.workspace.getPanes()
-    for item in pane.getItems()
-      if item.getTitle() is GeneratorPaneTitle
-        pane.activateItem item
-        pane.activate()
-        return item
-  window.atom.workspace.open(GeneratorPaneTitle, {split: 'right'})
-
-isGeneratorPane = (filePath) ->
-  offset = filePath.length - GeneratorPaneTitle.length
-  index = filePath.indexOf(GeneratorPaneTitle, offset)
-  index is offset
-
-generator = null
+  if generator?
+    showGenerator()
+  else
+    createGeneratorPane()
+    atom.workspace.open(generator, {
+      activatePane: false,
+      activateItem: false
+    }).then () ->
+      showGenerator()
 
 updateGeneratorPane = (data) ->
   findOrOpenGeneratorPaneView()
@@ -81,8 +109,6 @@ generate = ->
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.workspace.addOpener (filePath) =>
-      @createGeneratorPane() if isGeneratorPane filePath
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Send-To-Generator', ->
       sendToTextOnGenerator()
     @disp = null
@@ -105,25 +131,3 @@ module.exports =
   deactivate: ->
     @disp?.dispose()
     @subscriptions.dispose()
-
-  createGeneratorPane: ->
-    GeneratorPaneView = require './generator-pane-view'
-    generator = new GeneratorPaneView(
-        {
-          collapsedSections : []
-          functionName : ''
-          canGenerate : false
-          output : []
-          fileName : []
-          attributes : []
-          variables : []
-          onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
-          onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
-          onDidClickGenerate : -> generate()
-          onDidClickSimpleLink : (item) ->
-            data =
-              FileName : item.File
-              LineNumber : item.LineNumber
-              Location : 1
-            textOnCore.navigate(data)
-        })

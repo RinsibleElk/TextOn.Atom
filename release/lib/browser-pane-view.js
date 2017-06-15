@@ -5,7 +5,7 @@ import etch from 'etch'
 const $ = etch.dom
 import TextOnCore from './texton-core'
 
-export default class BrowserPanelView {
+export default class BrowserPaneView {
   constructor (props) {
     this.props = props;
     etch.initialize(this);
@@ -26,7 +26,7 @@ export default class BrowserPanelView {
   }
 
   isEqual (other) {
-    return other instanceof BrowserPanelView;
+    return other instanceof BrowserPaneView;
   }
 
   getPreferredLocation () {
@@ -39,6 +39,14 @@ export default class BrowserPanelView {
 
   isPermanentDockItem () {
     return true;
+  }
+
+  getTitle () {
+    return "TextOn Browser";
+  }
+
+  getURI () {
+    return "atom://texton-browser";
   }
 
   render () {

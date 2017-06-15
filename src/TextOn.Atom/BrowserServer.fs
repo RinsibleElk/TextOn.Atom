@@ -5,7 +5,7 @@ open System
 open System.IO
 
 type BrowserStartResult =
-    | CompilationFailure of CompilationError[]
+    | BrowserCompilationFailure of CompilationError[]
     | BrowserStarted of BrowserUpdate
 
 [<Sealed>]

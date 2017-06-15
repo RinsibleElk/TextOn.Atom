@@ -5,7 +5,7 @@
 {CompositeDisposable} = require 'atom'
 textOnCore = require './texton-core'
 generatorPane = require './generator-pane'
-browserPanel = require './browser-panel'
+browserPane = require './browser-pane'
 
 gotoDefinition = ->
   editor = atom.workspace.getActiveTextEditor()
@@ -42,11 +42,11 @@ module.exports =
         }
       ]
     generatorPane.activate()
-    browserPanel.activate()
+    browserPane.activate()
     textOnCore.spawn()
   deactivate: ->
     generatorPane.deactivate()
-    browserPanel.deactivate()
+    browserPane.deactivate()
     textOnCore.kill()
     @subscriptions.dispose()
   shouldDisplayContextMenu: (event) ->

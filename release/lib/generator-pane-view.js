@@ -26,6 +26,26 @@ export default class GeneratorPaneView {
     }
   }
 
+  getPreferredLocation () {
+    return 'right';
+  }
+
+  getAllowedLocations () {
+    return ["right"]
+  }
+
+  isPermanentDockItem () {
+    return true;
+  }
+
+  getTitle () {
+    return "TextOn Generator"
+  }
+
+  getURI () {
+    return "atom://texton-generator";
+  }
+
   destroy () {
     for (const input of this.inputs) {
       input.destroy();

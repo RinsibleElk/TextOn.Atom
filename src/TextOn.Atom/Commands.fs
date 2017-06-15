@@ -9,6 +9,8 @@ type Commands (serialize : Serializer) =
     let fileTemplateMap = ConcurrentDictionary<string, CompiledTemplate>()
     //TODO: Make thread-safe.
     let mutable generator = None
+    let mutable browsers = ConcurrentDictionary<string, BrowserServer>()
+    let mutable isBrowsing = false
     let add fileName directory lines =
         let key = Path.Combine(directory, fileName).ToLower()
         let f = System.Func<string, string list, string list>(fun _ _ -> lines)
@@ -19,7 +21,12 @@ type Commands (serialize : Serializer) =
             if ok then Some r
             else None
             |> Option.map (fun x -> (f, d, x))
-        if o.IsNone then Preprocessor.realFileResolver f d
+        if o.IsNone then
+            let o = Preprocessor.realFileResolver f d
+            if o.IsNone then None
+            else
+                add f d (o.Value |> fun (_, _, a) -> a)
+                o
         else o
     let doCompile fileName directory lines =
         async {
@@ -80,6 +87,20 @@ type Commands (serialize : Serializer) =
                             Success (GeneratorStartResult.GeneratorStarted generator.Value.Data))
                     |> defaultArg <| Failure "Nothing to generate" }
 
+    let doBrowserStart fileName directory lines = async {
+        add fileName directory lines
+        let! compileResult = doCompile fileName directory lines
+        return
+            match compileResult with
+            | Failure e -> Failure e
+            | Success compilationResult ->
+                match compilationResult with
+                | CompilationResult.CompilationFailure errors -> Success (BrowserStartResult.BrowserCompilationFailure errors)
+                | CompilationResult.CompilationSuccess template ->
+                    let browser = browsers.GetOrAdd(fileName, fun f-> BrowserServer(f))
+                    browser.UpdateTemplate(template)
+                    Success (BrowserStartResult.BrowserStarted browser.Data) }
+
     member __.Parse file lines =
         async {
             let lines = lines |> List.ofArray
@@ -111,13 +132,15 @@ type Commands (serialize : Serializer) =
             | Failure e -> [CommandResponse.error serialize e]
             | Success (generateStartResult) ->
                 match generateStartResult with
-                | BrowserStartResult.CompilationFailure(errors) ->
+                | BrowserStartResult.BrowserCompilationFailure(errors) ->
                     [ CommandResponse.error serialize "Nothing to browse"]
                 | BrowserStartResult.BrowserStarted(browserUpdate) ->
+                    isBrowsing <- true
                     [ CommandResponse.browserUpdate serialize browserUpdate ] }
 
-    member __.GenerateStop () = async {
-        generator <- None
+    member __.BrowserStop () = async {
+        isBrowsing <- false
+        browsers.Clear()
         return [] }
 
     member __.GeneratorValueSet ty name value = async {

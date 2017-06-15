@@ -40,5 +40,7 @@ module CommandResponse =
     let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = [|s|] }
     let generatorSetup (serialize : Serializer) (generatorData:GeneratorData) =
         serialize { Kind = "generatorSetup" ; Data = [|generatorData|] }
+    let browserUpdate (serialize : Serializer) (update:BrowserUpdate) =
+        serialize { Kind = "browserUpdate" ; Data = [|update|] }
     let navigate (serialize : Serializer) (data:NavigateData) =
         serialize { Kind = "navigate" ; Data = [|data|] }
