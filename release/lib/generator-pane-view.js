@@ -217,7 +217,7 @@ export default class GeneratorPaneView {
 
   render () {
     return (
-      <div className='texton-generator pane-item' tabIndex='-1'>
+      <div className='texton-generator' tabIndex='-1'>
         <header className='texton-header'>
           <h1>TextOn Generator for <a onClick={this.didClickFunctionLink.bind(this)}>{this.props.functionName}</a></h1>
         </header>

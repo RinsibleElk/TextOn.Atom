@@ -4,11 +4,13 @@
 import etch from 'etch'
 const $ = etch.dom
 import TextOnCore from './texton-core'
+import BrowserPaneTreeView from './browser-pane-tree-view'
 
 export default class BrowserPaneView {
   constructor (props) {
     this.props = props;
     etch.initialize(this);
+    this.handleEvents();
   }
 
   destroy () {
@@ -49,15 +51,43 @@ export default class BrowserPaneView {
     return "atom://texton-browser";
   }
 
+  handleClickEvent (e) {
+    // This prevents accidental collapsing when a .entries element is the event target
+    if (e.target.classList.contains('entries')) {
+      return
+    }
+    if (!(e.shiftKey || e.metaKey || e.ctrlKey)) {
+      this.entryClicked(e)
+    }
+  }
+
+  handleEvents () {
+    const handleClickEvent = this.handleClickEvent.bind(this);
+    this.element.addEventListener('click', handleClickEvent);
+  }
+
+  entryClicked (e) {
+    const entry = e.target.closest('.entry');
+    //selectEntry(entry);
+    if (entry.classList.contains('texton-tree')) {
+      entry.toggleExpansion();
+    }
+  }
+
   render () {
     return (
       <div className='texton-browser tool-panel' tabIndex='-1'>
-        <header className='texton-header'>
-          <h1>TextOn Browser</h1>
-        </header>
-        <main>
-          <div>Hello {this.props.name}!</div>
-        </main>
+        <ol class='list-tree has-collapsable-children'>
+          <BrowserPaneTreeView
+            text='Foo'
+            isCollapsed={false} />
+          <BrowserPaneTreeView
+            text='Bar'
+            isCollapsed={true} />
+          <BrowserPaneTreeView
+            text='Baz'
+            isCollapsed={false} />
+        </ol>
       </div>
     )
   }

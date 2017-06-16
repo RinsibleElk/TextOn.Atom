@@ -40,6 +40,9 @@ updateBrowserPane = ->
 sendToTextOnBrowser = ->
   updateBrowserPane()
 
+requestUpdate = ->
+
+
 module.exports =
   activate: ->
     @subscriptions = new CompositeDisposable
