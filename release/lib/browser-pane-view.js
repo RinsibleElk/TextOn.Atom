@@ -17,10 +17,24 @@ export default class BrowserPaneView {
   }
 
   update (props) {
-    if (props.hasOwnProperty('name')) {
-      this.props.name = props.name
+    if (props.hasOwnProperty('nodes')) {
+      this.props.nodes = props.nodes
     }
     return etch.update(this)
+  }
+
+  renderItems () {
+    if (this.props.nodes.length > 0) {
+      const className = 'list-tree has-collapsable-children';
+      return $.ol(
+        {className, ref: 'items'},
+        ...this.props.nodes.map((item, index) => $(BrowserPaneTreeView, {
+          text : item.text
+        }))
+      )
+    } else {
+      return ""
+    }
   }
 
   getTitle () {
@@ -69,26 +83,19 @@ export default class BrowserPaneView {
   entryClicked (e) {
     const entry = e.target.closest('.entry');
     //selectEntry(entry);
-    if (entry.classList.contains('texton-tree')) {
-      entry.toggleExpansion();
+    if (entry != null) {
+      if (entry.classList.contains('texton-tree')) {
+        entry.toggleExpansion();
+      }
     }
   }
 
   render () {
-    return (
-      <div className='texton-browser tool-panel' tabIndex='-1'>
-        <ol class='list-tree has-collapsable-children'>
-          <BrowserPaneTreeView
-            text='Foo'
-            isCollapsed={false} />
-          <BrowserPaneTreeView
-            text='Bar'
-            isCollapsed={true} />
-          <BrowserPaneTreeView
-            text='Baz'
-            isCollapsed={false} />
-        </ol>
-      </div>
-    )
+    return $.div(
+      {
+        className : 'texton-browser tool-panel',
+        tabIndex : '-1'
+      },
+      this.renderItems())
   }
 }

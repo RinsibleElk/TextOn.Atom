@@ -7,11 +7,11 @@ textOnCore = require './texton-core'
 Logger = require './texton-logger'
 browser = null
 
-createBrowserPane = ->
+createBrowserPane = (data) ->
   BrowserPaneView = require './browser-pane-view'
   browser = new BrowserPaneView(
       {
-        name : 'World'
+        nodes : data.nodes
       })
 
 showBrowser = ->
@@ -22,26 +22,34 @@ showBrowser = ->
     if pane?
       pane.activateItemForURI(browser.getURI())
 
-findOrOpenBrowserPaneView = ->
+updateBrowserPane = (data) ->
   if browser?
+      browser.update data
       showBrowser()
   else
-    createBrowserPane()
+    createBrowserPane data
+    Logger.logf("updateBrowserPane", "finished creating", browser)
     atom.workspace.open(browser, {
       activatePane: false,
       activateItem: false
     }).then () ->
       showBrowser()
 
-updateBrowserPane = ->
-  findOrOpenBrowserPaneView()
-  browser.update({name:'Updated'})
-
 sendToTextOnBrowser = ->
-  updateBrowserPane()
+  editor = atom.workspace.getActiveTextEditor()
+  isTextOn = textOnCore.isTextOnEditor editor
+  if isTextOn && editor.buffer.file?
+    text = editor.getText()
+    req =
+      FileName : editor.getPath()
+      Lines : text.split ["\n"]
+    p = textOnCore.send('browserstart', 'browserUpdate', req)
+    p.then (data) ->
+      if data.length is 1
+        Logger.logf("sendToTextOnBrowser", "updateBrowserPane", data[0])
+        updateBrowserPane (data[0])
 
 requestUpdate = ->
-
 
 module.exports =
   activate: ->

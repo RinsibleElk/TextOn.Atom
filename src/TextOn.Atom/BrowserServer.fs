@@ -135,14 +135,15 @@ type BrowserServer(file) =
             attributes = attributes
             variables = variables
             nodes =
-                [|
-                    {
-                        text = "fake node"
-                        index = 1
-                        isCollapsible = true
-                        file = file
-                        line = 1
-                        children = [||]
-                    }
-                |]
+                currentTemplate.Functions
+                |> Array.mapi
+                    (fun i fn ->
+                        {
+                            text = fn.Name
+                            index = i + 1
+                            isCollapsible = true
+                            file = fn.File
+                            line = fn.StartLine
+                            children = [||]
+                        })
         }

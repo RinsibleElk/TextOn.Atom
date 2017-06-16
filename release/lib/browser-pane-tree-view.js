@@ -8,6 +8,7 @@ import Logger from './texton-logger'
 
 export default class BrowserPaneTreeView {
   constructor (props) {
+    Logger.logf("BrowserPaneTreeView", "Ctor", props)
     this.props = props;
     this.isExpanded = false
     etch.initialize(this);
@@ -55,8 +56,8 @@ export default class BrowserPaneTreeView {
     if (props.hasOwnProperty('text')) {
       this.props.text = props.text;
     }
-    if (props.hasOwnProperty('index')) {
-      this.props.index = props.index;
+    if (props.hasOwnProperty('indexPath')) {
+      this.props.indexPath = props.indexPath;
     }
     if (props.hasOwnProperty('isCollapsed')) {
       this.props.isCollapsed = props.isCollapsed;
@@ -71,9 +72,9 @@ export default class BrowserPaneTreeView {
     return (
       <li>
         <div class='list-item'>
-          <span>{this.props.text}</span>
+          <span class='icon icon-file-directory'>{this.props.text}</span>
         </div>
-        <ol class='list-tree'>
+        <ol class='list-tree entry'>
           <li class='list-item'>
             <span>{this.props.text}</span>
           </li>
