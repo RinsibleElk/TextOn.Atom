@@ -20,6 +20,9 @@ export default class BrowserPaneView {
     if (props.hasOwnProperty('nodes')) {
       this.props.nodes = props.nodes
     }
+    if (props.hasOwnProperty('file')) {
+      this.props.file = props.file
+    }
     return etch.update(this)
   }
 
@@ -29,7 +32,12 @@ export default class BrowserPaneView {
       return $.ol(
         {className, ref: 'items'},
         ...this.props.nodes.map((item, index) => $(BrowserPaneTreeView, {
-          text : item.text
+          text : item.text,
+          file : item.file,
+          line : item.line,
+          isCollapsed : item.isCollapsed,
+          browserFile : this.props.file,
+          indexPath : item.indexPath
         }))
       )
     } else {

@@ -10,6 +10,7 @@ type BrowserStartResult =
 
 [<Sealed>]
 type BrowserServer(file) =
+    let mutable currentValue = None
     let mutable currentTemplate = None
     let mutable attributeValues = Map.empty
     let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
@@ -131,19 +132,39 @@ type BrowserServer(file) =
                 let variables = a |> Array.map snd |> Array.choose (function | Choice2Of2 a -> Some a | _ -> None)
                 let haveSeenEmpty = a |> Array.map fst |> List.ofArray |> List.tryLast |> defaultArg <| false
                 (haveSeenEmpty, attributes, variables)
-        {
-            attributes = attributes
-            variables = variables
-            nodes =
-                currentTemplate.Functions
-                |> Array.mapi
-                    (fun i fn ->
-                        {
-                            text = fn.Name
-                            index = i + 1
-                            isCollapsible = true
-                            file = fn.File
-                            line = fn.StartLine
-                            children = [||]
-                        })
-        }
+        let retVal =
+            {
+                attributes = attributes
+                variables = variables
+                nodes =
+                    currentTemplate.Functions
+                    |> Array.mapi
+                        (fun i fn ->
+                            {
+                                text = fn.Name
+                                indexPath = [|i|]
+                                isCollapsible = true
+                                isCollapsed = true
+                                file = fn.File
+                                line = fn.StartLine
+                                children = [||]
+                            })
+                file = file
+            }
+        currentValue <- Some retVal
+        retVal
+    member __.ItemsAt (indexPath:int[]) =
+        if currentValue.IsNone then None
+        else if currentValue.Value.nodes.Length < indexPath.[0] then None
+        else
+            indexPath
+            |> Array.skip 1
+            |> Array.fold
+                (fun (state:BrowserNode option) i ->
+                    if state |> Option.isNone then None
+                    else
+                        let state = state.Value
+                        if state.children.Length > i then Some state.children.[i]
+                        else None)
+                (Some currentValue.Value.nodes.[indexPath.[0]])
+            |> Option.map (fun item -> { newItems = item.children })

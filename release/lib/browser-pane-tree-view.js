@@ -27,10 +27,15 @@ export default class BrowserPaneTreeView {
 
   expand () {
     Logger.logf("BrowserPaneTreeView", "Expand", [])
-    this.isExpanded = true;
-    this.element.classList.add('expanded')
-    this.element.classList.remove('collapsed')
-
+    TextOnCore.send('browserExpand', 'browserItems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
+      .then((data) => {
+        if (data.length > 0) {
+          this.items = data[0].items
+          this.isExpanded = true;
+          this.element.classList.add('expanded')
+          this.element.classList.remove('collapsed')
+        }
+      })
   }
 
   collapse () {
@@ -38,6 +43,7 @@ export default class BrowserPaneTreeView {
     this.isExpanded = false;
     this.element.classList.remove('expanded')
     this.element.classList.add('collapsed')
+    this.items = []
   }
 
   toggleExpansion () {
@@ -56,23 +62,51 @@ export default class BrowserPaneTreeView {
     if (props.hasOwnProperty('text')) {
       this.props.text = props.text;
     }
-    if (props.hasOwnProperty('indexPath')) {
-      this.props.indexPath = props.indexPath;
+    if (props.hasOwnProperty('file')) {
+      this.props.file = props.file;
+    }
+    if (props.hasOwnProperty('line')) {
+      this.props.line = props.line;
     }
     if (props.hasOwnProperty('isCollapsed')) {
       this.props.isCollapsed = props.isCollapsed;
     }
-    if (props.hasOwnProperty('children')) {
-      this.props.children = props.children;
+    if (props.hasOwnProperty('items')) {
+      this.props.items = props.items
+      shouldComputeItems = true
+    }
+    if (props.hasOwnProperty('indexPath')) {
+      this.props.indexPath = props.indexPath
+    }
+    if (props.hasOwnProperty('browserFile')) {
+      this.props.browserFile = props.browserFile
+    }
+    if (shouldComputeItems) {
+      this.computeItems()
     }
     return etch.update(this)
+  }
+
+  computeItems () {
+    this.items = this.props.items;
+  }
+
+  didClickLink () {
+    data =
+      {
+        FileName : this.props.file,
+        LineNumber : this.props.line,
+        Location : 1
+      }
+    TextOnCore.navigate(data)
+    return false;
   }
 
   render () {
     return (
       <li>
         <div class='list-item'>
-          <span class='icon icon-file-directory'>{this.props.text}</span>
+          <a class='entry' onClick={this.didClickLink.bind(this)}>{this.props.text}</a>
         </div>
         <ol class='list-tree entry'>
           <li class='list-item'>

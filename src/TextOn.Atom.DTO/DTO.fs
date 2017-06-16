@@ -16,6 +16,7 @@ module DTO =
             LineNumber : int
             Lines : string[]
         }
+    type BrowserExpandRequest = { browserFile : string ; indexPath : int[] }
     type BrowserStopRequest = { Blank : string }
     type GeneratorConfiguration =
         {
@@ -68,8 +69,9 @@ module DTO =
     type BrowserNode =
         {
             text : string
-            index : int
+            indexPath : int[]
             isCollapsible : bool
+            isCollapsed : bool
             file : string
             line : int
             children : BrowserNode[]
@@ -79,6 +81,11 @@ module DTO =
             attributes : GeneratorInput[]
             variables : GeneratorInput[]
             nodes : BrowserNode[]
+            file : string
+        }
+    type BrowserItems =
+        {
+            newItems : BrowserNode[]
         }
     
     type NavigateData =

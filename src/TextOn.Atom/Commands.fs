@@ -101,6 +101,17 @@ type Commands (serialize : Serializer) =
                     browser.UpdateTemplate(template)
                     Success (BrowserStartResult.BrowserStarted browser.Data) }
 
+    let doBrowserExpand fileName directory indexPath = async {
+        if (not (isBrowsing)) then return Failure "Not browsing"
+        else
+            let ok, browser = browsers.TryGetValue(fileName)
+            let items =
+                browser.ItemsAt indexPath
+            return
+                items
+                |> Option.map (fun items -> Success items )
+                |> defaultArg <| Failure "Couldn't find IndexPath" }
+
     member __.Parse file lines =
         async {
             let lines = lines |> List.ofArray
@@ -137,6 +148,16 @@ type Commands (serialize : Serializer) =
                 | BrowserStartResult.BrowserStarted(browserUpdate) ->
                     isBrowsing <- true
                     [ CommandResponse.browserUpdate serialize browserUpdate ] }
+
+    member __.BrowserExpand file indexPath = async {
+        let fi = Path.GetFullPath file |> FileInfo
+        let! result = doBrowserExpand file fi.Directory.FullName indexPath
+        return
+            match result with
+            | Failure e -> [CommandResponse.error serialize e]
+            | Success browserItems ->
+                [ CommandResponse.browserItems serialize browserItems ] }
+
 
     member __.BrowserStop () = async {
         isBrowsing <- false

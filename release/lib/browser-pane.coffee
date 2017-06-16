@@ -11,7 +11,8 @@ createBrowserPane = (data) ->
   BrowserPaneView = require './browser-pane-view'
   browser = new BrowserPaneView(
       {
-        nodes : data.nodes
+        nodes : data.nodes,
+        file : data.file
       })
 
 showBrowser = ->

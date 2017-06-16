@@ -154,7 +154,8 @@ module Compiler =
         | ParsedSentence(lineNumber, sentence) ->
             match (compileSentence file lineNumber variableDefinitions sentence) with
             | Errors e -> Errors e
-            | Result compiledSentence -> Result (Sentence(file, lineNumber, compiledSentence))
+            | Result compiledSentence ->
+                Result (Sentence(file, lineNumber, compiledSentence))
         | ParsedFunctionInvocation(lineNumber, startLocation, endLocation, functionName) ->
             let func : CompiledFunctionDefinition option = functionDefinitions |> Map.tryFind functionName
             match func with

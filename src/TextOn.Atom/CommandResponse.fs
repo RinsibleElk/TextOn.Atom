@@ -42,5 +42,7 @@ module CommandResponse =
         serialize { Kind = "generatorSetup" ; Data = [|generatorData|] }
     let browserUpdate (serialize : Serializer) (update:BrowserUpdate) =
         serialize { Kind = "browserUpdate" ; Data = [|update|] }
+    let browserItems (serialize : Serializer) (items:BrowserItems) =
+        serialize { Kind = "browserItems" ; Data = [|items|] }
     let navigate (serialize : Serializer) (data:NavigateData) =
         serialize { Kind = "navigate" ; Data = [|data|] }
