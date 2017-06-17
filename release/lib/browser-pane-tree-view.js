@@ -59,6 +59,7 @@ export default class BrowserPaneTreeView {
   }
 
   update (props) {
+    shouldComputeItems = false
     if (props.hasOwnProperty('text')) {
       this.props.text = props.text;
     }

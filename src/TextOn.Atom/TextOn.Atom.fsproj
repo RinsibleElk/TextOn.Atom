@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -92,6 +92,7 @@
     <Compile Include="CompiledTemplate.fs" />
     <Compile Include="Compiler.fs" />
     <Compile Include="Generator.fs" />
+    <None Include="Browser.fs" />
     <Compile Include="RunInteractive.fs" />
     <Compile Include="JsonSerializer.fs" />
     <Compile Include="SuaveUtils.fs" />
@@ -106,7 +107,6 @@
     <None Include="SuaveTesting.fsx" />
     <None Include="CompilationBenchmark.fsx" />
     <None Include="Benchmarking.texton" />
-    <None Include="Browser.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
