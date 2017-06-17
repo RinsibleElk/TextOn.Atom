@@ -105,12 +105,14 @@ type Commands (serialize : Serializer) =
         if (not (isBrowsing)) then return Failure "Not browsing"
         else
             let ok, browser = browsers.TryGetValue(fileName)
-            let items =
-                browser.ItemsAt indexPath
-            return
-                items
-                |> Option.map (fun items -> Success items )
-                |> defaultArg <| Failure "Couldn't find IndexPath" }
+            if not ok then return Failure "No browser"
+            else
+                let items =
+                    browser.ExpandAt indexPath
+                return
+                    items
+                    |> Option.map (fun items -> Success items )
+                    |> defaultArg <| Failure "Couldn't find IndexPath" }
 
     member __.Parse file lines =
         async {

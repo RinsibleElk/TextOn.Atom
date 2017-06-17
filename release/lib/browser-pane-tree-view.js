@@ -27,7 +27,7 @@ export default class BrowserPaneTreeView {
 
   expand () {
     Logger.logf("BrowserPaneTreeView", "Expand", [])
-    TextOnCore.send('browserExpand', 'browserItems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
+    TextOnCore.send('browserexpand', 'browseritems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
       .then((data) => {
         if (data.length > 0) {
           this.items = data[0].items

@@ -22,3 +22,12 @@ module ConditionEvaluator =
         | Either(c1, c2) -> (c1 |> resolve cache) || (c2 |> resolve cache)
         | AreEqual(identity, value) -> (cache |> Map.find identity) = value
         | AreNotEqual(identity, value) -> (cache |> Map.find identity) <> value
+
+    /// Resolve a condition's value with only a partial cache.
+    let rec resolvePartial (cache:Map<int, string>) condition : bool =
+        match condition with
+        | True -> true
+        | Both(c1, c2) -> (c1 |> resolve cache) && (c2 |> resolve cache)
+        | Either(c1, c2) -> (c1 |> resolve cache) || (c2 |> resolve cache)
+        | AreEqual(identity, value) -> cache |> Map.tryFind identity |> Option.map ((=) value) |> defaultArg <| true
+        | AreNotEqual(identity, value) -> cache |> Map.tryFind identity |> Option.map ((<>) value) |> defaultArg <| true

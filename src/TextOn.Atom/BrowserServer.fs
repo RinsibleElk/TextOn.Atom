@@ -8,12 +8,19 @@ type BrowserStartResult =
     | BrowserCompilationFailure of CompilationError[]
     | BrowserStarted of BrowserUpdate
 
+type NodeHash = int
+
+type ExpandedPath =
+    | Collapsed
+    | Expanded of (NodeHash * ExpandedPath)[]
+
 [<Sealed>]
 type BrowserServer(file) =
     let mutable currentValue = None
     let mutable currentTemplate = None
     let mutable attributeValues = Map.empty
     let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
+    let mutable expandedPaths : ExpandedPath = Collapsed
     member __.File = file |> System.IO.FileInfo
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =
@@ -152,8 +159,11 @@ type BrowserServer(file) =
                 file = file
             }
         currentValue <- Some retVal
-        retVal
-    member __.ItemsAt (indexPath:int[]) =
+        retVal    
+       
+    // This should set the new state on the parent to expanded, and return the children, having resolved some text to write.
+    // It should update the current value.
+    member __.ExpandAt (indexPath:int[]) =
         if currentValue.IsNone then None
         else if currentValue.Value.nodes.Length < indexPath.[0] then None
         else
@@ -167,4 +177,8 @@ type BrowserServer(file) =
                         if state.children.Length > i then Some state.children.[i]
                         else None)
                 (Some currentValue.Value.nodes.[indexPath.[0]])
-            |> Option.map (fun item -> { newItems = item.children })
+            |> Option.map
+                (fun item ->
+                    {
+                        newItems = item.children
+                    })

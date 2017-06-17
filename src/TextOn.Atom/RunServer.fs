@@ -51,7 +51,7 @@ module internal RunServer =
                 path "/navigatetosymbol" >=> handler (fun (data : NavigateToSymbolRequest) -> commands.NavigateToSymbol data.FileName data.Line data.Column)
                 path "/browserstart" >=> handler (fun (data : BrowserStartRequest) -> commands.BrowserStart data.FileName (data.Lines |> List.ofArray))
                 path "/browserstop" >=> handler (fun (data : BrowserStopRequest) -> commands.BrowserStop ())
-                path "/browserExpand" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserExpand data.browserFile data.indexPath)
+                path "/browserexpand" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserExpand data.browserFile data.indexPath)
             ]
 
         let port = serverModeConfig.Port

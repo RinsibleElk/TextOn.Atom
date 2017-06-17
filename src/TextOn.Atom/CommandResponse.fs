@@ -43,6 +43,6 @@ module CommandResponse =
     let browserUpdate (serialize : Serializer) (update:BrowserUpdate) =
         serialize { Kind = "browserUpdate" ; Data = [|update|] }
     let browserItems (serialize : Serializer) (items:BrowserItems) =
-        serialize { Kind = "browserItems" ; Data = [|items|] }
+        serialize { Kind = "browseritems" ; Data = [|items|] }
     let navigate (serialize : Serializer) (data:NavigateData) =
         serialize { Kind = "navigate" ; Data = [|data|] }
