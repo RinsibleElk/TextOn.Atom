@@ -111,7 +111,7 @@ type Commands (serialize : Serializer) =
                     browser.ExpandAt indexPath
                 return
                     items
-                    |> Option.map (fun items -> Success items )
+                    |> Option.map Success
                     |> defaultArg <| Failure "Couldn't find IndexPath" }
 
     member __.Parse file lines =
