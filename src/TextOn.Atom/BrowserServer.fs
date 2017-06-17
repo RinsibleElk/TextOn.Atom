@@ -19,6 +19,8 @@ type BrowserServer(file) =
     let mutable attributeValues = Map.empty
     let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
     let mutable expandedPaths : ExpandedPath = Collapsed
+    let rec expandAt (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) (expandedPaths:ExpandedPath[]) (indexPath:int list) =
+        ()
     member __.File = file |> System.IO.FileInfo
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =

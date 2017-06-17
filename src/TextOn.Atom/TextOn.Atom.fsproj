@@ -106,6 +106,7 @@
     <None Include="SuaveTesting.fsx" />
     <None Include="CompilationBenchmark.fsx" />
     <None Include="Benchmarking.texton" />
+    <None Include="Browser.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
