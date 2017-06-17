@@ -160,8 +160,8 @@ module Compiler =
             let func : CompiledFunctionDefinition option = functionDefinitions |> Map.tryFind functionName
             match func with
             | None -> Errors [|(makeParseError file lineNumber startLocation endLocation (sprintf "Undefined function: %s" functionName))|]
-            | Some f -> Result (Function f.Index)
-        | ParsedSeq(nodes) ->
+            | Some f -> Result (Function (file, lineNumber, f.Index))
+        | ParsedSeq(lineNumber, nodes) ->
             let nodes =
                 nodes
                 |> Array.map (fun (node, condition) -> ((compileFunc file variableDefinitions attributeDefinitions functionDefinitions node), (compileCondition file attributeDefinitions condition)))
@@ -177,8 +177,8 @@ module Compiler =
             if errors.Length <> 0 then
                 Errors errors
             else
-                Result (Seq (nodes |> Array.map (function | (Result n, Result c) -> (n,c) | _ -> failwith "Internal error")))
-        | ParsedChoice(nodes) ->
+                Result (Seq (file, lineNumber, nodes |> Array.map (function | (Result n, Result c) -> (n,c) | _ -> failwith "Internal error")))
+        | ParsedChoice(lineNumber, nodes) ->
             let nodes =
                 nodes
                 |> Array.map (fun (node, condition) -> ((compileFunc file variableDefinitions attributeDefinitions functionDefinitions node), (compileCondition file attributeDefinitions condition)))
@@ -194,7 +194,7 @@ module Compiler =
             if errors.Length <> 0 then
                 Errors errors
             else
-                Result (Choice (nodes |> Array.map (function | (Result n, Result c) -> (n,c) | _ -> failwith "Internal error")))
+                Result (Choice (file, lineNumber, nodes |> Array.map (function | (Result n, Result c) -> (n,c) | _ -> failwith "Internal error")))
         | ParsedParagraphBreak(lineNumber) ->
             Result (ParagraphBreak(file, lineNumber))
         | _ -> failwith "Internal error"

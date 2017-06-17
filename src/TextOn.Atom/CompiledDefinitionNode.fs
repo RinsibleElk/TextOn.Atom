@@ -11,6 +11,6 @@ type SimpleCompiledDefinitionNode =
 type CompiledDefinitionNode =
     | Sentence of (string * int * SimpleCompiledDefinitionNode)
     | ParagraphBreak of string * int
-    | Choice of (CompiledDefinitionNode * Condition)[]
-    | Seq of (CompiledDefinitionNode * Condition)[]
-    | Function of int
+    | Choice of string * int * (CompiledDefinitionNode * Condition)[]
+    | Seq of string * int * (CompiledDefinitionNode * Condition)[]
+    | Function of string * int * int

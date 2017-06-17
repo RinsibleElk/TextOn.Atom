@@ -51,148 +51,149 @@ let fullExampleFile = Path.Combine(exampleDirectory, exampleFileName)
 
 let expected =
     {Attributes = [||];
-     Variables = [|{Name = "SomeVar"
-                    Index = 0
-                    File = Path.Combine(exampleDirectory, exampleFileName)
-                    StartLine = 1
-                    EndLine = 1
-                    PermitsFreeValue = true
-                    Text = "Hello world"
-                    AttributeDependencies = [||]
-                    VariableDependencies = [||]
-                    Values = [||] }|]
+     Variables = [|{Name = "SomeVar";
+                    Index = 0;
+                    File = "D:\Example\example.texton";
+                    StartLine = 1;
+                    EndLine = 1;
+                    PermitsFreeValue = true;
+                    Text = "Hello world";
+                    AttributeDependencies = [||];
+                    VariableDependencies = [||];
+                    Values = [||];}|];
      Functions =
       [|{Name = "main";
          Index = 1;
-         File = Path.Combine(exampleDirectory, exampleFileName);
-         StartLine = 2
-         EndLine = 33
-         AttributeDependencies = [||]
-         VariableDependencies = [|0|]
+         File = "D:\Example\example.texton";
+         StartLine = 2;
+         EndLine = 33;
+         AttributeDependencies = [||];
+         VariableDependencies = [|0|];
          Tree =
           Seq
-            [|(Choice
-                 [|(Seq
-                      [|(Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 6,
-                            SimpleText
-                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 7,
-                            SimpleSeq
-                              [|SimpleText "Cras ante lorem, ";
-                                SimpleChoice
-                                  [|SimpleText "faucibus";
-                                    SimpleText "maximus"|];
-                                SimpleText
-                                  " vel mauris eget, luctus suscipit elit."|]),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 8,
-                            SimpleText
-                              "Morbi lorem nibh, ultricies ac ligula gravida, pharetra posuere nibh."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 9,
-                            SimpleText
-                              "Curabitur eu mauris aliquam, mattis arcu vitae, semper lectus."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 10,
-                            SimpleText
-                              "Phasellus at elit ac sem dapibus dapibus."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 11,
-                            SimpleSeq
-                              [|SimpleText "Morbi convallis varius ";
-                                VariableValue 0; SimpleText "."|]), True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 12,
-                            SimpleText
-                              "Curabitur scelerisque semper justo sit amet vehicula."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 13,
-                            SimpleText "Ut ut velit at ante viverra euismod."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 14,
-                            SimpleText
-                              "Nullam et pharetra libero, sit amet consequat nunc."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 15,
-                            SimpleText "Fusce ac sagittis libero."), True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 16,
-                            SimpleSeq
-                              [|SimpleText "Duis vel mi a ";
-                                SimpleChoice
-                                  [|SimpleText "liquet odio";
-                                    SimpleText "ante viverra"|];
-                                SimpleText " blandit tincidunt."|]), True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 17,
-                            SimpleSeq
-                              [|SimpleText "Integer a mi "; VariableValue 0;
-                                SimpleText "."|]), True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 18,
-                            SimpleText
-                              "Integer vitae ipsum non purus tincidunt semper."),
-                         True)|], True);
-                   (Seq
-                      [|(Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 21,
-                            SimpleText
-                              "Ut ornare pellentesque quam, consectetur congue augue ultricies nec."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 22,
-                            SimpleSeq
-                              [|SimpleText "In gravida lacinia ";
-                                VariableValue 0; SimpleText "."|]), True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 23,
-                            SimpleText "Vivamus scelerisque blandit pulvinar."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 24,
-                            SimpleText
-                              "Praesent ullamcorper et ipsum et scelerisque."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 25,
-                            SimpleText
-                              "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 26,
-                            SimpleText
-                              "Aliquam ac augue pharetra, placerat sem non, lobortis massa."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 27,
-                            SimpleText
-                              "Mauris eu mauris luctus, ullamcorper leo eget, scelerisque orci."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 28,
-                            SimpleText
-                              "Vivamus ipsum lacus, facilisis semper risus eu, placerat dapibus nulla."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 29,
-                            SimpleText
-                              "Sed finibus libero ipsum, sed vestibulum leo cursus sit amet."),
-                         True);
-                        (Sentence
-                           (Path.Combine(exampleDirectory, exampleFileName), 30,
-                            SimpleText "Aenean mollis condimentum nulla."),
-                         True)|], True)|], True)|];}|];}
-
+            ("D:\Example\example.texton",2,
+             [|(Choice
+                  ("D:\Example\example.texton",4,
+                   [|(Seq
+                        ("D:\Example\example.texton",5,
+                         [|(Sentence
+                              ("D:\Example\example.texton", 6,
+                               SimpleText
+                                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 7,
+                               SimpleSeq
+                                 [|SimpleText "Cras ante lorem, ";
+                                   SimpleChoice
+                                     [|SimpleText "faucibus"; SimpleText "maximus"|];
+                                   SimpleText
+                                     " vel mauris eget, luctus suscipit elit."|]),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 8,
+                               SimpleText
+                                 "Morbi lorem nibh, ultricies ac ligula gravida, pharetra posuere nibh."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 9,
+                               SimpleText
+                                 "Curabitur eu mauris aliquam, mattis arcu vitae, semper lectus."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 10,
+                               SimpleText
+                                 "Phasellus at elit ac sem dapibus dapibus."), True);
+                           (Sentence
+                              ("D:\Example\example.texton", 11,
+                               SimpleSeq
+                                 [|SimpleText "Morbi convallis varius ";
+                                   VariableValue 0; SimpleText "."|]), True);
+                           (Sentence
+                              ("D:\Example\example.texton", 12,
+                               SimpleText
+                                 "Curabitur scelerisque semper justo sit amet vehicula."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 13,
+                               SimpleText "Ut ut velit at ante viverra euismod."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 14,
+                               SimpleText
+                                 "Nullam et pharetra libero, sit amet consequat nunc."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 15,
+                               SimpleText "Fusce ac sagittis libero."), True);
+                           (Sentence
+                              ("D:\Example\example.texton", 16,
+                               SimpleSeq
+                                 [|SimpleText "Duis vel mi a ";
+                                   SimpleChoice
+                                     [|SimpleText "liquet odio";
+                                       SimpleText "ante viverra"|];
+                                   SimpleText " blandit tincidunt."|]), True);
+                           (Sentence
+                              ("D:\Example\example.texton", 17,
+                               SimpleSeq
+                                 [|SimpleText "Integer a mi "; VariableValue 0;
+                                   SimpleText "."|]), True);
+                           (Sentence
+                              ("D:\Example\example.texton", 18,
+                               SimpleText
+                                 "Integer vitae ipsum non purus tincidunt semper."),
+                            True)|]), True);
+                     (Seq
+                        ("D:\Example\example.texton",20,
+                         [|(Sentence
+                              ("D:\Example\example.texton", 21,
+                               SimpleText
+                                 "Ut ornare pellentesque quam, consectetur congue augue ultricies nec."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 22,
+                               SimpleSeq
+                                 [|SimpleText "In gravida lacinia "; VariableValue 0;
+                                   SimpleText "."|]), True);
+                           (Sentence
+                              ("D:\Example\example.texton", 23,
+                               SimpleText "Vivamus scelerisque blandit pulvinar."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 24,
+                               SimpleText
+                                 "Praesent ullamcorper et ipsum et scelerisque."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 25,
+                               SimpleText
+                                 "Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 26,
+                               SimpleText
+                                 "Aliquam ac augue pharetra, placerat sem non, lobortis massa."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 27,
+                               SimpleText
+                                 "Mauris eu mauris luctus, ullamcorper leo eget, scelerisque orci."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 28,
+                               SimpleText
+                                 "Vivamus ipsum lacus, facilisis semper risus eu, placerat dapibus nulla."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 29,
+                               SimpleText
+                                 "Sed finibus libero ipsum, sed vestibulum leo cursus sit amet."),
+                            True);
+                           (Sentence
+                              ("D:\Example\example.texton", 30,
+                               SimpleText "Aenean mollis condimentum nulla."), True)|]),
+                      True)|]), True)|]);}|];}
 let rec compareTemplates t e =
     match (t,e) with
     | (Sentence(ts,ti,tn), Sentence(es,ei,en)) ->
@@ -202,7 +203,9 @@ let rec compareTemplates t e =
     | (ParagraphBreak(ts,ti), ParagraphBreak(es,ei)) ->
         test <@ ts = es @>
         test <@ ti = ti @>
-    | (Choice(tn), Choice(en)) ->
+    | (Choice(tf,tl,tn), Choice(ef,el,en)) ->
+        if tf <> ef then failwithf "Different file names in choices (%s <> %s) %A <> %A" tf ef tn en
+        if tl <> el then failwithf "Different line numbers in choices (%d <> %d) %A <> %A" tl el tn en
         if tn.Length <> en.Length then failwithf "Different lengths in choices %A <> %A" tn en
         else
             Array.zip tn en
@@ -210,7 +213,9 @@ let rec compareTemplates t e =
                 (fun ((tn,tc),(en,ec)) ->
                     test <@ tc = ec @>
                     compareTemplates tn en)
-    | (Seq(tn), Seq(en)) ->
+    | (Seq(tf,tl,tn), Seq(ef,el,en)) ->
+        if tf <> ef then failwithf "Different file names in seqs (%s <> %s) %A <> %A" tf ef tn en
+        if tl <> el then failwithf "Different line numbers in seqs (%d <> %d) %A <> %A" tl el tn en
         if tn.Length <> en.Length then failwithf "Different lengths in seqs %A <> %A" tn en
         else
             Array.zip tn en
@@ -218,7 +223,9 @@ let rec compareTemplates t e =
                 (fun ((tn,tc),(en,ec)) ->
                     test <@ tc = ec @>
                     compareTemplates tn en)
-    | (Function(ti), Function(ei)) ->
+    | (Function(tf,tl,ti), Function(ef,el,ei)) ->
+        if tf <> ef then failwithf "Different file names in function %s <> %s" tf ef
+        if tl <> el then failwithf "Different line numbers in function %d <> %d" tl el
         test <@ ti = ei @>
     | _ -> failwithf "Got different elements %A <> %A" t e
 
@@ -430,10 +437,11 @@ let ``Test invoking a function from within a function``() =
                             AttributeDependencies = [||]
                             VariableDependencies = [||]
                             Tree =
-                                Seq
+                                Seq(fullExampleFile,
+                                    1,
                                     [|
                                         (Sentence (fullExampleFile, 2, SimpleText "Hello world."), True)
-                                    |]
+                                    |])
                         }
                         {   Name = "func2";
                             Index = 1;
@@ -442,7 +450,7 @@ let ``Test invoking a function from within a function``() =
                             EndLine = 6;
                             AttributeDependencies = [||]
                             VariableDependencies = [||]
-                            Tree = Seq [|(Function 0, True)|];}|];}
+                            Tree = Seq(fullExampleFile,4,[|(Function(fullExampleFile, 5, 0), True)|])}|]}
     test <@ result = expected @>
 
 [<Test>]
@@ -490,13 +498,16 @@ let ``Test filtering out an entire seq block``() =
                             AttributeDependencies = [|0|]
                             VariableDependencies = [||]
                             Tree =
-                                Seq
+                                Seq(fullExampleFile,
+                                    6,
                                     [|
-                                        (Seq
+                                        (Seq(
+                                            fullExampleFile,
+                                            8,
                                             [|
                                                 (Sentence (fullExampleFile, 9, SimpleText "Blah."), True)
-                                            |], AreEqual(0, "Male"))
-                                    |]
+                                            |]), AreEqual(0, "Male"))
+                                    |])
                         }
                     |] }
     test <@ result = expected @>
@@ -546,13 +557,17 @@ let ``Test filtering out an entire choice block``() =
                             AttributeDependencies = [|0|]
                             VariableDependencies = [||]
                             Tree =
-                                Seq
+                                Seq(
+                                    fullExampleFile,
+                                    6,
                                     [|
-                                        (Choice
+                                        (Choice(
+                                            fullExampleFile,
+                                            8,
                                             [|
                                                 (Sentence (fullExampleFile, 9, SimpleText "Blah."), True)
-                                            |], AreEqual(0, "Male"))
-                                    |]
+                                            |]), AreEqual(0, "Male"))
+                                    |])
                         }
                     |] }
     test <@ result = expected @>
@@ -622,7 +637,9 @@ let ``Test variable dependency chain``() =
                             AttributeDependencies = [||];
                             VariableDependencies = [|0;1|];
                             Tree =
-                                Seq
+                                Seq(
+                                    fullExampleFile,
+                                    11,
                                     [|
                                         (Sentence
                                             (fullExampleFile, 13,
@@ -630,7 +647,7 @@ let ``Test variable dependency chain``() =
                                                     [|  SimpleText "I just need city here : "; VariableValue 1;
                                                         SimpleText "."
                                                     |]), True)
-                                    |] } |] }
+                                    |]) } |] }
     test <@ result = expected @>
 
 [<Test>]
@@ -685,8 +702,7 @@ let ``Test function dependency chain with variables``() =
                        AttributeDependencies = [||];
                        VariableDependencies = [|0; 1|];
                        Tree =
-                        Seq
-                          [|(Sentence (fullExampleFile, 10, VariableValue 1), True)|];};
+                        Seq(fullExampleFile, 9, [|(Sentence (fullExampleFile, 10, VariableValue 1), True)|]) }
                       {Name = "outer";
                        Index = 3;
                        File = fullExampleFile
@@ -694,7 +710,7 @@ let ``Test function dependency chain with variables``() =
                        EndLine = 14;
                        AttributeDependencies = [||];
                        VariableDependencies = [|0; 1|];
-                       Tree = Seq [|(Function 2, True)|];}|];}
+                       Tree = Seq(fullExampleFile, 12, [|(Function(fullExampleFile, 13, 2), True)|])}|]}
     test <@ result = expected @>
  
 [<Test>]
@@ -745,14 +761,16 @@ let ``Test function dependency chain with attributes``() =
                        AttributeDependencies = [|0; 1|];
                        VariableDependencies = [||];
                        Tree =
-                        Seq
-                          [|(Sentence (fullExampleFile, 10, SimpleText "Some text."),
-                             AreEqual (1,"London"))|];}; {Name = "outer";
+                        Seq(
+                            fullExampleFile,
+                            9,
+                            [|(Sentence (fullExampleFile, 10, SimpleText "Some text."),
+                                AreEqual (1,"London"))|])}; {Name = "outer";
                                                           Index = 3;
                                                           File = fullExampleFile;
                                                           StartLine = 12;
                                                           EndLine = 14;
                                                           AttributeDependencies = [|0; 1|];
                                                           VariableDependencies = [||];
-                                                          Tree = Seq [|(Function 2, True)|];}|];}
+                                                          Tree = Seq(fullExampleFile, 12, [|(Function (fullExampleFile, 13, 2), True)|])}|]}
      test <@ result = expected @>

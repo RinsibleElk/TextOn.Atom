@@ -46,9 +46,11 @@ let ``Test choice parsing``() =
                         Name = "stycke20160823_6"
                         Dependencies = [|ParsedVariableRef "MÄRKE"|]
                         Tree =
-                            ParsedSeq
+                            ParsedSeq(
+                                1,
                                 [|
-                                    (ParsedChoice
+                                    (ParsedChoice(
+                                        3,
                                         [|
                                             (ParsedSentence
                                                 (   4,
@@ -131,6 +133,6 @@ let ``Test choice parsing``() =
                                                             ParsedStringValue "."
                                                         |]),
                                                     ParsedUnconditional)
-                                        |], ParsedUnconditional)
-                                |] } }
+                                        |]), ParsedUnconditional)
+                                |]) } }
     test <@ result = expected @>

@@ -12,8 +12,8 @@ type ParsedSentenceNode =
 type ParsedNode =
     | ParsedSentence of (int * ParsedSentenceNode)
     | ParsedFunctionInvocation of (int * int * int * string)
-    | ParsedSeq of (ParsedNode * ParsedCondition)[]
-    | ParsedChoice of (ParsedNode * ParsedCondition)[]
+    | ParsedSeq of int * (ParsedNode * ParsedCondition)[]
+    | ParsedChoice of int * (ParsedNode * ParsedCondition)[]
     | ParsedParagraphBreak of int
     | ParseErrors of ParseError[]
 
@@ -167,8 +167,8 @@ module internal FunctionDefinitionParser =
             Node = nodes |> Array.map (fun (n,c) -> n.Node, c.Condition) |> makeNode
         }
 
-    let private makeParsedSeq = makeParsedMultiple ParsedSeq
-    let private makeParsedChoice = makeParsedMultiple ParsedChoice
+    let private makeParsedSeq a = makeParsedMultiple (fun b -> ParsedSeq(a, b))
+    let private makeParsedChoice a = makeParsedMultiple (fun b -> ParsedChoice(a, b))
 
     let private makeParagraphBreak lineNumber =
         {
@@ -191,14 +191,14 @@ module internal FunctionDefinitionParser =
     /// - The start of a choice.
     /// - The end of a choice (permits condition).
     /// - Some text (permits condition).
-    let rec private parseSequentialOrChoiceInner file (makeNode:(ParsedNodeWithDependencies * ConditionParseResults)[] -> ParsedNodeWithDependencies) output (tokens:AttributedTokenizedLine list) =
+    let rec private parseSequentialOrChoiceInner file startLineNumber (makeNode:int -> (ParsedNodeWithDependencies * ConditionParseResults)[] -> ParsedNodeWithDependencies) output (tokens:AttributedTokenizedLine list) =
         match tokens with
-        | [] -> makeNode (output |> List.rev |> Array.ofList)
+        | [] -> makeNode startLineNumber (output |> List.rev |> Array.ofList)
         | line::t ->
             match line.Tokens.[0].Token with
             | FunctionName functionName ->
                 if line.Tokens.Length = 1 then
-                    parseSequentialOrChoiceInner file makeNode (((makeParsedFunctionInvocation line.LineNumber line.Tokens.[0].TokenStartLocation line.Tokens.[0].TokenEndLocation functionName), unconditional)::output) t
+                    parseSequentialOrChoiceInner file startLineNumber makeNode (((makeParsedFunctionInvocation line.LineNumber line.Tokens.[0].TokenStartLocation line.Tokens.[0].TokenEndLocation functionName), unconditional)::output) t
                 else if line.Tokens.[1].Token <> OpenBrace then
                     makeParseErrors [|(makeParseError file line.LineNumber line.Tokens.[1].TokenStartLocation line.Tokens.[1].TokenEndLocation "Invalid token")|]
                 else
@@ -208,10 +208,10 @@ module internal FunctionDefinitionParser =
                         | ParsedCondition.ParsedConditionError errors -> makeParseErrors errors
                         | _ -> failwith "Internal error"
                     else
-                        parseSequentialOrChoiceInner file makeNode (((makeParsedFunctionInvocation line.LineNumber line.Tokens.[0].TokenStartLocation line.Tokens.[0].TokenEndLocation functionName), condition)::output) t
+                        parseSequentialOrChoiceInner file startLineNumber makeNode (((makeParsedFunctionInvocation line.LineNumber line.Tokens.[0].TokenStartLocation line.Tokens.[0].TokenEndLocation functionName), condition)::output) t
             | Break ->
                 if line.Tokens.Length = 1 then
-                    parseSequentialOrChoiceInner file makeNode (((makeParagraphBreak line.LineNumber), unconditional)::output) t
+                    parseSequentialOrChoiceInner file startLineNumber makeNode (((makeParagraphBreak line.LineNumber), unconditional)::output) t
                 else if line.Tokens.[1].Token <> OpenBrace then
                     makeParseErrors([|(makeParseError file line.LineNumber line.Tokens.[1].TokenStartLocation line.Tokens.[1].TokenEndLocation "Invalid token")|])
                 else
@@ -221,21 +221,21 @@ module internal FunctionDefinitionParser =
                         | ParsedCondition.ParsedConditionError errors -> makeParseErrors errors
                         | _ -> failwith "Internal error"
                     else
-                        parseSequentialOrChoiceInner file makeNode ((makeParagraphBreak(line.LineNumber), condition)::output) t
+                        parseSequentialOrChoiceInner file startLineNumber makeNode ((makeParagraphBreak(line.LineNumber), condition)::output) t
             | Sequential ->
                 let (toSkip, result, condition) = findEndOfSeqOrChoice file makeParsedSeq line t
                 match result.Node with
                 | ParseErrors _ -> result
                 | _ ->
                     let contLines = t |> List.skip toSkip
-                    parseSequentialOrChoiceInner file makeNode ((result, condition)::output) contLines
+                    parseSequentialOrChoiceInner file startLineNumber makeNode ((result, condition)::output) contLines
             | Choice ->
                 let (toSkip, result, condition) = findEndOfSeqOrChoice file makeParsedChoice line t
                 match result.Node with
                 | ParseErrors _ -> result
                 | _ ->
                     let contLines = t |> List.skip toSkip
-                    parseSequentialOrChoiceInner file makeNode ((result, condition)::output) contLines
+                    parseSequentialOrChoiceInner file startLineNumber makeNode ((result, condition)::output) contLines
             | _ ->
                 // Try to find a condition.
                 let conditionIndex = line.Tokens |> List.tryFindIndex (fun attToken -> attToken.Token = OpenBrace)
@@ -243,7 +243,7 @@ module internal FunctionDefinitionParser =
                     let sentenceNode = parseSimpleSequentialInner file line.LineNumber [] line.Tokens
                     match sentenceNode.SentenceNode with
                     | ParsedSentenceErrors errors -> makeParseErrors errors
-                    | _ -> parseSequentialOrChoiceInner file makeNode (((makeParsedSentence line.LineNumber sentenceNode), unconditional)::output) t
+                    | _ -> parseSequentialOrChoiceInner file startLineNumber makeNode (((makeParsedSentence line.LineNumber sentenceNode), unconditional)::output) t
                 else
                     let conditionIndex = conditionIndex.Value
                     let condition = line.Tokens |> List.skip conditionIndex |> ConditionParser.parseCondition file line.LineNumber false
@@ -253,7 +253,7 @@ module internal FunctionDefinitionParser =
                         let sentenceNode = parseSimpleSequentialInner file line.LineNumber [] (line.Tokens |> List.take conditionIndex)
                         match sentenceNode.SentenceNode with
                         | ParsedSentenceErrors errors -> makeParseErrors errors
-                        | _ -> parseSequentialOrChoiceInner file makeNode (((makeParsedSentence line.LineNumber sentenceNode), condition)::output) t
+                        | _ -> parseSequentialOrChoiceInner file startLineNumber makeNode (((makeParsedSentence line.LineNumber sentenceNode), condition)::output) t
     and private findCloseCurly (s:AttributedTokenizedLine list) =
         s
         |> List.scan
@@ -271,7 +271,7 @@ module internal FunctionDefinitionParser =
             (1, false)
         |> List.skip 1
         |> List.tryFindIndex (fun (bracketCount, isCloseCurly) -> bracketCount = 0 && isCloseCurly)
-    and private findEndOfSeqOrChoice file (makeNode:(ParsedNodeWithDependencies * ConditionParseResults)[] -> ParsedNodeWithDependencies) line remainingLines : int * ParsedNodeWithDependencies * ConditionParseResults =
+    and private findEndOfSeqOrChoice file (makeNode:int -> (ParsedNodeWithDependencies * ConditionParseResults)[] -> ParsedNodeWithDependencies) line remainingLines : int * ParsedNodeWithDependencies * ConditionParseResults =
         // Either the open brace is on this line or is the only thing on the next line.
         let lineTokens = line.Tokens
         if lineTokens.Length > 2 then
@@ -290,7 +290,7 @@ module internal FunctionDefinitionParser =
                         let closeCurlyIndex = closeCurlyIndex.Value
                         let closeCurlyLine = t2 |> List.skip closeCurlyIndex |> List.head
                         if closeCurlyLine.Tokens.Length = 1 then
-                            (closeCurlyIndex + 2, parseSequentialOrChoiceInner file makeNode [] (t2 |> List.take closeCurlyIndex), unconditional)
+                            (closeCurlyIndex + 2, parseSequentialOrChoiceInner file line.LineNumber makeNode [] (t2 |> List.take closeCurlyIndex), unconditional)
                         else if closeCurlyLine.Tokens.[1].Token <> OpenBrace then
                             let attToken = closeCurlyLine.Tokens.[1]
                             (closeCurlyIndex + 2, makeParseErrors([|(makeParseError file line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]), unconditional)
@@ -298,7 +298,7 @@ module internal FunctionDefinitionParser =
                             let condition = ConditionParser.parseCondition file line.LineNumber false (closeCurlyLine.Tokens |> List.skip 1)
                             match condition.Condition with
                             | ParsedConditionError errors -> (closeCurlyIndex + 1, makeParseErrors errors, unconditional)
-                            | _ -> (closeCurlyIndex + 2, parseSequentialOrChoiceInner file makeNode [] (t2 |> List.take closeCurlyIndex), condition)
+                            | _ -> (closeCurlyIndex + 2, parseSequentialOrChoiceInner file line.LineNumber makeNode [] (t2 |> List.take closeCurlyIndex), condition)
         else if lineTokens.[1].Token <> OpenCurly then
             (0, makeParseErrors([|(makeParseError file line.LineNumber lineTokens.[1].TokenStartLocation lineTokens.[1].TokenEndLocation "Invalid token")|]), unconditional)
         else
@@ -309,7 +309,7 @@ module internal FunctionDefinitionParser =
                 let closeCurlyIndex = closeCurlyIndex.Value
                 let closeCurlyLine = remainingLines |> List.skip closeCurlyIndex |> List.head
                 if closeCurlyLine.Tokens.Length = 1 then
-                    (closeCurlyIndex + 1, parseSequentialOrChoiceInner file makeNode [] (remainingLines |> List.take closeCurlyIndex), unconditional)
+                    (closeCurlyIndex + 1, parseSequentialOrChoiceInner file line.LineNumber makeNode [] (remainingLines |> List.take closeCurlyIndex), unconditional)
                 else if closeCurlyLine.Tokens.[1].Token <> OpenBrace then
                     let attToken = closeCurlyLine.Tokens.[1]
                     (closeCurlyIndex + 1, makeParseErrors([|(makeParseError file line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]), unconditional)
@@ -317,7 +317,7 @@ module internal FunctionDefinitionParser =
                     let condition = ConditionParser.parseCondition file line.LineNumber false (closeCurlyLine.Tokens |> List.skip 1)
                     match condition.Condition with
                     | ParsedConditionError errors -> (closeCurlyIndex + 1, makeParseErrors errors, unconditional)
-                    | _ -> (closeCurlyIndex + 1, parseSequentialOrChoiceInner file makeNode [] (remainingLines |> List.take closeCurlyIndex), condition)
+                    | _ -> (closeCurlyIndex + 1, parseSequentialOrChoiceInner file line.LineNumber makeNode [] (remainingLines |> List.take closeCurlyIndex), condition)
 
     /// Parse the CategorizedAttributedTokenSet for a function definition into a tree.
     let parseFunctionDefinition (tokenSet:CategorizedAttributedTokenSet) : ParsedFunctionDefinition =
@@ -350,13 +350,13 @@ module internal FunctionDefinitionParser =
                             else if tokenSet.Tokens.[1].Tokens.Length > 1 || tokenSet.Tokens.[1].Tokens.[0].Token <> OpenCurly then
                                 (name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[1].LineNumber tokens.[1].Tokens.[0].TokenStartLocation tokens.[1].Tokens.[0].TokenEndLocation "Invalid token")|]))
                             else
-                                let tree = tokenSet.Tokens |> List.skip 2 |> List.take (tokenSet.Tokens.Length - 3) |> parseSequentialOrChoiceInner tokenSet.File makeParsedSeq []
+                                let tree = tokenSet.Tokens |> List.skip 2 |> List.take (tokenSet.Tokens.Length - 3) |> parseSequentialOrChoiceInner tokenSet.File fl.LineNumber makeParsedSeq []
                                 let hasErrors = match tree.Node with | ParseErrors _ -> true | _ -> false
                                 (name, hasErrors, tree)
                         else if firstLine.[2].Token <> OpenCurly then
                             (name, true, (makeParseErrors [|(makeParseError tokenSet.File fl.LineNumber firstLine.[2].TokenStartLocation firstLine.[2].TokenEndLocation "Invalid token")|]))
                         else
-                            let tree = tokenSet.Tokens |> List.skip 1 |> List.take (tokenSet.Tokens.Length - 2) |> parseSequentialOrChoiceInner tokenSet.File makeParsedSeq []
+                            let tree = tokenSet.Tokens |> List.skip 1 |> List.take (tokenSet.Tokens.Length - 2) |> parseSequentialOrChoiceInner tokenSet.File fl.LineNumber makeParsedSeq []
                             let hasErrors = match tree.Node with | ParseErrors _ -> true | _ -> false
                             (name, hasErrors, tree)
         {   StartLine = tokenSet.StartLine

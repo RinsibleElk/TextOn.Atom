@@ -34,7 +34,7 @@ let makeNoVariablesTemplate node = {
                 EndLine = exampleLineNumber
                 AttributeDependencies = [||]
                 VariableDependencies = [||]
-                Tree = Seq [| (node, True) |]
+                Tree = Seq("", 0, [| (node, True) |])
             }
         |] }
 
@@ -67,11 +67,13 @@ let ``Test choice``() =
     let node1 = SimpleText text1
     let node2 = SimpleText text2
     let node =
-        Choice
+        Choice(
+            "",
+            0,
             [|
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |]
+            |])
     let template = makeNoVariablesTemplate node
     let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
@@ -92,11 +94,13 @@ let ``Test sentence break``() =
     let node1 = SimpleText text1
     let node2 = SimpleText text2
     let node =
-        Seq
+        Seq(
+            "",
+            0,
             [|
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |]
+            |])
     let template = makeNoVariablesTemplate node
     let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
@@ -125,12 +129,14 @@ let ``Test paragraph break``() =
     let node1 = SimpleText text1
     let node2 = SimpleText text2
     let node =
-        Seq
+        Seq(
+            "",
+            0,
             [|
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (ParagraphBreak(exampleFileName, exampleLineNumber), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |]
+            |])
     let template = makeNoVariablesTemplate node
     let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
@@ -181,7 +187,7 @@ let makeSingleAttributeTemplate node = {
                 EndLine = exampleLineNumber
                 AttributeDependencies = [|0|]
                 VariableDependencies = [||]
-                Tree = Seq [| (node, True) |]
+                Tree = Seq("", 0, [| (node, True) |])
             }
         |] }
 
@@ -201,12 +207,13 @@ let ``Test successful condition``() =
     let node1 = SimpleText text1
     let node2 = SimpleText text2
     let node =
-        Seq
+        Seq("",
+            0,
             [|
                 (Sentence(exampleFileName, exampleLineNumber, node1), AreEqual(0, "Male"))
                 (ParagraphBreak(exampleFileName, exampleLineNumber), AreEqual(0, "Male"))
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |]
+            |])
     let template = makeSingleAttributeTemplate node
     let output = Generator.generate (makeSingleAttributeInput "Male") template |> expectSuccess
     let expected = {
@@ -235,12 +242,14 @@ let ``Test failed condition``() =
     let node1 = SimpleText text1
     let node2 = SimpleText text2
     let node =
-        Seq
+        Seq(
+            "",
+            0,
             [|
                 (Sentence(exampleFileName, exampleLineNumber, node1), AreEqual(0, "Female"))
                 (ParagraphBreak(exampleFileName, exampleLineNumber), AreEqual(0, "Female"))
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |]
+            |])
     let template = makeSingleAttributeTemplate node
     let output = Generator.generate (makeSingleAttributeInput "Male") template |> expectSuccess
     let expected = {
@@ -285,7 +294,7 @@ let makeSingleVariableTemplate node = {
                 EndLine = exampleLineNumber
                 AttributeDependencies = [||]
                 VariableDependencies = [|0|]
-                Tree = Seq [| (node, True) |]
+                Tree = Seq("", 0, [| (node, True) |])
             }
         |] }
 
@@ -331,11 +340,13 @@ let ``Test using same seed gets same value``() =
     let node1 = SimpleText text1
     let node2 = SimpleText text2
     let node =
-        Choice
+        Choice(
+            "",
+            0,
             [|
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |]
+            |])
     let template1 = makeNoVariablesTemplate node
     let expected = Generator.generate (makeNoVariablesInputWithSeed NoSeed) template1 |> expectSuccess
     let template2 = makeNoVariablesTemplate node

@@ -81,7 +81,7 @@ module Generator =
         | Sentence(inputFile, inputLineNumber, s) ->
             Seq.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
         | ParagraphBreak(inputfile, inputLineNumber) -> Seq.singleton (ParaBreak(inputfile, inputLineNumber))
-        | Choice(s) ->
+        | Choice(inputfile, inputLineNumber, s) ->
             let options =
                 s
                 |> Array.choose
@@ -91,14 +91,14 @@ module Generator =
             if options.Length = 0 then failwith "Internal error"
             let index = random.Next(options.Length)
             generateInner attributeValues variableValues functions random options.[index]
-        | Seq(s) ->
+        | Seq(inputfile, inputLineNumber, s) ->
             s
             |> Array.filter (fun (node, condition) -> ConditionEvaluator.resolve attributeValues condition)
             |> Seq.collect
                 (fun (node, _) ->
                     let random = Random(random.Next())
                     generateInner attributeValues variableValues functions random node)
-        | Function(index) ->
+        | Function(inputfile, inputLineNumber, index) ->
             generateInner attributeValues variableValues functions random (functions |> Map.find index)
     let generate (input:GeneratorInput) (compiledTemplate:CompiledTemplate) : GeneratorResult =
         let randomSeed =

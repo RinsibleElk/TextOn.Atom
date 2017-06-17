@@ -154,7 +154,8 @@ let ``Test sentence with condition``() =
         Name = "main"
         Dependencies = [|ParsedAttributeRef "SomeAttribute"|]
         Tree =
-            ParsedSeq
+            ParsedSeq(
+                1,
                 [|
                     (   ParsedSentence
                             (   2,
@@ -182,5 +183,5 @@ let ``Test sentence with condition``() =
                                         ParsedStringValue "?"
                                     |]),
                         ParsedAreEqual (2, 105, 118, (att "SomeAttribute"),"Some value"))
-                |] }
+                |]) }
     test <@ parsedFunc = expected @>

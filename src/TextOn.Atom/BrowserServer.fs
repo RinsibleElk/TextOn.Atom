@@ -30,11 +30,11 @@ type BrowserServer(file) =
                             ()
                         | ParagraphBreak(file, line) ->
                             ()
-                        | Choice(choices) ->
+                        | Choice(file, line, stuff) ->
                             ()
-                        | Seq(stuff) ->
+                        | Seq(file, line, stuff) ->
                             ()
-                        | Function(f) ->
+                        | Function(file, line, f) ->
                             ())
             failwith ""
         | h::t ->
