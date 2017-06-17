@@ -11,6 +11,7 @@ export default class BrowserPaneTreeView {
     this.props = props;
     this.items = this.props.items;
     this.isExpanded = false
+    this.isNested = true
     etch.initialize(this);
     this.element.classList.add('list-nested-item');
     this.element.classList.add('collapsed');
@@ -19,6 +20,7 @@ export default class BrowserPaneTreeView {
     this.element.collapse = this.collapse.bind(this)
     this.element.expand = this.expand.bind(this)
     this.element.toggleExpansion = this.toggleExpansion.bind(this);
+    this.computeNesting()
     if (!this.props.isCollapsed)
     {
       this.expand();
@@ -72,6 +74,9 @@ export default class BrowserPaneTreeView {
     if (props.hasOwnProperty('isCollapsed')) {
       this.props.isCollapsed = props.isCollapsed;
     }
+    if (props.hasOwnProperty('isCollapsible')) {
+      this.props.isCollapsible = props.isCollapsible;
+    }
     if (props.hasOwnProperty('items')) {
       this.props.items = props.items
       shouldComputeItems = true
@@ -85,12 +90,28 @@ export default class BrowserPaneTreeView {
     if (shouldComputeItems) {
       this.computeItems()
     }
+    this.computeNesting()
     return etch.update(this)
   }
 
   computeItems () {
     this.items = this.props.items;
-    Logger.logf("Computing Items", "Blah", [this.items])
+  }
+
+  computeNesting () {
+    if (this.props.isCollapsible) {
+      if (!this.isNested) {
+        this.isNested = true
+        this.element.classList.remove('list-item')
+        this.element.classList.add('list-nested-item')
+      }
+    } else {
+      if (this.isNested) {
+        this.isNested = false
+        this.element.classList.remove('list-nested-item')
+        this.element.classList.add('list-item')
+      }
+    }
   }
 
   didClickLink () {
@@ -106,8 +127,7 @@ export default class BrowserPaneTreeView {
 
   renderItems () {
     if (this.items.length > 0) {
-      const className = 'list-tree has-collapsable-children';
-      Logger.logf("Well", "We Made it This Far", [this.items])
+      className = 'list-tree has-collapsable-children';
       return $.ol(
         {className, ref: 'items'},
         ...this.items.map((item, index) => $(BrowserPaneTreeView, {
@@ -115,6 +135,7 @@ export default class BrowserPaneTreeView {
           file : item.file,
           line : item.line,
           isCollapsed : item.isCollapsed,
+          isCollapsible : item.isCollapsible,
           browserFile : this.props.file,
           indexPath : item.indexPath,
           items : item.children

@@ -36,6 +36,7 @@ export default class BrowserPaneView {
           file : item.file,
           line : item.line,
           isCollapsed : item.isCollapsed,
+          isCollapsible : item.isCollapsible,
           browserFile : this.props.file,
           indexPath : item.indexPath,
           items : []
