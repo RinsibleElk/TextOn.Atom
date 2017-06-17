@@ -14,17 +14,93 @@ type BrowserServer(file) =
     let mutable currentTemplate = None
     let mutable attributeValues = Map.empty
     let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
-    let rec expandAt functionNames (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] =
+    let rec expandAt functionNames attributeValues variableNames variableValues (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] * BrowserNode[] =
         match searchIndexPath with
         | [] ->
-            compiledDefinitionNodes
-            |> Array.mapi
-                (fun i n ->
-                    let actualIndexPath = (i::currentIndexPathRev) |> List.rev |> List.toArray
+            let newNodes =
+                compiledDefinitionNodes
+                |> Array.mapi
+                    (fun i n ->
+                        let actualIndexPath = (i::currentIndexPathRev) |> List.rev |> List.toArray
+                        let text = Browser.makeText functionNames attributeValues variableNames variableValues n
+                        match n with
+                        | Sentence(file, line, simpleNode) ->
+                            {
+                                text = text
+                                indexPath = actualIndexPath
+                                isCollapsible = false
+                                isCollapsed = true
+                                file = file
+                                line = line
+                                children = [||]
+                            }
+                        | ParagraphBreak(file, line) ->
+                            {
+                                text = text
+                                indexPath = actualIndexPath
+                                isCollapsible = false
+                                isCollapsed = true
+                                file = file
+                                line = line
+                                children = [||]
+                            }
+                        | Choice(file, line, stuff) ->
+                            {
+                                text = text
+                                indexPath = actualIndexPath
+                                isCollapsible = true
+                                isCollapsed = true
+                                file = file
+                                line = line
+                                children = [||]
+                            }
+                        | Seq(file, line, stuff) ->
+                            {
+                                text = text
+                                indexPath = actualIndexPath
+                                isCollapsible = true
+                                isCollapsed = true
+                                file = file
+                                line = line
+                                children = [||]
+                            }
+                        | Function(file, line, f) ->
+                            {
+                                text = text
+                                indexPath = actualIndexPath
+                                isCollapsible = false
+                                isCollapsed = true
+                                file = file
+                                line = line
+                                children = [||]
+                            })
+            newNodes, newNodes
+        | h::t ->
+            if compiledDefinitionNodes.Length = browserNodes.Length && browserNodes.Length > h then
+                let firstHalf = browserNodes |> Array.take h
+                let secondHalf = browserNodes |> Array.skip (min browserNodes.Length (h + 1))
+                let innerChildren, retVal =
+                    let cn =
+                        match compiledDefinitionNodes.[h] with
+                        | Sentence _
+                        | ParagraphBreak _ -> [||]
+                        | Seq(_, _, nodes)
+                        | Choice(_, _, nodes) ->
+                            nodes
+                            |> Array.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
+                            |> Array.map fst
+                        | Function(_, _, f) ->
+                            [|currentTemplate.Value.Functions.[f].Tree|]
+                    let bn = browserNodes.[h].children
+                    expandAt functionNames attributeValues variableNames variableValues cn bn (h::currentIndexPathRev) t
+                let innerNode =
+                    let actualIndexPath = (h::currentIndexPathRev) |> List.rev |> List.toArray
+                    let n = compiledDefinitionNodes.[h]
+                    let text = Browser.makeText functionNames attributeValues variableNames variableValues n
                     match n with
                     | Sentence(file, line, simpleNode) ->
                         {
-                            text = "Some sentence text here please"
+                            text = text
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = true
@@ -34,7 +110,7 @@ type BrowserServer(file) =
                         }
                     | ParagraphBreak(file, line) ->
                         {
-                            text = "<paragraph break>"
+                            text = text
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = true
@@ -44,40 +120,37 @@ type BrowserServer(file) =
                         }
                     | Choice(file, line, stuff) ->
                         {
-                            text = "Choice - make text!!"
+                            text = text
                             indexPath = actualIndexPath
                             isCollapsible = true
-                            isCollapsed = true
+                            isCollapsed = false
                             file = file
                             line = line
-                            children = [||]
+                            children = innerChildren
                         }
                     | Seq(file, line, stuff) ->
                         {
-                            text = "Seq - make text!!"
+                            text = text
                             indexPath = actualIndexPath
                             isCollapsible = true
-                            isCollapsed = true
+                            isCollapsed = false
                             file = file
                             line = line
-                            children = [||]
+                            children = innerChildren
                         }
                     | Function(file, line, f) ->
-                            {
-                            text = "@" + (functionNames |> Map.find f)
+                        {
+                            text = text
                             indexPath = actualIndexPath
                             isCollapsible = false
-                            isCollapsed = true
+                            isCollapsed = false
                             file = file
                             line = line
-                            children = [||]
-                        })
-        | h::t ->
-            if compiledDefinitionNodes.Length = browserNodes.Length then
-                ()
+                            children = innerChildren
+                        }
+                (Array.append firstHalf (Array.append [|innerNode|] secondHalf)), retVal
             else
-                () 
-            failwith ""
+                [||], [||]
     member __.File = file |> System.IO.FileInfo
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =
@@ -224,18 +297,18 @@ type BrowserServer(file) =
         if currentValue.IsNone then None
         else if currentValue.Value.nodes.Length < indexPath.[0] then None
         else
-            indexPath
-            |> Array.skip 1
-            |> Array.fold
-                (fun (state:BrowserNode option) i ->
-                    if state |> Option.isNone then None
-                    else
-                        let state = state.Value
-                        if state.children.Length > i then Some state.children.[i]
-                        else None)
-                (Some currentValue.Value.nodes.[indexPath.[0]])
-            |> Option.map
-                (fun item ->
+            let functionNames = currentTemplate.Value.Functions |> Array.map (fun f -> f.Index, f.Name) |> Map.ofArray
+            let attributeValues = Map.empty
+            let variableNames = currentTemplate.Value.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
+            let variableValues = Map.empty
+            let compiledNodes = [|currentTemplate.Value.Functions.[indexPath.[0]].Tree|]
+            let (a,b) = expandAt functionNames attributeValues variableNames variableValues compiledNodes currentValue.Value.nodes [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
+            currentValue <-
+                Some
                     {
-                        newItems = item.children
-                    })
+                        attributes = currentValue.Value.attributes
+                        variables = currentValue.Value.variables
+                        nodes = a
+                        file = file
+                    }
+            Some { newItems = b }

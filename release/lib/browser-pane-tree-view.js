@@ -8,8 +8,8 @@ import Logger from './texton-logger'
 
 export default class BrowserPaneTreeView {
   constructor (props) {
-    Logger.logf("BrowserPaneTreeView", "Ctor", props)
     this.props = props;
+    this.items = this.props.items;
     this.isExpanded = false
     etch.initialize(this);
     this.element.classList.add('list-nested-item');
@@ -30,10 +30,10 @@ export default class BrowserPaneTreeView {
     TextOnCore.send('browserexpand', 'browseritems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
       .then((data) => {
         if (data.length > 0) {
-          this.items = data[0].items
           this.isExpanded = true;
           this.element.classList.add('expanded')
           this.element.classList.remove('collapsed')
+          this.update({ items : data[0].newItems })
         }
       })
   }
@@ -90,6 +90,7 @@ export default class BrowserPaneTreeView {
 
   computeItems () {
     this.items = this.props.items;
+    Logger.logf("Computing Items", "Blah", [this.items])
   }
 
   didClickLink () {
@@ -103,17 +104,34 @@ export default class BrowserPaneTreeView {
     return false;
   }
 
+  renderItems () {
+    if (this.items.length > 0) {
+      const className = 'list-tree has-collapsable-children';
+      Logger.logf("Well", "We Made it This Far", [this.items])
+      return $.ol(
+        {className, ref: 'items'},
+        ...this.items.map((item, index) => $(BrowserPaneTreeView, {
+          text : item.text,
+          file : item.file,
+          line : item.line,
+          isCollapsed : item.isCollapsed,
+          browserFile : this.props.file,
+          indexPath : item.indexPath,
+          items : item.children
+        }))
+      )
+    } else {
+      return ""
+    }
+  }
+
   render () {
     return (
       <li>
         <div class='list-item'>
           <a class='entry' onClick={this.didClickLink.bind(this)}>{this.props.text}</a>
         </div>
-        <ol class='list-tree entry'>
-          <li class='list-item'>
-            <span>{this.props.text}</span>
-          </li>
-        </ol>
+        {this.renderItems()}
       </li>
     )
   }

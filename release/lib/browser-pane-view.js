@@ -37,7 +37,8 @@ export default class BrowserPaneView {
           line : item.line,
           isCollapsed : item.isCollapsed,
           browserFile : this.props.file,
-          indexPath : item.indexPath
+          indexPath : item.indexPath,
+          items : []
         }))
       )
     } else {

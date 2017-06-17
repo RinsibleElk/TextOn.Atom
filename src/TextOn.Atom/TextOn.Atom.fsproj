@@ -92,7 +92,7 @@
     <Compile Include="CompiledTemplate.fs" />
     <Compile Include="Compiler.fs" />
     <Compile Include="Generator.fs" />
-    <None Include="Browser.fs" />
+    <Compile Include="Browser.fs" />
     <Compile Include="RunInteractive.fs" />
     <Compile Include="JsonSerializer.fs" />
     <Compile Include="SuaveUtils.fs" />
