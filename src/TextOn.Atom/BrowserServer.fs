@@ -10,7 +10,7 @@ type BrowserStartResult =
 
 type ExpandedPath =
     | Collapsed
-    | Expanded of (NodeHash * ExpandedPath)[]
+    | Expanded of ExpandedPath[]
 
 [<Sealed>]
 type BrowserServer(file) =
