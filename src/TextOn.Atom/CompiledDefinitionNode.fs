@@ -1,5 +1,7 @@
 ﻿namespace TextOn.Atom
 
+type NodeHash = int
+
 type SimpleCompiledDefinitionNode =
     | VariableValue of int
     | SimpleChoice of SimpleCompiledDefinitionNode[]

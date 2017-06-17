@@ -8,8 +8,6 @@ type BrowserStartResult =
     | BrowserCompilationFailure of CompilationError[]
     | BrowserStarted of BrowserUpdate
 
-type NodeHash = int
-
 type ExpandedPath =
     | Collapsed
     | Expanded of (NodeHash * ExpandedPath)[]
