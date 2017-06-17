@@ -8,36 +8,75 @@ type BrowserStartResult =
     | BrowserCompilationFailure of CompilationError[]
     | BrowserStarted of BrowserUpdate
 
-type ExpandedPath =
-    | Collapsed
-    | Expanded of ExpandedPath[]
-
 [<Sealed>]
 type BrowserServer(file) =
     let mutable currentValue = None
     let mutable currentTemplate = None
     let mutable attributeValues = Map.empty
     let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
-    let mutable expandedPaths : ExpandedPath = Collapsed
-    let rec expandAt (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) (expandedPaths:ExpandedPath[]) (indexPath:int list) : (BrowserNode[] * ExpandedPath[]) =
-        match indexPath with
+    let rec expandAt functionNames (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] =
+        match searchIndexPath with
         | [] ->
-            let newBrowserNodes =
-                compiledDefinitionNodes
-                |> Array.map
-                    (function
-                        | Sentence(file, line, simpleNode) ->
-                            ()
-                        | ParagraphBreak(file, line) ->
-                            ()
-                        | Choice(file, line, stuff) ->
-                            ()
-                        | Seq(file, line, stuff) ->
-                            ()
-                        | Function(file, line, f) ->
-                            ())
-            failwith ""
+            compiledDefinitionNodes
+            |> Array.mapi
+                (fun i n ->
+                    let actualIndexPath = (i::currentIndexPathRev) |> List.rev |> List.toArray
+                    match n with
+                    | Sentence(file, line, simpleNode) ->
+                        {
+                            text = "Some sentence text here please"
+                            indexPath = actualIndexPath
+                            isCollapsible = false
+                            isCollapsed = true
+                            file = file
+                            line = line
+                            children = [||]
+                        }
+                    | ParagraphBreak(file, line) ->
+                        {
+                            text = "<paragraph break>"
+                            indexPath = actualIndexPath
+                            isCollapsible = false
+                            isCollapsed = true
+                            file = file
+                            line = line
+                            children = [||]
+                        }
+                    | Choice(file, line, stuff) ->
+                        {
+                            text = "Choice - make text!!"
+                            indexPath = actualIndexPath
+                            isCollapsible = true
+                            isCollapsed = true
+                            file = file
+                            line = line
+                            children = [||]
+                        }
+                    | Seq(file, line, stuff) ->
+                        {
+                            text = "Seq - make text!!"
+                            indexPath = actualIndexPath
+                            isCollapsible = true
+                            isCollapsed = true
+                            file = file
+                            line = line
+                            children = [||]
+                        }
+                    | Function(file, line, f) ->
+                            {
+                            text = "@" + (functionNames |> Map.find f)
+                            indexPath = actualIndexPath
+                            isCollapsible = false
+                            isCollapsed = true
+                            file = file
+                            line = line
+                            children = [||]
+                        })
         | h::t ->
+            if compiledDefinitionNodes.Length = browserNodes.Length then
+                ()
+            else
+                () 
             failwith ""
     member __.File = file |> System.IO.FileInfo
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
