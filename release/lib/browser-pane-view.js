@@ -33,6 +33,7 @@ export default class BrowserPaneView {
         {className, ref: 'items'},
         ...this.props.nodes.map((item, index) => $(BrowserPaneTreeView, {
           text : item.text,
+          nodeType : item.nodeType,
           file : item.file,
           line : item.line,
           isCollapsed : item.isCollapsed,

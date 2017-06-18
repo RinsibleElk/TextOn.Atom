@@ -27,6 +27,7 @@ type BrowserServer(file) =
                         | Sentence(file, line, simpleNode) ->
                             {
                                 text = text
+                                nodeType = "text"
                                 indexPath = actualIndexPath
                                 isCollapsible = false
                                 isCollapsed = true
@@ -37,6 +38,7 @@ type BrowserServer(file) =
                         | ParagraphBreak(file, line) ->
                             {
                                 text = text
+                                nodeType = "paragraphbreak"
                                 indexPath = actualIndexPath
                                 isCollapsible = false
                                 isCollapsed = true
@@ -47,6 +49,7 @@ type BrowserServer(file) =
                         | Choice(file, line, stuff) ->
                             {
                                 text = text
+                                nodeType = "choice"
                                 indexPath = actualIndexPath
                                 isCollapsible = true
                                 isCollapsed = true
@@ -57,6 +60,7 @@ type BrowserServer(file) =
                         | Seq(file, line, stuff) ->
                             {
                                 text = text
+                                nodeType = "seq"
                                 indexPath = actualIndexPath
                                 isCollapsible = true
                                 isCollapsed = true
@@ -67,6 +71,7 @@ type BrowserServer(file) =
                         | Function(file, line, f) ->
                             {
                                 text = text
+                                nodeType = "function"
                                 indexPath = actualIndexPath
                                 isCollapsible = false
                                 isCollapsed = true
@@ -101,6 +106,7 @@ type BrowserServer(file) =
                     | Sentence(file, line, simpleNode) ->
                         {
                             text = text
+                            nodeType = "text"
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = true
@@ -111,6 +117,7 @@ type BrowserServer(file) =
                     | ParagraphBreak(file, line) ->
                         {
                             text = text
+                            nodeType = "paragraphbreak"
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = true
@@ -121,6 +128,7 @@ type BrowserServer(file) =
                     | Choice(file, line, stuff) ->
                         {
                             text = text
+                            nodeType = "choice"
                             indexPath = actualIndexPath
                             isCollapsible = true
                             isCollapsed = false
@@ -131,6 +139,7 @@ type BrowserServer(file) =
                     | Seq(file, line, stuff) ->
                         {
                             text = text
+                            nodeType = "seq"
                             indexPath = actualIndexPath
                             isCollapsible = true
                             isCollapsed = false
@@ -141,6 +150,7 @@ type BrowserServer(file) =
                     | Function(file, line, f) ->
                         {
                             text = text
+                            nodeType = "function"
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = false
@@ -279,6 +289,7 @@ type BrowserServer(file) =
                         (fun i fn ->
                             {
                                 text = fn.Name
+                                nodeType = "function"
                                 indexPath = [|i|]
                                 isCollapsible = true
                                 isCollapsed = true
@@ -303,7 +314,8 @@ type BrowserServer(file) =
             let variableValues = Map.empty
             let functionIndex = indexPath.[0]
             let compiledNodes = [|currentTemplate.Value.Functions.[functionIndex].Tree|]
-            let (a,b) = expandAt functionNames attributeValues variableNames variableValues compiledNodes currentValue.Value.nodes.[functionIndex].children [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
+            let (rootItems, newItems) =
+                expandAt functionNames attributeValues variableNames variableValues compiledNodes currentValue.Value.nodes.[functionIndex].children [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
             currentValue <-
                 Some
                     {
@@ -314,9 +326,12 @@ type BrowserServer(file) =
                                 (currentValue.Value.nodes |> Array.take functionIndex)
                                 (Array.append
                                     [|
-                                        { currentValue.Value.nodes.[functionIndex] with children = a }
+                                        { currentValue.Value.nodes.[functionIndex] with children = rootItems }
                                     |]
                                     (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
                         file = file
                     }
-            Some { newItems = b }
+            Some
+                {
+                    newItems = newItems
+                }

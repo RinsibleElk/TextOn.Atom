@@ -69,6 +69,7 @@ module DTO =
     type BrowserNode =
         {
             text : string
+            nodeType : string
             indexPath : int[]
             isCollapsible : bool
             isCollapsed : bool

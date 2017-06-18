@@ -62,6 +62,9 @@ export default class BrowserPaneTreeView {
     if (props.hasOwnProperty('text')) {
       this.props.text = props.text;
     }
+    if (props.hasOwnProperty('nodeType')) {
+      this.props.nodeType = props.nodeType;
+    }
     if (props.hasOwnProperty('file')) {
       this.props.file = props.file;
     }
@@ -129,6 +132,7 @@ export default class BrowserPaneTreeView {
         {className, ref: 'items'},
         ...this.items.map((item, index) => $(BrowserPaneTreeView, {
           text : item.text,
+          nodeType : item.nodeType,
           file : item.file,
           line : item.line,
           isCollapsed : item.isCollapsed,
