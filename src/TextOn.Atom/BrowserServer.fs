@@ -335,3 +335,6 @@ type BrowserServer(file) =
                 {
                     newItems = newItems
                 }
+
+    member __.SetValue ty name value =
+        ()

@@ -26,6 +26,12 @@ export default class ValueInputView {
     }
   }
 
+  didClickClear () {
+    if (this.props.onDidConfirmSelection) {
+      this.props.onDidConfirmSelection(this.props.type, this.props.name, '')
+    }
+  }
+
   didCancelSelection () {
   }
 
@@ -38,7 +44,7 @@ export default class ValueInputView {
 
   didInitializeCombobox (combobox) {
     if (this.combobox != null) {
-      throw 'Fuck you'
+      throw 'No combobox created'
     }
     this.combobox = combobox;
   }
@@ -56,7 +62,17 @@ export default class ValueInputView {
     return false;
   }
 
-  // not sure about these class names yet...
+  renderClearButton() {
+    if (this.props.showClearButton) {
+      return (
+        <button class='btn btn' onClick={this.didClickClear.bind(this)}>Clear</button>
+      )
+    }
+    else {
+      return ""
+    }
+  }
+
   render () {
     return (
       <atom-panel className={this.props.className}>
@@ -75,6 +91,7 @@ export default class ValueInputView {
               permitsFreeValue={this.props.permitsFreeValue}
               didConfirmSelection={this.didConfirmSelection.bind(this)}
               didCancelSelection={this.didCancelSelection.bind(this)} />
+            {this.renderClearButton()}
           </div>
         </div>
       </atom-panel>

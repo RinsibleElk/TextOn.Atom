@@ -52,6 +52,7 @@ module internal RunServer =
                 path "/browserstart" >=> handler (fun (data : BrowserStartRequest) -> commands.BrowserStart data.FileName (data.Lines |> List.ofArray))
                 path "/browserstop" >=> handler (fun (data : BrowserStopRequest) -> commands.BrowserStop ())
                 path "/browserexpand" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserExpand data.browserFile data.indexPath)
+                path "/browservalueset" >=> handler (fun (data : BrowserValueSetRequest) -> commands.BrowserValueSet data.FileName data.Type data.Name data.Value)
             ]
 
         let port = serverModeConfig.Port

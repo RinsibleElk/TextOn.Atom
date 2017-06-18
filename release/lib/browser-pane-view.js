@@ -5,7 +5,9 @@ import etch from 'etch'
 const $ = etch.dom
 import TextOnCore from './texton-core'
 import PaneSectionView from './pane-section-view'
+import ValueInputView from './value-input-view'
 import BrowserPaneTreeView from './browser-pane-tree-view'
+import Logger from './texton-logger'
 
 export default class BrowserPaneView {
   constructor (props) {
@@ -27,16 +29,76 @@ export default class BrowserPaneView {
   }
 
   destroy () {
+    for (const input of this.inputs) {
+      input.destroy();
+    }
+    for (const section of this.sections) {
+      section.destroy();
+    }
+    this.inputs = null;
+    this.sections = null;
   }
 
   update (props) {
+    if (props.hasOwnProperty('attributes')) {
+      this.props.attributes = props.attributes
+    }
+    if (props.hasOwnProperty('variables')) {
+      this.props.variables = props.variables
+    }
     if (props.hasOwnProperty('nodes')) {
       this.props.nodes = props.nodes
     }
     if (props.hasOwnProperty('file')) {
       this.props.file = props.file
     }
+    Logger.logf("UpdateAttributes", "UpdateAttributes", [this.props.attributes])
+    this.attributes = this.props.attributes.map((item) => {
+      return item;
+    });
+    this.variables = this.props.variables.map((item) => {
+      return item;
+    });
     return etch.update(this)
+  }
+
+  renderAttributes () {
+    Logger.logf("Attributes", "Attributes", [this.attributes])
+    return $.div(
+      {},
+      ...this.attributes.map((att, index) => $(ValueInputView, {
+            ref: 'attributes',
+            type: 'Attribute',
+            name: att.name,
+            value: att.value,
+            text: att.text,
+            className: 'texton-sections-settable padded',
+            permitsFreeValue: false,
+            items: att.items,
+            showClearButton: true,
+            onDidInitialize: this.didInitializeInput.bind(this),
+            onDidConfirmSelection: this.didConfirmSelection.bind(this),
+            onDidClickLink: this.didClickAttributeLink.bind(this)
+        })));
+  }
+
+  renderVariables () {
+    return $.div(
+      {},
+      ...this.variables.map((att, index) => $(ValueInputView, {
+            ref: 'variables',
+            type: 'Variable',
+            name: att.name,
+            value: att.value,
+            text: att.text,
+            className: 'texton-sections-settable padded',
+            permitsFreeValue: att.permitsFreeValue,
+            items: att.items,
+            showClearButton: true,
+            onDidInitialize: this.didInitializeInput.bind(this),
+            onDidConfirmSelection: this.didConfirmSelection.bind(this),
+            onDidClickLink: this.didClickVariableLink.bind(this)
+        })));
   }
 
   renderItems () {
@@ -59,6 +121,16 @@ export default class BrowserPaneView {
     } else {
       return ""
     }
+  }
+
+  didClickVariableLink (variableName) {
+    this.props.onDidClickSmartLink ('Variable', this.props.file, variableName)
+    return false
+  }
+
+  didClickAttributeLink (attributeName) {
+    this.props.onDidClickSmartLink ('Attribute', this.props.file, attributeName)
+    return false
   }
 
   didInitializeSection (section) {
@@ -130,6 +202,12 @@ export default class BrowserPaneView {
     return (
       <div className='texton-browser tool-panel' tabIndex='-1'>
         <main className='texton-sections'>
+          <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
+            {this.renderAttributes()}
+          </PaneSectionView>
+          <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
+            {this.renderVariables()}
+          </PaneSectionView>
           <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='browser' title='Browser'>
             {this.renderItems()}
           </PaneSectionView>

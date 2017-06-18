@@ -6,6 +6,7 @@ const $ = etch.dom
 import PaneSectionView from './pane-section-view'
 import ValueInputView from './value-input-view'
 import TextOnCore from './texton-core'
+import Logger from './texton-logger'
 
 export default class GeneratorPaneView {
   constructor (props) {
@@ -76,6 +77,7 @@ export default class GeneratorPaneView {
     if (props.hasOwnProperty('output')) {
       this.props.output = props.output
     }
+    Logger.logf("GenUpdateAttributes", "GenUpdateAttributes", [this.props.attributes])
     this.attributes = this.props.attributes.map((item) => {
       return item;
     });
@@ -109,6 +111,7 @@ export default class GeneratorPaneView {
   }
 
   renderAttributes () {
+    Logger.logf("GenAttributes", "GenAttributes", [this.attributes])
     return $.div(
       {},
       ...this.attributes.map((att, index) => $(ValueInputView, {
@@ -120,6 +123,7 @@ export default class GeneratorPaneView {
             className: 'texton-sections-settable padded',
             permitsFreeValue: false,
             items: att.items,
+            showClearButton: false,
             onDidInitialize: this.didInitializeInput.bind(this),
             onDidConfirmSelection: this.didConfirmSelection.bind(this),
             onDidClickLink: this.didClickAttributeLink.bind(this)
@@ -138,6 +142,7 @@ export default class GeneratorPaneView {
             className: 'texton-sections-settable padded',
             permitsFreeValue: att.permitsFreeValue,
             items: att.items,
+            showClearButton: false,
             onDidInitialize: this.didInitializeInput.bind(this),
             onDidConfirmSelection: this.didConfirmSelection.bind(this),
             onDidClickLink: this.didClickVariableLink.bind(this)

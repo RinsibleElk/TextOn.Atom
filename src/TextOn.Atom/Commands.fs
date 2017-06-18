@@ -173,6 +173,14 @@ type Commands (serialize : Serializer) =
                 [ CommandResponse.generatorSetup serialize generator.Value.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
 
+    member __.BrowserValueSet file ty name value = async {
+        let ok, browser = browsers.TryGetValue(file)
+        return
+            if ok then
+                browser.SetValue ty name value
+                [ CommandResponse.browserUpdate serialize browser.Data ]
+            else [ CommandResponse.error serialize "Nothing to browse" ] }
+
     member __.Generate config = async {
         return
             if generator.IsSome then

@@ -11,8 +11,12 @@ createBrowserPane = (data) ->
   BrowserPaneView = require './browser-pane-view'
   browser = new BrowserPaneView(
       {
+        attributes : data.attributes,
+        variables : data.variables,
         nodes : data.nodes,
-        file : data.file
+        file : data.file,
+        onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name),
+        onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
       })
 
 showBrowser = ->
@@ -22,6 +26,26 @@ showBrowser = ->
     pane = atom.workspace.paneForItem(browser)
     if pane?
       pane.activateItemForURI(browser.getURI())
+
+valueset = (type, name, value) ->
+  req =
+    Type : type
+    Name : name
+    Value : value
+  p = textOnCore.send('browservalueset', 'browserUpdate', req)
+  p.then (data) ->
+    if data.length > 0
+      updateBrowserPane (data[0])
+
+navigate = (type, fileName, name) ->
+  req =
+    FileName : fileName
+    NavigateType : type
+    Name : name
+  p = textOnCore.send('navigaterequest', 'navigate', req)
+  p.then (data) ->
+    if data.length is 1
+      textOnCore.navigate data[0]
 
 updateBrowserPane = (data) ->
   if browser?
@@ -34,6 +58,7 @@ updateBrowserPane = (data) ->
       activateItem: false
     }).then () ->
       showBrowser()
+      browser.update data
 
 sendToTextOnBrowser = ->
   editor = atom.workspace.getActiveTextEditor()
