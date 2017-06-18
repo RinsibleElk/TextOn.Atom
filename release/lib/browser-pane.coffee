@@ -29,7 +29,6 @@ updateBrowserPane = (data) ->
       showBrowser()
   else
     createBrowserPane data
-    Logger.logf("updateBrowserPane", "finished creating", browser)
     atom.workspace.open(browser, {
       activatePane: false,
       activateItem: false
@@ -47,7 +46,6 @@ sendToTextOnBrowser = ->
     p = textOnCore.send('browserstart', 'browserUpdate', req)
     p.then (data) ->
       if data.length is 1
-        Logger.logf("sendToTextOnBrowser", "updateBrowserPane", data[0])
         updateBrowserPane (data[0])
 
 requestUpdate = ->

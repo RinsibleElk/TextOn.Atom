@@ -28,7 +28,6 @@ export default class BrowserPaneTreeView {
   }
 
   expand () {
-    Logger.logf("BrowserPaneTreeView", "Expand", [])
     TextOnCore.send('browserexpand', 'browseritems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
       .then((data) => {
         if (data.length > 0) {
@@ -41,7 +40,6 @@ export default class BrowserPaneTreeView {
   }
 
   collapse () {
-    Logger.logf("BrowserPaneTreeView", "Collapse", [])
     this.isExpanded = false;
     this.element.classList.remove('expanded')
     this.element.classList.add('collapsed')
@@ -49,7 +47,6 @@ export default class BrowserPaneTreeView {
   }
 
   toggleExpansion () {
-    Logger.logf("BrowserPaneTreeView", "toggleExpansion", [])
     if (this.isExpanded) {
       this.collapse();
     } else {
