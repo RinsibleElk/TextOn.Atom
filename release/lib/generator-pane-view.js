@@ -3,7 +3,7 @@
 
 import etch from 'etch'
 const $ = etch.dom
-import GeneratorPaneSectionView from './generator-pane-section-view'
+import PaneSectionView from './pane-section-view'
 import ValueInputView from './value-input-view'
 import TextOnCore from './texton-core'
 
@@ -222,15 +222,15 @@ export default class GeneratorPaneView {
           <h1>TextOn Generator for <a onClick={this.didClickFunctionLink.bind(this)}>{this.props.functionName}</a></h1>
         </header>
         <main className='texton-sections'>
-          <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
+          <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='attributes' title='Attributes'>
             {this.renderAttributes()}
-          </GeneratorPaneSectionView>
-          <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
+          </PaneSectionView>
+          <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='variables' title='Variables'>
             {this.renderVariables()}
-          </GeneratorPaneSectionView>
-          <GeneratorPaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='generator' title='Generator'>
+          </PaneSectionView>
+          <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='generator' title='Generator'>
             {this.renderGenerator()}
-          </GeneratorPaneSectionView>
+          </PaneSectionView>
         </main>
       </div>
     )

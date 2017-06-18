@@ -4,12 +4,25 @@
 import etch from 'etch'
 const $ = etch.dom
 import TextOnCore from './texton-core'
+import PaneSectionView from './pane-section-view'
 import BrowserPaneTreeView from './browser-pane-tree-view'
 
 export default class BrowserPaneView {
   constructor (props) {
     this.props = props;
+    this.collapsedSections = props.collapsedSections ? new Set(props.collapsedSections) : new Set();
+    this.inputs = [];
+    this.sections = [];
+    this.attributes = [];
+    this.variables = [];
     etch.initialize(this);
+    for (const section of this.sections) {
+      if (this.collapsedSections.has(section.name)) {
+        section.collapse();
+      } else {
+        section.expand();
+      }
+    }
     this.handleEvents();
   }
 
@@ -46,6 +59,18 @@ export default class BrowserPaneView {
     } else {
       return ""
     }
+  }
+
+  didInitializeSection (section) {
+    this.sections.push(section);
+  }
+
+  didInitializeInput (input) {
+    this.inputs.push(input);
+  }
+
+  didConfirmSelection (type, name, value) {
+    this.props.onDidConfirmSelection (type, name, value)
   }
 
   getTitle () {
@@ -102,11 +127,14 @@ export default class BrowserPaneView {
   }
 
   render () {
-    return $.div(
-      {
-        className : 'texton-browser tool-panel',
-        tabIndex : '-1'
-      },
-      this.renderItems())
+    return (
+      <div className='texton-browser tool-panel' tabIndex='-1'>
+        <main className='texton-sections'>
+          <PaneSectionView onDidInitialize={this.didInitializeSection.bind(this)} name='browser' title='Browser'>
+            {this.renderItems()}
+          </PaneSectionView>
+        </main>
+      </div>
+    )
   }
 }
