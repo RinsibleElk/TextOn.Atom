@@ -39,8 +39,8 @@ module VariableConditionEvaluator =
     let rec resolvePartial (attributeCache:Map<int, string>) (variableCache:Map<int, string>) condition : bool =
         match condition with
         | VarTrue -> true
-        | VarBoth(c1, c2) -> (c1 |> resolve attributeCache variableCache) && (c2 |> resolve attributeCache variableCache)
-        | VarEither(c1, c2) -> (c1 |> resolve attributeCache variableCache) || (c2 |> resolve attributeCache variableCache)
+        | VarBoth(c1, c2) -> (c1 |> resolvePartial attributeCache variableCache) && (c2 |> resolvePartial attributeCache variableCache)
+        | VarEither(c1, c2) -> (c1 |> resolvePartial attributeCache variableCache) || (c2 |> resolvePartial attributeCache variableCache)
         | VarAreEqual(identity, value) ->
             match identity with
             | Attribute attributeIdentity ->

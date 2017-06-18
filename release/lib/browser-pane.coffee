@@ -16,7 +16,7 @@ createBrowserPane = (data) ->
         nodes : data.nodes,
         file : data.file,
         onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name),
-        onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
+        onDidConfirmSelection : (file, type, name, value) -> valueset(file, type, name, value)
       })
 
 showBrowser = ->
@@ -27,8 +27,9 @@ showBrowser = ->
     if pane?
       pane.activateItemForURI(browser.getURI())
 
-valueset = (type, name, value) ->
+valueset = (file, type, name, value) ->
   req =
+    FileName : file
     Type : type
     Name : name
     Value : value

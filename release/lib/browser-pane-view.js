@@ -142,7 +142,7 @@ export default class BrowserPaneView {
   }
 
   didConfirmSelection (type, name, value) {
-    this.props.onDidConfirmSelection (type, name, value)
+    this.props.onDidConfirmSelection (this.props.file, type, name, value)
   }
 
   getTitle () {

@@ -12,8 +12,8 @@ type BrowserStartResult =
 type BrowserServer(file) =
     let mutable currentValue = None
     let mutable currentTemplate = None
-    let mutable attributeValues = Map.empty
-    let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
+    let mutable attributeValues : Map<string, string> = Map.empty
+    let mutable variableValues : Map<string, string> = Map.empty
     let rec expandAt functionNames attributeValues variableNames variableValues (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] * BrowserNode[] =
         match searchIndexPath with
         | [] ->
@@ -73,7 +73,7 @@ type BrowserServer(file) =
                                 text = text
                                 nodeType = "function"
                                 indexPath = actualIndexPath
-                                isCollapsible = false
+                                isCollapsible = true
                                 isCollapsed = true
                                 file = file
                                 line = line
@@ -95,7 +95,7 @@ type BrowserServer(file) =
                             |> Array.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
                             |> Array.map fst
                         | Function(_, _, f) ->
-                            [|currentTemplate.Value.Functions.[f].Tree|]
+                            currentTemplate.Value.Functions |> Array.tryFind (fun fn -> fn.Index = f) |> Option.map (fun fn -> [|fn.Tree|]) |> defaultArg <| [||]
                     let bn = browserNodes.[h].children
                     expandAt functionNames attributeValues variableNames variableValues cn bn (h::currentIndexPathRev) t
                 let innerNode =
@@ -152,7 +152,7 @@ type BrowserServer(file) =
                             text = text
                             nodeType = "function"
                             indexPath = actualIndexPath
-                            isCollapsible = false
+                            isCollapsible = true
                             isCollapsed = false
                             file = file
                             line = line
@@ -165,7 +165,7 @@ type BrowserServer(file) =
     member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
     member __.Data =
         let currentTemplate = currentTemplate.Value
-        let (haveSeenEmpty, attributes, variables) =
+        let (attributes, variables) =
             let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
             attributeValues <- attributeValues |> Map.filter (fun k _ -> k |> attributeNameToIndex |> Option.isSome)
             let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
@@ -177,108 +177,80 @@ type BrowserServer(file) =
                 (requiredAttributes |> Array.map Choice1Of2)
                 (requiredVariables |> Array.map Choice2Of2)
             |> Array.scan
-                (fun (haveSeenFilled, haveSeenEmpty, _) value ->
+                (fun _ value ->
                     match value with
                     | Choice1Of2 att ->
                         let data =
-                            if haveSeenEmpty then
-                                // I cannot know if this value is valid, so remove it.
-                                attributeValues <- attributeValues |> Map.remove att.Name
-                                {
-                                    name = att.Name
-                                    text = att.Text
-                                    value = ""
-                                    items = [||]
-                                    permitsFreeValue = false
-                                }
-                            else
-                                let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
-                                let value = attributeValuesByIndex |> Map.tryFind att.Index
-                                let value =
-                                    if value.IsSome && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
-                                        attributeValues <- attributeValues |> Map.remove att.Name
-                                        None
-                                    else
-                                        value
-                                let newValue, newSuggestions =
-                                    if value.IsNone && suggestions.Length > 0 then
-                                        attributeValues <- attributeValues |> Map.add att.Name suggestions.[0]
-                                        suggestions.[0], suggestions
-                                    else if value.IsSome then
-                                        // Put the current value at the front.
-                                        value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
-                                    else
-                                        "", [|""|]
-                                {
-                                    name = att.Name
-                                    value = newValue
-                                    items = newSuggestions
-                                    text = att.Text
-                                    permitsFreeValue = false
-                                }
-                        (haveSeenFilled || data.value <> "", haveSeenEmpty || data.value = "", (Some (Choice1Of2 data)))
+                            let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                            let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolvePartial attributeValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
+                            let value = attributeValuesByIndex |> Map.tryFind att.Index
+                            let value =
+                                if value.IsSome && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
+                                    attributeValues <- attributeValues |> Map.remove att.Name
+                                    None
+                                else
+                                    value
+                            let newValue, newSuggestions =
+                                if value.IsNone && suggestions.Length > 0 then
+                                    "", (""::(suggestions |> List.ofArray) |> List.toArray)
+                                else if value.IsSome then
+                                    // Put the current value at the front.
+                                    value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                else
+                                    "", [|""|]
+                            {
+                                name = att.Name
+                                value = newValue
+                                items = newSuggestions
+                                text = att.Text
+                                permitsFreeValue = false
+                            }
+                        (Some (Choice1Of2 data))
                     | Choice2Of2 var ->
                         let data =
-                            if haveSeenEmpty && (not var.PermitsFreeValue) then
-                                // I cannot know if this value is valid, so remove it.
-                                variableValues <- variableValues |> Map.remove var.Name
-                                {
-                                    name = var.Name
-                                    value = ""
-                                    items = [|""|]
-                                    text = var.Text
-                                    permitsFreeValue = var.PermitsFreeValue
-                                }
-                            else
-                                let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let (currentValue, userChoseThisValue) = variableValues |> Map.tryFind var.Name |> fun o -> if o.IsSome then (Some (o.Value |> fst), o.Value |> snd) else (None, false)
-                                let value =
-                                    if (not userChoseThisValue) then
-                                        variableValues <- variableValues |> Map.remove var.Name
-                                        None
-                                    else
-                                        currentValue
-                                let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,(v,_)) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let suggestions =
-                                    if haveSeenEmpty then
-                                        [||]
-                                    else
-                                        var.Values
-                                        |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition)
-                                        |> Array.map (fun a -> a.Value)
-                                // We remove the choice if it is invalid, or if it was system generated.
-                                let value =
-                                    if value.IsSome && (not var.PermitsFreeValue) && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
-                                        variableValues <- variableValues |> Map.remove var.Name
-                                        None
-                                    else
-                                        value
-                                let newValue, newSuggestions =
-                                    if value.IsNone && suggestions.Length > 0 then
-                                        variableValues <- variableValues |> Map.add var.Name (suggestions.[0], false) // I chose this one.
-                                        suggestions.[0], suggestions
-                                    else if value.IsSome then
-                                        // Put the current value at the front.
-                                        value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
-                                    else
-                                        "", [|""|]
-                                {
-                                    name = var.Name
-                                    value = newValue
-                                    items = newSuggestions
-                                    text = var.Text
-                                    permitsFreeValue = var.PermitsFreeValue
-                                }
-                        (haveSeenFilled || data.value <> "", haveSeenEmpty || data.value = "", (Some (Choice2Of2 data))))
-                    (false, false, None)
+                            let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                            let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                            let value = variableValuesByIndex |> Map.tryFind var.Index
+                            let suggestions =
+                                var.Values
+                                |> Array.filter (fun a -> VariableConditionEvaluator.resolvePartial attributeValuesByIndex variableValuesByIndex a.Condition)
+                                |> Array.map (fun a -> a.Value)
+                            let value =
+                                if value.IsSome && (not var.PermitsFreeValue) && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
+                                    attributeValues <- attributeValues |> Map.remove var.Name
+                                    None
+                                else
+                                    value
+                            // We remove the choice if it is invalid, or if it was system generated.
+                            let value =
+                                if value.IsSome && (not var.PermitsFreeValue) && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
+                                    variableValues <- variableValues |> Map.remove var.Name
+                                    None
+                                else
+                                    value
+                            let newValue, newSuggestions =
+                                if value.IsNone && suggestions.Length > 0 then
+                                    "", (""::(suggestions |> List.ofArray) |> List.toArray)
+                                else if value.IsSome then
+                                    // Put the current value at the front.
+                                    value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                else
+                                    "", [|""|]
+                            {
+                                name = var.Name
+                                value = newValue
+                                items = newSuggestions
+                                text = var.Text
+                                permitsFreeValue = var.PermitsFreeValue
+                            }
+                        (Some (Choice2Of2 data)))
+                    None
             |> Array.skip 1
-            |> Array.map (fun (_,e,o) -> (e,o.Value))
+            |> Array.map Option.get
             |> fun a ->
-                let attributes = a |> Array.map snd |> Array.choose (function | Choice1Of2 a -> Some a | _ -> None)
-                let variables = a |> Array.map snd |> Array.choose (function | Choice2Of2 a -> Some a | _ -> None)
-                let haveSeenEmpty = a |> Array.map fst |> List.ofArray |> List.tryLast |> defaultArg <| false
-                (haveSeenEmpty, attributes, variables)
+                let attributes = a |> Array.choose (function | Choice1Of2 a -> Some a | _ -> None)
+                let variables = a |> Array.choose (function | Choice2Of2 a -> Some a | _ -> None)
+                (attributes, variables)
         let retVal =
             {
                 attributes = attributes
@@ -300,8 +272,8 @@ type BrowserServer(file) =
                 file = file
             }
         currentValue <- Some retVal
-        retVal    
-       
+        retVal
+
     // This should set the new state on the parent to expanded, and return the children, having resolved some text to write.
     // It should update the current value.
     member __.ExpandAt (indexPath:int[]) =
@@ -309,13 +281,15 @@ type BrowserServer(file) =
         else if currentValue.Value.nodes.Length < indexPath.[0] then None
         else
             let functionNames = currentTemplate.Value.Functions |> Array.map (fun f -> f.Index, f.Name) |> Map.ofArray
-            let attributeValues = Map.empty
             let variableNames = currentTemplate.Value.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
-            let variableValues = Map.empty
             let functionIndex = indexPath.[0]
             let compiledNodes = [|currentTemplate.Value.Functions.[functionIndex].Tree|]
+            let attributeNameToIndex, attributeIndexToName = currentTemplate.Value.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+            let variableNameToIndex, variableIndexToName = currentTemplate.Value.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+            let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+            let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
             let (rootItems, newItems) =
-                expandAt functionNames attributeValues variableNames variableValues compiledNodes currentValue.Value.nodes.[functionIndex].children [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
+                expandAt functionNames attributeValuesByIndex variableNames variableValuesByIndex compiledNodes currentValue.Value.nodes.[functionIndex].children [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
             currentValue <-
                 Some
                     {
@@ -337,4 +311,13 @@ type BrowserServer(file) =
                 }
 
     member __.SetValue ty name value =
-        ()
+        if ty = "Variable" then
+            if value |> String.IsNullOrEmpty then
+                variableValues <- variableValues |> Map.remove name
+            else
+                variableValues <- variableValues |> Map.add name value
+        else
+            if value |> String.IsNullOrEmpty then
+                attributeValues <- attributeValues |> Map.remove name
+            else
+                attributeValues <- attributeValues |> Map.add name value
