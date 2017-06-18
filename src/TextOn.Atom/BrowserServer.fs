@@ -301,14 +301,22 @@ type BrowserServer(file) =
             let attributeValues = Map.empty
             let variableNames = currentTemplate.Value.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
             let variableValues = Map.empty
-            let compiledNodes = [|currentTemplate.Value.Functions.[indexPath.[0]].Tree|]
-            let (a,b) = expandAt functionNames attributeValues variableNames variableValues compiledNodes currentValue.Value.nodes [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
+            let functionIndex = indexPath.[0]
+            let compiledNodes = [|currentTemplate.Value.Functions.[functionIndex].Tree|]
+            let (a,b) = expandAt functionNames attributeValues variableNames variableValues compiledNodes currentValue.Value.nodes.[functionIndex].children [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
             currentValue <-
                 Some
                     {
                         attributes = currentValue.Value.attributes
                         variables = currentValue.Value.variables
-                        nodes = a
+                        nodes =
+                            Array.append
+                                (currentValue.Value.nodes |> Array.take functionIndex)
+                                (Array.append
+                                    [|
+                                        { currentValue.Value.nodes.[functionIndex] with children = a }
+                                    |]
+                                    (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
                         file = file
                     }
             Some { newItems = b }
