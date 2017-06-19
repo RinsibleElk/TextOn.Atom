@@ -23,9 +23,9 @@ export default class BrowserPaneTreeView {
     this.computeNesting()
     if (!this.props.isCollapsed)
     {
-      this.expand();
+      this.setExpanded();
     } else {
-      this.collapse();
+      this.setCollapsed();
     }
   }
 
@@ -33,20 +33,28 @@ export default class BrowserPaneTreeView {
     TextOnCore.send('browserexpand', 'browseritems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
       .then((data) => {
         if (data.length > 0) {
-          this.isExpanded = true;
-          this.element.classList.add('expanded')
-          this.element.classList.remove('collapsed')
-          this.update({ items : data[0].newItems })
+          this.update({ items : data[0].newItems, isCollapsed : false })
         }
       })
   }
 
+  setExpanded () {
+    this.isExpanded = true;
+    this.element.classList.add('expanded')
+    this.element.classList.remove('collapsed')
+  }
+
   collapse () {
     TextOnCore.send('browsercollapse', 'thanks', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
+      .then((data) => {
+        this.update({ items : [], isCollapsed : true })
+      })
+  }
+
+  setCollapsed () {
     this.isExpanded = false;
     this.element.classList.remove('expanded')
     this.element.classList.add('collapsed')
-    this.items = []
   }
 
   toggleExpansion () {
@@ -94,6 +102,12 @@ export default class BrowserPaneTreeView {
       this.computeItems()
     }
     this.computeNesting()
+    if (!this.props.isCollapsed)
+    {
+      this.setExpanded();
+    } else {
+      this.setCollapsed();
+    }
     return etch.update(this)
   }
 
