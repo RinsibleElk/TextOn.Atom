@@ -140,7 +140,7 @@ export default class BrowserPaneTreeView {
           line : item.line,
           isCollapsed : item.isCollapsed,
           isCollapsible : item.isCollapsible,
-          browserFile : this.props.file,
+          browserFile : this.props.browserFile,
           indexPath : item.indexPath,
           items : item.children
         }))
