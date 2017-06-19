@@ -46,3 +46,5 @@ module CommandResponse =
         serialize { Kind = "browseritems" ; Data = [|items|] }
     let navigate (serialize : Serializer) (data:NavigateData) =
         serialize { Kind = "navigate" ; Data = [|data|] }
+    let thanks (serialize : Serializer) =
+        serialize { Kind = "thanks" ; Data = [||] }

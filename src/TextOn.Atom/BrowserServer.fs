@@ -14,6 +14,33 @@ type BrowserServer(file) =
     let mutable currentTemplate = None
     let mutable attributeValues : Map<string, string> = Map.empty
     let mutable variableValues : Map<string, string> = Map.empty
+    let rec collapseAt (browserNodes:BrowserNode[]) indexPath =
+        match indexPath with
+        | [] ->
+            failwith "Cannot reach here"
+        | [h] ->
+            if browserNodes.Length > h then
+                Some
+                    (Array.append
+                        (browserNodes |> Array.take h)
+                        (Array.append
+                            (Array.singleton { browserNodes.[h] with children = [||] ; isCollapsed = true })
+                            (browserNodes |> Array.skip (min (h + 1) browserNodes.Length))))
+            else
+                None
+        | h::t ->
+            if browserNodes.Length > h then
+                let innerChildren = collapseAt browserNodes.[h].children t
+                innerChildren
+                |> Option.map
+                    (fun innerChildren ->
+                        Array.append
+                            (browserNodes |> Array.take h)
+                            (Array.append
+                                (Array.singleton { browserNodes.[h] with children = innerChildren })
+                                (browserNodes |> Array.skip (min (h + 1) browserNodes.Length))))
+            else
+                None
     let rec expandAt functionNames attributeValues variableNames variableValues (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] * BrowserNode[] =
         match searchIndexPath with
         | [] ->
@@ -309,6 +336,24 @@ type BrowserServer(file) =
                 {
                     newItems = newItems
                 }
+
+    member __.CollapseAt (indexPath:int[]) =
+        if currentValue.IsNone then None
+        else if currentValue.Value.nodes.Length < indexPath.[0] then None
+        else
+            let children = collapseAt currentValue.Value.nodes (indexPath |> List.ofArray)
+            if children |> Option.isSome then
+                currentValue <-
+                    Some
+                        {
+                            attributes = currentValue.Value.attributes
+                            variables = currentValue.Value.variables
+                            nodes = children.Value
+                            file = file
+                        }
+                Some true
+            else
+                None
 
     member __.SetValue ty name value =
         if ty = "Variable" then

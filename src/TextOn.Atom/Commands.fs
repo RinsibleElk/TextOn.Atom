@@ -114,6 +114,18 @@ type Commands (serialize : Serializer) =
                     |> Option.map Success
                     |> defaultArg <| Failure "Couldn't find IndexPath" }
 
+    let doBrowserCollapse fileName directory indexPath = async {
+        if (not (isBrowsing)) then return Failure "Not browsing"
+        else
+            let ok, browser = browsers.TryGetValue(fileName)
+            if not ok then return Failure "No browser"
+            else
+                let res = browser.CollapseAt indexPath
+                return
+                    res
+                    |> Option.map Success
+                    |> defaultArg <| Failure "Couldn't find IndexPath" }
+
     member __.Parse file lines =
         async {
             let lines = lines |> List.ofArray
@@ -160,6 +172,13 @@ type Commands (serialize : Serializer) =
             | Success browserItems ->
                 [ CommandResponse.browserItems serialize browserItems ] }
 
+    member __.BrowserCollapse file indexPath = async {
+        let fi = Path.GetFullPath file |> FileInfo
+        let! result = doBrowserCollapse file fi.Directory.FullName indexPath
+        return
+            match result with
+            | Failure e -> [CommandResponse.error serialize e]
+            | Success _ -> [CommandResponse.thanks serialize] }
 
     member __.BrowserStop () = async {
         isBrowsing <- false

@@ -24,6 +24,8 @@ export default class BrowserPaneTreeView {
     if (!this.props.isCollapsed)
     {
       this.expand();
+    } else {
+      this.collapse();
     }
   }
 
@@ -40,6 +42,7 @@ export default class BrowserPaneTreeView {
   }
 
   collapse () {
+    TextOnCore.send('browsercollapse', 'thanks', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
     this.isExpanded = false;
     this.element.classList.remove('expanded')
     this.element.classList.add('collapsed')
