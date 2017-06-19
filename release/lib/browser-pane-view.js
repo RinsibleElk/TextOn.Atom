@@ -7,7 +7,6 @@ import TextOnCore from './texton-core'
 import PaneSectionView from './pane-section-view'
 import ValueInputView from './value-input-view'
 import BrowserPaneTreeView from './browser-pane-tree-view'
-import Logger from './texton-logger'
 
 export default class BrowserPaneView {
   constructor (props) {
@@ -52,7 +51,6 @@ export default class BrowserPaneView {
     if (props.hasOwnProperty('file')) {
       this.props.file = props.file
     }
-    Logger.logf("UpdateAttributes", "UpdateAttributes", [this.props.attributes])
     this.attributes = this.props.attributes.map((item) => {
       return item;
     });
@@ -63,7 +61,6 @@ export default class BrowserPaneView {
   }
 
   renderAttributes () {
-    Logger.logf("Attributes", "Attributes", [this.attributes])
     return $.div(
       {},
       ...this.attributes.map((att, index) => $(ValueInputView, {

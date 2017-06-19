@@ -6,7 +6,6 @@ const $ = etch.dom
 import PaneSectionView from './pane-section-view'
 import ValueInputView from './value-input-view'
 import TextOnCore from './texton-core'
-import Logger from './texton-logger'
 
 export default class GeneratorPaneView {
   constructor (props) {
@@ -77,7 +76,6 @@ export default class GeneratorPaneView {
     if (props.hasOwnProperty('output')) {
       this.props.output = props.output
     }
-    Logger.logf("GenUpdateAttributes", "GenUpdateAttributes", [this.props.attributes])
     this.attributes = this.props.attributes.map((item) => {
       return item;
     });
@@ -111,7 +109,6 @@ export default class GeneratorPaneView {
   }
 
   renderAttributes () {
-    Logger.logf("GenAttributes", "GenAttributes", [this.attributes])
     return $.div(
       {},
       ...this.attributes.map((att, index) => $(ValueInputView, {

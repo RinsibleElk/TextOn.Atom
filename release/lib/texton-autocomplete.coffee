@@ -3,6 +3,7 @@
 ###
 
 textOnCore = require './texton-core'
+Logger = require './texton-logger'
 path = require 'path'
 fuzzaldrin = require 'fuzzaldrin'
 
@@ -35,7 +36,7 @@ module.exports = new class # This only needs to be a class to bind getSuggestion
     return [] unless isTextOn
     row = options.bufferPosition.row
     col = options.bufferPosition.column
-    line = options.editor.buffer.lines[row]
+    line = options.editor.buffer.lineForRow(row)
     prefix = options.prefix
     c = line.charAt(col - options.prefix.length - 1)
     if c is '@'

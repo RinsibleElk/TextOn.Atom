@@ -5,11 +5,9 @@
 {CompositeDisposable} = require 'atom'
 GeneratorPaneTitle = 'TextOn Generator'
 textOnCore = require './texton-core'
-Logger = require './texton-logger'
 generator = null
 
 createGeneratorPane = ->
-  Logger.logf("Generator", "Creating", [])
   GeneratorPaneView = require './generator-pane-view'
   generator = new GeneratorPaneView(
       {

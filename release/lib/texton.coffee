@@ -13,7 +13,7 @@ gotoDefinition = ->
   if isTextOn && editor.buffer.file?
     row = editor.getCursorBufferPosition().row
     column = editor.getCursorBufferPosition().column
-    line = editor.buffer.lines[row]
+    line = editor.buffer.lineForRow(row)
     req =
       FileName : editor.getPath()
       Line : line
