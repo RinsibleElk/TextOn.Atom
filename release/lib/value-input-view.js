@@ -15,8 +15,10 @@ export default class ValueInputView {
   }
 
   elementForItem (item) {
-    const li = document.createElement('li')
-    li.textContent = item
+    const li = document.createElement('li');
+    const span = document.createElement('span');
+    span.textContent = item;
+    li.appendChild(span);
     return li
   }
 

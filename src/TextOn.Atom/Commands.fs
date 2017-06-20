@@ -9,7 +9,7 @@ type Commands (serialize : Serializer) =
     let fileTemplateMap = ConcurrentDictionary<string, CompiledTemplate>()
     //TODO: Make thread-safe.
     let mutable generator = None
-    let mutable browsers = ConcurrentDictionary<string, BrowserServer>()
+    let browserSingleton = ConcurrentDictionary<int, BrowserServer>()
     let mutable isBrowsing = false
     let add fileName directory lines =
         let key = Path.Combine(directory, fileName).ToLower()
@@ -97,18 +97,20 @@ type Commands (serialize : Serializer) =
                 match compilationResult with
                 | CompilationResult.CompilationFailure errors -> Success (BrowserStartResult.BrowserCompilationFailure errors)
                 | CompilationResult.CompilationSuccess template ->
-                    let browser = browsers.GetOrAdd(fileName, fun f-> BrowserServer(f))
+                    let browser =
+                        let browser = new BrowserServer(fileName)
+                        browserSingleton.AddOrUpdate(0, browser, (fun _ _ -> browser))
                     browser.UpdateTemplate(template)
                     Success (BrowserStartResult.BrowserStarted browser.Data) }
 
     let doBrowserExpand fileName directory indexPath = async {
         if (not (isBrowsing)) then return Failure "Not browsing"
         else
-            let ok, browser = browsers.TryGetValue(fileName)
+            let ok, browser = browserSingleton.TryGetValue(0)
             if not ok then return Failure "No browser"
+            else if browser.File.FullName <> fileName then return Failure (sprintf "Browser is for file %s, asked for file %s" browser.File.FullName fileName)
             else
-                let items =
-                    browser.ExpandAt indexPath
+                let items = browser.ExpandAt indexPath
                 return
                     items
                     |> Option.map Success
@@ -117,8 +119,9 @@ type Commands (serialize : Serializer) =
     let doBrowserCollapse fileName directory indexPath = async {
         if (not (isBrowsing)) then return Failure "Not browsing"
         else
-            let ok, browser = browsers.TryGetValue(fileName)
+            let ok, browser = browserSingleton.TryGetValue(0)
             if not ok then return Failure "No browser"
+            else if browser.File.FullName <> fileName then return Failure (sprintf "Browser is for file %s, asked for file %s" browser.File.FullName fileName)
             else
                 let res = browser.CollapseAt indexPath
                 return
@@ -182,7 +185,7 @@ type Commands (serialize : Serializer) =
 
     member __.BrowserStop () = async {
         isBrowsing <- false
-        browsers.Clear()
+        browserSingleton.Clear()
         return [] }
 
     member __.GeneratorValueSet ty name value = async {
@@ -192,13 +195,14 @@ type Commands (serialize : Serializer) =
                 [ CommandResponse.generatorSetup serialize generator.Value.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
 
-    member __.BrowserValueSet file ty name value = async {
-        let ok, browser = browsers.TryGetValue(file)
+    member __.BrowserValueSet fileName ty name value = async {
+        let ok, browser = browserSingleton.TryGetValue(0)
         return
-            if ok then
+            if not ok then [ CommandResponse.error serialize "Nothing to browse" ]
+            else if browser.File.FullName <> fileName then [ CommandResponse.error serialize (sprintf "Browser is for file %s, asked for file %s" browser.File.FullName fileName) ]
+            else
                 browser.SetValue ty name value
-                [ CommandResponse.browserUpdate serialize browser.Data ]
-            else [ CommandResponse.error serialize "Nothing to browse" ] }
+                [ CommandResponse.browserUpdate serialize browser.Data ] }
 
     member __.Generate config = async {
         return
