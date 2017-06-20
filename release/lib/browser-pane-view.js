@@ -7,7 +7,6 @@ import TextOnCore from './texton-core'
 import PaneSectionView from './pane-section-view'
 import ValueInputView from './value-input-view'
 import BrowserPaneTreeView from './browser-pane-tree-view'
-import Logger from './texton-logger'
 
 export default class BrowserPaneView {
   constructor (props) {
@@ -127,6 +126,12 @@ export default class BrowserPaneView {
     }
   }
 
+  followLink () {
+    if (this.selectedEntry != null) {
+      this.selectedEntry.browserNode.didClickLink();
+    }
+  }
+
   didInitializeChild (child) {
     this.children.push(child);
   }
@@ -199,7 +204,8 @@ export default class BrowserPaneView {
         'core:move-up': this.moveUp.bind(this),
         'core:move-down': this.moveDown.bind(this),
         'TextOn:browser-expand-collapsible': this.expandSelected.bind(this),
-        'TextOn:browser-collapse-collapsible': this.collapseSelected.bind(this)
+        'TextOn:browser-collapse-collapsible': this.collapseSelected.bind(this),
+        'TextOn:browser-follow-link': this.followLink.bind(this)
       });
   }
 
@@ -229,17 +235,15 @@ export default class BrowserPaneView {
   }
 
   selectEntry (entry) {
-    Logger.logf('selectEntry', 'Entry', [entry])
     if (entry == null) {
       return null;
     }
 
     if (this.selectedEntry != null) {
-      Logger.logf('selectEntry', 'Deselect', [this.selectedEntry])
       this.selectedEntry.classList.remove('selected');
     }
 
-    Logger.logf('selectEntry', 'Select', [entry])
+
     this.selectedEntry = entry;
     entry.classList.add('selected');
     return entry;
@@ -282,9 +286,6 @@ export default class BrowserPaneView {
     if (selectedEntry != null) {
       if (previousEntry = this.previousEntry(selectedEntry)) {
         this.selectEntry(previousEntry);
-//        if (previousEntry.classList.contains('texton-collapsible')) {
-//          this.selectEntry(_.last(previousEntry.children[1].children));
-//        }
       } else {
         this.selectEntry(selectedEntry.parentElement.closest('.texton-collapsible'));
       }

@@ -16,3 +16,4 @@
 '.texton-browser':
   'right': 'TextOn:browser-expand-collapsible'
   'left': 'TextOn:browser-collapse-collapsible'
+  'enter': 'TextOn:browser-follow-link'
