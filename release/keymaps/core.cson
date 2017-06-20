@@ -9,6 +9,10 @@
 # https://atom.io/docs/latest/advanced/keymaps
 
 'atom-workspace atom-text-editor:not([mini])[data-grammar~=texton]':
-    'alt-enter': 'TextOn:Send-To-Generator'
-    'ctrl-d': 'TextOn:Go-To-Definition'
-    'alt-b': 'TextOn:View-Browser'
+  'alt-enter': 'TextOn:Send-To-Generator'
+  'ctrl-d': 'TextOn:Go-To-Definition'
+  'alt-b': 'TextOn:View-Browser'
+
+'.texton-browser':
+  'right': 'TextOn:browser-expand-collapsible'
+  'left': 'TextOn:browser-collapse-collapsible'

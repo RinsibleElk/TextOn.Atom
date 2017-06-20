@@ -9,6 +9,7 @@ import Logger from './texton-logger'
 export default class BrowserPaneTreeView {
   constructor (props) {
     this.props = props;
+    this.children = [];
     this.items = this.props.items;
     this.isExpanded = false
     this.isNested = true
@@ -17,9 +18,13 @@ export default class BrowserPaneTreeView {
     this.element.classList.add('collapsed');
     this.element.classList.add('texton-tree');
     this.element.classList.add('entry');
+    this.element.browserNode = this;
     this.element.collapse = this.collapse.bind(this)
     this.element.expand = this.expand.bind(this)
     this.element.toggleExpansion = this.toggleExpansion.bind(this);
+    if (props.onDidInitialize) {
+      props.onDidInitialize(this)
+    }
     this.computeNesting()
     if (!this.props.isCollapsed)
     {
@@ -66,6 +71,10 @@ export default class BrowserPaneTreeView {
   }
 
   destroy () {
+    for (const child of this.children) {
+      children.destroy();
+    }
+    this.children = null;
   }
 
   update (props) {
@@ -102,6 +111,11 @@ export default class BrowserPaneTreeView {
       this.computeItems()
     }
     this.computeNesting()
+    if (this.props.isCollapsible) {
+      this.element.classList.add('texton-collapsible');
+    } else {
+      this.element.classList.remove('texton-collapsible');
+    }
     if (!this.props.isCollapsed)
     {
       this.setExpanded();
@@ -142,6 +156,10 @@ export default class BrowserPaneTreeView {
     return false;
   }
 
+  didInitializeChild (child) {
+    this.children.push(child);
+  }
+
   renderItems () {
     if (this.items.length > 0) {
       className = 'list-tree has-collapsable-children';
@@ -156,7 +174,8 @@ export default class BrowserPaneTreeView {
           isCollapsible : item.isCollapsible,
           browserFile : this.props.browserFile,
           indexPath : item.indexPath,
-          items : item.children
+          items : item.children,
+          onDidInitialize: this.didInitializeChild.bind(this)
         }))
       )
     } else {

@@ -7,6 +7,7 @@ import TextOnCore from './texton-core'
 import PaneSectionView from './pane-section-view'
 import ValueInputView from './value-input-view'
 import BrowserPaneTreeView from './browser-pane-tree-view'
+import Logger from './texton-logger'
 
 export default class BrowserPaneView {
   constructor (props) {
@@ -14,6 +15,7 @@ export default class BrowserPaneView {
     this.collapsedSections = props.collapsedSections ? new Set(props.collapsedSections) : new Set();
     this.inputs = [];
     this.sections = [];
+    this.children = [];
     this.attributes = [];
     this.variables = [];
     etch.initialize(this);
@@ -34,8 +36,12 @@ export default class BrowserPaneView {
     for (const section of this.sections) {
       section.destroy();
     }
+    for (const child of this.children) {
+      children.destroy();
+    }
     this.inputs = null;
     this.sections = null;
+    this.children = null;
   }
 
   update (props) {
@@ -112,12 +118,17 @@ export default class BrowserPaneView {
           isCollapsible : item.isCollapsible,
           browserFile : this.props.file,
           indexPath : item.indexPath,
-          items : []
+          items : [],
+          onDidInitialize: this.didInitializeChild.bind(this)
         }))
       )
     } else {
       return ""
     }
+  }
+
+  didInitializeChild (child) {
+    this.children.push(child);
   }
 
   didClickVariableLink (variableName) {
@@ -183,16 +194,130 @@ export default class BrowserPaneView {
   handleEvents () {
     const handleClickEvent = this.handleClickEvent.bind(this);
     this.element.addEventListener('click', handleClickEvent);
+    atom.commands.add(this.element,
+      {
+        'core:move-up': this.moveUp.bind(this),
+        'core:move-down': this.moveDown.bind(this),
+        'TextOn:browser-expand-collapsible': this.expandSelected.bind(this),
+        'TextOn:browser-collapse-collapsible': this.collapseSelected.bind(this)
+      });
+  }
+
+  scrollToEntry (entry) {
+    if (entry != null) {
+      entry.scrollIntoViewIfNeeded(true);
+    }
+  }
+
+  expandSelected () {
+    if (this.selectedEntry != null) {
+      if (this.selectedEntry.browserNode != null) {
+        this.selectedEntry.browserNode.expand();
+      }
+    }
+  }
+
+  collapseSelected () {
+    if (this.selectedEntry != null) {
+      if (this.selectedEntry.browserNode != null) {
+        this.selectedEntry.browserNode.expand();
+      }
+    }
+  }
+
+  selectEntry (entry) {
+    Logger.logf('selectEntry', 'Entry', [entry])
+    if (entry == null) {
+      return null;
+    }
+
+    if (this.selectedEntry != null) {
+      Logger.logf('selectEntry', 'Deselect', [this.selectedEntry])
+      this.selectedEntry.classList.remove('selected');
+    }
+
+    Logger.logf('selectEntry', 'Select', [entry])
+    this.selectedEntry = entry;
+    entry.classList.add('selected');
+    return entry;
   }
 
   entryClicked (e) {
     const entry = e.target.closest('.entry');
-    //selectEntry(entry);
+    this.selectEntry(entry);
     if (entry != null) {
       if (entry.classList.contains('texton-tree')) {
         entry.toggleExpansion();
       }
     }
+  }
+
+  moveDown (event) {
+    event.stopImmediatePropagation();
+    selectedEntry = this.selectedEntry;
+    if (selectedEntry != null) {
+      Logger.logf('moveDown', 'selectedEntry', [selectedEntry])
+      if (!selectedEntry.classList.contains('collapsed')) {
+        Logger.logf('moveDown', 'notCollapsed', [selectedEntry])
+        if (selectedEntry.browserNode != null) {
+          Logger.logf('moveDown', 'browserNode', [selectedEntry])
+          if (selectedEntry.browserNode.children != null) {
+            Logger.logf('moveDown', 'items', [selectedEntry.browserNode.children])
+            if (selectedEntry.browserNode.children.length > 0) {
+              Logger.logf('moveDown', 'items.length', [selectedEntry.browserNode.children.length])
+              this.selectEntry(selectedEntry.browserNode.children[0].element);
+              this.scrollToEntry(this.selectedEntry);
+              return;
+            }
+          }
+        }
+      }
+      nextEntry = this.nextEntry(selectedEntry);
+      if (nextEntry != null) {
+        this.selectEntry(nextEntry);
+      }
+    } else {
+      this.selectEntry(this.items[0].element);
+    }
+    this.scrollToEntry(this.selectedEntry);
+  }
+
+  moveUp (event) {
+    event.stopImmediatePropagation();
+    selectedEntry = this.selectedEntry;
+    if (selectedEntry != null) {
+      previousEntry = this.previousEntry(selectedEntry);
+      if (previousEntry != null) {
+        this.selectEntry(previousEntry);
+      }
+    }
+    this.scrollToEntry(this.selectedEntry);
+  }
+
+  nextEntry (entry) {
+    var currentEntry = entry;
+    while (currentEntry != null) {
+      if (currentEntry.nextSibling != null) {
+        currentEntry = currentEntry.nextSibling;
+        if (currentEntry.matches('.entry')) {
+          return currentEntry;
+        }
+      } else {
+        currentEntry = currentEntry.parentElement.closest('.texton-collapsible');
+      }
+    }
+    return null;
+  }
+
+  previousEntry (entry) {
+    var currentEntry = entry;
+    while (currentEntry != null) {
+      currentEntry = currentEntry.previousSibling;
+      if ((currentEntry != null) && (currentEntry.matches('.entry'))) {
+        return currentEntry;
+      }
+    }
+    return null;
   }
 
   render () {
