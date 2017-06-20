@@ -5,10 +5,13 @@
 {CompositeDisposable} = require 'atom'
 GeneratorPaneTitle = 'TextOn Generator'
 textOnCore = require './texton-core'
+Logger = require './texton-logger'
 generator = null
+dock = 'right'
 
 createGeneratorPane = ->
   GeneratorPaneView = require './generator-pane-view'
+  Logger.logf("createGeneratorPane", "dock", [dock])
   generator = new GeneratorPaneView(
       {
         collapsedSections : []
@@ -18,6 +21,7 @@ createGeneratorPane = ->
         fileName : []
         attributes : []
         variables : []
+        dock : dock
         onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name)
         onDidConfirmSelection : (type, name, value) -> valueset(type, name, value)
         onDidClickGenerate : -> generate()
@@ -106,6 +110,7 @@ generate = ->
 
 module.exports =
   activate: ->
+    dock = textOnCore.generatorDock()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Send-To-Generator', ->
       sendToTextOnGenerator()

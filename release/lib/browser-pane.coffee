@@ -6,6 +6,7 @@
 textOnCore = require './texton-core'
 Logger = require './texton-logger'
 browser = null
+dock = 'bottom'
 
 createBrowserPane = (data) ->
   BrowserPaneView = require './browser-pane-view'
@@ -15,6 +16,7 @@ createBrowserPane = (data) ->
         variables : data.variables,
         nodes : data.nodes,
         file : data.file,
+        dock : dock,
         onDidClickSmartLink : (type, fileName, name) -> navigate(type, fileName, name),
         onDidConfirmSelection : (file, type, name, value) -> valueset(file, type, name, value)
       })
@@ -85,6 +87,7 @@ requestUpdate = ->
 
 module.exports =
   activate: ->
+    dock = textOnCore.browserDock()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:View-Browser', ->
       sendToTextOnBrowser()

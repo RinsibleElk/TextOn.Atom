@@ -58,6 +58,10 @@ module.exports =
       NumBlankLinesBetweenParagraphs: window.atom.config.get("texton.GeneratorConfig.NumBlankLinesBetweenParagraphs")
       WindowsLineEndings: window.atom.config.get("texton.GeneratorConfig.WindowsLineEndings")
     o
+  generatorDock: ->
+    window.atom.config.get("texton.GeneratorConfig.Dock")
+  browserDock: ->
+    window.atom.config.get("texton.BrowserConfig.Dock")
   send: (requestKind, responseKind, data) ->
     Logger.logf("Service", "Sending #{requestKind} request", [data])
     options =

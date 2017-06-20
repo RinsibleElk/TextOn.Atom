@@ -167,11 +167,11 @@ export default class BrowserPaneView {
   }
 
   getPreferredLocation () {
-    return 'bottom';
+    return this.props.dock;
   }
 
   getAllowedLocations () {
-    return ["bottom"]
+    return [this.props.dock]
   }
 
   isPermanentDockItem () {

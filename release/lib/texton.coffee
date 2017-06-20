@@ -72,6 +72,11 @@ module.exports =
     GeneratorConfig:
       type: 'object'
       properties:
+        Dock:
+          title: 'Where to dock the Generator Pane'
+          type: 'string'
+          enum: ['right','bottom']
+          default: 'right'
         NumSpacesBetweenSentences:
           title: 'Number of spaces between sentences'
           type: 'number'
@@ -86,3 +91,11 @@ module.exports =
           title: 'Use Windows line endings?'
           type: 'boolean'
           default: false
+    BrowserConfig:
+      type: 'object'
+      properties:
+        Dock:
+          title: 'Where to dock the Browser Pane'
+          type: 'string'
+          enum: ['right','bottom']
+          default: 'bottom'

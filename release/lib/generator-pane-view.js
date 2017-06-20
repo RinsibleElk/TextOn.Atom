@@ -27,11 +27,11 @@ export default class GeneratorPaneView {
   }
 
   getPreferredLocation () {
-    return 'right';
+    return this.props.dock;
   }
 
   getAllowedLocations () {
-    return ["right"]
+    return [this.props.dock]
   }
 
   isPermanentDockItem () {
