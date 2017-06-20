@@ -75,6 +75,13 @@ sendToTextOnBrowser = ->
         updateBrowserPane (data[0])
 
 requestUpdate = ->
+  req =
+    Blank : ""
+  p = textOnCore.send('updatebrowser', 'browserUpdate', req)
+  p.then (data) ->
+    if data.length > 0
+      # We take care _not_ to open the browser here - that would be annoying.
+      browser.update (data[0])
 
 module.exports =
   activate: ->

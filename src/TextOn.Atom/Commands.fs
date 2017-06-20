@@ -233,6 +233,26 @@ type Commands (serialize : Serializer) =
             else return [ CommandResponse.error serialize "Nothing to generate" ]
         else return [ CommandResponse.error serialize "Nothing to generate" ] }
 
+    member __.UpdateBrowser() = async {
+        let ok, browser = browserSingleton.TryGetValue 0
+        if ok then
+            let fi = browser.File
+            let lines = fileResolver fi.Name fi.Directory.FullName
+            if lines.IsSome then
+                let (file, directory, lines) = lines.Value
+                let! compileResult = doCompile file directory lines
+                match compileResult with
+                | Success r ->
+                    match r with
+                    | CompilationResult.CompilationSuccess template ->
+                        browser.UpdateTemplate template
+                        return
+                            [ CommandResponse.browserUpdate serialize browser.Data ]
+                    | _ -> return [ CommandResponse.error serialize "Nothing to browse" ]
+                | _ -> return [ CommandResponse.error serialize "Nothing to browse" ]
+            else return [ CommandResponse.error serialize "Nothing to browse" ]
+        else return [ CommandResponse.error serialize "Nothing to browse" ] }
+
     member __.GetCompletions fileName ty (line:string) (col:int) = async {
         let template = fileTemplateMap.TryFind(fileName)
         match ty with

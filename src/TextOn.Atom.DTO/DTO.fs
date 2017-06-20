@@ -29,6 +29,7 @@ module DTO =
     type GeneratorValueSetRequest = { Type : string ; Name : string ; Value : string }
     type BrowserValueSetRequest = { FileName : string ; Type : string ; Name : string ; Value : string }
     type UpdateGeneratorRequest = { Blank : string }
+    type UpdateBrowserRequest = { SelectedIdentity : string }
     type SuggestionRequest = { fileName : string ; ``type`` : string ; line : string ; column : int } // type will be "Function", "Attribute", "Variable" or "QuotedString"
     type NavigateToSymbolRequest = { FileName : string ; Line : string ; Column : int }
 
