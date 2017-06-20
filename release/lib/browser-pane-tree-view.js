@@ -195,7 +195,7 @@ export default class BrowserPaneTreeView {
     return (
       <li>
         <div class='list-item'>
-          <a class='entry' onClick={this.didClickLink.bind(this)}>{this.props.text}</a>
+          <a onClick={this.didClickLink.bind(this)}>{this.props.text}</a>
         </div>
         {this.renderItems()}
       </li>
