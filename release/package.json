@@ -12,6 +12,7 @@
     "fuzzaldrin": "*",
     "request": "*",
     "request-promise": "*",
+    "underscore-plus": "*",
     "etch": "*"
   },
   "package-deps": [

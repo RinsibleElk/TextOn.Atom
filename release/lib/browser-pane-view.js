@@ -220,7 +220,10 @@ export default class BrowserPaneView {
   collapseSelected () {
     if (this.selectedEntry != null) {
       if (this.selectedEntry.browserNode != null) {
-        this.selectedEntry.browserNode.expand();
+        if (this.selectedEntry.browserNode.parentNode != null) {
+          this.selectEntry(this.selectedEntry.browserNode.parentNode.element);
+          this.selectedEntry.browserNode.collapse();
+        }
       }
     }
   }
@@ -256,28 +259,19 @@ export default class BrowserPaneView {
     event.stopImmediatePropagation();
     selectedEntry = this.selectedEntry;
     if (selectedEntry != null) {
-      Logger.logf('moveDown', 'selectedEntry', [selectedEntry])
-      if (!selectedEntry.classList.contains('collapsed')) {
-        Logger.logf('moveDown', 'notCollapsed', [selectedEntry])
-        if (selectedEntry.browserNode != null) {
-          Logger.logf('moveDown', 'browserNode', [selectedEntry])
-          if (selectedEntry.browserNode.children != null) {
-            Logger.logf('moveDown', 'items', [selectedEntry.browserNode.children])
-            if (selectedEntry.browserNode.children.length > 0) {
-              Logger.logf('moveDown', 'items.length', [selectedEntry.browserNode.children.length])
-              this.selectEntry(selectedEntry.browserNode.children[0].element);
-              this.scrollToEntry(this.selectedEntry);
-              return;
-            }
-          }
+      if (selectedEntry.classList.contains('texton-collapsible')) {
+        if ((selectedEntry.children != null) &&
+            (selectedEntry.children.length == 2) &&
+            (this.selectEntry(selectedEntry.children[1].children[0]))) {
+          this.scrollToEntry(this.selectedEntry);
+          return;
         }
       }
-      nextEntry = this.nextEntry(selectedEntry);
-      if (nextEntry != null) {
+      if (nextEntry = this.nextEntry(selectedEntry)) {
         this.selectEntry(nextEntry);
       }
     } else {
-      this.selectEntry(this.items[0].element);
+      this.selectEntry(this.roots[0]);
     }
     this.scrollToEntry(this.selectedEntry);
   }
@@ -286,19 +280,26 @@ export default class BrowserPaneView {
     event.stopImmediatePropagation();
     selectedEntry = this.selectedEntry;
     if (selectedEntry != null) {
-      previousEntry = this.previousEntry(selectedEntry);
-      if (previousEntry != null) {
+      if (previousEntry = this.previousEntry(selectedEntry)) {
         this.selectEntry(previousEntry);
+//        if (previousEntry.classList.contains('texton-collapsible')) {
+//          this.selectEntry(_.last(previousEntry.children[1].children));
+//        }
+      } else {
+        this.selectEntry(selectedEntry.parentElement.closest('.texton-collapsible'));
       }
+    } else {
+      entries = this.list.querySelectorAll('.entry');
+      this.selectEntry(entries[entries.length - 1]);
     }
     this.scrollToEntry(this.selectedEntry);
   }
 
   nextEntry (entry) {
-    var currentEntry = entry;
+    currentEntry = entry
     while (currentEntry != null) {
       if (currentEntry.nextSibling != null) {
-        currentEntry = currentEntry.nextSibling;
+        currentEntry = currentEntry.nextSibling
         if (currentEntry.matches('.entry')) {
           return currentEntry;
         }
@@ -310,7 +311,7 @@ export default class BrowserPaneView {
   }
 
   previousEntry (entry) {
-    var currentEntry = entry;
+    currentEntry = entry;
     while (currentEntry != null) {
       currentEntry = currentEntry.previousSibling;
       if ((currentEntry != null) && (currentEntry.matches('.entry'))) {

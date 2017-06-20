@@ -13,6 +13,7 @@ export default class BrowserPaneTreeView {
     this.items = this.props.items;
     this.isExpanded = false
     this.isNested = true
+    this.parentNode = props.parentNode;
     etch.initialize(this);
     this.element.classList.add('list-nested-item');
     this.element.classList.add('collapsed');
@@ -71,10 +72,12 @@ export default class BrowserPaneTreeView {
   }
 
   destroy () {
-    for (const child of this.children) {
-      children.destroy();
+    if (this.children != null) {
+      for (const child of this.children) {
+        child.destroy();
+      }
+      this.children = null;
     }
-    this.children = null;
   }
 
   update (props) {
@@ -106,6 +109,10 @@ export default class BrowserPaneTreeView {
     }
     if (props.hasOwnProperty('browserFile')) {
       this.props.browserFile = props.browserFile
+    }
+    if (props.hasOwnProperty('parentNode')) {
+      this.props.parentNode = props.parentNode;
+      this.parentNode = props.parentNode;
     }
     if (shouldComputeItems) {
       this.computeItems()
@@ -175,6 +182,7 @@ export default class BrowserPaneTreeView {
           browserFile : this.props.browserFile,
           indexPath : item.indexPath,
           items : item.children,
+          parentNode : this,
           onDidInitialize: this.didInitializeChild.bind(this)
         }))
       )
