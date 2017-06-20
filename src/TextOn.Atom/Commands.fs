@@ -7,8 +7,7 @@ open System.Collections.Concurrent
 type Commands (serialize : Serializer) =
     let fileLinesMap = ConcurrentDictionary<string, string list>()
     let fileTemplateMap = ConcurrentDictionary<string, CompiledTemplate>()
-    //TODO: Make thread-safe.
-    let mutable generator = None
+    let generatorSingleton = ConcurrentDictionary<int, GeneratorServer>()
     let browserSingleton = ConcurrentDictionary<int, BrowserServer>()
     let mutable isBrowsing = false
     let add fileName directory lines =
@@ -81,10 +80,11 @@ type Commands (serialize : Serializer) =
                     |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
                     |> Option.map
                         (fun f ->
-                            let g = GeneratorServer(f.File, f.Name)
-                            g.UpdateTemplate(template)
-                            generator <- Some g
-                            Success (GeneratorStartResult.GeneratorStarted generator.Value.Data))
+                            let generator =
+                                let generator = GeneratorServer(f.File, f.Name)
+                                generatorSingleton.AddOrUpdate(0, generator, fun _ _ -> generator)
+                            generator.UpdateTemplate(template)
+                            Success (GeneratorStartResult.GeneratorStarted generator.Data))
                     |> defaultArg <| Failure "Nothing to generate" }
 
     let doBrowserStart fileName directory lines = async {
@@ -149,7 +149,7 @@ type Commands (serialize : Serializer) =
                     [ CommandResponse.generatorSetup serialize generatorSetup ] }
 
     member __.GenerateStop () = async {
-        generator <- None
+        generatorSingleton.Clear()
         return [] }
 
     member __.BrowserStart (file:SourceFilePath) lines = async {
@@ -189,10 +189,11 @@ type Commands (serialize : Serializer) =
         return [] }
 
     member __.GeneratorValueSet ty name value = async {
+        let ok, generator = generatorSingleton.TryGetValue 0
         return
-            if generator.IsSome then
-                generator.Value.SetValue ty name value
-                [ CommandResponse.generatorSetup serialize generator.Value.Data ]
+            if ok then
+                generator.SetValue ty name value
+                [ CommandResponse.generatorSetup serialize generator.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
 
     member __.BrowserValueSet fileName ty name value = async {
@@ -205,15 +206,16 @@ type Commands (serialize : Serializer) =
                 [ CommandResponse.browserUpdate serialize browser.Data ] }
 
     member __.Generate config = async {
+        let ok, generator = generatorSingleton.TryGetValue 0
         return
-            if generator.IsSome then
-                generator.Value.Generate config
-                [ CommandResponse.generatorSetup serialize generator.Value.Data ]
+            if ok then
+                generator.Generate config
+                [ CommandResponse.generatorSetup serialize generator.Data ]
             else [ CommandResponse.error serialize "Nothing to generate" ] }
 
     member __.UpdateGenerator () = async {
-        if generator.IsSome then
-            let generator = generator.Value
+        let ok, generator = generatorSingleton.TryGetValue 0
+        if ok then
             let fi = generator.File
             let lines = fileResolver fi.Name fi.Directory.FullName
             if lines.IsSome then
