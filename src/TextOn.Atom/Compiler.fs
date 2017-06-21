@@ -149,6 +149,17 @@ module Compiler =
             else
                 Result (SimpleSeq (choices |> Array.map (function | Result r -> r | _ -> failwith "Internal error")))
         | _ -> failwith "Internal error"
+    let private tryFindFunction file functionDefinitions functionName : CompiledFunctionDefinition option =
+        functionDefinitions
+        |> Array.filter (fun fn -> fn.Name = functionName)
+        |> Array.filter (fun fn -> (not fn.IsPrivate) || fn.File = file)
+        |> fun a ->
+            if a |> Array.isEmpty then None
+            else if a.Length > 2 then failwithf "Shouldn't be possible to get more than 2 functions of the name %s (one private, one public from another file)" functionName
+            else if a.Length = 1 then Some a.[0]
+            else if a.[0].IsPrivate then Some a.[0]
+            else if (not a.[1].IsPrivate) then failwithf "Shouldn't be possible to get more than 2 public functions of the name %s" functionName
+            else Some a.[1]
     let rec private compileFunc file variableDefinitions attributeDefinitions functionDefinitions parsedNode =
         match parsedNode with
         | ParsedSentence(lineNumber, sentence) ->
@@ -157,7 +168,7 @@ module Compiler =
             | Result compiledSentence ->
                 Result (Sentence(file, lineNumber, compiledSentence))
         | ParsedFunctionInvocation(lineNumber, startLocation, endLocation, functionName) ->
-            let func : CompiledFunctionDefinition option = functionDefinitions |> Map.tryFind functionName
+            let func = tryFindFunction file functionDefinitions functionName
             match func with
             | None -> Errors [|(makeParseError file lineNumber startLocation endLocation (sprintf "Undefined function: %s" functionName))|]
             | Some f -> Result (Function (file, lineNumber, f.Index))
@@ -280,7 +291,7 @@ module Compiler =
                     {
                         Attributes = attributeDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
                         Variables = variableDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
-                        Functions = functionDefinitions |> Map.toArray |> Array.map snd |> Array.sortBy (fun v -> v.Index)
+                        Functions = functionDefinitions |> Array.sortBy (fun v -> v.Index)
                     }
             | _ ->
                 CompilationFailure (errors |> List.toArray)
@@ -295,7 +306,7 @@ module Compiler =
                         | ParseErrors x -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(x |> List.ofArray |> List.map ParserError))
                         | _ -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors)
                     else
-                        let existing = functionDefinitions |> Map.tryFind f.Name
+                        let existing = functionDefinitions |> Array.filter (fun fn -> fn.Name = f.Name) |> Array.filter (fun fn -> fn.File = h.File || ((not fn.IsPrivate) && (not f.IsPrivate))) |> Array.tryFind (fun _ -> true)
                         if existing.IsSome then
                             let e =
                                 [|(makeParseError h.File f.StartLine 1 5 (sprintf "Duplicate definition of function %s" f.Name))|]
@@ -304,20 +315,32 @@ module Compiler =
                             match (compileFunc h.File variableDefinitions attributeDefinitions functionDefinitions f.Tree) with
                             | Errors e -> (variableDefinitions, attributeDefinitions, functionDefinitions, errors@(e |> List.ofArray))
                             | Result r ->
-                                let directAttributeDependencies = f.Dependencies |> Array.collect (function | ParsedAttributeRef n -> attributeDefinitions |> Map.tryFind n |> Option.map (fun a -> [|a.Index|]) |> defaultArg <| [||] | ParsedFunctionRef n -> functionDefinitions.[n].AttributeDependencies | _ -> [||])
-                                let directVariableDependencies = f.Dependencies |> Array.collect (function | ParsedVariableRef n -> variableDefinitions |> Map.tryFind n |> Option.map (fun v -> [|v.Index|]) |> defaultArg <| [||] | ParsedFunctionRef n -> functionDefinitions.[n].VariableDependencies | _ -> [||])
+                                let directAttributeDependencies =
+                                    f.Dependencies
+                                    |> Array.collect
+                                        (function
+                                            | ParsedAttributeRef n -> attributeDefinitions |> Map.tryFind n |> Option.map (fun a -> [|a.Index|]) |> defaultArg <| [||]
+                                            | ParsedFunctionRef n -> (tryFindFunction h.File functionDefinitions n).Value.AttributeDependencies
+                                            | _ -> [||])
+                                let directVariableDependencies =
+                                    f.Dependencies
+                                    |> Array.collect
+                                        (function
+                                            | ParsedVariableRef n -> variableDefinitions |> Map.tryFind n |> Option.map (fun v -> [|v.Index|]) |> defaultArg <| [||]
+                                            | ParsedFunctionRef n -> (tryFindFunction h.File functionDefinitions n).Value.VariableDependencies | _ -> [||])
                                 let attributesByIndex = attributeDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let variablesByIndex = variableDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let fn = {
                                     Name = f.Name
                                     Index = f.Index
                                     File = h.File
+                                    IsPrivate = f.IsPrivate
                                     StartLine = f.StartLine
                                     EndLine = f.EndLine
                                     AttributeDependencies = (findVariableAttributeDependencies attributesByIndex variablesByIndex directAttributeDependencies directVariableDependencies)
                                     VariableDependencies = (findVariableVariableDependencies variablesByIndex directVariableDependencies)
                                     Tree = r }
-                                (variableDefinitions, attributeDefinitions, (functionDefinitions |> Map.add f.Name fn), errors)
+                                (variableDefinitions, attributeDefinitions, (Array.append functionDefinitions [|fn|]), errors)
                 | ParsedAttribute a ->
                     // Traverse through replacing variable & attribute references and inlining function references.
                     if a.HasErrors then
@@ -342,7 +365,7 @@ module Compiler =
 
     /// Compile the results of parsing into a tree, with inlined functions, variables and attributes.
     let compile (elements:ParsedElement list) : CompilationResult =
-        compileInner Map.empty Map.empty Map.empty [] elements
+        compileInner Map.empty Map.empty [||] [] elements
 
 
 

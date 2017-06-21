@@ -6,6 +6,7 @@ type CompiledFunctionDefinition =
         Name : string
         Index : int
         File : string
+        IsPrivate : bool
         StartLine : int
         EndLine : int
         AttributeDependencies : int[]

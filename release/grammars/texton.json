@@ -37,7 +37,11 @@
         },
         {
           "name": "keyword.free.texton",
-          "match": "\\s*@free\\s*"
+          "match": "\\s*@free[\\s*|$]"
+        },
+        {
+          "name": "keyword.private.texton",
+          "match": "\\s*@private[\\s*|$]"
         },
         {
           "name": "variable.parameter.texton",

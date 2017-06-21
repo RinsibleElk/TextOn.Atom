@@ -63,6 +63,7 @@ type Commands (serialize : Serializer) =
             ("break",   "Insert a paragraph break")
             ("choice",  "Define a new random choice")
             ("seq",     "Define a new sequence of sentences")
+            ("private", "Do not export this function outside of the current TextOn file")
         |]
         |> Array.map (fun (x,d) -> { text = x ; ``type`` = "keyword" ; description = d } : DTO.DTO.Suggestion)
 
