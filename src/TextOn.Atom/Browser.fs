@@ -45,3 +45,8 @@ module Browser =
             |> fun x -> "@" + x
     let makeText functionNames attributeValues variableNames variableValues (node:CompiledDefinitionNode) =
         makeTextInner true functionNames attributeValues variableNames variableValues node
+
+    let functionNames currentTemplate =
+        currentTemplate.Functions
+        |> Array.map (fun f -> f.Index, if f.IsPrivate then (sprintf "%s.%s" (System.IO.Path.GetFileNameWithoutExtension f.File) f.Name) else f.Name)
+        |> Map.ofArray

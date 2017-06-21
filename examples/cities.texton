@@ -51,3 +51,7 @@
     "Bar"
     "Baz"
   }
+
+@func @private @notAccessible {
+  This function cannot be called from anywhere.
+}

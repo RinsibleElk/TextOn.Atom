@@ -3,7 +3,7 @@
 // This is a comment.
 
 // Here's a function I can call from within the main.
-@func @guyStuff
+@func @private @guyStuff
 {
   @choice {
     Blah.
@@ -11,7 +11,7 @@
   }
 }
 
-@func @dependsOnCity {
+@func @private @dependsOnCity {
   The city is $City.
 }
 
@@ -23,6 +23,7 @@
     You live in {$City|a {city|metropolitan area|town} in $Country}.
     $City is in $Country.
     @break
+    @dependsOnCity
     @guyStuff [%Gender = "Male"]
   }
 }
