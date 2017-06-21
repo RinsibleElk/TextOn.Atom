@@ -52,6 +52,10 @@
     "Baz"
   }
 
-@func @private @notAccessible {
-  This function cannot be called from anywhere.
+@func @private @dependsOnCity {
+  This function, that depends on $City, is defined in the cities file.
+}
+
+@func @cityExport {
+  @dependsOnCity
 }
