@@ -103,27 +103,27 @@ type Commands (serialize : Serializer) =
                     browser.UpdateTemplate(template)
                     Success (BrowserStartResult.BrowserStarted browser.Data) }
 
-    let doBrowserExpand fileName directory indexPath = async {
+    let doBrowserExpand fileName directory rootFunction indexPath = async {
         if (not (isBrowsing)) then return Failure "Not browsing"
         else
             let ok, browser = browserSingleton.TryGetValue(0)
             if not ok then return Failure "No browser"
             else if browser.File.FullName <> fileName then return Failure (sprintf "Browser is for file %s, asked for file %s" browser.File.FullName fileName)
             else
-                let items = browser.ExpandAt indexPath
+                let items = browser.ExpandAt rootFunction indexPath
                 return
                     items
                     |> Option.map Success
                     |> defaultArg <| Failure "Couldn't find IndexPath" }
 
-    let doBrowserCollapse fileName directory indexPath = async {
+    let doBrowserCollapse fileName directory rootFunction indexPath = async {
         if (not (isBrowsing)) then return Failure "Not browsing"
         else
             let ok, browser = browserSingleton.TryGetValue(0)
             if not ok then return Failure "No browser"
             else if browser.File.FullName <> fileName then return Failure (sprintf "Browser is for file %s, asked for file %s" browser.File.FullName fileName)
             else
-                let res = browser.CollapseAt indexPath
+                let res = browser.CollapseAt rootFunction indexPath
                 return
                     res
                     |> Option.map Success
@@ -166,18 +166,18 @@ type Commands (serialize : Serializer) =
                     isBrowsing <- true
                     [ CommandResponse.browserUpdate serialize browserUpdate ] }
 
-    member __.BrowserExpand file indexPath = async {
+    member __.BrowserExpand file rootFunction indexPath = async {
         let fi = Path.GetFullPath file |> FileInfo
-        let! result = doBrowserExpand file fi.Directory.FullName indexPath
+        let! result = doBrowserExpand file fi.Directory.FullName rootFunction indexPath
         return
             match result with
             | Failure e -> [CommandResponse.error serialize e]
             | Success browserItems ->
                 [ CommandResponse.browserItems serialize browserItems ] }
 
-    member __.BrowserCollapse file indexPath = async {
+    member __.BrowserCollapse file rootFunction indexPath = async {
         let fi = Path.GetFullPath file |> FileInfo
-        let! result = doBrowserCollapse file fi.Directory.FullName indexPath
+        let! result = doBrowserCollapse file fi.Directory.FullName rootFunction indexPath
         return
             match result with
             | Failure e -> [CommandResponse.error serialize e]

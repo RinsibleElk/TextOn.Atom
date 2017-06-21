@@ -116,6 +116,7 @@ export default class BrowserPaneView {
           isCollapsed : item.isCollapsed,
           isCollapsible : item.isCollapsible,
           browserFile : this.props.file,
+          rootFunction : item.rootFunction,
           indexPath : item.indexPath,
           items : [],
           onDidInitialize: this.didInitializeChild.bind(this)

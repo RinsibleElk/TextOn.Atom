@@ -36,7 +36,7 @@ export default class BrowserPaneTreeView {
   }
 
   expand () {
-    TextOnCore.send('browserexpand', 'browseritems', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
+    TextOnCore.send('browserexpand', 'browseritems', { browserFile : this.props.browserFile, rootFunction : this.props.rootFunction, indexPath : this.props.indexPath })
       .then((data) => {
         if (data.length > 0) {
           this.update({ items : data[0].newItems, isCollapsed : false })
@@ -51,7 +51,7 @@ export default class BrowserPaneTreeView {
   }
 
   collapse () {
-    TextOnCore.send('browsercollapse', 'thanks', { browserFile : this.props.browserFile, indexPath : this.props.indexPath })
+    TextOnCore.send('browsercollapse', 'thanks', { browserFile : this.props.browserFile, rootFunction : this.props.rootFunction, indexPath : this.props.indexPath })
       .then((data) => {
         this.update({ items : [], isCollapsed : true })
       })
@@ -103,6 +103,9 @@ export default class BrowserPaneTreeView {
     if (props.hasOwnProperty('items')) {
       this.props.items = props.items
       shouldComputeItems = true
+    }
+    if (props.hasOwnProperty('rootFunction')) {
+      this.props.rootFunction = props.rootFunction
     }
     if (props.hasOwnProperty('indexPath')) {
       this.props.indexPath = props.indexPath
@@ -180,6 +183,7 @@ export default class BrowserPaneTreeView {
           isCollapsed : item.isCollapsed,
           isCollapsible : item.isCollapsible,
           browserFile : this.props.browserFile,
+          rootFunction : item.rootFunction,
           indexPath : item.indexPath,
           items : item.children,
           parentNode : this,

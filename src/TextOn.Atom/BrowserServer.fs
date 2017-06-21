@@ -41,7 +41,7 @@ type BrowserServer(file) =
                                 (browserNodes |> Array.skip (min (h + 1) browserNodes.Length))))
             else
                 None
-    let rec expandAt functionNames attributeValues variableNames variableValues (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] * BrowserNode[] =
+    let rec expandAt rootFunction functionNames attributeValues variableNames variableValues (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] * BrowserNode[] =
         match searchIndexPath with
         | [] ->
             let newNodes =
@@ -55,6 +55,7 @@ type BrowserServer(file) =
                             {
                                 text = text
                                 nodeType = "text"
+                                rootFunction = rootFunction
                                 indexPath = actualIndexPath
                                 isCollapsible = false
                                 isCollapsed = true
@@ -66,6 +67,7 @@ type BrowserServer(file) =
                             {
                                 text = text
                                 nodeType = "paragraphbreak"
+                                rootFunction = rootFunction
                                 indexPath = actualIndexPath
                                 isCollapsible = false
                                 isCollapsed = true
@@ -77,6 +79,7 @@ type BrowserServer(file) =
                             {
                                 text = text
                                 nodeType = "choice"
+                                rootFunction = rootFunction
                                 indexPath = actualIndexPath
                                 isCollapsible = true
                                 isCollapsed = true
@@ -88,6 +91,7 @@ type BrowserServer(file) =
                             {
                                 text = text
                                 nodeType = "seq"
+                                rootFunction = rootFunction
                                 indexPath = actualIndexPath
                                 isCollapsible = true
                                 isCollapsed = true
@@ -99,6 +103,7 @@ type BrowserServer(file) =
                             {
                                 text = text
                                 nodeType = "function"
+                                rootFunction = rootFunction
                                 indexPath = actualIndexPath
                                 isCollapsible = true
                                 isCollapsed = true
@@ -124,7 +129,7 @@ type BrowserServer(file) =
                         | Function(_, _, f) ->
                             currentTemplate.Value.Functions |> Array.tryFind (fun fn -> fn.Index = f) |> Option.map (fun fn -> [|fn.Tree|]) |> defaultArg <| [||]
                     let bn = browserNodes.[h].children
-                    expandAt functionNames attributeValues variableNames variableValues cn bn (h::currentIndexPathRev) t
+                    expandAt rootFunction functionNames attributeValues variableNames variableValues cn bn (h::currentIndexPathRev) t
                 let innerNode =
                     let actualIndexPath = (h::currentIndexPathRev) |> List.rev |> List.toArray
                     let n = compiledDefinitionNodes.[h]
@@ -134,6 +139,7 @@ type BrowserServer(file) =
                         {
                             text = text
                             nodeType = "text"
+                            rootFunction = rootFunction
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = true
@@ -145,6 +151,7 @@ type BrowserServer(file) =
                         {
                             text = text
                             nodeType = "paragraphbreak"
+                            rootFunction = rootFunction
                             indexPath = actualIndexPath
                             isCollapsible = false
                             isCollapsed = true
@@ -156,6 +163,7 @@ type BrowserServer(file) =
                         {
                             text = text
                             nodeType = "choice"
+                            rootFunction = rootFunction
                             indexPath = actualIndexPath
                             isCollapsible = true
                             isCollapsed = false
@@ -167,6 +175,7 @@ type BrowserServer(file) =
                         {
                             text = text
                             nodeType = "seq"
+                            rootFunction = rootFunction
                             indexPath = actualIndexPath
                             isCollapsible = true
                             isCollapsed = false
@@ -178,6 +187,7 @@ type BrowserServer(file) =
                         {
                             text = text
                             nodeType = "function"
+                            rootFunction = rootFunction
                             indexPath = actualIndexPath
                             isCollapsible = true
                             isCollapsed = false
@@ -286,16 +296,34 @@ type BrowserServer(file) =
                     currentTemplate.Functions
                     |> Array.mapi
                         (fun i fn ->
-                            {
-                                text = fn.Name
-                                nodeType = "function"
-                                indexPath = [|i|]
-                                isCollapsible = true
-                                isCollapsed = true
-                                file = fn.File
-                                line = fn.StartLine
-                                children = [||]
-                            })
+                            let browserNode =
+                                currentValue
+                                |> Option.bind (fun browser -> browser.nodes |> Array.tryFind (fun bn -> bn.text = fn.Name))
+                            if browserNode.IsNone || browserNode.Value.isCollapsed then
+                                {
+                                    text = fn.Name
+                                    nodeType = "function"
+                                    rootFunction = fn.Name
+                                    indexPath = [||]
+                                    isCollapsible = true
+                                    isCollapsed = true
+                                    file = fn.File
+                                    line = fn.StartLine
+                                    children = [||]
+                                }
+                            else
+                                let browserNode = browserNode.Value
+                                {
+                                    text = fn.Name
+                                    nodeType = "function"
+                                    rootFunction = fn.Name
+                                    indexPath = [||]
+                                    isCollapsible = true
+                                    isCollapsed = true
+                                    file = fn.File
+                                    line = fn.StartLine
+                                    children = [||]
+                                })
                 file = file
             }
         currentValue <- Some retVal
@@ -303,57 +331,61 @@ type BrowserServer(file) =
 
     // This should set the new state on the parent to expanded, and return the children, having resolved some text to write.
     // It should update the current value.
-    member __.ExpandAt (indexPath:int[]) =
+    member __.ExpandAt rootFunction (indexPath:int[]) =
         if currentValue.IsNone then None
-        else if currentValue.Value.nodes.Length < indexPath.[0] then None
         else
-            let functionNames = currentTemplate.Value.Functions |> Array.map (fun f -> f.Index, f.Name) |> Map.ofArray
-            let variableNames = currentTemplate.Value.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
-            let functionIndex = indexPath.[0]
-            let compiledNodes = [|currentTemplate.Value.Functions.[functionIndex].Tree|]
-            let attributeNameToIndex, attributeIndexToName = currentTemplate.Value.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
-            let variableNameToIndex, variableIndexToName = currentTemplate.Value.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
-            let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-            let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-            let (rootItems, newItems) =
-                expandAt functionNames attributeValuesByIndex variableNames variableValuesByIndex compiledNodes currentValue.Value.nodes.[functionIndex].children [indexPath.[0]] (indexPath |> List.ofArray |> List.skip 1)
-            currentValue <-
-                Some
-                    {
-                        attributes = currentValue.Value.attributes
-                        variables = currentValue.Value.variables
-                        nodes =
-                            Array.append
-                                (currentValue.Value.nodes |> Array.take functionIndex)
-                                (Array.append
-                                    [|
-                                        { currentValue.Value.nodes.[functionIndex] with children = rootItems }
-                                    |]
-                                    (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
-                        file = file
-                    }
-            Some
-                {
-                    newItems = newItems
-                }
-
-    member __.CollapseAt (indexPath:int[]) =
-        if currentValue.IsNone then None
-        else if currentValue.Value.nodes.Length < indexPath.[0] then None
-        else
-            let children = collapseAt currentValue.Value.nodes (indexPath |> List.ofArray)
-            if children |> Option.isSome then
+            let functionIndex = currentValue.Value.nodes |> Array.mapi (fun a b -> (a,b)) |> Array.tryFind (fun (_, fn) -> fn.text = rootFunction) |> Option.map fst
+            if functionIndex.IsNone then None
+            else
+                let functionNames = currentTemplate.Value.Functions |> Array.map (fun f -> f.Index, f.Name) |> Map.ofArray
+                let variableNames = currentTemplate.Value.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
+                let functionIndex = functionIndex.Value
+                let compiledNodes = [|currentTemplate.Value.Functions.[functionIndex].Tree|]
+                let attributeNameToIndex, attributeIndexToName = currentTemplate.Value.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+                let variableNameToIndex, variableIndexToName = currentTemplate.Value.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+                let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+                let (rootItems, newItems) =
+                    expandAt rootFunction functionNames attributeValuesByIndex variableNames variableValuesByIndex compiledNodes currentValue.Value.nodes.[functionIndex].children [] (indexPath |> List.ofArray)
                 currentValue <-
                     Some
                         {
                             attributes = currentValue.Value.attributes
                             variables = currentValue.Value.variables
-                            nodes = children.Value
+                            nodes =
+                                Array.append
+                                    (currentValue.Value.nodes |> Array.take functionIndex)
+                                    (Array.append
+                                        [|
+                                            { currentValue.Value.nodes.[functionIndex] with children = rootItems }
+                                        |]
+                                        (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
                             file = file
                         }
-                Some true
+                Some
+                    {
+                        newItems = newItems
+                    }
+
+    member __.CollapseAt rootFunction (indexPath:int[]) =
+        if currentValue.IsNone then None
+        else
+            let functionIndex = currentValue.Value.nodes |> Array.mapi (fun i n -> (i,n)) |> Array.tryFind (fun (_, fn) -> fn.text = rootFunction) |> Option.map fst
+            if functionIndex.IsNone then None
             else
-                None
+                let children = collapseAt currentValue.Value.nodes (functionIndex.Value :: (indexPath |> List.ofArray))
+                if children |> Option.isSome then
+                    currentValue <-
+                        Some
+                            {
+                                attributes = currentValue.Value.attributes
+                                variables = currentValue.Value.variables
+                                nodes = children.Value
+                                file = file
+                            }
+                    Some true
+                else
+                    None
 
     member __.SetValue ty name value =
         if ty = "Variable" then

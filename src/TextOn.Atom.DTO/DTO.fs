@@ -16,7 +16,7 @@ module DTO =
             LineNumber : int
             Lines : string[]
         }
-    type BrowserExpandRequest = { browserFile : string ; indexPath : int[] }
+    type BrowserExpandRequest = { browserFile : string ; rootFunction : string ; indexPath : int[] }
     type BrowserStopRequest = { Blank : string }
     type GeneratorConfiguration =
         {
@@ -72,6 +72,7 @@ module DTO =
         {
             text : string
             nodeType : string
+            rootFunction : string
             indexPath : int[]
             isCollapsible : bool
             isCollapsed : bool

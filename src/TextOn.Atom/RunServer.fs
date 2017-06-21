@@ -51,8 +51,8 @@ module internal RunServer =
                 path "/navigatetosymbol" >=> handler (fun (data : NavigateToSymbolRequest) -> commands.NavigateToSymbol data.FileName data.Line data.Column)
                 path "/browserstart" >=> handler (fun (data : BrowserStartRequest) -> commands.BrowserStart data.FileName (data.Lines |> List.ofArray))
                 path "/browserstop" >=> handler (fun (data : BrowserStopRequest) -> commands.BrowserStop ())
-                path "/browserexpand" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserExpand data.browserFile data.indexPath)
-                path "/browsercollapse" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserCollapse data.browserFile data.indexPath)
+                path "/browserexpand" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserExpand data.browserFile data.rootFunction data.indexPath)
+                path "/browsercollapse" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserCollapse data.browserFile data.rootFunction data.indexPath)
                 path "/browservalueset" >=> handler (fun (data : BrowserValueSetRequest) -> commands.BrowserValueSet data.FileName data.Type data.Name data.Value)
                 path "/updatebrowser" >=> handler (fun (data : UpdateBrowserRequest) -> commands.UpdateBrowser())
             ]
