@@ -146,7 +146,7 @@ type BrowserServer(file) =
                 | Seq (_, _, stuff) ->
                     let filtered = stuff |> Array.filter (fun (_, c) -> ConditionEvaluator.resolvePartial attributeValues c) |> Array.map fst
                     let children = updateNodes rootFunction functionNames attributeValues variableNames variableValues filtered bn.children (i::currentIndexPathRev)
-                    (true, children |> Array.length = 0, children)
+                    (true, children |> Array.isEmpty, children)
                 | Function(_, _, f) ->
                     currentTemplate.Value.Functions
                     |> Array.tryFind (fun fn -> fn.Index = f)
@@ -393,14 +393,14 @@ type BrowserServer(file) =
                                 }
                             else
                                 let browserNode = browserNode.Value
-                                let children = updateNodes fn.Name functionNames attributeValuesByIndex variableNames variableValuesByIndex [|fn.Tree|] [|browserNode|] []
+                                let children = updateNodes fn.Name functionNames attributeValuesByIndex variableNames variableValuesByIndex [|fn.Tree|] browserNode.children []
                                 {
                                     text = fn.Name
                                     nodeType = "function"
                                     rootFunction = fn.Name
                                     indexPath = [||]
                                     isCollapsible = true
-                                    isCollapsed = children.Length = 0
+                                    isCollapsed = children |> Array.isEmpty
                                     file = fn.File
                                     line = fn.StartLine
                                     children = children
@@ -438,7 +438,7 @@ type BrowserServer(file) =
                                     (currentValue.Value.nodes |> Array.take functionIndex)
                                     (Array.append
                                         [|
-                                            { currentValue.Value.nodes.[functionIndex] with children = rootItems }
+                                            { currentValue.Value.nodes.[functionIndex] with children = rootItems ; isCollapsed = (rootItems.Length = 0) }
                                         |]
                                         (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
                             file = file

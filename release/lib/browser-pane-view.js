@@ -118,7 +118,7 @@ export default class BrowserPaneView {
           browserFile : this.props.file,
           rootFunction : item.rootFunction,
           indexPath : item.indexPath,
-          items : [],
+          items : item.children,
           onDidInitialize: this.didInitializeChild.bind(this)
         }))
       )

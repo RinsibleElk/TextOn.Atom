@@ -101,6 +101,7 @@ export default class BrowserPaneTreeView {
       this.props.isCollapsible = props.isCollapsible;
     }
     if (props.hasOwnProperty('items')) {
+      Logger.logf("UpdateTree", "items", [this.props.text, this.props.items])
       this.props.items = props.items
       shouldComputeItems = true
     }
@@ -171,7 +172,9 @@ export default class BrowserPaneTreeView {
   }
 
   renderItems () {
+    Logger.logf("renderItems", "renderItems", [this.items])
     if (this.items.length > 0) {
+      Logger.logf("renderItems", "length.greater.than.1", this.items)
       className = 'list-tree has-collapsable-children';
       return $.ol(
         {className, ref: 'items'},
