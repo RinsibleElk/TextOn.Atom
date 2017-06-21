@@ -259,7 +259,7 @@ type Commands (serialize : Serializer) =
         match ty with
         | "Function" ->
             // We add the keywords to this list.
-            let functions = template |> Option.map (fun t -> t.Functions |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)) |> defaultArg <| [||]
+            let functions = template |> Option.map (fun t -> t.Functions |> Array.filter (fun fn -> (not fn.IsPrivate) || fn.File = fileName) |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)) |> defaultArg <| [||]
             return [ CommandResponse.suggestions serialize (Array.append functions keywords) ]
         | "Variable" ->
             return [ CommandResponse.suggestions serialize (template |> Option.map (fun t -> t.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = sprintf "$%s: %s" x.Name x.Text } : DTO.DTO.Suggestion)) |> defaultArg <| [||]) ]

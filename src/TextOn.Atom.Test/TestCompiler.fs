@@ -327,11 +327,11 @@ let ``Declare the same attribute twice``() =
 [<Test>]
 let ``Declare the same function twice``() =
     let lines =
-        "@func @FuncName
+        "@func @private @FuncName
   {
     Hello
   }
-@func @FuncName
+@func @private @FuncName
   {
     Hello
   }
