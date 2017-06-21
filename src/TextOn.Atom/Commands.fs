@@ -78,7 +78,7 @@ type Commands (serialize : Serializer) =
                 | CompilationResult.CompilationFailure errors -> Success (GeneratorStartResult.CompilationFailure errors)
                 | CompilationResult.CompilationSuccess template ->
                     template.Functions
-                    |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
+                    |> Array.tryFind (fun f -> f.File = fileName && (not f.IsPrivate) && f.StartLine <= line && f.EndLine >= line)
                     |> Option.map
                         (fun f ->
                             let generator =
