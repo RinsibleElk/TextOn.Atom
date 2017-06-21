@@ -123,7 +123,7 @@ export default class BrowserPaneView {
         }))
       )
     } else {
-      return ""
+      return "";
     }
   }
 

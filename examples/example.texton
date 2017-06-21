@@ -3,7 +3,7 @@
 // This is a comment.
 
 // Here's a function I can call from within the main.
-@func @guyStuff
+@func @private @guyStuff
 {
   @choice {
     Blah.
@@ -11,8 +11,8 @@
   }
 }
 
-@func @dependsOnCity {
-  The city is $City.
+@func @private @dependsOnCity {
+  This function, that depends on $City, is defined in the example file.
 }
 
 // Every full TextOn script must have a main function.
@@ -23,6 +23,8 @@
     You live in {$City|a {city|metropolitan area|town} in $Country}.
     $City is in $Country.
     @break
+    @dependsOnCity
+    @cityExport
     @guyStuff [%Gender = "Male"]
   }
 }

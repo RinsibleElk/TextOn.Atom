@@ -14,6 +14,7 @@ type BrowserServer(file) =
     let mutable currentTemplate = None
     let mutable attributeValues : Map<string, string> = Map.empty
     let mutable variableValues : Map<string, string> = Map.empty
+
     let rec collapseAt (browserNodes:BrowserNode[]) indexPath =
         match indexPath with
         | [] ->
@@ -282,6 +283,7 @@ type BrowserServer(file) =
         attributeValues <- attributeValues |> Map.filter (fun k _ -> k |> attributeNameToIndex |> Option.isSome)
         let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
         variableValues <- variableValues |> Map.filter (fun k _ -> k |> variableNameToIndex |> Option.isSome)
+        let functionNames = Browser.functionNames currentTemplate
         let (attributes, variables) =
             let functionDefs = currentTemplate.Functions
             let requiredAttributes = functionDefs |> Array.collect (fun f -> f.AttributeDependencies) |> Set.ofArray |> Set.toArray |> Array.map (fun i -> currentTemplate.Attributes |> Array.find (fun a -> a.Index = i))
@@ -364,7 +366,6 @@ type BrowserServer(file) =
                 let attributes = a |> Array.choose (function | Choice1Of2 a -> Some a | _ -> None)
                 let variables = a |> Array.choose (function | Choice2Of2 a -> Some a | _ -> None)
                 (attributes, variables)
-        let functionNames = currentTemplate.Functions |> Array.map (fun f -> f.Index, f.Name) |> Map.ofArray
         let variableNames = currentTemplate.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
         let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
         let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
@@ -374,6 +375,7 @@ type BrowserServer(file) =
                 variables = variables
                 nodes =
                     currentTemplate.Functions
+                    |> Array.filter (fun fn -> (not fn.IsPrivate))
                     |> Array.mapi
                         (fun i fn ->
                             let browserNode =
@@ -415,15 +417,17 @@ type BrowserServer(file) =
     member __.ExpandAt rootFunction (indexPath:int[]) =
         if currentValue.IsNone then None
         else
+            let currentTemplate = currentTemplate.Value
             let functionIndex = currentValue.Value.nodes |> Array.mapi (fun a b -> (a,b)) |> Array.tryFind (fun (_, fn) -> fn.text = rootFunction) |> Option.map fst
             if functionIndex.IsNone then None
             else
-                let functionNames = currentTemplate.Value.Functions |> Array.map (fun f -> f.Index, f.Name) |> Map.ofArray
-                let variableNames = currentTemplate.Value.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
+                let functionNames = Browser.functionNames currentTemplate
+                let variableNames = currentTemplate.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
                 let functionIndex = functionIndex.Value
-                let compiledNodes = [|currentTemplate.Value.Functions.[functionIndex].Tree|]
-                let attributeNameToIndex, attributeIndexToName = currentTemplate.Value.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
-                let variableNameToIndex, variableIndexToName = currentTemplate.Value.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+                let publicFunctions = currentTemplate.Functions |> Array.filter (fun fn -> not fn.IsPrivate)
+                let compiledNodes = [|publicFunctions.[functionIndex].Tree|]
+                let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+                let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
                 let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
                 let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
                 let (rootItems, newItems) =

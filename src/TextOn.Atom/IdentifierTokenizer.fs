@@ -53,6 +53,7 @@ module internal IdentifierTokenizer =
             | "break" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Break })
             | "choice" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Choice })
             | "seq" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Sequential })
+            | "private" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Private })
             | _ -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = FunctionName(name) })
             i <- i + len + 1
         i

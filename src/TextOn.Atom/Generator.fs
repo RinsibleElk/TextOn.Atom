@@ -106,7 +106,7 @@ module Generator =
             | SpecificValue seed -> seed
             | NoSeed -> Random().Next()
         let random = Random(randomSeed)
-        let functionDef = compiledTemplate.Functions |> Array.find (fun f -> f.Name = input.Function)
+        let functionDef = compiledTemplate.Functions |> Array.find (fun f -> f.Name = input.Function && (not f.IsPrivate))
         let attributeValues, attributeError =
             // Need to do a check that the user has provided values for all attribute values.
             let attributeRequired = functionDef.AttributeDependencies |> Set.ofArray |> fun s i -> s |> Set.contains i

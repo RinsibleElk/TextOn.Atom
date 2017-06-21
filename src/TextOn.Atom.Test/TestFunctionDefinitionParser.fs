@@ -150,6 +150,7 @@ let ``Test sentence with condition``() =
         StartLine = 1
         EndLine = 3
         Index = 0
+        IsPrivate = false
         HasErrors = false
         Name = "main"
         Dependencies = [|ParsedAttributeRef "SomeAttribute"|]

@@ -51,3 +51,11 @@
     "Bar"
     "Baz"
   }
+
+@func @private @dependsOnCity {
+  This function, that depends on $City, is defined in the cities file.
+}
+
+@func @cityExport {
+  @dependsOnCity
+}

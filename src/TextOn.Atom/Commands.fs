@@ -63,6 +63,7 @@ type Commands (serialize : Serializer) =
             ("break",   "Insert a paragraph break")
             ("choice",  "Define a new random choice")
             ("seq",     "Define a new sequence of sentences")
+            ("private", "Do not export this function outside of the current TextOn file")
         |]
         |> Array.map (fun (x,d) -> { text = x ; ``type`` = "keyword" ; description = d } : DTO.DTO.Suggestion)
 
@@ -77,7 +78,7 @@ type Commands (serialize : Serializer) =
                 | CompilationResult.CompilationFailure errors -> Success (GeneratorStartResult.CompilationFailure errors)
                 | CompilationResult.CompilationSuccess template ->
                     template.Functions
-                    |> Array.tryFind (fun f -> f.File = fileName && f.StartLine <= line && f.EndLine >= line)
+                    |> Array.tryFind (fun f -> f.File = fileName && (not f.IsPrivate) && f.StartLine <= line && f.EndLine >= line)
                     |> Option.map
                         (fun f ->
                             let generator =
@@ -258,7 +259,7 @@ type Commands (serialize : Serializer) =
         match ty with
         | "Function" ->
             // We add the keywords to this list.
-            let functions = template |> Option.map (fun t -> t.Functions |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)) |> defaultArg <| [||]
+            let functions = template |> Option.map (fun t -> t.Functions |> Array.filter (fun fn -> (not fn.IsPrivate) || fn.File = fileName) |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)) |> defaultArg <| [||]
             return [ CommandResponse.suggestions serialize (Array.append functions keywords) ]
         | "Variable" ->
             return [ CommandResponse.suggestions serialize (template |> Option.map (fun t -> t.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = sprintf "$%s: %s" x.Name x.Text } : DTO.DTO.Suggestion)) |> defaultArg <| [||]) ]

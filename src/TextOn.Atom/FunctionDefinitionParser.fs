@@ -33,6 +33,7 @@ type ParsedFunctionDefinition = {
     StartLine : int
     EndLine : int
     Index : int
+    IsPrivate : bool
     HasErrors : bool
     Name : string
     Dependencies : ParsedAttributeOrVariableOrFunction[]
@@ -321,7 +322,7 @@ module internal FunctionDefinitionParser =
 
     /// Parse the CategorizedAttributedTokenSet for a function definition into a tree.
     let parseFunctionDefinition (tokenSet:CategorizedAttributedTokenSet) : ParsedFunctionDefinition =
-        let (name, hasErrors, tree) =
+        let (isPrivate, name, hasErrors, tree) =
             if tokenSet.Tokens.Length = 0 then
                 failwith "Internal error" // Cannot happen due to categorization
             else
@@ -330,38 +331,78 @@ module internal FunctionDefinitionParser =
                 let fl = tokens.[0]
                 let firstLine = fl.Tokens
                 let l = firstLine.Length
-                if l < 2 then ("<unknown>", true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation "No name given for function")|]))
-                else if l > 3 then
-                    let name = match firstLine.[1].Token with | FunctionName name -> name | _ -> "<unknown>"
-                    (name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation "Function first line too long")|]))
+                if l < 2 then (false, "<unknown>", true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation "No name given for function")|]))
+                else if l > 4 then
+                    let name =
+                        if firstLine.[1].Token = Private then
+                            match firstLine.[2].Token with | FunctionName name -> name | _ -> "<unknown>"
+                        else 
+                            match firstLine.[1].Token with | FunctionName name -> name | _ -> "<unknown>"
+                    (false, name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation "Function first line too long")|]))
                 else
-                    let name = match firstLine.[1].Token with | FunctionName name -> Choice1Of2 name | InvalidReservedToken value -> Choice2Of2 ("Reserved token: " + value) | _ -> Choice2Of2 "Unnamed function"
-                    match name with
+                    let firstLineDetails =
+                        // One of the following cases:
+                        // @func @private @funcName {
+                        // @func @private @funcName
+                        // @func @funcName {
+                        // @func @funcName
+                        match l with
+                        | 4 ->
+                            if firstLine.[1].Token = Private then
+                                if firstLine.[3].Token = OpenCurly then
+                                    match firstLine.[2].Token with
+                                    | FunctionName name ->
+                                        Choice1Of2 (true, name, true)
+                                    | InvalidReservedToken value -> Choice2Of2 ("Reserved token: " + value)
+                                    | _ -> Choice2Of2 "Unnamed function"
+                                else
+                                    Choice2Of2 "Missing open curly"
+                            else
+                                Choice2Of2 "Invalid tokens"
+                        | 3 ->
+                            if firstLine.[1].Token = Private then
+                                match firstLine.[2].Token with
+                                | FunctionName name -> Choice1Of2 (true, name, false)
+                                | InvalidReservedToken value -> Choice2Of2 ("Reserved token: " + value)
+                                | _ -> Choice2Of2 "Unnamed function"
+                            else if firstLine.[2].Token = OpenCurly then
+                                match firstLine.[1].Token with
+                                | FunctionName name -> Choice1Of2 (false, name, true)
+                                | InvalidReservedToken value -> Choice2Of2 ("Reserved token: " + value)
+                                | _ -> Choice2Of2 "Unnamed function"
+                            else
+                                Choice2Of2 "Unnamed function"
+                        | 2 ->
+                            match firstLine.[1].Token with
+                            | FunctionName name -> Choice1Of2 (false, name, false)
+                            | InvalidReservedToken value -> Choice2Of2 ("Reserved token: " + value)
+                            | _ -> Choice2Of2 "Unnamed function"
+                        | _ -> failwith "Something failed - reached this point with an invalid number of tokens on first line of function"
+                    match firstLineDetails with
                     | Choice2Of2 errorText ->
-                        ("<unknown>", true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation errorText)|]))
-                    | Choice1Of2 name ->
+                        (false, "<unknown>", true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[0].TokenEndLocation errorText)|]))
+                    | Choice1Of2 (isPrivate, name, hasOpenCurly) ->
                         if tokenSet.Tokens.[tokenSet.Tokens.Length - 1].Tokens.Length > 1 || tokenSet.Tokens.[tokenSet.Tokens.Length - 1].Tokens.[0].Token <> CloseCurly then
                             let line = tokenSet.Tokens.[tokenSet.Tokens.Length - 1]
                             let attToken = line.Tokens.[0]
-                            (name, true, (makeParseErrors [|(makeParseError tokenSet.File line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]))
-                        else if l = 2 then
+                            (isPrivate, name, true, (makeParseErrors [|(makeParseError tokenSet.File line.LineNumber attToken.TokenStartLocation attToken.TokenEndLocation "Invalid token")|]))
+                        else if not hasOpenCurly then
                             if tokenSet.Tokens.Length < 3 then
-                                (name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[firstLine.Length - 1].TokenEndLocation "Insufficient brackets")|]))
+                                (isPrivate, name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[0].LineNumber firstLine.[0].TokenStartLocation firstLine.[firstLine.Length - 1].TokenEndLocation "Insufficient brackets")|]))
                             else if tokenSet.Tokens.[1].Tokens.Length > 1 || tokenSet.Tokens.[1].Tokens.[0].Token <> OpenCurly then
-                                (name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[1].LineNumber tokens.[1].Tokens.[0].TokenStartLocation tokens.[1].Tokens.[0].TokenEndLocation "Invalid token")|]))
+                                (isPrivate, name, true, (makeParseErrors [|(makeParseError tokenSet.File tokens.[1].LineNumber tokens.[1].Tokens.[0].TokenStartLocation tokens.[1].Tokens.[0].TokenEndLocation "Invalid token")|]))
                             else
                                 let tree = tokenSet.Tokens |> List.skip 2 |> List.take (tokenSet.Tokens.Length - 3) |> parseSequentialOrChoiceInner tokenSet.File fl.LineNumber makeParsedSeq []
                                 let hasErrors = match tree.Node with | ParseErrors _ -> true | _ -> false
-                                (name, hasErrors, tree)
-                        else if firstLine.[2].Token <> OpenCurly then
-                            (name, true, (makeParseErrors [|(makeParseError tokenSet.File fl.LineNumber firstLine.[2].TokenStartLocation firstLine.[2].TokenEndLocation "Invalid token")|]))
+                                (isPrivate, name, hasErrors, tree)
                         else
                             let tree = tokenSet.Tokens |> List.skip 1 |> List.take (tokenSet.Tokens.Length - 2) |> parseSequentialOrChoiceInner tokenSet.File fl.LineNumber makeParsedSeq []
                             let hasErrors = match tree.Node with | ParseErrors _ -> true | _ -> false
-                            (name, hasErrors, tree)
+                            (isPrivate, name, hasErrors, tree)
         {   StartLine = tokenSet.StartLine
             EndLine = tokenSet.EndLine
             Index = tokenSet.Index
+            IsPrivate = isPrivate
             HasErrors = hasErrors
             Name = name
             Dependencies = tree.Dependencies

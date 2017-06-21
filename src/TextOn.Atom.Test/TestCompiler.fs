@@ -65,6 +65,7 @@ let expected =
       [|{Name = "main";
          Index = 1;
          File = "D:\Example\example.texton";
+         IsPrivate = false;
          StartLine = 2;
          EndLine = 33;
          AttributeDependencies = [||];
@@ -259,14 +260,17 @@ let ``End to end test``() =
                     test <@ t.File = e.File @>
                     compareTemplates t.Tree e.Tree)
 
-let compileLines (lines:string) =
+let compileLinesWithResolver fileResolver (lines:string) =
     lines.Split([|'\r';'\n'|], StringSplitOptions.RemoveEmptyEntries)
     |> List.ofArray
-    |> Preprocessor.preprocess (fun _ _ -> None) exampleFileName exampleDirectory
+    |> Preprocessor.preprocess fileResolver exampleFileName exampleDirectory
     |> CommentStripper.stripComments
     |> LineCategorizer.categorize
     |> List.map (Tokenizer.tokenize >> Parser.parse)
     |> Compiler.compile
+
+let compileLines lines =
+    compileLinesWithResolver (fun _ _ -> None) lines
 
 [<Test>]
 let ``Declare the same variable twice``() =
@@ -323,11 +327,11 @@ let ``Declare the same attribute twice``() =
 [<Test>]
 let ``Declare the same function twice``() =
     let lines =
-        "@func @FuncName
+        "@func @private @FuncName
   {
     Hello
   }
-@func @FuncName
+@func @private @FuncName
   {
     Hello
   }
@@ -432,6 +436,7 @@ let ``Test invoking a function from within a function``() =
                         {   Name = "func1"
                             Index = 0
                             File = fullExampleFile
+                            IsPrivate = false;
                             StartLine = 1
                             EndLine = 3
                             AttributeDependencies = [||]
@@ -446,6 +451,7 @@ let ``Test invoking a function from within a function``() =
                         {   Name = "func2";
                             Index = 1;
                             File = fullExampleFile
+                            IsPrivate = false;
                             StartLine = 4;
                             EndLine = 6;
                             AttributeDependencies = [||]
@@ -493,6 +499,7 @@ let ``Test filtering out an entire seq block``() =
                         {   Name = "main"
                             Index = 1
                             File = fullExampleFile
+                            IsPrivate = false;
                             StartLine = 6
                             EndLine = 11
                             AttributeDependencies = [|0|]
@@ -552,6 +559,7 @@ let ``Test filtering out an entire choice block``() =
                         {   Name = "main"
                             Index = 1
                             File = fullExampleFile
+                            IsPrivate = false;
                             StartLine = 6
                             EndLine = 11
                             AttributeDependencies = [|0|]
@@ -632,6 +640,7 @@ let ``Test variable dependency chain``() =
                         {   Name = "dependsOnCity"
                             Index = 2;
                             File = fullExampleFile
+                            IsPrivate = false;
                             StartLine = 11;
                             EndLine = 14;
                             AttributeDependencies = [||];
@@ -697,6 +706,7 @@ let ``Test function dependency chain with variables``() =
                     [|{Name = "inner";
                        Index = 2;
                        File = fullExampleFile
+                       IsPrivate = false;
                        StartLine = 9;
                        EndLine = 11;
                        AttributeDependencies = [||];
@@ -706,6 +716,7 @@ let ``Test function dependency chain with variables``() =
                       {Name = "outer";
                        Index = 3;
                        File = fullExampleFile
+                       IsPrivate = false;
                        StartLine = 12;
                        EndLine = 14;
                        AttributeDependencies = [||];
@@ -756,6 +767,7 @@ let ``Test function dependency chain with attributes``() =
                     [|{Name = "inner";
                        Index = 2;
                        File = fullExampleFile;
+                       IsPrivate = false;
                        StartLine = 9;
                        EndLine = 11;
                        AttributeDependencies = [|0; 1|];
@@ -768,9 +780,43 @@ let ``Test function dependency chain with attributes``() =
                                 AreEqual (1,"London"))|])}; {Name = "outer";
                                                           Index = 3;
                                                           File = fullExampleFile;
+                                                          IsPrivate = false;
                                                           StartLine = 12;
                                                           EndLine = 14;
                                                           AttributeDependencies = [|0; 1|];
                                                           VariableDependencies = [||];
                                                           Tree = Seq(fullExampleFile, 12, [|(Function (fullExampleFile, 13, 2), True)|])}|]}
      test <@ result = expected @>
+
+[<Test>]
+let ``Test private functions with the same name``() =
+    let makeText file =
+        sprintf @"@func @private @myFunction {
+    This private function is defined in %s.
+}
+@func @%sExport {
+    @myFunction
+}"              file file
+    let fileResolver =
+        [
+            "foo"
+            "bar"
+            "baz"
+        ]
+        |> Seq.map (fun x -> (sprintf "%s.texton" x), (makeText x))
+        |> Map.ofSeq
+        |> fun m ->
+            fun x (d:string) -> (Some (x, d, m.[x].Split([|'\n';'\r'|], StringSplitOptions.RemoveEmptyEntries) |> List.ofArray))
+    let mainText = "#include \"foo.texton\"
+#include \"bar.texton\"
+#include \"baz.texton\"
+@func @main {
+    @fooExport
+    @barExport
+    @bazExport
+}"
+    let result = compileLinesWithResolver fileResolver mainText
+    match result with
+    | CompilationResult.CompilationSuccess _ -> ()
+    | CompilationResult.CompilationFailure f -> failwithf "Failed to compile template with private functions - %A" f
+
