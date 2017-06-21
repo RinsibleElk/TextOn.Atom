@@ -29,6 +29,7 @@ type Token =
     | RawText of string
     | InvalidReservedToken of string
     | FunctionName of string
+    | Private
 
 type AttributedToken = {
     TokenStartLocation : int
