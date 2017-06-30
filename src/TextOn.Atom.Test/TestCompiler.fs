@@ -456,7 +456,7 @@ let ``Test invoking a function from within a function``() =
                             IsPrivate = false;
                             StartLine = 4;
                             EndLine = 6;
-                            FunctionDependencies = [||]
+                            FunctionDependencies = [|0|]
                             AttributeDependencies = [||]
                             VariableDependencies = [||]
                             Tree = Seq(fullExampleFile,4,[|(Function(fullExampleFile, 5, 0), True)|])}|]}
@@ -726,7 +726,7 @@ let ``Test function dependency chain with variables``() =
                        IsPrivate = false;
                        StartLine = 12;
                        EndLine = 14;
-                       FunctionDependencies = [||]
+                       FunctionDependencies = [|2|]
                        AttributeDependencies = [||];
                        VariableDependencies = [|0; 1|];
                        Tree = Seq(fullExampleFile, 12, [|(Function(fullExampleFile, 13, 2), True)|])}|]}
@@ -734,7 +734,7 @@ let ``Test function dependency chain with variables``() =
  
 [<Test>]
 let ``Test function dependency chain with attributes``() =
-     let text = "@att %Country = \"Which country are you writing about?\"
+    let text = "@att %Country = \"Which country are you writing about?\"
    {
      \"U.K.\"
    }
@@ -748,55 +748,78 @@ let ``Test function dependency chain with attributes``() =
 @func @outer {
    @inner
 }"
-     let result = text |> compileLines
-     let expected =
+    let result = text |> compileLines
+    let expected =
         CompilationSuccess
             {   Attributes =
-                    [|{Name = "Country";
-                       Text = "Which country are you writing about?";
-                       Index = 0;
-                       File = fullExampleFile;
-                       StartLine = 1;
-                       EndLine = 4;
-                       AttributeDependencies = [||];
-                       Values = [|{Value = "U.K.";
-                                   Condition = True;}|];};
-                      {Name = "City";
-                       Text = "Which city are you writing about?";
-                       Index = 1;
-                       File = fullExampleFile;
-                       StartLine = 5;
-                       EndLine = 8;
-                       AttributeDependencies = [|0|];
-                       Values = [|{Value = "London";
-                                   Condition = AreEqual (0,"U.K.");}|];}|];
-                Variables = [||];
+                    [|
+                        {   
+                            Name = "Country"
+                            Text = "Which country are you writing about?"
+                            Index = 0
+                            File = fullExampleFile
+                            StartLine = 1
+                            EndLine = 4
+                            AttributeDependencies = [||]
+                            Values =
+                                [|
+                                    { Value = "U.K."; Condition = True }
+                                |]
+                        }
+                        {
+                            Name = "City"
+                            Text = "Which city are you writing about?"
+                            Index = 1
+                            File = fullExampleFile
+                            StartLine = 5
+                            EndLine = 8
+                            AttributeDependencies = [|0|]
+                            Values =
+                                [|
+                                    { Value = "London"; Condition = AreEqual (0,"U.K.") }
+                                |]
+                        }
+                    |]
+                Variables = [||]
                 Functions =
-                    [|{Name = "inner";
-                       Index = 2;
-                       File = fullExampleFile;
-                       IsPrivate = false;
-                       StartLine = 9;
-                       EndLine = 11;
-                       FunctionDependencies = [||]
-                       AttributeDependencies = [|0; 1|];
-                       VariableDependencies = [||];
-                       Tree =
-                        Seq(
-                            fullExampleFile,
-                            9,
-                            [|(Sentence (fullExampleFile, 10, SimpleText "Some text."),
-                                AreEqual (1,"London"))|])}; {Name = "outer";
-                                                          Index = 3;
-                                                          File = fullExampleFile;
-                                                          IsPrivate = false;
-                                                          StartLine = 12;
-                                                          EndLine = 14;
-                                                          FunctionDependencies = [||];
-                                                          AttributeDependencies = [|0; 1|];
-                                                          VariableDependencies = [||];
-                                                          Tree = Seq(fullExampleFile, 12, [|(Function (fullExampleFile, 13, 2), True)|])}|]}
-     test <@ result = expected @>
+                    [|  
+                        {   
+                            Name = "inner"
+                            Index = 2
+                            File = fullExampleFile
+                            IsPrivate = false
+                            StartLine = 9
+                            EndLine = 11
+                            FunctionDependencies = [||]
+                            AttributeDependencies = [|0; 1|]
+                            VariableDependencies = [||]
+                            Tree =
+                                Seq
+                                    (fullExampleFile,9,
+                                        [|
+                                            (Sentence (fullExampleFile, 10, SimpleText "Some text."), AreEqual (1,"London"))
+                                        |])
+                        }
+                        {   
+                            Name = "outer"
+                            Index = 3
+                            File = fullExampleFile
+                            IsPrivate = false
+                            StartLine = 12
+                            EndLine = 14
+                            FunctionDependencies = [|2|]
+                            AttributeDependencies = [|0; 1|]
+                            VariableDependencies = [||]
+                            Tree =
+                                Seq
+                                    (fullExampleFile,12,
+                                        [|
+                                            (Function (fullExampleFile,13,2), True)
+                                        |])
+                        }
+                    |]
+            }
+    test <@ result = expected @>
 
 [<Test>]
 let ``Test private functions with the same name``() =
