@@ -24,6 +24,7 @@
     $City is in $Country.
     @break
     @dependsOnCity
+    @dependsOnCity
     @cityExport
     @guyStuff [%Gender = "Male"]
   }

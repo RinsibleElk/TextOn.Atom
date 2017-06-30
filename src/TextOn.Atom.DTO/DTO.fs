@@ -24,6 +24,12 @@ module DTO =
             NumBlankLinesBetweenParagraphs : int
             WindowsLineEndings : bool
         }
+    type BrowserCycleRequest =
+        {
+            FileName : string
+            // First line is 1
+            LineNumber : int
+        }
     type GenerateRequest = {Config:GeneratorConfiguration}
     type NavigateRequest = { FileName : string ; NavigateType : string ; Name : string }
     type GeneratorValueSetRequest = { Type : string ; Name : string ; Value : string }
@@ -86,6 +92,7 @@ module DTO =
             variables : GeneratorInput[]
             nodes : BrowserNode[]
             file : string
+            selectedPath : int[]
         }
     type BrowserItems =
         {

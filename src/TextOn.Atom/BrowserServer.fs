@@ -10,10 +10,24 @@ type BrowserStartResult =
 
 [<Sealed>]
 type BrowserServer(file) =
-    let mutable currentValue = None
+    let mutable currentValue : BrowserUpdate option = None
     let mutable currentTemplate = None
     let mutable attributeValues : Map<string, string> = Map.empty
     let mutable variableValues : Map<string, string> = Map.empty
+    let mutable currentSelectedFileName = None
+    let mutable currentSelectedLine = None
+    let mutable currentSelectedPaths : (string * int[])[] option = None
+    let mutable currentSelectedPathIndex = -1
+
+    let resetSelection() =
+        currentSelectedFileName <- None
+        currentSelectedLine <- None
+        currentSelectedPaths <- None
+        currentSelectedPathIndex <- -1
+
+    let makeSelectedPath() =
+        if currentSelectedPaths.IsNone then [||]
+        else currentSelectedPaths.Value.[currentSelectedPathIndex] |> snd
 
     let rec collapseAt (browserNodes:BrowserNode[]) indexPath =
         match indexPath with
@@ -275,8 +289,166 @@ type BrowserServer(file) =
                 (Array.append firstHalf (Array.append [|innerNode|] secondHalf)), retVal
             else
                 [||], [||]
+
+    let rec expandPath rootFunction functionNames attributeValues variableNames variableValues (compiledDefinitionNodes:CompiledDefinitionNode[]) (browserNodes:BrowserNode[]) currentIndexPathRev (searchIndexPath:int list) : BrowserNode[] =
+        match searchIndexPath with
+        | [] -> browserNodes
+        | h::t ->
+            let newBrowserNodes, _ = expandAt rootFunction functionNames attributeValues variableNames variableValues compiledDefinitionNodes browserNodes [] (currentIndexPathRev |> List.rev)
+            let actualIndexPathRev = h::currentIndexPathRev
+            expandPath rootFunction functionNames attributeValues variableNames variableValues compiledDefinitionNodes newBrowserNodes actualIndexPathRev t
+
+    let nodeLine n =
+        match n with
+        | Choice (_, l, _)
+        | Seq (_, l, _)
+        | ParagraphBreak(_, l)
+        | Sentence(_, l, _)
+        | Function (_, l, _) -> l
+
+    let rec findIndexPathsForFunction functionIndex (functionDefinitions:Map<int, CompiledFunctionDefinition>) attributeValues (nodes:(CompiledDefinitionNode * int * (int list)) list) output =
+        match nodes with
+        | [] -> output
+        | (node, f, path)::t ->
+            let newNodesAndIndexPathAdditionsOrOutputAddition =
+                match node with
+                | Function(_, _, i) ->
+                    if i = functionIndex then Choice2Of2 (f, (path |> List.rev))
+                    else
+                        let fn = functionDefinitions.[i]
+                        Choice1Of2 ([(fn.Tree, f, 0::path)])
+                | ParagraphBreak _
+                | Sentence _ -> Choice1Of2 []
+                | Seq (_, _, nodes)
+                | Choice (_, _, nodes) ->
+                    nodes
+                    |> Array.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
+                    |> Array.mapi (fun i (n, _) -> (n, f, i::path))
+                    |> List.ofArray
+                    |> Choice1Of2
+            let newNodes = match newNodesAndIndexPathAdditionsOrOutputAddition with | Choice1Of2 x -> t@x | _ -> t
+            let newOutput = match newNodesAndIndexPathAdditionsOrOutputAddition with | Choice2Of2 x -> x::output | _ -> output
+            findIndexPathsForFunction functionIndex functionDefinitions attributeValues newNodes newOutput
+
+    let rec findNodeAtLineWithinFunction attributeValues line node currentPathRev =
+        let returnBad, indexAndNode =
+            match node with
+            | Seq(_, l, nodes)
+            | Choice(_, l, nodes) ->
+                if l = line then (false, None)
+                else
+                    nodes
+                    |> Array.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
+                    |> Array.mapi (fun i (n, _) -> (i, n))
+                    |> Array.takeWhile (snd >> nodeLine >> fun l -> l <= line)
+                    |> Array.tryLast
+                    |> fun o ->
+                        if o.IsNone then (true, None)
+                        else (false, o)
+            | ParagraphBreak(_, l)
+            | Function(_, l, _)
+            | Sentence(_, l, _) ->
+                if l = line then (false, None)
+                else (true, None)
+        if returnBad then None
+        else if indexAndNode.IsNone then (Some (currentPathRev |> List.rev))
+        else
+            let (i, n) = indexAndNode.Value
+            findNodeAtLineWithinFunction attributeValues line n (i::currentPathRev)
+
     member __.File = file |> System.IO.FileInfo
-    member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
+    member __.UpdateTemplate (template:CompiledTemplate) =
+        currentTemplate <- Some template
+        resetSelection()
+    member private __.ExpandAndSelect rootFunction (selectedPath:int[]) =
+        let currentTemplate = currentTemplate.Value
+        let functionNames = Browser.functionNames currentTemplate
+        let functionIndex = selectedPath.[0]
+        let variableNames = currentTemplate.Variables |> Array.map (fun v -> v.Index, v.Name) |> Map.ofArray
+        let publicFunctions = currentTemplate.Functions |> Array.filter (fun fn -> not fn.IsPrivate)
+        let compiledNodes = [|publicFunctions.[functionIndex].Tree|]
+        let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+        let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+        let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+        let variableValuesByIndex = variableValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> variableNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+        let rootItems = expandPath rootFunction functionNames attributeValuesByIndex variableNames variableValuesByIndex compiledNodes currentValue.Value.nodes.[selectedPath.[0]].children [] (selectedPath |> List.ofArray |> List.skip 1)
+        currentValue <-
+            Some
+                {
+                    attributes = currentValue.Value.attributes
+                    variables = currentValue.Value.variables
+                    nodes =
+                        Array.append
+                            (currentValue.Value.nodes |> Array.take functionIndex)
+                            (Array.append
+                                [|
+                                    { currentValue.Value.nodes.[functionIndex] with children = rootItems ; isCollapsed = (rootItems.Length = 0) }
+                                |]
+                                (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
+                    file = file
+                    selectedPath = selectedPath |> Array.skip 1
+                }
+    member this.CycleThroughTo fileName line =
+        if currentSelectedFileName.IsNone || currentSelectedFileName.Value <> fileName || currentSelectedLine.IsNone || currentSelectedLine.Value <> line then
+            resetSelection()
+            // Find which function it's in.
+            let fn = currentTemplate.Value.Functions |> Array.tryFind (fun x -> x.File = fileName && x.StartLine <= line && x.EndLine >= line)
+            if fn.IsSome then
+                let fn = fn.Value
+                let currentTemplate = currentTemplate.Value
+                let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+                let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
+
+                // Find the path within the function.
+                let indexPathWithinFn = findNodeAtLineWithinFunction attributeValuesByIndex line fn.Tree [0]
+                if indexPathWithinFn.IsSome then
+                    let indexPathWithinFn = indexPathWithinFn.Value
+                    let fnDefs = currentTemplate.Functions |> Array.map (fun fn -> fn.Index, fn) |> Map.ofArray
+                    let fnIndex = fn.Index
+                    let nodes =
+                        currentTemplate.Functions
+                        |> Array.filter (fun fn -> fn.FunctionDependencies |> Array.contains fnIndex)
+                        |> Array.filter (fun fn -> not fn.IsPrivate)
+                        |> Array.map (fun fn -> (fn.Tree, fn.Index, [0]))
+                        |> List.ofArray
+                    let starterRef = if fn.IsPrivate then [] else [(fn.Index, [])]
+
+                    // Find all references to that function (recursively) and the paths.
+                    let refsToFunction = findIndexPathsForFunction fnIndex fnDefs attributeValuesByIndex nodes starterRef
+                    let publicFunctions =
+                        currentTemplate.Functions
+                        |> Array.filter (fun fn -> fn.IsPrivate |> not)
+                        |> Array.mapi (fun i fn -> (fn.Index, (i, fn.Name)))
+                        |> Map.ofArray
+                    let paths =
+                        refsToFunction
+                        |> List.rev
+                        |> List.toArray
+                        |> Array.map
+                            (fun (f, fPath) ->
+                                let (i, n) = publicFunctions.[f]
+                                (n, ((i::(fPath@indexPathWithinFn)) |> List.toArray)))
+                    if paths |> Array.isEmpty then false
+                    else
+                        currentSelectedFileName <- Some fileName
+                        currentSelectedLine <- Some line
+                        currentSelectedPaths <- Some paths
+                        currentSelectedPathIndex <- 0
+                        let (rootFunction, indexPath) = currentSelectedPaths.Value.[currentSelectedPathIndex]
+                        this.ExpandAndSelect rootFunction indexPath
+                        true
+                else
+                    false
+            else
+                false
+        else
+            currentSelectedPathIndex <- currentSelectedPathIndex + 1
+            if currentSelectedPathIndex >= (currentSelectedPaths.Value |> Array.length) then
+                currentSelectedPathIndex <- 0
+            let (rootFunction, indexPath) = currentSelectedPaths.Value.[currentSelectedPathIndex]
+            this.ExpandAndSelect rootFunction indexPath
+            true
+
     member __.Data =
         let currentTemplate = currentTemplate.Value
         let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
@@ -408,6 +580,7 @@ type BrowserServer(file) =
                                     children = children
                                 })
                 file = file
+                selectedPath = makeSelectedPath()
             }
         currentValue <- Some retVal
         retVal
@@ -446,6 +619,7 @@ type BrowserServer(file) =
                                         |]
                                         (currentValue.Value.nodes |> Array.skip (min (functionIndex + 1) (currentValue.Value.nodes.Length))))
                             file = file
+                            selectedPath = [||]
                         }
                 Some
                     {
@@ -467,12 +641,14 @@ type BrowserServer(file) =
                                 variables = currentValue.Value.variables
                                 nodes = children.Value
                                 file = file
+                                selectedPath = [||]
                             }
                     Some true
                 else
                     None
 
     member __.SetValue ty name value =
+        resetSelection()
         if ty = "Variable" then
             if value |> String.IsNullOrEmpty then
                 variableValues <- variableValues |> Map.remove name

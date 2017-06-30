@@ -4,7 +4,6 @@
 import etch from 'etch'
 const $ = etch.dom
 import TextOnCore from './texton-core'
-import Logger from './texton-logger'
 
 export default class BrowserPaneTreeView {
   constructor (props) {
@@ -27,6 +26,11 @@ export default class BrowserPaneTreeView {
       props.onDidInitialize(this)
     }
     this.computeNesting()
+    if (this.props.isCollapsible) {
+      this.element.classList.add('texton-collapsible');
+    } else {
+      this.element.classList.remove('texton-collapsible');
+    }
     if (!this.props.isCollapsed)
     {
       this.setExpanded();
@@ -101,7 +105,6 @@ export default class BrowserPaneTreeView {
       this.props.isCollapsible = props.isCollapsible;
     }
     if (props.hasOwnProperty('items')) {
-      Logger.logf("UpdateTree", "items", [this.props.text, this.props.items])
       this.props.items = props.items
       shouldComputeItems = true
     }
@@ -172,9 +175,7 @@ export default class BrowserPaneTreeView {
   }
 
   renderItems () {
-    Logger.logf("renderItems", "renderItems", [this.items])
     if (this.items.length > 0) {
-      Logger.logf("renderItems", "length.greater.than.1", this.items)
       className = 'list-tree has-collapsable-children';
       return $.ol(
         {className, ref: 'items'},

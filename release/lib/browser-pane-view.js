@@ -244,10 +244,32 @@ export default class BrowserPaneView {
       this.selectedEntry.classList.remove('selected');
     }
 
-
     this.selectedEntry = entry;
     entry.classList.add('selected');
     return entry;
+  }
+
+  selectPath (path) {
+    selectedEntry = null;
+    for (const index of path) {
+      if (selectedEntry != null) {
+        if (selectedEntry.classList.contains('texton-collapsible')) {
+          if ((selectedEntry.children != null) && (selectedEntry.children.length == 2) && (selectedEntry.children[1].children.length > index)) {
+            selectedEntry = selectedEntry.children[1].children[index];
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
+      } else {
+        selectedEntry = this.sections[2].element.children[1].children[index]
+        this.scrollToEntry(selectedEntry)
+      }
+    }
+    if (selectedEntry != null) {
+      this.selectEntry(selectedEntry);
+    }
   }
 
   entryClicked (e) {

@@ -52,8 +52,13 @@ navigate = (type, fileName, name) ->
 
 updateBrowserPane = (data) ->
   if browser?
-      browser.update data
-      showBrowser()
+      p = browser.update data
+      p.then () ->
+        showBrowser()
+        Logger.logf("Updated", "Updated", data.selectedPath)
+        if data.selectedPath.length > 0
+          Logger.logf("SP", "SP", data.selectedPath)
+          browser.selectPath data.selectedPath
   else
     createBrowserPane data
     atom.workspace.open(browser, {
@@ -81,9 +86,23 @@ requestUpdate = ->
     Blank : ""
   p = textOnCore.send('updatebrowser', 'browserUpdate', req)
   p.then (data) ->
-    if data.length > 0
+    if data.length is 1
       # We take care _not_ to open the browser here - that would be annoying.
       browser.update (data[0])
+
+cycleThroughTextOnBrowser = ->
+  editor = atom.workspace.getActiveTextEditor()
+  isTextOn = textOnCore.isTextOnEditor editor
+  if isTextOn && editor.buffer.file?
+    text = editor.getText()
+    line = editor.getCursorBufferPosition().row
+    req =
+      FileName : editor.getPath()
+      LineNumber : line + 1
+    p = textOnCore.send('browsercycle', 'browserUpdate', req)
+    p.then (data) ->
+      if data.length is 1
+        updateBrowserPane (data[0])
 
 module.exports =
   activate: ->
@@ -91,6 +110,8 @@ module.exports =
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:View-Browser', ->
       sendToTextOnBrowser()
+    @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Cycle-Through-Browser', ->
+      cycleThroughTextOnBrowser()
     @disp = null
     @subscriptions.add atom.workspace.onDidStopChangingActivePaneItem (item) ->
       @disp?.dispose()

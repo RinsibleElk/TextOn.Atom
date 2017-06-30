@@ -327,7 +327,22 @@ module Compiler =
                                     |> Array.collect
                                         (function
                                             | ParsedVariableRef n -> variableDefinitions |> Map.tryFind n |> Option.map (fun v -> [|v.Index|]) |> defaultArg <| [||]
-                                            | ParsedFunctionRef n -> (tryFindFunction h.File functionDefinitions n).Value.VariableDependencies | _ -> [||])
+                                            | ParsedFunctionRef n -> (tryFindFunction h.File functionDefinitions n).Value.VariableDependencies
+                                            | _ -> [||])
+                                let functionDependencies =
+                                    f.Dependencies
+                                    |> Array.collect
+                                        (function
+                                            | ParsedFunctionRef n ->
+                                                let f = tryFindFunction h.File functionDefinitions n
+                                                f
+                                                |> Option.map
+                                                    (fun x ->
+                                                        Array.append [|x.Index|] x.FunctionDependencies)
+                                                |> defaultArg <| [||]
+                                            | _ -> [||])
+                                    |> Set.ofArray
+                                    |> Set.toArray
                                 let attributesByIndex = attributeDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let variablesByIndex = variableDefinitions |> Map.toSeq |> Seq.map (fun (_,a) -> (a.Index, a)) |> Map.ofSeq
                                 let fn = {
@@ -337,6 +352,7 @@ module Compiler =
                                     IsPrivate = f.IsPrivate
                                     StartLine = f.StartLine
                                     EndLine = f.EndLine
+                                    FunctionDependencies = functionDependencies
                                     AttributeDependencies = (findVariableAttributeDependencies attributesByIndex variablesByIndex directAttributeDependencies directVariableDependencies)
                                     VariableDependencies = (findVariableVariableDependencies variablesByIndex directVariableDependencies)
                                     Tree = r }

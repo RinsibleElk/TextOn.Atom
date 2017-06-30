@@ -12,6 +12,7 @@
   'alt-enter': 'TextOn:Send-To-Generator'
   'ctrl-d': 'TextOn:Go-To-Definition'
   'alt-b': 'TextOn:View-Browser'
+  'f8': 'TextOn:Cycle-Through-Browser'
 
 '.texton-browser':
   'right': 'TextOn:browser-expand-collapsible'

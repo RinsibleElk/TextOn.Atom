@@ -64,13 +64,13 @@ module Preprocessor =
                     yield {
                         TopLevelFileLineNumber = topLevelFileLineNumber
                         CurrentFileLineNumber = currentFileLineNumber
-                        CurrentFile = Path.Combine(currentDirectory, currentFile)
+                        CurrentFile = Path.GetFullPath(Path.Combine(currentDirectory, currentFile))
                         Contents = PreprocessorLine line }
                 else if (not (line.StartsWith(includeLine))) || line.Length <= 8 || (not (Char.IsWhiteSpace (line.[8]))) then
                     yield {
                         TopLevelFileLineNumber = topLevelFileLineNumber
                         CurrentFileLineNumber = currentFileLineNumber
-                        CurrentFile = Path.Combine(currentDirectory, currentFile)
+                        CurrentFile = Path.GetFullPath(Path.Combine(currentDirectory, currentFile))
                         Contents = PreprocessorError {
                             StartLocation = 1
                             EndLocation = line.Length
@@ -84,7 +84,7 @@ module Preprocessor =
                         yield {
                             TopLevelFileLineNumber = topLevelFileLineNumber
                             CurrentFileLineNumber = currentFileLineNumber
-                            CurrentFile = Path.Combine(currentDirectory, currentFile)
+                            CurrentFile = Path.GetFullPath(Path.Combine(currentDirectory, currentFile))
                             Contents = PreprocessorError {
                                 StartLocation = 1
                                 EndLocation = line.Length
@@ -94,7 +94,7 @@ module Preprocessor =
                             yield {
                                 TopLevelFileLineNumber = topLevelFileLineNumber
                                 CurrentFileLineNumber = currentFileLineNumber
-                                CurrentFile = Path.Combine(currentDirectory, currentFile)
+                                CurrentFile = Path.GetFullPath(Path.Combine(currentDirectory, currentFile))
                                 Contents = PreprocessorError {
                                     StartLocation = 1
                                     EndLocation = line.Length
@@ -106,7 +106,7 @@ module Preprocessor =
                                 yield {
                                     TopLevelFileLineNumber = topLevelFileLineNumber
                                     CurrentFileLineNumber = currentFileLineNumber
-                                    CurrentFile = Path.Combine(currentDirectory, currentFile)
+                                    CurrentFile = Path.GetFullPath(Path.Combine(currentDirectory, currentFile))
                                     Contents = PreprocessorError {
                                         StartLocation = 1 + line.IndexOf(doubleQuoteChar)
                                         EndLocation = line.Length

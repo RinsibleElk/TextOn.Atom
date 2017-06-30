@@ -254,6 +254,15 @@ type Commands (serialize : Serializer) =
             else return [ CommandResponse.error serialize "Nothing to browse" ]
         else return [ CommandResponse.error serialize "Nothing to browse" ] }
 
+    member __.BrowserCycle fileName line = async {
+        let ok, browser = browserSingleton.TryGetValue 0
+        if ok then
+            if browser.CycleThroughTo fileName line then
+                return [ CommandResponse.browserUpdate serialize browser.Data ]
+            else
+                return [ CommandResponse.error serialize "Text not in a function" ]
+        else return [ CommandResponse.error serialize "Nothing to browse" ] }
+
     member __.GetCompletions fileName ty (line:string) (col:int) = async {
         let template = fileTemplateMap.TryFind(fileName)
         match ty with

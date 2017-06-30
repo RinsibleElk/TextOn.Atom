@@ -9,6 +9,7 @@ type CompiledFunctionDefinition =
         IsPrivate : bool
         StartLine : int
         EndLine : int
+        FunctionDependencies : int[]
         AttributeDependencies : int[]
         VariableDependencies : int[]
         Tree : CompiledDefinitionNode

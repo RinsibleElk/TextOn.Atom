@@ -55,6 +55,7 @@ module internal RunServer =
                 path "/browsercollapse" >=> handler (fun (data : BrowserExpandRequest) -> commands.BrowserCollapse data.browserFile data.rootFunction data.indexPath)
                 path "/browservalueset" >=> handler (fun (data : BrowserValueSetRequest) -> commands.BrowserValueSet data.FileName data.Type data.Name data.Value)
                 path "/updatebrowser" >=> handler (fun (data : UpdateBrowserRequest) -> commands.UpdateBrowser())
+                path "/browsercycle" >=> handler (fun (data : BrowserCycleRequest) -> commands.BrowserCycle data.FileName data.LineNumber)
             ]
 
         let port = serverModeConfig.Port
