@@ -6,7 +6,7 @@ open FsCheck
 open NUnit.Framework
 open Swensen.Unquote
 
-open TextOn.Core
+open TextOn.Core.Tokenizing
 
 let exampleFileName = @"D:\NodeJs\TextOn\example.texton"
 

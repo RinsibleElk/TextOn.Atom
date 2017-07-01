@@ -1,4 +1,4 @@
-﻿namespace TextOn.Core
+﻿namespace TextOn.Core.Tokenizing
 
 open System
 

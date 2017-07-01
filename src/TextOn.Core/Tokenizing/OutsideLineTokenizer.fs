@@ -1,10 +1,11 @@
 ﻿[<RequireQualifiedAccess>]
-module internal TextOn.Core.VariableOrAttributeLineTokenizer
+/// Take a line that has been determined to be outside of a function/variable/attribute definition and tokenize it.
+module internal TextOn.Core.Tokenizing.OutsideLineTokenizer
 
 open System
+open System.Text
 open System.Collections.Generic
 
-/// Tokenize a line within a variable or attribute definition.
 let tokenizeLine (line:string) =
     let lastIndex = line.Length - 1
     let mutable i = 0
@@ -15,9 +16,6 @@ let tokenizeLine (line:string) =
             i <- i + 1
         else
             match c with
-            | '[' ->
-                tokens.AddRange(ConditionTokenizer.tokenizeCondition i lastIndex line)
-                i <- lastIndex + 1
             | '/' ->
                 if i = lastIndex || line.[i + 1] <> '/' then
                     tokens.Add({ TokenStartLocation = i + 1 ; TokenEndLocation = lastIndex + 1 ; Token = InvalidUnrecognised(line.Substring(i)) })
@@ -30,6 +28,8 @@ let tokenizeLine (line:string) =
                 i <- IdentifierTokenizer.tokenizeQuotedString tokens i lastIndex line
             | '@' ->
                 i <- IdentifierTokenizer.tokenizeFunctionName tokens i lastIndex line
+            | '#' ->
+                i <- IdentifierTokenizer.legacyTokenizeInclude tokens i lastIndex line
             | '$' ->
                 let len = IdentifierTokenizer.findLengthOfWord (i + 1) lastIndex line
                 if len = 0 then
@@ -48,9 +48,6 @@ let tokenizeLine (line:string) =
                     i <- i + len + 1
             | '{' ->
                 tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = (i + 1) ; Token = OpenCurly })
-                i <- i + 1
-            | '}' ->
-                tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = (i + 1) ; Token = CloseCurly })
                 i <- i + 1
             | _ ->
                 tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = (lastIndex + 1) ; Token = InvalidUnrecognised(line.Substring(i)) })

@@ -8,7 +8,8 @@ open Swensen.Unquote
 open FSharp.Quotations
 open System.Collections.Generic
 
-open TextOn.Core
+open TextOn.Core.Parsing
+open TextOn.Core.Tokenizing
 
 let att n = ParsedAttributeOrVariable.ParsedAttributeName n
 let var n = ParsedAttributeOrVariable.ParsedVariableName n

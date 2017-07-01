@@ -1,5 +1,5 @@
 ﻿[<RequireQualifiedAccess>]
-module internal TextOn.Core.Tokenizer
+module internal TextOn.Core.Tokenizing.Tokenizer
 
 type private TokenizerState =
     | Done

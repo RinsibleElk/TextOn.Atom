@@ -1,4 +1,6 @@
-﻿namespace TextOn.Core
+﻿namespace TextOn.Core.Parsing
+
+open TextOn.Core.Tokenizing
 
 type internal ParsedVariableSuggestedValue = {
     Value : string

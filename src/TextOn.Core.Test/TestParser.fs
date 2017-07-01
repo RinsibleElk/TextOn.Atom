@@ -8,7 +8,9 @@ open Swensen.Unquote
 open FSharp.Quotations
 open System.Collections.Generic
 open System.IO
-open TextOn.Core
+
+open TextOn.Core.Parsing
+open TextOn.Core.Tokenizing
 
 let exampleFileName = @"D:\Example\example.texton"
 

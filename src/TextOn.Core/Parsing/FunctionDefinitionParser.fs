@@ -1,6 +1,7 @@
-﻿namespace TextOn.Core
+﻿namespace TextOn.Core.Parsing
 
 open System
+open TextOn.Core.Tokenizing
 
 type internal ParsedSentenceNode =
     | ParsedStringValue of string

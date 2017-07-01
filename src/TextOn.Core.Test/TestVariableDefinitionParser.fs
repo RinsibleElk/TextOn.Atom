@@ -8,7 +8,8 @@ open Swensen.Unquote
 open FSharp.Quotations
 open System.Collections.Generic
 
-open TextOn.Core
+open TextOn.Core.Parsing
+open TextOn.Core.Tokenizing
 
 let exampleFileName = "example.texton"
 let private makeTokenSet tokens =

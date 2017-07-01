@@ -1,5 +1,5 @@
 ﻿[<RequireQualifiedAccess>]
-module internal TextOn.Core.IdentifierTokenizer
+module internal TextOn.Core.Tokenizing.IdentifierTokenizer
 
 open System
 open System.Text

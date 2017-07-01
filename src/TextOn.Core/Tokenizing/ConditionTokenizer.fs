@@ -1,5 +1,5 @@
 ﻿[<RequireQualifiedAccess>]
-module internal TextOn.Core.ConditionTokenizer
+module internal TextOn.Core.Tokenizing.ConditionTokenizer
 
 open System
 open System.Text

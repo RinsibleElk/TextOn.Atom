@@ -1,6 +1,6 @@
 ﻿[<RequireQualifiedAccess>]
 /// Take a line that has been determined to be within a function definition and tokenize it.
-module internal TextOn.Core.FunctionLineTokenizer
+module internal TextOn.Core.Tokenizing.FunctionLineTokenizer
 
 open System
 open System.Text

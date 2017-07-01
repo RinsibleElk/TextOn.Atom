@@ -51,20 +51,20 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Tokens.fs" />
-    <Compile Include="IdentifierTokenizer.fs" />
-    <Compile Include="ConditionTokenizer.fs" />
-    <Compile Include="FunctionLineTokenizer.fs" />
-    <Compile Include="VariableOrAttributeLineTokenizer.fs" />
-    <Compile Include="OutsideLineTokenizer.fs" />
-    <Compile Include="Tokenizer.fs" />
-    <Compile Include="ConditionParser.fs" />
-    <Compile Include="ImportParser.fs" />
-    <Compile Include="FunctionDefinitionParser.fs" />
-    <Compile Include="VariableDefinitionParser.fs" />
-    <Compile Include="AttributeDefinitionParser.fs" />
-    <Compile Include="Parser.fs" />
-    <None Include="Play.fsx" />
+    <Compile Include="Tokenizing\Tokens.fs" />
+    <Compile Include="Tokenizing\IdentifierTokenizer.fs" />
+    <Compile Include="Tokenizing\ConditionTokenizer.fs" />
+    <Compile Include="Tokenizing\FunctionLineTokenizer.fs" />
+    <Compile Include="Tokenizing\VariableOrAttributeLineTokenizer.fs" />
+    <Compile Include="Tokenizing\OutsideLineTokenizer.fs" />
+    <Compile Include="Tokenizing\Tokenizer.fs" />
+    <Compile Include="Parsing\ConditionParser.fs" />
+    <Compile Include="Parsing\ImportParser.fs" />
+    <Compile Include="Parsing\FunctionDefinitionParser.fs" />
+    <Compile Include="Parsing\VariableDefinitionParser.fs" />
+    <Compile Include="Parsing\AttributeDefinitionParser.fs" />
+    <Compile Include="Parsing\Parser.fs" />
+    <None Include="Scripts\Play.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

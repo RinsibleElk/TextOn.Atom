@@ -6,7 +6,7 @@ open FsCheck
 open NUnit.Framework
 open Swensen.Unquote
 
-open TextOn.Core
+open TextOn.Core.Tokenizing
 
 let private runTest expected line =
     let expectedPlus4 = expected |> List.map (fun (token, s, e) -> { Token = token ; TokenStartLocation = s + 4 ; TokenEndLocation = e + 4 })
