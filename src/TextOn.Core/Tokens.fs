@@ -81,6 +81,9 @@ type internal AttributedTokenizedLine =
         LineNumber : int
         Tokens : AttributedToken list
     }
+    with
+        override this.ToString() =
+            sprintf "[%s]@%d" (this.Tokens |> List.fold (fun a b -> (if a = "" then "" else (a + ";")) +  b.ToString()) "") this.LineNumber
 
 /// The output for the LineCategorizer.
 type internal Category =
@@ -88,7 +91,15 @@ type internal Category =
     | CategorizedVarDefinition
     | CategorizedAttDefinition
     | CategorizedImport
-    | CategorizationError
+    | CategorizationError of string
+    with
+        override this.ToString() =
+            match this with
+            | CategorizedFuncDefinition -> "CategorizedFuncDefinition"
+            | CategorizedVarDefinition -> "CategorizedVarDefinition"
+            | CategorizedAttDefinition -> "CategorizedAttDefinition"
+            | CategorizedImport -> "CategorizedImport"
+            | CategorizationError s -> sprintf "CategorizationError %s" s
 
 /// A block of tokens representing a function, variable, attribute, or import.
 type internal CategorizedAttributedTokenSet =
@@ -99,3 +110,6 @@ type internal CategorizedAttributedTokenSet =
         EndLine : int
         Tokens : AttributedTokenizedLine list
     }
+    with
+        override this.ToString() =
+            sprintf "{\n%s (%s - %d-%d) :%s\n}" (this.Category.ToString()) this.File this.StartLine this.EndLine (this.Tokens |> List.fold (fun a b -> a + "\n" + b.ToString()) "")
