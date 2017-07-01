@@ -30,8 +30,8 @@ type internal Token =
     | RawText of string
     | FunctionName of string
     | Private
-    | Include of string
-    | Import of string
+    | Include
+    | Import
 
 /// A token with its start and end columns. These start at column 1.
 type internal AttributedToken =
