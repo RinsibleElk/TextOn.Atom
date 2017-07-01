@@ -1,18 +1,18 @@
 ﻿namespace TextOn.Core
 
-type ParsedAttributeValueResult = {
+type internal ParsedAttributeValueResult = {
     Value : string
     Condition : ConditionParseResults }
 
-type ParsedAttributeValue = {
+type internal ParsedAttributeValue = {
     Value : string
     Condition : ParsedCondition }
 
-type ParsedAttributeResult =
+type internal ParsedAttributeResult =
     | ParsedAttributeErrors of ParseError[]
     | ParsedAttributeSuccess of ParsedAttributeValueResult[]
 
-type ParsedAttributeDefinition = {
+type internal ParsedAttributeDefinition = {
     StartLine : int
     EndLine : int
     Name : string

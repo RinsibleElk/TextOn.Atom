@@ -2,14 +2,14 @@
 
 open System
 
-type ParsedSentenceNode =
+type internal ParsedSentenceNode =
     | ParsedStringValue of string
     | ParsedSimpleVariable of (int * int * string)
     | ParsedSimpleChoice of ParsedSentenceNode[]
     | ParsedSimpleSeq of ParsedSentenceNode[]
     | ParsedSentenceErrors of ParseError[]
 
-type ParsedNode =
+type internal ParsedNode =
     | ParsedSentence of (int * ParsedSentenceNode)
     | ParsedFunctionInvocation of (int * int * int * string)
     | ParsedSeq of int * (ParsedNode * ParsedCondition)[]
@@ -17,19 +17,19 @@ type ParsedNode =
     | ParsedParagraphBreak of int
     | ParseErrors of ParseError[]
 
-type ParsedNodeWithDependencies =
+type internal ParsedNodeWithDependencies =
     {
         Dependencies : ParsedAttributeOrVariableOrFunction[]
         Node : ParsedNode
     }
 
-type ParsedSentenceNodeWithDependencies =
+type internal ParsedSentenceNodeWithDependencies =
     {
         Dependencies : ParsedAttributeOrVariable[]
         SentenceNode : ParsedSentenceNode
     }
 
-type ParsedFunctionDefinition = {
+type internal ParsedFunctionDefinition = {
     StartLine : int
     EndLine : int
     IsPrivate : bool

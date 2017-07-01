@@ -1,14 +1,14 @@
 ﻿namespace TextOn.Core
 
-type ParsedVariableSuggestedValue = {
+type internal ParsedVariableSuggestedValue = {
     Value : string
     Condition : ConditionParseResults }
 
-type ParsedVariableResult =
+type internal ParsedVariableResult =
     | ParsedVariableErrors of ParseError[]
     | ParsedVariableSuccess of ParsedVariableSuggestedValue[]
 
-type ParsedVariableDefinition = {
+type internal ParsedVariableDefinition = {
     StartLine : int
     EndLine : int
     Name : string

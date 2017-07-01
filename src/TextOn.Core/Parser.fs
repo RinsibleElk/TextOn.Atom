@@ -2,13 +2,13 @@
 
 open System
 
-type ParseResult =
+type internal ParseResult =
     | ParsedImport of ParsedImportDefinition
     | ParsedFunction of ParsedFunctionDefinition
     | ParsedVariable of ParsedVariableDefinition
     | ParsedAttribute of ParsedAttributeDefinition
 
-type ParsedElement = {
+type internal ParsedElement = {
     File : string
     Result : ParseResult }
 

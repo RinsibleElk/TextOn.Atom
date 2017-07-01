@@ -1,6 +1,6 @@
 ﻿namespace TextOn.Core
 
-type ParsedImportDefinition =
+type internal ParsedImportDefinition =
     {
         StartLine : int
         EndLine : int
