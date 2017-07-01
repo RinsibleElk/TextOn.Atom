@@ -6,10 +6,10 @@ open System
 open System.Text
 open System.Collections.Generic
 
-// Special characters depend on context.
-// In condition: '(', ')', '&', '|', '=', '<', '>', '%', '['; ']' changes context
-// Start: '@', '{', '}'; anything else changes context
-// In text: '\', '{', '|', '}', '$'; '[' changes context
+/// Special characters depend on context.
+/// In condition: '(', ')', '&', '|', '=', '<', '>', '%', '['; ']' changes context
+/// Start: '@', '{', '}'; anything else changes context
+/// In text: '\', '{', '|', '}', '$'; '[' changes context
 let tokenizeLine (line:string) =
     let mutable i = 0
     let lastIndex = line.Length - 1
@@ -72,8 +72,9 @@ let tokenizeLine (line:string) =
                         sb.Append('/') |> ignore
                         i <- i + 1
                     else
+                        let text = sb.ToString()
                         if i + 1 <> rawTextStart then
-                            tokens.Add({ TokenStartLocation = rawTextStart ; TokenEndLocation = i ; Token = RawText(sb.ToString()) })
+                            tokens.Add({ TokenStartLocation = rawTextStart ; TokenEndLocation = i - trailingWhitespaceCharacters ; Token = RawText(text.Substring(0, text.Length - trailingWhitespaceCharacters)) })
                         rawTextStart <- -1
                         // Comments don't need tokenizing.
                         i <- lastIndex + 1

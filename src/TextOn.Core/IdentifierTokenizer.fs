@@ -35,6 +35,21 @@ let tokenizeQuotedString (tokens:List<AttributedToken>) startIndex lastIndex (li
         i <- i + 1
     i
 
+/// Tokenize something after an '#' symbol.
+let legacyTokenizeInclude (tokens:List<AttributedToken>) startIndex lastIndex (line:string) =
+    let mutable i = startIndex
+    let len = findLengthOfWord (i + 1) lastIndex line
+    if len = 0 then
+        tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = (i + 1) ; Token = InvalidUnrecognised("#") })
+        i <- i + 1
+    else
+        let name = line.Substring(i + 1, len)
+        match name with
+        | "include" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Include })
+        | _ -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = InvalidUnrecognised("#" + name) })
+        i <- i + len + 1
+    i
+
 /// Tokenize something after an '@' symbol.
 let tokenizeFunctionName (tokens:List<AttributedToken>) startIndex lastIndex (line:string) =
     let mutable i = startIndex
@@ -53,7 +68,7 @@ let tokenizeFunctionName (tokens:List<AttributedToken>) startIndex lastIndex (li
         | "choice" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Choice })
         | "seq" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Sequential })
         | "private" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Private })
-        | "import" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Private })
+        | "import" -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = Import })
         | _ -> tokens.Add({ TokenStartLocation = (i + 1) ; TokenEndLocation = i + 1 + len ; Token = FunctionName(name) })
         i <- i + len + 1
     i

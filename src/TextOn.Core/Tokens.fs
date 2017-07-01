@@ -32,6 +32,37 @@ type internal Token =
     | Private
     | Include
     | Import
+    with
+        override this.ToString() =
+            match this with
+            | Att                       -> "Att"
+            | Var                       -> "Var"
+            | Func                      -> "Func"
+            | Free                      -> "Free"
+            | Break                     -> "Break"
+            | Sequential                -> "Sequential"
+            | Choice                    -> "Choice"
+            | VariableName s            -> sprintf "VariableName %s" s
+            | OpenBrace                 -> "OpenBrace"
+            | CloseBrace                -> "CloseBrace"
+            | OpenCurly                 -> "OpenCurly"
+            | CloseCurly                -> "CloseCurly"
+            | AttributeName s           -> sprintf "AttributeName %s" s
+            | OpenBracket               -> "OpenBracket"
+            | CloseBracket              -> "CloseBracket"
+            | QuotedString s            -> sprintf "QuotedString %s" s
+            | Or                        -> "Or"
+            | And                       -> "And"
+            | Equals                    -> "Equals"
+            | NotEquals                 -> "NotEquals"
+            | InvalidUnrecognised s     -> sprintf "InvalidUnrecognised %s" s
+            | InvalidReservedToken s    -> sprintf "InvalidReservedToken %s" s
+            | ChoiceSeparator           -> "ChoiceSeparator"
+            | RawText s                 -> sprintf "RawText %s" s
+            | FunctionName s            -> sprintf "FunctionName %s" s
+            | Private                   -> "Private"
+            | Include                   -> "Include"
+            | Import                    -> "Import"
 
 /// A token with its start and end columns. These start at column 1.
 type internal AttributedToken =
@@ -40,6 +71,9 @@ type internal AttributedToken =
         TokenEndLocation : int
         Token : Token
     }
+    with
+        override this.ToString() =
+            sprintf "{%s [%d-%d]}" (this.Token.ToString()) this.TokenStartLocation this.TokenEndLocation
 
 /// A non-empty, comment-stripped, tokenized line, with its line number (starting at line 1).
 type internal AttributedTokenizedLine =
@@ -60,7 +94,6 @@ type internal Category =
 type internal CategorizedAttributedTokenSet =
     {
         Category : Category
-        Index : int
         File : string
         StartLine : int
         EndLine : int
