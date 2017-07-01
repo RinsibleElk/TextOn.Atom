@@ -58,6 +58,12 @@
     <Compile Include="VariableOrAttributeLineTokenizer.fs" />
     <Compile Include="OutsideLineTokenizer.fs" />
     <Compile Include="Tokenizer.fs" />
+    <Compile Include="ConditionParser.fs" />
+    <Compile Include="ImportParser.fs" />
+    <Compile Include="FunctionDefinitionParser.fs" />
+    <Compile Include="VariableDefinitionParser.fs" />
+    <Compile Include="AttributeDefinitionParser.fs" />
+    <Compile Include="Parser.fs" />
     <None Include="Play.fsx" />
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 open System
 
 /// All the tokens recognised by the TextOn language.
+[<NoComparison>]
 type internal Token =
     | Att
     | Var
@@ -65,6 +66,7 @@ type internal Token =
             | Import                    -> "Import"
 
 /// A token with its start and end columns. These start at column 1.
+[<NoComparison>]
 type internal AttributedToken =
     {
         TokenStartLocation : int
@@ -76,6 +78,7 @@ type internal AttributedToken =
             sprintf "{%s [%d-%d]}" (this.Token.ToString()) this.TokenStartLocation this.TokenEndLocation
 
 /// A non-empty, comment-stripped, tokenized line, with its line number (starting at line 1).
+[<NoComparison>]
 type internal AttributedTokenizedLine =
     {
         LineNumber : int
@@ -86,6 +89,7 @@ type internal AttributedTokenizedLine =
             sprintf "[%s]@%d" (this.Tokens |> List.fold (fun a b -> (if a = "" then "" else (a + ";")) +  b.ToString()) "") this.LineNumber
 
 /// The output for the LineCategorizer.
+[<NoComparison>]
 type internal Category =
     | CategorizedFuncDefinition
     | CategorizedVarDefinition
@@ -102,6 +106,7 @@ type internal Category =
             | CategorizationError s -> sprintf "CategorizationError %s" s
 
 /// A block of tokens representing a function, variable, attribute, or import.
+[<NoComparison>]
 type internal CategorizedAttributedTokenSet =
     {
         Category : Category

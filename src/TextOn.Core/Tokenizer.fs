@@ -1,5 +1,5 @@
 ﻿[<RequireQualifiedAccess>]
-module TextOn.Core.Tokenizer
+module internal TextOn.Core.Tokenizer
 
 type private TokenizerState =
     | Done
@@ -122,11 +122,12 @@ let rec private tokenizeInner fileName state lines output =
                         VariableOrAttribute(category, startLine, currentLine, currentLine + 1, numBrackets + 1, (makeAttributedLine currentLine tokens)::tokenizedLines), t, output
                     else
                         VariableOrAttribute(category, startLine, currentLine, currentLine + 1, numBrackets, (makeAttributedLine currentLine tokens)::tokenizedLines), t, output
-    if newState = Done then
+    match newState with
+    | Done ->
         newOutput |> List.rev
-    else
+    | _ ->
         tokenizeInner fileName newState newLines newOutput
 
 /// Tokenize a file.
-let internal tokenize (fileName:string) (lines:string list) : CategorizedAttributedTokenSet list =
+let tokenize (fileName:string) (lines:string list) : CategorizedAttributedTokenSet list =
     tokenizeInner fileName (Outside 1) lines []

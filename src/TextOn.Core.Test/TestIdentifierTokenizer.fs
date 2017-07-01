@@ -18,3 +18,4 @@ let ``Invalid token``() =
     let line = "    Hello world. [% = \"Value\"]"
     test <@ IdentifierTokenizer.findLengthOfWord 19 (line.Length - 1) line = 0 @>
 
+
