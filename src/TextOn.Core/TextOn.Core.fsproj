@@ -64,6 +64,11 @@
     <Compile Include="Parsing\VariableDefinitionParser.fs" />
     <Compile Include="Parsing\AttributeDefinitionParser.fs" />
     <Compile Include="Parsing\Parser.fs" />
+    <Compile Include="Compiling\Compiler.fs" />
+    <Compile Include="Conditions\ConditionEvaluator.fs" />
+    <Compile Include="Conditions\VariableConditionEvaluator.fs" />
+    <Compile Include="Linking\Template.fs" />
+    <Compile Include="Linking\Linker.fs" />
     <None Include="Scripts\Play.fsx" />
   </ItemGroup>
   <ItemGroup>

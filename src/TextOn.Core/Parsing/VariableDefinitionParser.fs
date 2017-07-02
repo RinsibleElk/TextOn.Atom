@@ -2,7 +2,7 @@
 
 open TextOn.Core.Tokenizing
 
-type internal ParsedVariableSuggestedValue = {
+type ParsedVariableSuggestedValue = {
     Value : string
     Condition : ConditionParseResults }
 
@@ -10,7 +10,7 @@ type internal ParsedVariableResult =
     | ParsedVariableErrors of ParseError[]
     | ParsedVariableSuccess of ParsedVariableSuggestedValue[]
 
-type internal ParsedVariableDefinition = {
+type ParsedVariableDefinition = {
     StartLine : int
     EndLine : int
     Name : string

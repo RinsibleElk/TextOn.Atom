@@ -2,10 +2,11 @@
 
 open TextOn.Core.Tokenizing
 
-type internal ParsedImportDefinition =
+type ParsedImportDefinition =
     {
-        StartLine : int
-        EndLine : int
+        Line : int
+        StartLocation : int
+        EndLocation : int
         ImportedFileName : string
     }
 
@@ -27,7 +28,7 @@ module internal ImportParser =
             EndLocation = e
             ErrorText = t }
 
-    let private makeImport line file = { StartLine = line ; EndLine = line ; ImportedFileName = file }
+    let private makeImport line startLocation endLocation file = { Line = line ; StartLocation = startLocation ; EndLocation = endLocation ; ImportedFileName = file }
 
     let parseImport (tokenSet:CategorizedAttributedTokenSet) : ParseError[] * ParsedImportDefinition option =
         if tokenSet.Tokens.Length <> 1 then
@@ -43,9 +44,9 @@ module internal ImportParser =
             else
                 match (tokens.[0].Token, tokens.[1].Token) with
                 | (Import, QuotedString s) ->
-                    [||], Some (makeImport lineNumber s)
+                    [||], Some (makeImport lineNumber tokens.[0].TokenStartLocation tokens.[1].TokenEndLocation s)
                 | (Include, QuotedString s) ->
-                    [|(makeParseWarning tokenSet.File lineNumber tokens.[0].TokenStartLocation tokens.[0].TokenEndLocation "Deprecated - please use @import")|], Some (makeImport lineNumber s)
+                    [|(makeParseWarning tokenSet.File lineNumber tokens.[0].TokenStartLocation tokens.[0].TokenEndLocation "Deprecated - please use @import")|], Some (makeImport lineNumber tokens.[0].TokenStartLocation tokens.[1].TokenEndLocation s)
                 | (Import, _)
                 | (Include, _) ->
                     [|(makeParseError tokenSet.File lineNumber tokens.[1].TokenStartLocation tokens.[1].TokenEndLocation "Unrecognised token - expected @import \"filename.texton\"")|], None

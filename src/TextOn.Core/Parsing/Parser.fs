@@ -17,7 +17,7 @@ type internal ParsedElement = {
 [<RequireQualifiedAccess>]
 module internal Parser =
     /// Do the context-specific parse.
-    let parse (tokenSet:CategorizedAttributedTokenSet) : ParseError[] * ParsedElement option =
+    let parseTokenSet (tokenSet:CategorizedAttributedTokenSet) : ParseError[] * ParsedElement option =
         match tokenSet.Category with
         | CategorizedImport ->
             let (errors, result) = ImportParser.parseImport tokenSet

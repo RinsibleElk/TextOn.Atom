@@ -146,7 +146,7 @@ let ``Test choice parsing``() =
         |> List.ofArray
         |> Tokenizer.tokenize exampleFileName
         |> List.head
-        |> Parser.parse 
+        |> Parser.parseTokenSet
     let expected =
         {   File = exampleFileName
             Result = expectedDefinition false }
@@ -160,7 +160,7 @@ let ``Test private function parsing``() =
         |> List.ofArray
         |> Tokenizer.tokenize exampleFileName
         |> List.head
-        |> Parser.parse
+        |> Parser.parseTokenSet
     let expected =
         {   File = exampleFileName
             Result = expectedDefinition true }

@@ -3,14 +3,14 @@
 open System
 open TextOn.Core.Tokenizing
 
-type internal ParsedSentenceNode =
+type ParsedSentenceNode =
     | ParsedStringValue of string
     | ParsedSimpleVariable of (int * int * string)
     | ParsedSimpleChoice of ParsedSentenceNode[]
     | ParsedSimpleSeq of ParsedSentenceNode[]
     | ParsedSentenceErrors of ParseError[]
 
-type internal ParsedNode =
+type ParsedNode =
     | ParsedSentence of (int * ParsedSentenceNode)
     | ParsedFunctionInvocation of (int * int * int * string)
     | ParsedSeq of int * (ParsedNode * ParsedCondition)[]
@@ -30,7 +30,7 @@ type internal ParsedSentenceNodeWithDependencies =
         SentenceNode : ParsedSentenceNode
     }
 
-type internal ParsedFunctionDefinition = {
+type ParsedFunctionDefinition = {
     StartLine : int
     EndLine : int
     IsPrivate : bool

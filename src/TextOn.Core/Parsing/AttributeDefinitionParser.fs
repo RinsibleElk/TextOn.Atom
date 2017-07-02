@@ -6,7 +6,7 @@ type internal ParsedAttributeValueResult = {
     Value : string
     Condition : ConditionParseResults }
 
-type internal ParsedAttributeValue = {
+type ParsedAttributeValue = {
     Value : string
     Condition : ParsedCondition }
 
@@ -14,7 +14,7 @@ type internal ParsedAttributeResult =
     | ParsedAttributeErrors of ParseError[]
     | ParsedAttributeSuccess of ParsedAttributeValueResult[]
 
-type internal ParsedAttributeDefinition = {
+type ParsedAttributeDefinition = {
     StartLine : int
     EndLine : int
     Name : string
