@@ -115,3 +115,19 @@ let ``Valid attribute, variable, then function``() =
 [<Test>]
 let ``Invalid unrecognised token``() =
     runTest unrecognisedLines
+
+[<Test>]
+let ``Unfinished attribute``() =
+    let (_, l) = attLines.[0]
+    runTest [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
+
+[<Test>]
+let ``Unfinished variable``() =
+    let (_, l) = varLines.[0]
+    runTest [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
+
+[<Test>]
+let ``Unfinished function``() =
+    let (_, l) = funcLines.[0]
+    runTest [(CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))]
+
