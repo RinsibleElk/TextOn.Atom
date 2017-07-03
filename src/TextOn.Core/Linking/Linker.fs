@@ -18,12 +18,6 @@ module Linker =
             EndLocation = e
             ErrorText = t }
 
-    let rec private linkInner modules template =
-        match modules with
-        | [] -> template
-        | m::r ->
-            template
-
     let private getNormalizedPath file =
         Path.GetFullPath(file).ToLower()
 

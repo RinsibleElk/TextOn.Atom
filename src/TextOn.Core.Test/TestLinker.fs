@@ -403,6 +403,90 @@ let ``Full compilation and linking of valid files with deprecated include direct
     test <@ result = expected @>
 
 [<Test>]
+let ``Missing references``() =
+    let result =
+        [
+            (exampleFile, exampleLines |> List.skip 1)
+        ]
+        |> List.map (fun (file, lines) -> Compiler.compile file lines)
+        |> Linker.link exampleFile
+    let expectedMissingReferences =
+        {
+            Errors =
+                [
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 14;
+                        StartLocation = 34;
+                        EndLocation = 38;
+                        ErrorText = "Unknown variable City"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 21;
+                        StartLocation = 23;
+                        EndLocation = 29;
+                        ErrorText = "Unknown attribute Gender"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 22;
+                        StartLocation = 18;
+                        EndLocation = 22;
+                        ErrorText = "Unknown variable City"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 22;
+                        StartLocation = 59;
+                        EndLocation = 66;
+                        ErrorText = "Unknown variable Country"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 23;
+                        StartLocation = 5;
+                        EndLocation = 9;
+                        ErrorText = "Unknown variable City"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 23;
+                        StartLocation = 17;
+                        EndLocation = 24;
+                        ErrorText = "Unknown variable Country"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 27;
+                        StartLocation = 5;
+                        EndLocation = 15;
+                        ErrorText = "Unknown function cityExport"
+                    }
+                    {
+                        File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
+                        Severity = Error;
+                        LineNumber = 28;
+                        StartLocation = 16;
+                        EndLocation = 22;
+                        ErrorText = "Unknown attribute Gender"
+                    }
+                ]
+            Warnings = []
+            Attributes = []
+            Variables = []
+            Functions = []
+        }
+    test <@ result = expectedMissingReferences @>
+
+[<Test>]
 let ``Circular reference in files``() =
     let makeFileName = sprintf @"D:\NodeJs\TextOn.Atom\examples\example%d.texton"
     let makeExampleFile index refToIndices =
