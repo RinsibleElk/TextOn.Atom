@@ -79,7 +79,7 @@ type Template =
     {
         Errors : ParseError list
         Warnings : ParseError list
-        Attributes : Map<int, AttributeDefinition>
-        Variables : Map<int, VariableDefinition>
-        Functions : Map<int, FunctionDefinition>
+        Attributes : AttributeDefinition list
+        Variables : VariableDefinition list
+        Functions : FunctionDefinition list
     }
