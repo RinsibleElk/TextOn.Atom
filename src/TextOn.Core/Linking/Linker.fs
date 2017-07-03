@@ -35,7 +35,7 @@ module Linker =
         let circularReference = fileReferencePath |> List.tryFind (fun (f, _) -> f = currentNormalizedPath)
         if circularReference.IsSome then
             let (file, import) = circularReference.Value |> snd
-            [makeParseError file import.Line 1 1 (sprintf "Circular reference - import %s or one of its imports references file %s" import.ImportedFileName file)]
+            [makeParseError file import.Line import.StartLocation import.EndLocation (sprintf "Circular reference - import %s or one of its imports references file %s" import.ImportedFileName file)]
         else
             currentFile.ImportedFiles
             |> List.collect
@@ -238,7 +238,7 @@ module Linker =
         {
             Name = a.Name
             Text = a.Text
-            Index = getAttributeIndex a.Name
+            Index = getVariableIndex a.Name
             File = file
             StartLine = a.StartLine
             EndLine = a.EndLine
@@ -308,6 +308,8 @@ module Linker =
         let circularReferenceErrors =
             modules
             |> List.collect (findCircularReferenceErrors knownFiles [])
+            |> Set.ofList
+            |> Set.toList
 
         // Find any entities that are used but cannot be found in an import.
         let missingEntityErrors =

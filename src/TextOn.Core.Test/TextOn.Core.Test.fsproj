@@ -79,6 +79,7 @@
     <Compile Include="TestFunctionDefinitionParser.fs" />
     <Compile Include="TestVariableDefinitionParser.fs" />
     <Compile Include="TestParser.fs" />
+    <Compile Include="TestLinker.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
