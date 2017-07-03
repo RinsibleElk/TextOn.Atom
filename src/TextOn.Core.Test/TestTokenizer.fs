@@ -88,6 +88,14 @@ let private attLines =
             ])
     ]
 
+let private unrecognisedLines =
+    [
+        (CategorizationError "Unrecognised starting token",
+            [
+                ("Blah", [(InvalidUnrecognised "Blah", 1, 4)])
+            ])
+    ]
+
 [<Test>]
 let ``Valid full function``() =
     runTest funcLines
@@ -103,3 +111,7 @@ let ``Valid attribute``() =
 [<Test>]
 let ``Valid attribute, variable, then function``() =
     runTest (attLines@varLines@funcLines)
+
+[<Test>]
+let ``Invalid unrecognised token``() =
+    runTest unrecognisedLines

@@ -1,11 +1,13 @@
 namespace TextOn.Core.Conditions
 
 /// Unique identifier for an attribute in some cache we prepare.
+[<NoComparison>]
 type AttributeOrVariableIdentity =
     | Attribute of int
     | Variable of int
 
 /// Represents a tree of decisions.
+[<NoComparison>]
 type VariableCondition =
     | VarTrue
     | VarBoth of VariableCondition * VariableCondition

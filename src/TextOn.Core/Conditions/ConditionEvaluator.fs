@@ -4,6 +4,7 @@ namespace TextOn.Core.Conditions
 type AttributeIdentity = int
 
 /// Represents a tree of decisions.
+[<NoComparison>]
 type Condition =
     | True
     | Both of Condition * Condition
