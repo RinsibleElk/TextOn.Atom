@@ -6,6 +6,9 @@ open System.IO
 
 [<RequireQualifiedAccess>]
 module Linker =
+    type private Reference =
+        | Public of string
+        | Private of string * string
     let private makeParseError file line s e t =
         {   File = file
             Severity = Error
@@ -113,10 +116,21 @@ module Linker =
             (fun value ->
                 missingReferencesInCondition file missingAttributes Set.empty value.Condition)
 
+    let rec private getImports allModules (m:CompiledModule) =
+        let directImports =
+            m.ImportedFiles
+            |> List.map (fun i -> (getNormalizedImportPath m.File i.ImportedFileName))
+            |> List.map (fun f -> f, allModules |> Map.find f)
+        let recursiveImports =
+            directImports
+            |> List.collect
+                (snd >> getImports allModules)
+        recursiveImports @ directImports
+
     /// Link together a set of compiled modules to make a template ready for passing errors back to the user or generating texts.
-    let link (modules:CompiledModule list) : Template =
+    let link file (modules:CompiledModule list) : Template =
         // Missing any references?
-        let knownFiles              = modules |> List.map (fun m -> Path.GetFullPath(m.File).ToLower(), m) |> Map.ofList
+        let knownFiles              = modules |> List.map (fun m -> getNormalizedPath m.File, m) |> Map.ofList
         let allReferences           =
             modules
             |> List.collect
@@ -200,11 +214,11 @@ module Linker =
                                     missingReferencesInVariable m.File missingAttributes missingVariables f)
                         functionMissingRefs @ attributeMissingRefs @ variableeMissingRefs)
 
-        // Report any errors in imported files to the parent.
-
-        // This should be all the errors we can possibly encounter. Report them and bail if there are any.
+        // All the errors and warnings.
         let allErrors = (modules |> List.collect (fun m -> m.Errors)) @ unknownReferenceErrors @ publicFunctionClashErrors @ attributeClashErrors @ variableClashErrors @ circularReferenceErrors @ missingEntityErrors
         let allWarnings = modules |> List.collect (fun m -> m.Warnings)
+
+        // This should be all the errors we can possibly encounter. Report them and bail if there are any.
         if allErrors.Length > 0 then
             {
                 Errors = allErrors
@@ -214,4 +228,20 @@ module Linker =
                 Functions = Map.empty
             }
         else
+            /// Pick a sensible ordering for everything.
+            let mainModule = modules |> List.find (fun m -> m.File = file)
+            let imports =
+                getImports knownFiles mainModule
+                @
+                [(getNormalizedPath mainModule.File, mainModule)]
+            let orderedModules =
+                imports
+                |> List.scan
+                    (fun (_, d) (s, m) ->
+                        if d |> Set.contains s then (None, d)
+                        else (Some m, d |> Set.add s))
+                    (None, Set.empty)
+                |> List.choose fst
+            
+            // Assign an index to everything.
             failwith ""
