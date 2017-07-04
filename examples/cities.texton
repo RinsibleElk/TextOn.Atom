@@ -1,4 +1,4 @@
-#include "gender.texton"
+@import "gender.texton"
 
 @var $Country = "Which country are you writing about?"
   {

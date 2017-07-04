@@ -588,3 +588,22 @@ let ``Self reference in file``() =
             Functions = []
         }
     test <@ result = expected @>
+
+[<Test>]
+let ``Infinite recursion``() =
+    let lines =
+        [
+            "@func @outer {"
+            "    @inner"
+            "}"
+            "@func @inner {"
+            "    @outer"
+            "}"
+        ]
+    let template =
+        lines
+        |> Compiler.compile exampleFile
+        |> List.singleton
+        |> Linker.link exampleFile
+    test <@ template.Errors.Length > 0 @>
+

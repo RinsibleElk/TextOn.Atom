@@ -35,21 +35,41 @@ module Linker =
                     else
                         findCircularReferenceErrors knownFiles ((currentNormalizedPath, (currentFile.File, i))::fileReferencePath) f.Value)
 
-    let rec private findInfiniteRecursionErrors knownFiles fileReferencePath (currentFile:CompiledModule) =
+    let rec private findInfiniteRecursionErrors knownFiles (functionReferencePath:(_ * (_ * ParsedFunctionDefinition)) list) (currentFile:CompiledModule) (currentFunction:ParsedFunctionDefinition) =
         let currentNormalizedPath = currentFile.File |> Utils.getNormalizedPath
-        let circularReference = fileReferencePath |> List.tryFind (fun (f, _) -> f = currentNormalizedPath)
+        let circularReference = functionReferencePath |> List.tryFind (fun (normFile, (file, fn)) -> normFile = currentNormalizedPath && fn.Name = currentFunction.Name)
         if circularReference.IsSome then
-            let (file, import) = circularReference.Value |> snd
-            [makeParseError file import.Line import.StartLocation import.EndLocation (sprintf "Circular reference - import %s or one of its imports references file %s" import.ImportedFileName file)]
+            let (file, fn) = circularReference.Value |> snd
+            [makeParseError file fn.StartLine 1 1 (sprintf "Infinite recursion within function %s" fn.Name)]
         else
-            currentFile.ImportedFiles
+            currentFunction.Dependencies
+            |> List.ofArray
             |> List.collect
-                (fun i ->
-                    let normalizedImport = Utils.getNormalizedImportPath currentFile.File i.ImportedFileName
-                    let f = knownFiles |> Map.tryFind normalizedImport
-                    if f.IsNone then []
-                    else
-                        findCircularReferenceErrors knownFiles ((currentNormalizedPath, (currentFile.File, i))::fileReferencePath) f.Value)
+                (function
+                    | ParsedFunctionRef f ->
+                        let privfn = currentFile.PrivateFunctions |> List.tryFind (fun fn -> fn.Name = f)
+                        let functions =
+                            if privfn.IsSome then [(currentNormalizedPath, (currentFile, privfn.Value))]
+                            else
+                                let pubfn = currentFile.PublicFunctions |> List.tryFind (fun fn -> fn.Name = f)
+                                if pubfn.IsSome then [(currentNormalizedPath, (currentFile, pubfn.Value))]
+                                else
+                                    currentFile.ImportedFiles
+                                    |> List.choose
+                                        (fun import ->
+                                            let normFile = Utils.getNormalizedImportPath currentFile.File import.ImportedFileName
+                                            let file = knownFiles |> Map.tryFind normFile
+                                            file
+                                            |> Option.bind
+                                                (fun file ->
+                                                    file.PublicFunctions
+                                                    |> List.tryFind (fun fn -> fn.Name = f)
+                                                    |> Option.map (fun fn -> (normFile, (file, fn)))))
+                        functions
+                        |> List.collect
+                            (fun (normFile, (file, fn)) ->
+                                findInfiniteRecursionErrors knownFiles ((currentNormalizedPath, (currentFile.File, currentFunction))::functionReferencePath) file fn)
+                    | _ -> [])
 
     let rec private findImportedModulesInner knownFiles knownImports rootNormalizedPath (currentFile:CompiledModule) =
         currentFile.ImportedFiles
@@ -360,8 +380,18 @@ module Linker =
                                     missingReferencesInVariable m.File missingAttributes missingVariables f)
                         functionMissingRefs @ attributeMissingRefs @ variableeMissingRefs)
 
+        // Find infinite recursion errors.
+        let infiniteRecursionErrors =
+            modules
+            |> List.collect
+                (fun m ->
+                    (m.PrivateFunctions@m.PublicFunctions)
+                    |> List.collect (fun fn -> findInfiniteRecursionErrors knownFiles [] m fn))
+            |> Set.ofList
+            |> Set.toList
+
         // All the errors and warnings.
-        let allErrors = (modules |> List.collect (fun m -> m.Errors)) @ unknownReferenceErrors @ publicFunctionClashErrors @ attributeClashErrors @ variableClashErrors @ circularReferenceErrors @ missingEntityErrors
+        let allErrors = (modules |> List.collect (fun m -> m.Errors)) @ unknownReferenceErrors @ publicFunctionClashErrors @ attributeClashErrors @ variableClashErrors @ circularReferenceErrors @ missingEntityErrors @ infiniteRecursionErrors
         let allWarnings = modules |> List.collect (fun m -> m.Warnings)
 
         // This should be all the errors we can possibly encounter. Report them and bail if there are any.
