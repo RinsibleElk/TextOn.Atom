@@ -68,7 +68,7 @@ let rec private tokenizeInner fileName state lines output =
                 | Att -> transitionToVariableOrAttribute CategorizedAttDefinition currentLine tokens, t, ((makeError errorBlockText fileName startLine endLine tokenizedLines)::output)
                 | Import
                 | Include -> Outside (currentLine + 1), t, ((makeImport fileName currentLine tokens)::((makeError errorBlockText fileName startLine endLine tokenizedLines)::output))
-                | _ -> Error(startLine, endLine, currentLine + 1, (tokens |> makeAttributedLine currentLine)::tokenizedLines), t, output
+                | _ -> Error(startLine, currentLine, currentLine + 1, (tokens |> makeAttributedLine currentLine)::tokenizedLines), t, output
         | Function (startLine, endLine, currentLine, numBrackets, tokenizedLines), [] ->
             // Output the incomplete function as an error and transition to Done state
             Done, [], (makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output

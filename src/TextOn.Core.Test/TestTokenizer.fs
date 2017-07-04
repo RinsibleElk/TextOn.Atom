@@ -23,7 +23,13 @@ let private convertInputs lineNumber l =
     |> List.skip 1
     |> List.map (fst >> Option.get)
 
-let private runTest input =
+let private runTest intersperseWithBlankLines input =
+    let input =
+        if (not intersperseWithBlankLines) then
+            input
+        else
+            input
+            |> List.map (fun (a,l) -> (a, l |> List.collect (fun (a,b) -> [(a,b);("",[])]) |> fun l -> l |> List.take (l.Length - 1)))
     let lines = input |> List.collect (snd >> List.map fst)
     let expected =
         input
@@ -41,7 +47,7 @@ let private runTest input =
                 (Some expected, lineNumber + numLines))
             (None, 1)
         |> List.skip 1
-        |> List.map (fst >> Option.get)
+        |> List.map (fst >> Option.get >> (fun e -> { e with Tokens = e.Tokens |> List.filter (fun t -> t.Tokens.Length > 0) }))
     let result = Tokenizer.tokenize exampleFileName lines
     test <@ result = expected @>
 
@@ -96,45 +102,55 @@ let private unrecognisedLines =
             ])
     ]
 
+let private sustainedErrorLines =
+    [
+        (CategorizationError "Unrecognised starting token",
+            [
+                ("Blah", [(InvalidUnrecognised "Blah", 1, 4)])
+                ("Something", [(InvalidUnrecognised "Something", 1, 9)])
+                ("Something or other", [(InvalidUnrecognised "Something or other", 1, 18)])
+            ])
+    ]
+
 [<Test>]
 let ``Valid full function``() =
-    runTest funcLines
+    runTest false funcLines
 
 [<Test>]
 let ``Valid free variable``() =
-    runTest varLines
+    runTest false varLines
 
 [<Test>]
 let ``Valid attribute``() =
-    runTest attLines
+    runTest false attLines
 
 [<Test>]
 let ``Valid attribute, variable, then function``() =
-    runTest (attLines@varLines@funcLines)
+    runTest false (attLines@varLines@funcLines)
 
 [<Test>]
 let ``Invalid unrecognised token``() =
-    runTest unrecognisedLines
+    runTest false unrecognisedLines
 
 [<Test>]
 let ``Unfinished attribute``() =
     let (_, l) = attLines.[0]
-    runTest [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
+    runTest false [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
 
 [<Test>]
 let ``Unfinished variable``() =
     let (_, l) = varLines.[0]
-    runTest [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
+    runTest false [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
 
 [<Test>]
 let ``Unfinished function``() =
     let (_, l) = funcLines.[0]
-    runTest [(CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))]
+    runTest false [(CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))]
 
 [<Test>]
 let ``Unfinished function followed by attribute``() =
     let (_, l) = funcLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
             attLines.[0]
@@ -143,7 +159,7 @@ let ``Unfinished function followed by attribute``() =
 [<Test>]
 let ``Unfinished function followed by function``() =
     let (_, l) = funcLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
             funcLines.[0]
@@ -152,7 +168,7 @@ let ``Unfinished function followed by function``() =
 [<Test>]
 let ``Unfinished function followed by variable``() =
     let (_, l) = funcLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
             varLines.[0]
@@ -161,7 +177,7 @@ let ``Unfinished function followed by variable``() =
 [<Test>]
 let ``Unfinished function followed by import``() =
     let (_, l) = funcLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
             varLines.[0]
@@ -170,7 +186,7 @@ let ``Unfinished function followed by import``() =
 [<Test>]
 let ``Unfinished variable followed by attribute``() =
     let (_, l) = varLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             attLines.[0]
@@ -179,7 +195,7 @@ let ``Unfinished variable followed by attribute``() =
 [<Test>]
 let ``Unfinished variable followed by function``() =
     let (_, l) = varLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             funcLines.[0]
@@ -188,7 +204,7 @@ let ``Unfinished variable followed by function``() =
 [<Test>]
 let ``Unfinished variable followed by variable``() =
     let (_, l) = varLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             varLines.[0]
@@ -197,7 +213,7 @@ let ``Unfinished variable followed by variable``() =
 [<Test>]
 let ``Unfinished variable followed by import``() =
     let (_, l) = varLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             varLines.[0]
@@ -206,7 +222,7 @@ let ``Unfinished variable followed by import``() =
 [<Test>]
 let ``Unfinished attribute followed by attribute``() =
     let (_, l) = attLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             attLines.[0]
@@ -215,7 +231,7 @@ let ``Unfinished attribute followed by attribute``() =
 [<Test>]
 let ``Unfinished attribute followed by function``() =
     let (_, l) = attLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             funcLines.[0]
@@ -224,7 +240,7 @@ let ``Unfinished attribute followed by function``() =
 [<Test>]
 let ``Unfinished attribute followed by variable``() =
     let (_, l) = attLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             varLines.[0]
@@ -233,9 +249,184 @@ let ``Unfinished attribute followed by variable``() =
 [<Test>]
 let ``Unfinished attribute followed by import``() =
     let (_, l) = attLines.[0]
-    runTest
+    runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
             varLines.[0]
         ]
+
+[<Test>]
+let ``Sustained error followed by attribute``() =
+    runTest false (sustainedErrorLines @ attLines)
+
+[<Test>]
+let ``Sustained error followed by function``() =
+    runTest false (sustainedErrorLines @ funcLines)
+
+[<Test>]
+let ``Sustained error followed by variable``() =
+    runTest false (sustainedErrorLines @ varLines)
+
+[<Test>]
+let ``Sustained error followed by import``() =
+    runTest false (sustainedErrorLines @ varLines)
+
+[<Test>]
+let ``Valid full function interspersed``() =
+    runTest true funcLines
+
+[<Test>]
+let ``Valid free variable interspersed``() =
+    runTest true varLines
+
+[<Test>]
+let ``Valid attribute interspersed``() =
+    runTest true attLines
+
+[<Test>]
+let ``Valid attribute, variable, then function interspersed``() =
+    runTest true (attLines@varLines@funcLines)
+
+[<Test>]
+let ``Invalid unrecognised token interspersed``() =
+    runTest true unrecognisedLines
+
+[<Test>]
+let ``Unfinished attribute interspersed``() =
+    let (_, l) = attLines.[0]
+    runTest true [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
+
+[<Test>]
+let ``Unfinished variable interspersed``() =
+    let (_, l) = varLines.[0]
+    runTest true [(CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))]
+
+[<Test>]
+let ``Unfinished function interspersed``() =
+    let (_, l) = funcLines.[0]
+    runTest true [(CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))]
+
+[<Test>]
+let ``Unfinished function followed by attribute interspersed``() =
+    let (_, l) = funcLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            attLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished function followed by function interspersed``() =
+    let (_, l) = funcLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            funcLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished function followed by variable interspersed``() =
+    let (_, l) = funcLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished function followed by import interspersed``() =
+    let (_, l) = funcLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by attribute interspersed``() =
+    let (_, l) = varLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            attLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by function interspersed``() =
+    let (_, l) = varLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            funcLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by variable interspersed``() =
+    let (_, l) = varLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by import interspersed``() =
+    let (_, l) = varLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by attribute interspersed``() =
+    let (_, l) = attLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            attLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by function interspersed``() =
+    let (_, l) = attLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            funcLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by variable interspersed``() =
+    let (_, l) = attLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by import interspersed``() =
+    let (_, l) = attLines.[0]
+    runTest true
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Sustained error followed by attribute interspersed``() =
+    runTest true (sustainedErrorLines @ attLines)
+
+[<Test>]
+let ``Sustained error followed by function interspersed``() =
+    runTest true (sustainedErrorLines @ funcLines)
+
+[<Test>]
+let ``Sustained error followed by variable interspersed``() =
+    runTest true (sustainedErrorLines @ varLines)
+
+[<Test>]
+let ``Sustained error followed by import interspersed``() =
+    runTest true (sustainedErrorLines @ varLines)
 
