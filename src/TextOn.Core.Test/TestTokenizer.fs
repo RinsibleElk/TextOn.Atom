@@ -131,3 +131,111 @@ let ``Unfinished function``() =
     let (_, l) = funcLines.[0]
     runTest [(CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))]
 
+[<Test>]
+let ``Unfinished function followed by attribute``() =
+    let (_, l) = funcLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            attLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished function followed by function``() =
+    let (_, l) = funcLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            funcLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished function followed by variable``() =
+    let (_, l) = funcLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished function followed by import``() =
+    let (_, l) = funcLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by attribute``() =
+    let (_, l) = varLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            attLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by function``() =
+    let (_, l) = varLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            funcLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by variable``() =
+    let (_, l) = varLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished variable followed by import``() =
+    let (_, l) = varLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by attribute``() =
+    let (_, l) = attLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            attLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by function``() =
+    let (_, l) = attLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            funcLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by variable``() =
+    let (_, l) = attLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+
+[<Test>]
+let ``Unfinished attribute followed by import``() =
+    let (_, l) = attLines.[0]
+    runTest
+        [
+            (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
+            varLines.[0]
+        ]
+

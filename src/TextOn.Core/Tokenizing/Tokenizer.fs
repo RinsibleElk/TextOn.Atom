@@ -83,11 +83,19 @@ let rec private tokenizeInner fileName state lines output =
             else
                 // First we detect if the user has moved onto something new but screwed up.
                 match tokens.[0].Token with
-                | Func -> transitionToFunction currentLine tokens, t, ((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output)
-                | Var -> transitionToVariableOrAttribute CategorizedVarDefinition currentLine tokens, t, ((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output)
-                | Att -> transitionToVariableOrAttribute CategorizedAttDefinition currentLine tokens, t, ((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output)
+                | Func ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    transitionToFunction currentLine tokens, t, ((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output)
+                | Var ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    transitionToVariableOrAttribute CategorizedVarDefinition currentLine tokens, t, ((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output)
+                | Att ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    transitionToVariableOrAttribute CategorizedAttDefinition currentLine tokens, t, ((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output)
                 | Import
-                | Include -> Outside (currentLine + 1), t, ((makeImport fileName currentLine tokens)::((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output))
+                | Include ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    Outside (currentLine + 1), t, ((makeImport fileName currentLine tokens)::((makeError incompleteFunctionText fileName startLine endLine tokenizedLines)::output))
                 // Has the bracket count changed?
                 | CloseCurly ->
                     if numBrackets = 1 then
@@ -106,11 +114,19 @@ let rec private tokenizeInner fileName state lines output =
                 VariableOrAttribute(category, startLine, endLine, currentLine + 1, numBrackets, tokenizedLines), t, output
             else
                 match tokens.[0].Token with
-                | Func -> transitionToFunction currentLine tokens, t, ((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output)
-                | Var -> transitionToVariableOrAttribute CategorizedVarDefinition currentLine tokens, t, ((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output)
-                | Att -> transitionToVariableOrAttribute CategorizedAttDefinition currentLine tokens, t, ((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output)
+                | Func ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    transitionToFunction currentLine tokens, t, ((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output)
+                | Var ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    transitionToVariableOrAttribute CategorizedVarDefinition currentLine tokens, t, ((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output)
+                | Att ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    transitionToVariableOrAttribute CategorizedAttDefinition currentLine tokens, t, ((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output)
                 | Import
-                | Include -> Outside (currentLine + 1), t, ((makeImport fileName currentLine tokens)::((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output))
+                | Include ->
+                    let tokens = OutsideLineTokenizer.tokenizeLine h
+                    Outside (currentLine + 1), t, ((makeImport fileName currentLine tokens)::((makeError incompleteVarText fileName startLine endLine tokenizedLines)::output))
                 // Has the bracket count changed?
                 | CloseCurly ->
                     if numBrackets = 1 then
