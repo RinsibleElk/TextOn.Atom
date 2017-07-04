@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open TextOn.ArgParser
 
 type Mode =
     | [<ArgDescription("Interactive mode (compile a full template and fill in values for generation)")>] Interactive of InteractiveConfig

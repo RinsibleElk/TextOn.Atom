@@ -1,11 +1,14 @@
 ﻿namespace TextOn.Atom
 
-open TextOn.Atom.DTO.DTO
 open System
 open System.IO
+open TextOn.Atom.DTO.DTO
+open TextOn.Core.Parsing
+open TextOn.Core.Linking
+open TextOn.Core.Conditions
 
 type GeneratorStartResult =
-    | CompilationFailure of CompilationError[]
+    | CompilationFailure of ParseError[]
     | GeneratorStarted of GeneratorData
 
 [<Sealed>]
@@ -16,17 +19,17 @@ type GeneratorServer(file, name) =
     let mutable attributeValues = Map.empty
     let mutable variableValues : Map<string, (string * bool)> = Map.empty // stores whether the user chose this value or the system did
     member __.File = file |> System.IO.FileInfo
-    member __.UpdateTemplate (template:CompiledTemplate) = currentTemplate <- Some template
+    member __.UpdateTemplate (template:Template) = currentTemplate <- Some template
     member __.Data =
         let currentTemplate = currentTemplate.Value
         let (haveSeenEmpty, attributes, variables) =
-            let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+            let attributeNameToIndex, attributeIndexToName = currentTemplate.Attributes |> List.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofList |> fun m x -> m |> Map.tryFind x), (a |> List.map (fun (x,y) -> (y,x)) |> Map.ofList |> fun m x -> m |> Map.tryFind x)
             attributeValues <- attributeValues |> Map.filter (fun k _ -> k |> attributeNameToIndex |> Option.isSome)
-            let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> Array.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofArray |> fun m x -> m |> Map.tryFind x), (a |> Array.map (fun (x,y) -> (y,x)) |> Map.ofArray |> fun m x -> m |> Map.tryFind x)
+            let variableNameToIndex, variableIndexToName = currentTemplate.Variables |> List.map (fun a -> a.Name, a.Index) |> fun a -> (a |> Map.ofList |> fun m x -> m |> Map.tryFind x), (a |> List.map (fun (x,y) -> (y,x)) |> Map.ofList |> fun m x -> m |> Map.tryFind x)
             variableValues <- variableValues |> Map.filter (fun k _ -> k |> variableNameToIndex |> Option.isSome)
-            let functionDef = currentTemplate.Functions |> Array.find (fun functionDef -> functionDef.Name = name)
-            let requiredAttributes = functionDef.AttributeDependencies |> Array.map (fun i -> currentTemplate.Attributes |> Array.find (fun a -> a.Index = i))
-            let requiredVariables = functionDef.VariableDependencies |> Array.map (fun i -> currentTemplate.Variables |> Array.find (fun a -> a.Index = i))
+            let functionDef = currentTemplate.Functions |> List.find (fun functionDef -> functionDef.Name = name && functionDef.File = file)
+            let requiredAttributes = functionDef.AttributeDependencies |> List.map (fun i -> currentTemplate.Attributes |> List.find (fun a -> a.Index = i)) |> List.toArray
+            let requiredVariables = functionDef.VariableDependencies |> List.map (fun i -> currentTemplate.Variables |> List.find (fun a -> a.Index = i)) |> List.toArray
             Array.append
                 (requiredAttributes |> Array.map Choice1Of2)
                 (requiredVariables |> Array.map Choice2Of2)
@@ -47,10 +50,10 @@ type GeneratorServer(file, name) =
                                 }
                             else
                                 let attributeValuesByIndex = attributeValues |> Map.toSeq |> Seq.choose (fun (n,v) -> n |> attributeNameToIndex |> Option.map (fun i -> (i,v))) |> Map.ofSeq
-                                let suggestions = att.Values |> Array.filter (fun a -> ConditionEvaluator.resolve attributeValuesByIndex a.Condition) |> Array.map (fun a -> a.Value)
+                                let suggestions = att.Values |> List.filter (fun a -> ConditionEvaluator.resolve attributeValuesByIndex a.Condition) |> List.map (fun a -> a.Value)
                                 let value = attributeValuesByIndex |> Map.tryFind att.Index
                                 let value =
-                                    if value.IsSome && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
+                                    if value.IsSome && (suggestions |> List.tryFind ((=) value.Value) |> Option.isNone) then
                                         attributeValues <- attributeValues |> Map.remove att.Name
                                         None
                                     else
@@ -61,13 +64,13 @@ type GeneratorServer(file, name) =
                                         suggestions.[0], suggestions
                                     else if value.IsSome then
                                         // Put the current value at the front.
-                                        value.Value, (value.Value::(suggestions |> List.ofArray |> List.filter ((<>) value.Value))) |> List.toArray
+                                        value.Value, (value.Value::(suggestions |> List.filter ((<>) value.Value)))
                                     else
-                                        "", [|""|]
+                                        "", [""]
                                 {
                                     name = att.Name
                                     value = newValue
-                                    items = newSuggestions
+                                    items = newSuggestions |> List.toArray
                                     text = att.Text
                                     permitsFreeValue = false
                                 }
@@ -99,8 +102,9 @@ type GeneratorServer(file, name) =
                                         [||]
                                     else
                                         var.Values
-                                        |> Array.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition)
-                                        |> Array.map (fun a -> a.Value)
+                                        |> List.filter (fun a -> VariableConditionEvaluator.resolve attributeValuesByIndex variableValuesByIndex a.Condition)
+                                        |> List.map (fun a -> a.Value)
+                                        |> List.toArray
                                 // We remove the choice if it is invalid, or if it was system generated.
                                 let value =
                                     if value.IsSome && (not var.PermitsFreeValue) && (suggestions |> Array.tryFind ((=) value.Value) |> Option.isNone) then
@@ -148,16 +152,16 @@ type GeneratorServer(file, name) =
             attributeValues <- attributeValues |> Map.add name value
     member __.Generate (config:GeneratorConfiguration) =
         // OPS Super unsafe.
-        let functionDef = currentTemplate.Value.Functions |> Array.find (fun functionDef -> functionDef.Name = name)
-        let requiredAttributes = functionDef.AttributeDependencies |> Array.map (fun i -> currentTemplate.Value.Attributes |> Array.find (fun a -> a.Index = i))
-        let requiredVariables = functionDef.VariableDependencies |> Array.map (fun i -> currentTemplate.Value.Variables |> Array.find (fun a -> a.Index = i))
+        let functionDef = currentTemplate.Value.Functions |> List.find (fun functionDef -> functionDef.Name = name)
+        let requiredAttributes = functionDef.AttributeDependencies |> List.map (fun i -> currentTemplate.Value.Attributes |> List.find (fun a -> a.Index = i))
+        let requiredVariables = functionDef.VariableDependencies |> List.map (fun i -> currentTemplate.Value.Variables |> List.find (fun a -> a.Index = i))
         let generatorInput =
             {   RandomSeed = NoSeed
                 Config = {  NumSpacesBetweenSentences = config.NumSpacesBetweenSentences
                             NumBlankLinesBetweenParagraphs = config.NumBlankLinesBetweenParagraphs
                             LineEnding = (if config.WindowsLineEndings then CRLF else LF) }
-                Attributes  = requiredAttributes |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Name })
-                Variables   = requiredVariables |> List.ofArray |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name |> fst })
+                Attributes  = requiredAttributes |> List.map (fun a -> { Name = a.Name ; Value = attributeValues |> Map.find a.Name })
+                Variables   = requiredVariables |> List.map (fun a -> { Name = a.Name ; Value = variableValues |> Map.find a.Name |> fst })
                 Function = name }
         match (Generator.generate generatorInput currentTemplate.Value) with
         | GeneratorError _ -> lastResult <- None

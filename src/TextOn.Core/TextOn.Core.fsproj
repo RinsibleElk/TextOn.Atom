@@ -51,6 +51,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Utils\Utils.fs" />
     <Compile Include="Tokenizing\Tokens.fs" />
     <Compile Include="Tokenizing\IdentifierTokenizer.fs" />
     <Compile Include="Tokenizing\ConditionTokenizer.fs" />
@@ -69,6 +70,7 @@
     <Compile Include="Conditions\VariableConditionEvaluator.fs" />
     <Compile Include="Linking\Template.fs" />
     <Compile Include="Linking\Linker.fs" />
+    <Compile Include="Pipeline\Builder.fs" />
     <None Include="Scripts\Play.fsx" />
   </ItemGroup>
   <ItemGroup>

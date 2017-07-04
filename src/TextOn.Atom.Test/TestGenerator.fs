@@ -9,6 +9,8 @@ open FSharp.Quotations
 open System.Collections.Generic
 
 open TextOn.Atom
+open TextOn.Core.Conditions
+open TextOn.Core.Linking
 
 let noVariablesInput = {
     RandomSeed = SpecificValue(42)
@@ -21,24 +23,28 @@ let noVariablesInput = {
 
 let exampleFileName = "example.texton"
 let exampleLineNumber = 1
-let makeNoVariablesTemplate node = {
-    Attributes = [||]
-    Variables = [||]
-    Functions =
-        [|
-            {
-                Name = "main"
-                Index = 1
-                File = exampleFileName
-                IsPrivate = false;
-                StartLine = exampleLineNumber
-                EndLine = exampleLineNumber
-                FunctionDependencies = [||]
-                AttributeDependencies = [||]
-                VariableDependencies = [||]
-                Tree = Seq("", 0, [| (node, True) |])
-            }
-        |] }
+let makeNoVariablesTemplate node =
+    {
+        Errors = []
+        Warnings = []
+        Attributes = []
+        Variables = []
+        Functions =
+            [
+                {
+                    Name = "main"
+                    Index = 0
+                    File = exampleFileName
+                    IsPrivate = false;
+                    StartLine = exampleLineNumber
+                    EndLine = exampleLineNumber
+                    FunctionDependencies = []
+                    AttributeDependencies = []
+                    VariableDependencies = []
+                    Tree = Seq("", 0, [ (node, True) ])
+                }
+            ]
+    }
 
 let expectSuccess result =
     match result with
@@ -72,10 +78,10 @@ let ``Test choice``() =
         Choice(
             "",
             0,
-            [|
+            [
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |])
+            ])
     let template = makeNoVariablesTemplate node
     let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
@@ -99,10 +105,10 @@ let ``Test sentence break``() =
         Seq(
             "",
             0,
-            [|
+            [
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |])
+            ])
     let template = makeNoVariablesTemplate node
     let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
@@ -134,11 +140,11 @@ let ``Test paragraph break``() =
         Seq(
             "",
             0,
-            [|
+            [
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (ParagraphBreak(exampleFileName, exampleLineNumber), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |])
+            ])
     let template = makeNoVariablesTemplate node
     let output = Generator.generate noVariablesInput template |> expectSuccess
     let expected = {
@@ -161,8 +167,10 @@ let ``Test paragraph break``() =
     test <@ expected = output @>
 
 let makeSingleAttributeTemplate node = {
+    Errors = []
+    Warnings = []
     Attributes =
-        [|
+        [
             {
                 Name = "Gender"
                 Text = "What is the gender of the target audience?"
@@ -170,30 +178,30 @@ let makeSingleAttributeTemplate node = {
                 File = exampleFileName
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
-                AttributeDependencies= [||]
+                AttributeDependencies= []
                 Values =
-                    [|
+                    [
                         { Value = "Male"; Condition = True }
                         { Value = "Female"; Condition = True }
-                    |]
+                    ]
             }
-        |]
-    Variables = [||]
+        ]
+    Variables = []
     Functions =
-        [|
+        [
             {
                 Name = "main"
-                Index = 1
+                Index = 0
                 File = exampleFileName
                 IsPrivate = false;
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
-                FunctionDependencies = [||]
-                AttributeDependencies = [|0|]
-                VariableDependencies = [||]
-                Tree = Seq("", 0, [| (node, True) |])
+                FunctionDependencies = []
+                AttributeDependencies = [0]
+                VariableDependencies = []
+                Tree = Seq("", 0, [ (node, True) ])
             }
-        |] }
+        ] }
 
 let makeSingleAttributeInput gender = {
     RandomSeed = SpecificValue(42)
@@ -213,11 +221,11 @@ let ``Test successful condition``() =
     let node =
         Seq("",
             0,
-            [|
+            [
                 (Sentence(exampleFileName, exampleLineNumber, node1), AreEqual(0, "Male"))
                 (ParagraphBreak(exampleFileName, exampleLineNumber), AreEqual(0, "Male"))
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |])
+            ])
     let template = makeSingleAttributeTemplate node
     let output = Generator.generate (makeSingleAttributeInput "Male") template |> expectSuccess
     let expected = {
@@ -249,11 +257,11 @@ let ``Test failed condition``() =
         Seq(
             "",
             0,
-            [|
+            [
                 (Sentence(exampleFileName, exampleLineNumber, node1), AreEqual(0, "Female"))
                 (ParagraphBreak(exampleFileName, exampleLineNumber), AreEqual(0, "Female"))
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |])
+            ])
     let template = makeSingleAttributeTemplate node
     let output = Generator.generate (makeSingleAttributeInput "Male") template |> expectSuccess
     let expected = {
@@ -268,9 +276,11 @@ let ``Test failed condition``() =
     test <@ expected = output @>
 
 let makeSingleVariableTemplate node = {
-    Attributes = [||]
+    Errors = []
+    Warnings = []
+    Attributes = []
     Variables =
-        [|
+        [
             {
                 Name = "Country"
                 Index = 0
@@ -279,30 +289,30 @@ let makeSingleVariableTemplate node = {
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
                 PermitsFreeValue = true
-                AttributeDependencies = [||]
-                VariableDependencies = [||]
+                AttributeDependencies = []
+                VariableDependencies = []
                 Values =
-                    [|
+                    [
                         { Value = "U.K."; Condition = VarTrue }
                         { Value = "Germany"; Condition = VarTrue }
-                    |]
+                    ]
             }
-        |]
+        ]
     Functions =
-        [|
+        [
             {
                 Name = "main"
-                Index = 1
+                Index = 0
                 File = exampleFileName
                 IsPrivate = false;
                 StartLine = exampleLineNumber
                 EndLine = exampleLineNumber
-                FunctionDependencies = [||]
-                AttributeDependencies = [||]
-                VariableDependencies = [|0|]
-                Tree = Seq("", 0, [| (node, True) |])
+                FunctionDependencies = []
+                AttributeDependencies = []
+                VariableDependencies = [0]
+                Tree = Seq("", 0, [ (node, True) ])
             }
-        |] }
+        ] }
 
 let makeSingleVariableInput country = {
     RandomSeed = SpecificValue(42)
@@ -349,10 +359,10 @@ let ``Test using same seed gets same value``() =
         Choice(
             "",
             0,
-            [|
+            [
                 (Sentence(exampleFileName, exampleLineNumber, node1), True)
                 (Sentence(exampleFileName, exampleLineNumber, node2), True)
-            |])
+            ])
     let template1 = makeNoVariablesTemplate node
     let expected = Generator.generate (makeNoVariablesInputWithSeed NoSeed) template1 |> expectSuccess
     let template2 = makeNoVariablesTemplate node

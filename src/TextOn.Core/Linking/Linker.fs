@@ -4,6 +4,7 @@ open System.IO
 open TextOn.Core.Compiling
 open TextOn.Core.Parsing
 open TextOn.Core.Conditions
+open TextOn.Core.Utils
 
 [<RequireQualifiedAccess>]
 module Linker =
@@ -18,14 +19,8 @@ module Linker =
             EndLocation = e
             ErrorText = t }
 
-    let private getNormalizedPath file =
-        Path.GetFullPath(file).ToLower()
-
-    let private getNormalizedImportPath rootFile importedFile =
-        Path.Combine(FileInfo(rootFile).Directory.FullName, importedFile) |> getNormalizedPath
-
     let rec private findCircularReferenceErrors knownFiles fileReferencePath (currentFile:CompiledModule) =
-        let currentNormalizedPath = currentFile.File |> getNormalizedPath
+        let currentNormalizedPath = currentFile.File |> Utils.getNormalizedPath
         let circularReference = fileReferencePath |> List.tryFind (fun (f, _) -> f = currentNormalizedPath)
         if circularReference.IsSome then
             let (file, import) = circularReference.Value |> snd
@@ -34,7 +29,23 @@ module Linker =
             currentFile.ImportedFiles
             |> List.collect
                 (fun i ->
-                    let normalizedImport = getNormalizedImportPath currentFile.File i.ImportedFileName
+                    let normalizedImport = Utils.getNormalizedImportPath currentFile.File i.ImportedFileName
+                    let f = knownFiles |> Map.tryFind normalizedImport
+                    if f.IsNone then []
+                    else
+                        findCircularReferenceErrors knownFiles ((currentNormalizedPath, (currentFile.File, i))::fileReferencePath) f.Value)
+
+    let rec private findInfiniteRecursionErrors knownFiles fileReferencePath (currentFile:CompiledModule) =
+        let currentNormalizedPath = currentFile.File |> Utils.getNormalizedPath
+        let circularReference = fileReferencePath |> List.tryFind (fun (f, _) -> f = currentNormalizedPath)
+        if circularReference.IsSome then
+            let (file, import) = circularReference.Value |> snd
+            [makeParseError file import.Line import.StartLocation import.EndLocation (sprintf "Circular reference - import %s or one of its imports references file %s" import.ImportedFileName file)]
+        else
+            currentFile.ImportedFiles
+            |> List.collect
+                (fun i ->
+                    let normalizedImport = Utils.getNormalizedImportPath currentFile.File i.ImportedFileName
                     let f = knownFiles |> Map.tryFind normalizedImport
                     if f.IsNone then []
                     else
@@ -44,7 +55,7 @@ module Linker =
         currentFile.ImportedFiles
         |> List.fold
             (fun knownImports import ->
-                let importNormalizedPath = getNormalizedImportPath currentFile.File import.ImportedFileName
+                let importNormalizedPath = Utils.getNormalizedImportPath currentFile.File import.ImportedFileName
                 if importNormalizedPath = rootNormalizedPath || knownImports |> Set.contains importNormalizedPath then
                     knownImports
                 else
@@ -56,7 +67,7 @@ module Linker =
             knownImports
 
     let private findImportedModules knownFiles (rootFile:CompiledModule) =
-        let rootNormalizedPath = rootFile.File |> getNormalizedPath
+        let rootNormalizedPath = rootFile.File |> Utils.getNormalizedPath
         findImportedModulesInner knownFiles Set.empty rootNormalizedPath rootFile
         |> Set.toList
         |> List.choose (fun f -> knownFiles |> Map.tryFind f)
@@ -116,7 +127,7 @@ module Linker =
             m.ImportedFiles
             |> List.map
                 (fun i ->
-                    let f = (getNormalizedImportPath m.File i.ImportedFileName)
+                    let f = (Utils.getNormalizedImportPath m.File i.ImportedFileName)
                     f, allModules |> Map.find f)
         let recursiveImports = directImports |> List.collect (snd >> getImports allModules)
         recursiveImports @ directImports
@@ -263,7 +274,7 @@ module Linker =
     /// Link together a set of compiled modules to make a template ready for passing errors back to the user or generating texts.
     let link file (modules:CompiledModule list) : Template =
         // Missing any references?
-        let knownFiles              = modules |> List.map (fun m -> getNormalizedPath m.File, m) |> Map.ofList
+        let knownFiles              = modules |> List.map (fun m -> Utils.getNormalizedPath m.File, m) |> Map.ofList
         let allReferences           =
             modules
             |> List.collect
@@ -271,7 +282,7 @@ module Linker =
                     m.ImportedFiles
                     |> List.map
                         (fun import ->
-                            let importedFile = getNormalizedImportPath m.File import.ImportedFileName
+                            let importedFile = Utils.getNormalizedImportPath m.File import.ImportedFileName
                             (m, import, importedFile)))
         let unknownReferenceErrors  =
             allReferences
@@ -368,7 +379,7 @@ module Linker =
             let imports =
                 getImports knownFiles mainModule
                 @
-                [(getNormalizedPath mainModule.File, mainModule)]
+                [(Utils.getNormalizedPath mainModule.File, mainModule)]
             let orderedModules =
                 imports
                 |> List.scan
@@ -383,7 +394,7 @@ module Linker =
                 orderedModules
                 |> List.collect
                     (fun m ->
-                        let file = m.File |> getNormalizedPath
+                        let file = m.File |> Utils.getNormalizedPath
                         List.append m.PrivateFunctions m.PublicFunctions
                         |> List.map (fun f -> (file, m.File, f)))
                 |> List.scan (fun (i, _) f -> (i + 1, Some (i, f))) (0, None)
@@ -392,7 +403,7 @@ module Linker =
                 orderedModules
                 |> List.collect
                     (fun m ->
-                        let file = m.File |> getNormalizedPath
+                        let file = m.File |> Utils.getNormalizedPath
                         m.Variables |> List.map (fun v -> (file, m.File, v)))
                 |> List.scan (fun (i, _) v -> (i + 1, Some (i, v))) (0, None)
                 |> List.choose snd
@@ -400,7 +411,7 @@ module Linker =
                 orderedModules
                 |> List.collect
                     (fun m ->
-                        let file = m.File |> getNormalizedPath
+                        let file = m.File |> Utils.getNormalizedPath
                         m.Attributes |> List.map (fun a -> (file, m.File, a)))
                 |> List.scan (fun (i, _) a -> (i + 1, Some (i, a))) (0, None)
                 |> List.choose snd

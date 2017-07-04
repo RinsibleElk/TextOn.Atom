@@ -94,6 +94,14 @@ let private attLines =
             ])
     ]
 
+let private importLines =
+    [
+        (CategorizedImport,
+            [
+                ("@import \"somefile.texton\"", [(Import, 1, 7);(QuotedString "somefile.texton", 9, 25)])
+            ])
+    ]
+
 let private unrecognisedLines =
     [
         (CategorizationError "Unrecognised starting token",
@@ -180,7 +188,7 @@ let ``Unfinished function followed by import``() =
     runTest false
         [
             (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
-            varLines.[0]
+            importLines.[0]
         ]
 
 [<Test>]
@@ -216,7 +224,7 @@ let ``Unfinished variable followed by import``() =
     runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
-            varLines.[0]
+            importLines.[0]
         ]
 
 [<Test>]
@@ -252,7 +260,7 @@ let ``Unfinished attribute followed by import``() =
     runTest false
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
-            varLines.[0]
+            importLines.[0]
         ]
 
 [<Test>]
@@ -269,7 +277,7 @@ let ``Sustained error followed by variable``() =
 
 [<Test>]
 let ``Sustained error followed by import``() =
-    runTest false (sustainedErrorLines @ varLines)
+    runTest false (sustainedErrorLines @ importLines)
 
 [<Test>]
 let ``Valid full function interspersed``() =
@@ -339,7 +347,7 @@ let ``Unfinished function followed by import interspersed``() =
     runTest true
         [
             (CategorizationError "Incomplete function definition", l |> List.take (l.Length - 1))
-            varLines.[0]
+            importLines.[0]
         ]
 
 [<Test>]
@@ -375,7 +383,7 @@ let ``Unfinished variable followed by import interspersed``() =
     runTest true
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
-            varLines.[0]
+            importLines.[0]
         ]
 
 [<Test>]
@@ -411,7 +419,7 @@ let ``Unfinished attribute followed by import interspersed``() =
     runTest true
         [
             (CategorizationError "Incomplete variable/attribute definition", l |> List.take (l.Length - 1))
-            varLines.[0]
+            importLines.[0]
         ]
 
 [<Test>]
@@ -428,5 +436,5 @@ let ``Sustained error followed by variable interspersed``() =
 
 [<Test>]
 let ``Sustained error followed by import interspersed``() =
-    runTest true (sustainedErrorLines @ varLines)
+    runTest true (sustainedErrorLines @ importLines)
 

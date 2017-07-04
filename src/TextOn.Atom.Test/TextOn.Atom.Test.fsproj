@@ -69,26 +69,15 @@
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\..\packages\MSBuild.Extension.Pack.1.9.0\build\net40\MSBuild.Extension.Pack.targets" Condition="Exists('..\..\packages\MSBuild.Extension.Pack.1.9.0\build\net40\MSBuild.Extension.Pack.targets')" />
   <ItemGroup>
-    <Compile Include="TestArgParser.fs" />
-    <Compile Include="TestPreprocessor.fs" />
-    <Compile Include="TestCommentStripper.fs" />
-    <Compile Include="TestLineCategorizer.fs" />
-    <Compile Include="TestIdentifierTokenizer.fs" />
-    <Compile Include="TestConditionTokenizer.fs" />
-    <Compile Include="TestFunctionLineTokenizer.fs" />
-    <Compile Include="TestVariableLineTokenizer.fs" />
-    <Compile Include="TestAttributeLineTokenizer.fs" />
-    <Compile Include="TestConditionParser.fs" />
-    <Compile Include="TestFunctionDefinitionParser.fs" />
-    <Compile Include="TestVariableDefinitionParser.fs" />
-    <Compile Include="TestParser.fs" />
-    <Compile Include="TestCompiler.fs" />
-    <Compile Include="TestConditionEvaluator.fs" />
-    <Compile Include="TestVariableConditionEvaluator.fs" />
     <Compile Include="TestGenerator.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TextOn.Core\TextOn.Core.fsproj">
+      <Name>TextOn.Core</Name>
+      <Project>{d0e36a43-0a66-4ce4-b1f1-e21f44162d80}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <Reference Include="FsCheck">
       <HintPath>..\..\packages\FsCheck\lib\net45\FsCheck.dll</HintPath>
       <Private>True</Private>

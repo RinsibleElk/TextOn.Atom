@@ -1,6 +1,8 @@
 ﻿namespace TextOn.Atom
 
 open System
+open TextOn.Core.Linking
+open TextOn.Core.Conditions
 
 /// Store a mapping.
 type StringNameValuePair = {
@@ -66,25 +68,25 @@ type GeneratorResult =
 
 [<RequireQualifiedAccess>]
 module Generator =
-    let rec private generateSentence (variableValues:Map<int,string>) (random:Random) (node:SimpleCompiledDefinitionNode) =
+    let rec private generateSentence (variableValues:Map<int,string>) (random:Random) (node:SimpleDefinitionNode) =
         match node with
         | VariableValue(index) -> variableValues.[index]
         | SimpleChoice(nodes) ->
             generateSentence variableValues random nodes.[(random.Next(nodes.Length))]
         | SimpleSeq(nodes) ->
             nodes
-            |> Array.map (generateSentence variableValues random)
-            |> Array.fold (+) ""
+            |> List.map (generateSentence variableValues random)
+            |> List.fold (+) ""
         | SimpleText(s) -> s
-    let rec private generateInner attributeValues variableValues functions (random:Random) (node:CompiledDefinitionNode) =
+    let rec private generateInner attributeValues variableValues functions (random:Random) (node:DefinitionNode) =
         match node with
         | Sentence(inputFile, inputLineNumber, s) ->
-            Seq.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
-        | ParagraphBreak(inputfile, inputLineNumber) -> Seq.singleton (ParaBreak(inputfile, inputLineNumber))
+            List.singleton (SentenceText (inputFile, inputLineNumber, (generateSentence variableValues random s)))
+        | ParagraphBreak(inputfile, inputLineNumber) -> List.singleton (ParaBreak(inputfile, inputLineNumber))
         | Choice(inputfile, inputLineNumber, s) ->
             let options =
                 s
-                |> Array.choose
+                |> List.choose
                     (fun (node, condition) ->
                         if ConditionEvaluator.resolve attributeValues condition then Some node
                         else None)
@@ -93,28 +95,28 @@ module Generator =
             generateInner attributeValues variableValues functions random options.[index]
         | Seq(inputfile, inputLineNumber, s) ->
             s
-            |> Array.filter (fun (node, condition) -> ConditionEvaluator.resolve attributeValues condition)
-            |> Seq.collect
+            |> List.filter (fun (node, condition) -> ConditionEvaluator.resolve attributeValues condition)
+            |> List.collect
                 (fun (node, _) ->
                     let random = Random(random.Next())
                     generateInner attributeValues variableValues functions random node)
         | Function(inputfile, inputLineNumber, index) ->
             generateInner attributeValues variableValues functions random (functions |> Map.find index)
-    let generate (input:GeneratorInput) (compiledTemplate:CompiledTemplate) : GeneratorResult =
+    let generate (input:GeneratorInput) (compiledTemplate:Template) : GeneratorResult =
         let randomSeed =
             match input.RandomSeed with
             | SpecificValue seed -> seed
             | NoSeed -> Random().Next()
         let random = Random(randomSeed)
-        let functionDef = compiledTemplate.Functions |> Array.find (fun f -> f.Name = input.Function && (not f.IsPrivate))
+        let functionDef = compiledTemplate.Functions |> List.find (fun f -> f.Name = input.Function && (not f.IsPrivate))
         let attributeValues, attributeError =
             // Need to do a check that the user has provided values for all attribute values.
-            let attributeRequired = functionDef.AttributeDependencies |> Set.ofArray |> fun s i -> s |> Set.contains i
+            let attributeRequired = functionDef.AttributeDependencies |> Set.ofList |> fun s i -> s |> Set.contains i
             let requiredAttributes =
                 compiledTemplate.Attributes
-                |> Array.filter (fun a -> a.Index |> attributeRequired)
-                |> Array.map (fun x -> x.Name)
-                |> Set.ofArray
+                |> List.filter (fun a -> a.Index |> attributeRequired)
+                |> List.map (fun x -> x.Name)
+                |> Set.ofList
             let givenAttributes = input.Attributes |> List.map (fun x -> x.Name) |> Set.ofList
             let extraAttributes = Set.difference givenAttributes requiredAttributes
             let missingAttributes = Set.difference requiredAttributes givenAttributes
@@ -125,8 +127,8 @@ module Generator =
             else
                 let attributeIndices =
                     compiledTemplate.Attributes
-                    |> Array.map (fun x -> x.Name, x.Index)
-                    |> Map.ofArray
+                    |> List.map (fun x -> x.Name, x.Index)
+                    |> Map.ofList
                 let attributeValues =
                     input.Attributes
                     |> List.map
@@ -135,12 +137,12 @@ module Generator =
                 (attributeValues, None)
         let variableValues, variableError =
             // Need to do a check that the user has provided values for all variable values.
-            let variableRequired = functionDef.VariableDependencies |> Set.ofArray |> fun s i -> s |> Set.contains i
+            let variableRequired = functionDef.VariableDependencies |> Set.ofList |> fun s i -> s |> Set.contains i
             let requiredVariables =
                 compiledTemplate.Variables
-                |> Array.filter (fun a -> a.Index |> variableRequired)
-                |> Array.map (fun x -> x.Name)
-                |> Set.ofArray
+                |> List.filter (fun a -> a.Index |> variableRequired)
+                |> List.map (fun x -> x.Name)
+                |> Set.ofList
             let givenVariables = input.Variables |> List.map (fun x -> x.Name) |> Set.ofList
             let extraVariables = Set.difference givenVariables requiredVariables
             let missingVariables = Set.difference requiredVariables givenVariables
@@ -151,8 +153,8 @@ module Generator =
             else
                 let variableIndices =
                     compiledTemplate.Variables
-                    |> Array.map (fun x -> x.Name, x.Index)
-                    |> Map.ofArray
+                    |> List.map (fun x -> x.Name, x.Index)
+                    |> Map.ofList
                 let variableValues =
                     input.Variables
                     |> List.map
@@ -164,11 +166,11 @@ module Generator =
         | (_, Some e) -> GeneratorError e
         | _ ->
             let functionName = input.Function
-            let mainFunction = compiledTemplate.Functions |> Array.tryFind (fun f -> f.Name = functionName)
+            let mainFunction = compiledTemplate.Functions |> List.tryFind (fun f -> f.Name = functionName)
             if mainFunction.IsNone then GeneratorError (sprintf "Function \"%s\" is not defined - nothing to generate" functionName)
             else
                 let definition = mainFunction.Value.Tree
-                let output = generateInner attributeValues variableValues (compiledTemplate.Functions |> Array.map (fun fn -> (fn.Index, fn.Tree)) |> Map.ofArray) random definition |> Seq.toList
+                let output = generateInner attributeValues variableValues (compiledTemplate.Functions |> List.map (fun fn -> (fn.Index, fn.Tree)) |> Map.ofList) random definition
                 let sentenceBreakText = [ 1 .. input.Config.NumSpacesBetweenSentences ] |> Seq.map (fun _ -> " ") |> Seq.fold (+) ""
                 let lineBreakText = match input.Config.LineEnding with | CRLF -> "\r\n" | _ -> "\n"
                 let paraBreakText = [ 0 .. input.Config.NumBlankLinesBetweenParagraphs ] |> Seq.map (fun _ -> lineBreakText) |> Seq.fold (+) ""

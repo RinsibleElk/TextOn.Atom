@@ -44,9 +44,11 @@
           \"$3\"
         }
     """
-  'include':
-    'prefix': '#i'
-    'body': '#include \"$1\"'
+
+  'import':
+    'prefix': '@import'
+    'body': '@import \"$1\"'
+
   'Constrain by attribute':
     'prefix': 'ca'
     'body': '[%$1 = \"$2\"]'

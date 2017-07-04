@@ -12,6 +12,7 @@ open Suave.Sockets.Control
 open Suave.Filters
 open Newtonsoft.Json
 open TextOn.Atom.DTO.DTO
+open TextOn.ArgParser
 
 type ServerModeConfig =
     {

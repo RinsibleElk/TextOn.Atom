@@ -36,6 +36,10 @@
           "match": "^\\s*@break\\s*"
         },
         {
+          "name": "keyword.import.texton",
+          "match": "^\\s*@import\\s*"
+        },
+        {
           "name": "keyword.free.texton",
           "match": "\\s*@free[\\s*|$]"
         },

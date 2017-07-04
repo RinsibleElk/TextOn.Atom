@@ -2,40 +2,26 @@
 
 open System
 open TextOn.Atom.DTO.DTO
+open TextOn.Core.Parsing
 
 module TextOnErrorInfo =
-    let OfCompilationError(error) =
-        match error with
-        | ParserError(e) ->
-            {
-                range =
-                    [|
-                        [|(float (e.LineNumber - 1));(float (e.StartLocation - 1))|]
-                        [|(float (e.LineNumber - 1));(float (e.EndLocation))|]
-                    |]
-                ``type`` = "Error"
-                text = e.ErrorText
-                filePath = e.File
-            }
-        | GeneralError(e) ->
-            {
-                range =
-                    [|
-                        [|0.0;0.0|]
-                        [|0.0;1.0|]
-                    |]
-                filePath = e.File
-                text = e.ErrorText
-                ``type`` = "Error"
-            }
+    let OfCompilationError (error:ParseError) =
+        {
+            range =
+                [|
+                    [|(float (error.LineNumber - 1));(float (error.StartLocation - 1))|]
+                    [|(float (error.LineNumber - 1));(float (error.EndLocation))|]
+                |]
+            ``type`` = match error.Severity with | Error -> "Error" | Warning -> "Warning"
+            text = error.ErrorText
+            filePath = error.File
+        }
 
 [<RequireQualifiedAccess>]
 module CommandResponse =
-    let errors (serialize : Serializer) (errors:CompilationError[], file: string) =
+    let errors (serialize : Serializer) (errors:ParseError[], file: string) =
         serialize { Kind = "errors"
-                    Data = errors
-                           |> Array.filter (function | ParserError(e) -> e.File = file | _ -> true)
-                           |> Array.map TextOnErrorInfo.OfCompilationError }
+                    Data = errors |> Array.map TextOnErrorInfo.OfCompilationError }
     let suggestions (serialize : Serializer) (s: Suggestion[]) = serialize { Kind = "suggestion"; Data = s }
     let error (serialize : Serializer) (s: string) = serialize { Kind = "error"; Data = [|s|] }
     let generatorSetup (serialize : Serializer) (generatorData:GeneratorData) =

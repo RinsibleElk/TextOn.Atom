@@ -4,7 +4,7 @@ open System
 
 /// All the tokens recognised by the TextOn language.
 [<NoComparison>]
-type  Token =
+type internal Token =
     | Att
     | Var
     | Func
@@ -36,7 +36,7 @@ type  Token =
 
 /// A token with its start and end columns. These start at column 1.
 [<NoComparison>]
-type  AttributedToken =
+type internal AttributedToken =
     {
         TokenStartLocation : int
         TokenEndLocation : int
@@ -45,7 +45,7 @@ type  AttributedToken =
 
 /// A non-empty, comment-stripped, tokenized line, with its line number (starting at line 1).
 [<NoComparison>]
-type  AttributedTokenizedLine =
+type internal AttributedTokenizedLine =
     {
         LineNumber : int
         Tokens : AttributedToken list
@@ -53,7 +53,7 @@ type  AttributedTokenizedLine =
 
 /// The output for the LineCategorizer.
 [<NoComparison>]
-type  Category =
+type internal Category =
     | CategorizedFuncDefinition
     | CategorizedVarDefinition
     | CategorizedAttDefinition
@@ -62,7 +62,7 @@ type  Category =
 
 /// A block of tokens representing a function, variable, attribute, or import.
 [<NoComparison>]
-type  CategorizedAttributedTokenSet =
+type internal CategorizedAttributedTokenSet =
     {
         Category : Category
         File : string

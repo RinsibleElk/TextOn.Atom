@@ -67,30 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Cprintf.fs" />
-    <Compile Include="ArgParser.fs" />
-    <Compile Include="Preprocessor.fs" />
-    <Compile Include="CommentStripper.fs" />
-    <Compile Include="LineCategorizer.fs" />
-    <Compile Include="Tokens.fs" />
-    <Compile Include="IdentifierTokenizer.fs" />
-    <Compile Include="ConditionTokenizer.fs" />
-    <Compile Include="FunctionLineTokenizer.fs" />
-    <Compile Include="VariableOrAttributeLineTokenizer.fs" />
-    <Compile Include="Tokenizer.fs" />
-    <Compile Include="ConditionParser.fs" />
-    <Compile Include="FunctionDefinitionParser.fs" />
-    <Compile Include="VariableDefinitionParser.fs" />
-    <Compile Include="AttributeDefinitionParser.fs" />
-    <Compile Include="Parser.fs" />
-    <Compile Include="ConditionEvaluator.fs" />
-    <Compile Include="VariableConditionEvaluator.fs" />
-    <Compile Include="CompiledAttributeDefinition.fs" />
-    <Compile Include="CompiledVariableDefinition.fs" />
-    <Compile Include="CompiledDefinitionNode.fs" />
-    <Compile Include="CompiledFunctionDefinition.fs" />
-    <Compile Include="CompiledTemplate.fs" />
-    <Compile Include="Compiler.fs" />
     <Compile Include="Generator.fs" />
     <Compile Include="Browser.fs" />
     <Compile Include="RunInteractive.fs" />
@@ -109,9 +85,19 @@
     <None Include="Benchmarking.texton" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TextOn.ArgParser\TextOn.ArgParser.fsproj">
+      <Name>TextOn.ArgParser</Name>
+      <Project>{4baf5dca-53fa-4a1a-b641-c95a4a1ba4ef}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
       <Name>TextOn.Atom.DTO</Name>
       <Project>{7c8b2d6c-feca-466f-8eff-9a2595fed812}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TextOn.Core\TextOn.Core.fsproj">
+      <Name>TextOn.Core</Name>
+      <Project>{d0e36a43-0a66-4ce4-b1f1-e21f44162d80}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>

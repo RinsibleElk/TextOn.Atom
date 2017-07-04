@@ -3,56 +3,47 @@
 open System
 open System.IO
 open System.Collections.Concurrent
+open TextOn.Core.Utils
+open TextOn.Core.Linking
+open TextOn.Core.Pipeline
 
 type Commands (serialize : Serializer) =
     let fileLinesMap = ConcurrentDictionary<string, string list>()
-    let fileTemplateMap = ConcurrentDictionary<string, CompiledTemplate>()
+    let fileTemplateMap = ConcurrentDictionary<string, Template>()
     let generatorSingleton = ConcurrentDictionary<int, GeneratorServer>()
     let browserSingleton = ConcurrentDictionary<int, BrowserServer>()
     let mutable isBrowsing = false
-    let add fileName directory lines =
-        let key = Path.Combine(directory, fileName).ToLower()
+    let add n lines =
         let f = System.Func<string, string list, string list>(fun _ _ -> lines)
-        fileLinesMap.AddOrUpdate(key, lines, f) |> ignore
-    let fileResolver f d =
+        fileLinesMap.AddOrUpdate(n, lines, f) |> ignore
+    let fileResolver n f =
         let o =
-            let (ok, r) = fileLinesMap.TryGetValue(Path.Combine(d, f).ToLower())
-            if ok then Some r
+            let (ok, l) = fileLinesMap.TryGetValue(n)
+            if ok then Some l
             else None
-            |> Option.map (fun x -> (f, d, x))
         if o.IsNone then
-            let o = Preprocessor.realFileResolver f d
+            let o = f |> fun f -> if f |> File.Exists then (Some (f |> File.ReadAllLines |> List.ofArray)) else None
             if o.IsNone then None
             else
-                add f d (o.Value |> fun (_, _, a) -> a)
+                add n o.Value
                 o
         else o
-    let doCompile fileName directory lines =
+    let doCompile fileName lines =
         async {
-            let lines = Preprocessor.preprocess fileResolver fileName directory lines
-            let lines' = CommentStripper.stripComments lines
-            let groups = LineCategorizer.categorize lines'
-            let tokens = groups |> List.map Tokenizer.tokenize
-            let source = tokens |> List.map Parser.parse
-            let output = Compiler.compile source
-            match output with
-            | CompilationSuccess template -> fileTemplateMap.[fileName] <- template
-            | _ -> ()
-            return Success output }
+            let template = Builder.build fileResolver fileName lines
+            fileTemplateMap.[fileName] <- template
+            return Success template }
     let parse' fileName directory lines =
         async {
-            add fileName directory lines
-            let! result = doCompile fileName directory lines
+            let n = Utils.getNormalizedPath fileName
+            add n lines
+            let! result = doCompile fileName lines
             return
                 match result with
                 | Failure e -> [CommandResponse.error serialize e]
-                | Success (compilationResult) ->
-                    match compilationResult with
-                    | CompilationResult.CompilationFailure(errors) ->
-                        [ CommandResponse.errors serialize (errors, fileName) ]
-                    | _ ->
-                        let errors = [||]
-                        [ CommandResponse.errors serialize (errors, fileName) ] }
+                | Success (template) ->
+                    let errors = (template.Errors @ template.Warnings) |> List.toArray
+                    [ CommandResponse.errors serialize (errors, fileName) ] }
 
     let keywords =
         [|
@@ -64,21 +55,23 @@ type Commands (serialize : Serializer) =
             ("choice",  "Define a new random choice")
             ("seq",     "Define a new sequence of sentences")
             ("private", "Do not export this function outside of the current TextOn file")
+            ("import",  "Import another texton module")
         |]
         |> Array.map (fun (x,d) -> { text = x ; ``type`` = "keyword" ; description = d } : DTO.DTO.Suggestion)
 
     let doGenerateStart fileName directory lines line = async {
-        add fileName directory lines
-        let! compileResult = doCompile fileName directory lines
+        let n = Utils.getNormalizedPath fileName
+        add n lines
+        let! result = doCompile fileName lines
         return
-            match compileResult with
+            match result with
             | Failure e -> Failure e
-            | Success compilationResult ->
-                match compilationResult with
-                | CompilationResult.CompilationFailure errors -> Success (GeneratorStartResult.CompilationFailure errors)
-                | CompilationResult.CompilationSuccess template ->
+            | Success template ->
+                if template.Errors.Length > 0 then
+                    Success (GeneratorStartResult.CompilationFailure (template.Errors |> List.toArray))
+                else
                     template.Functions
-                    |> Array.tryFind (fun f -> f.File = fileName && (not f.IsPrivate) && f.StartLine <= line && f.EndLine >= line)
+                    |> List.tryFind (fun f -> f.File = fileName && (not f.IsPrivate) && f.StartLine <= line && f.EndLine >= line)
                     |> Option.map
                         (fun f ->
                             let generator =
@@ -89,15 +82,15 @@ type Commands (serialize : Serializer) =
                     |> defaultArg <| Failure "Nothing to generate" }
 
     let doBrowserStart fileName directory lines = async {
-        add fileName directory lines
-        let! compileResult = doCompile fileName directory lines
+        let n = Utils.getNormalizedPath fileName
+        add n lines
+        let! result = doCompile fileName lines
         return
-            match compileResult with
+            match result with
             | Failure e -> Failure e
-            | Success compilationResult ->
-                match compilationResult with
-                | CompilationResult.CompilationFailure errors -> Success (BrowserStartResult.BrowserCompilationFailure errors)
-                | CompilationResult.CompilationSuccess template ->
+            | Success template ->
+                if template.Errors.Length > 0 then Success (BrowserStartResult.BrowserCompilationFailure (template.Errors |> List.toArray))
+                else
                     let browser =
                         let browser = new BrowserServer(fileName)
                         browserSingleton.AddOrUpdate(0, browser, (fun _ _ -> browser))
@@ -218,18 +211,16 @@ type Commands (serialize : Serializer) =
         let ok, generator = generatorSingleton.TryGetValue 0
         if ok then
             let fi = generator.File
-            let lines = fileResolver fi.Name fi.Directory.FullName
+            let lines = fileResolver (Utils.getNormalizedPath fi.FullName) fi.FullName
             if lines.IsSome then
-                let (file, directory, lines) = lines.Value
-                let! compileResult = doCompile file directory lines
+                let lines = lines.Value
+                let! compileResult = doCompile fi.FullName lines
                 match compileResult with
-                | Success r ->
-                    match r with
-                    | CompilationResult.CompilationSuccess template ->
+                | Success template ->
+                    if template.Errors.Length = 0 then
                         generator.UpdateTemplate template
-                        return
-                            [ CommandResponse.generatorSetup serialize generator.Data ]
-                    | _ -> return [ CommandResponse.error serialize "Nothing to generate" ]
+                        return [ CommandResponse.generatorSetup serialize generator.Data ]
+                    else return [ CommandResponse.error serialize "Nothing to generate" ]
                 | _ -> return [ CommandResponse.error serialize "Nothing to generate" ]
             else return [ CommandResponse.error serialize "Nothing to generate" ]
         else return [ CommandResponse.error serialize "Nothing to generate" ] }
@@ -238,18 +229,16 @@ type Commands (serialize : Serializer) =
         let ok, browser = browserSingleton.TryGetValue 0
         if ok then
             let fi = browser.File
-            let lines = fileResolver fi.Name fi.Directory.FullName
+            let lines = fileResolver (Utils.getNormalizedPath fi.FullName) fi.FullName
             if lines.IsSome then
-                let (file, directory, lines) = lines.Value
-                let! compileResult = doCompile file directory lines
+                let lines = lines.Value
+                let! compileResult = doCompile fi.FullName lines
                 match compileResult with
-                | Success r ->
-                    match r with
-                    | CompilationResult.CompilationSuccess template ->
+                | Success template ->
+                    if template.Errors.Length = 0 then
                         browser.UpdateTemplate template
-                        return
-                            [ CommandResponse.browserUpdate serialize browser.Data ]
-                    | _ -> return [ CommandResponse.error serialize "Nothing to browse" ]
+                        return [ CommandResponse.browserUpdate serialize browser.Data ]
+                    else return [ CommandResponse.error serialize "Nothing to browse" ]
                 | _ -> return [ CommandResponse.error serialize "Nothing to browse" ]
             else return [ CommandResponse.error serialize "Nothing to browse" ]
         else return [ CommandResponse.error serialize "Nothing to browse" ] }
@@ -268,12 +257,12 @@ type Commands (serialize : Serializer) =
         match ty with
         | "Function" ->
             // We add the keywords to this list.
-            let functions = template |> Option.map (fun t -> t.Functions |> Array.filter (fun fn -> (not fn.IsPrivate) || fn.File = fileName) |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)) |> defaultArg <| [||]
+            let functions = template |> Option.map (fun t -> t.Functions |> List.toArray |> Array.filter (fun fn -> (not fn.IsPrivate) || fn.File = fileName) |> Array.map (fun f -> { text = f.Name ; ``type`` = "function" ; description = "Call the @" + f.Name + " function" } : DTO.DTO.Suggestion)) |> defaultArg <| [||]
             return [ CommandResponse.suggestions serialize (Array.append functions keywords) ]
         | "Variable" ->
-            return [ CommandResponse.suggestions serialize (template |> Option.map (fun t -> t.Variables |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = sprintf "$%s: %s" x.Name x.Text } : DTO.DTO.Suggestion)) |> defaultArg <| [||]) ]
+            return [ CommandResponse.suggestions serialize (template |> Option.map (fun t -> t.Variables |> List.toArray |> Array.map (fun x -> { text = x.Name ; ``type`` = "variable" ; description = sprintf "$%s: %s" x.Name x.Text } : DTO.DTO.Suggestion)) |> defaultArg <| [||]) ]
         | "Attribute" ->
-            return [ CommandResponse.suggestions serialize (template |> Option.map (fun t -> t.Attributes |> Array.map (fun x -> { text = x.Name ; ``type`` = "attribute" ; description = sprintf "%%%s: %s" x.Name x.Text } : DTO.DTO.Suggestion)) |> defaultArg <| [||]) ]
+            return [ CommandResponse.suggestions serialize (template |> Option.map (fun t -> t.Attributes |> List.toArray |> Array.map (fun x -> { text = x.Name ; ``type`` = "attribute" ; description = sprintf "%%%s: %s" x.Name x.Text } : DTO.DTO.Suggestion)) |> defaultArg <| [||]) ]
         | "QuotedString" ->
             // Bit of work to do. We need to backtrack to try and find a '%' or a '$' character, then try and tokenize just the named value after that point.
             let mutable name = []
@@ -290,11 +279,11 @@ type Commands (serialize : Serializer) =
                 while i >= 0 && ((Char.IsLetterOrDigit line.[i]) || (line.[i] = '_')) do
                     name <- line.[i]::name
                     i <- i - 1
-                if i < 0 || (line.[i] <> '$' && line.[i] <> '%' && line.[i] <> '#') then
+                if i < 0 || (line.[i] <> '$' && line.[i] <> '%' && line.[i] <> '@') then
                     return [ CommandResponse.suggestions serialize [||] ]
                 else
                     let values =
-                        if line.[i] = '#' then
+                        if line.[i] = '@' then
                             // We add the directory contents.
                             let fi = FileInfo fileName
                             if fi.Exists |> not then [||]
@@ -315,21 +304,23 @@ type Commands (serialize : Serializer) =
                         else if line.[i] = '$' then
                             let actualName = String.Join("", name |> List.toArray)
                             template
-                            |> Option.bind (fun t -> t.Variables |> Array.tryFind (fun v -> v.Name = actualName))
+                            |> Option.bind (fun t -> t.Variables |> List.tryFind (fun v -> v.Name = actualName))
                             |> Option.map
                                 (fun v ->
                                     let description = sprintf "Value for variable $%s - %s" v.Name
                                     v.Values
+                                    |> List.toArray
                                     |> Array.map (fun x -> x.Value, description x.Value, "value"))
                             |> defaultArg <| [||]
                         else
                             let actualName = String.Join("", name |> List.toArray)
                             template
-                            |> Option.bind (fun t -> t.Attributes |> Array.tryFind (fun v -> v.Name = actualName))
+                            |> Option.bind (fun t -> t.Attributes |> List.tryFind (fun v -> v.Name = actualName))
                             |> Option.map
                                 (fun v ->
                                     let description = sprintf "Value for attribute %%%s - %s" v.Name
                                     v.Values
+                                    |> List.toArray
                                     |> Array.map (fun x -> x.Value, description x.Value, "value"))
                             |> defaultArg <| [||]
                     return [ CommandResponse.suggestions serialize (values |> Array.map (fun (value, desc, ty) -> { text = value ; description = desc ; ``type`` = ty })) ]
@@ -360,13 +351,13 @@ type Commands (serialize : Serializer) =
                 | None -> None
                 | (Some ('@', l)) ->
                     let functionName = String.Join("", l@forwardCharacters)
-                    template.Value.Functions |> Array.tryFind (fun f -> f.Name = functionName) |> Option.map (fun f -> f.File, f.StartLine)
+                    template.Value.Functions |> List.tryFind (fun f -> f.Name = functionName) |> Option.map (fun f -> f.File, f.StartLine)
                 | (Some ('$', l)) ->
                     let variableName = String.Join("", l@forwardCharacters)
-                    template.Value.Variables |> Array.tryFind (fun f -> f.Name = variableName) |> Option.map (fun f -> f.File, f.StartLine)
+                    template.Value.Variables |> List.tryFind (fun f -> f.Name = variableName) |> Option.map (fun f -> f.File, f.StartLine)
                 | (Some ('%', l)) ->
                     let attributeName = String.Join("", l@forwardCharacters)
-                    template.Value.Attributes |> Array.tryFind (fun f -> f.Name = attributeName) |> Option.map (fun f -> f.File, f.StartLine)
+                    template.Value.Attributes |> List.tryFind (fun f -> f.Name = attributeName) |> Option.map (fun f -> f.File, f.StartLine)
                 | _ -> None
             if fileAndLine.IsSome then
                 let (file, line) = fileAndLine.Value
@@ -376,24 +367,22 @@ type Commands (serialize : Serializer) =
 
     member __.Navigate (file:SourceFilePath) ty name = async {
         let fi = Path.GetFullPath file |> FileInfo
-        let lines = fileResolver fi.Name fi.Directory.FullName
+        let lines = fileResolver (Utils.getNormalizedPath fi.FullName) fi.FullName
         if lines |> Option.isSome then
-            let (file, directory, lines) = lines.Value
-            let! compileResult = doCompile file directory lines
+            let lines = lines.Value
+            let! compileResult = doCompile fi.FullName lines
             return
                 match compileResult with
                 | Failure e -> [CommandResponse.error serialize e]
-                | Success (compilationResult) ->
-                    match compilationResult with
-                    | CompilationResult.CompilationFailure(errors) ->
+                | Success (template) ->
+                    if template.Errors.Length > 0 then
                         [ CommandResponse.error serialize "File had compilation errors" ]
-                    | CompilationResult.CompilationSuccess template ->
-                        let errors = [||]
+                    else
                         let f =
                             match ty with
-                            | "Function" -> template.Functions |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
-                            | "Variable" -> template.Variables |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
-                            | "Attribute" -> template.Attributes |> Array.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "Function" -> template.Functions |> List.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "Variable" -> template.Variables |> List.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
+                            | "Attribute" -> template.Attributes |> List.tryFind (fun fn -> fn.Name = name) |> Option.map (fun fn -> fn.File, fn.StartLine)
                             | _ -> failwith "Internal error"
                         if f |> Option.isNone then
                             [ CommandResponse.error serialize "Function not found" ]

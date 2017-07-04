@@ -1,28 +1,30 @@
 ﻿namespace TextOn.Atom
 
 open System
+open TextOn.Core.Linking
+open TextOn.Core.Conditions
 
 [<RequireQualifiedAccess>]
 module Browser =
-    let rec makeSimpleText variableNames variableValues (node:SimpleCompiledDefinitionNode) =
+    let rec makeSimpleText variableNames variableValues (node:SimpleDefinitionNode) =
         match node with
         | VariableValue(i) ->
             variableValues
             |> Map.tryFind i
             |> defaultArg <| (variableNames |> Map.find i |> fun x -> "$" + x)
         | SimpleChoice(nodes) ->
-            "{" + (nodes |> Array.fold (fun x a -> (if x = "" then "" else (x + "|")) + (makeSimpleText variableNames variableValues a)) "") + "}"
+            "{" + (nodes |> List.fold (fun x a -> (if x = "" then "" else (x + "|")) + (makeSimpleText variableNames variableValues a)) "") + "}"
         | SimpleSeq(nodes) ->
-            (nodes |> Array.fold (fun x a -> x + (makeSimpleText variableNames variableValues a)) "")
+            (nodes |> List.fold (fun x a -> x + (makeSimpleText variableNames variableValues a)) "")
         | SimpleText(s) -> s
-    let rec private makeTextInner isRoot functionNames attributeValues variableNames variableValues (node:CompiledDefinitionNode) =
+    let rec private makeTextInner isRoot functionNames attributeValues variableNames variableValues (node:DefinitionNode) =
         match node with
         | Sentence(_, _, simpleNode) -> makeSimpleText variableNames variableValues simpleNode
         | ParagraphBreak(_) -> "<paragraph break>"
         | Choice(_, _, nodes) ->
             nodes
-            |> Array.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
-            |> Array.tryFind (fun _ -> true)
+            |> List.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
+            |> List.tryFind (fun _ -> true)
             |> Option.map (fst >> makeTextInner false functionNames attributeValues variableNames variableValues)
             |> defaultArg <| "<no output>"
             |> fun text ->
@@ -31,8 +33,8 @@ module Browser =
                 else text
         | Seq(_, _, nodes) ->
             nodes
-            |> Array.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
-            |> Array.tryFind (fun _ -> true)
+            |> List.filter (fun (_, condition) -> ConditionEvaluator.resolvePartial attributeValues condition)
+            |> List.tryFind (fun _ -> true)
             |> Option.map (fst >> makeTextInner false functionNames attributeValues variableNames variableValues)
             |> defaultArg <| "<no output>"
             |> fun text ->
@@ -43,10 +45,10 @@ module Browser =
             functionNames
             |> Map.find f
             |> fun x -> "@" + x
-    let makeText functionNames attributeValues variableNames variableValues (node:CompiledDefinitionNode) =
+    let makeText functionNames attributeValues variableNames variableValues (node:DefinitionNode) =
         makeTextInner true functionNames attributeValues variableNames variableValues node
 
     let functionNames currentTemplate =
         currentTemplate.Functions
-        |> Array.map (fun f -> f.Index, if f.IsPrivate then (sprintf "%s.%s" (System.IO.Path.GetFileNameWithoutExtension f.File) f.Name) else f.Name)
-        |> Map.ofArray
+        |> List.map (fun f -> f.Index, if f.IsPrivate then (sprintf "%s.%s" (System.IO.Path.GetFileNameWithoutExtension f.File) f.Name) else f.Name)
+        |> Map.ofList

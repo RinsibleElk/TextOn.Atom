@@ -1,4 +1,4 @@
-#include "../examples/cities.texton"
+@import "../examples/cities.texton"
 
 // This is a comment.
 
