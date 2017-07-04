@@ -606,4 +606,3 @@ let ``Infinite recursion``() =
         |> List.singleton
         |> Linker.link exampleFile
     test <@ template.Errors.Length > 0 @>
-

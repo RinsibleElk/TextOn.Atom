@@ -11,10 +11,6 @@
   }
 }
 
-@func @private @dependsOnCity {
-  This function, that depends on $City, is defined in the example file.
-}
-
 // Every full TextOn script must have a main function.
 @func @main
 {
@@ -28,4 +24,8 @@
     @cityExport
     @guyStuff [%Gender = "Male"]
   }
+}
+
+@func @private @dependsOnCity {
+  This function, that depends on $City, is defined in the example file.
 }
