@@ -158,7 +158,7 @@ let expected =
                     EndLine = 57
                     FunctionDependencies = []
                     AttributeDependencies = []
-                    VariableDependencies = [1]
+                    VariableDependencies = [0;1]
                     Tree =
                        Seq
                          (citiesFile,55,
@@ -177,7 +177,7 @@ let expected =
                     EndLine = 61
                     FunctionDependencies = [0]
                     AttributeDependencies = []
-                    VariableDependencies = []
+                    VariableDependencies = [0;1]
                     Tree = Seq (citiesFile,59, [(Function (citiesFile,60,0), True)])
                 }
                 {
@@ -211,7 +211,7 @@ let expected =
                     EndLine = 16
                     FunctionDependencies = []
                     AttributeDependencies = []
-                    VariableDependencies = [1]
+                    VariableDependencies = [0;1]
                     Tree =
                         Seq
                             (exampleFile,14,
@@ -229,7 +229,7 @@ let expected =
                     IsPrivate = false;
                     StartLine = 19;
                     EndLine = 31;
-                    FunctionDependencies = [1; 2; 3];
+                    FunctionDependencies = [0; 1; 2; 3];
                     AttributeDependencies = [0];
                     VariableDependencies = [0; 1];
                     Tree =

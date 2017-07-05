@@ -305,19 +305,63 @@ module Linker =
             Sentence(file, lineNumber, buildSentenceNode getVariableIndex file sentenceNode)
         | ParseErrors e -> failwithf "Parse errors not expected when building a node %A" e
 
-    let private buildFunction getFunctionIndex getVariableIndex getAttributeIndex file (fn:ParsedFunctionDefinition) =
-        {
-            Name = fn.Name
-            Index = getFunctionIndex fn.Name
-            File = file
-            IsPrivate = fn.IsPrivate
-            StartLine = fn.StartLine
-            EndLine = fn.EndLine
-            FunctionDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedFunctionRef f -> (Some (getFunctionIndex f)) | _ -> None) |> List.sort
-            AttributeDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedAttributeRef a -> (Some (getAttributeIndex a)) | _ -> None) |> List.sort
-            VariableDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedVariableRef v -> (Some (getVariableIndex v)) | _ -> None) |> List.sort
-            Tree = buildFunctionNode getFunctionIndex getVariableIndex getAttributeIndex file fn.Tree
-        }
+    let private buildFunction functionAttributeDependencies functionVariableDependencies functionFunctionDependencies variableAttributeDependencies variableVariableDependencies attributeDependencies getFunctionIndex getVariableIndex getAttributeIndex file (fn:ParsedFunctionDefinition) =
+        let thisIndex = getFunctionIndex fn.Name
+        let thisFunctionDependencies =
+            fn.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedFunctionRef f ->
+                        let i = (getFunctionIndex f)
+                        i::(functionFunctionDependencies |> Map.find i)
+                    | _ -> [])
+            |> List.distinct
+            |> List.sort
+        let thisVariableDependencies =
+            fn.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedFunctionRef f ->
+                        let i = (getFunctionIndex f)
+                        (functionVariableDependencies |> Map.find i)
+                    | ParsedVariableRef f ->
+                        let i = (getVariableIndex f)
+                        i::(variableVariableDependencies |> Map.find i)
+                    | _ -> [])
+            |> List.distinct
+            |> List.sort
+        let thisAttributeDependencies =
+            fn.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedFunctionRef f ->
+                        let i = (getFunctionIndex f)
+                        (functionAttributeDependencies |> Map.find i)
+                    | ParsedVariableRef f ->
+                        let i = (getVariableIndex f)
+                        (variableAttributeDependencies |> Map.find i)
+                    | ParsedAttributeRef f ->
+                        let i = (getAttributeIndex f)
+                        i::(attributeDependencies |> Map.find i))
+            |> List.distinct
+            |> List.sort
+        let a =
+            {
+                Name = fn.Name
+                Index = thisIndex
+                File = file
+                IsPrivate = fn.IsPrivate
+                StartLine = fn.StartLine
+                EndLine = fn.EndLine
+                FunctionDependencies = thisFunctionDependencies
+                AttributeDependencies = thisAttributeDependencies
+                VariableDependencies = thisVariableDependencies
+                Tree = buildFunctionNode getFunctionIndex getVariableIndex getAttributeIndex file fn.Tree
+            }
+        (functionAttributeDependencies |> Map.add thisIndex thisAttributeDependencies, functionVariableDependencies |> Map.add thisIndex thisVariableDependencies, functionFunctionDependencies |> Map.add thisIndex thisFunctionDependencies, Some a)
 
     let private buildVariableValue getVariableIndex getAttributeIndex file (s:ParsedVariableSuggestedValue) : VariableValue =
         {
@@ -325,19 +369,46 @@ module Linker =
             Condition = buildVariableCondition getVariableIndex getAttributeIndex file s.Condition.Condition
         }
 
-    let private buildVariable getVariableIndex getAttributeIndex file (a:ParsedVariableDefinition) : VariableDefinition =
-        {
-            Name = a.Name
-            Text = a.Text
-            Index = getVariableIndex a.Name
-            File = file
-            StartLine = a.StartLine
-            EndLine = a.EndLine
-            PermitsFreeValue = a.SupportsFreeValue
-            AttributeDependencies = a.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeName a -> (Some (getAttributeIndex a)) | _ -> None)
-            VariableDependencies = a.Dependencies |> List.ofArray |> List.choose (function | ParsedVariableName v -> (Some (getVariableIndex v)) | _ -> None)
-            Values = a.Result |> List.ofArray |> List.map (buildVariableValue getVariableIndex getAttributeIndex file)
-        }
+    let private buildVariable variableAttributeDependencies variableVariableDependencies attributeDependencies getVariableIndex getAttributeIndex file (a:ParsedVariableDefinition) : Map<int, int list> * Map<int, int list> * VariableDefinition option =
+        let thisIndex = getVariableIndex a.Name
+        let thisAttributeDependencies =
+            a.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedAttributeName a ->
+                        let i = (getAttributeIndex a)
+                        i::(attributeDependencies |> Map.find i)
+                    | ParsedVariableName v ->
+                        let i = (getVariableIndex v)
+                        (variableAttributeDependencies |> Map.find i))
+            |> List.distinct
+            |> List.sort
+        let thisVariableDependencies =
+            a.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedAttributeName a -> []
+                    | ParsedVariableName v ->
+                        let i = (getVariableIndex v)
+                        i::(variableVariableDependencies |> Map.find i))
+            |> List.distinct
+            |> List.sort
+        let v =
+            {
+                Name = a.Name
+                Text = a.Text
+                Index = thisIndex
+                File = file
+                StartLine = a.StartLine
+                EndLine = a.EndLine
+                PermitsFreeValue = a.SupportsFreeValue
+                AttributeDependencies = thisAttributeDependencies
+                VariableDependencies = thisVariableDependencies
+                Values = a.Result |> List.ofArray |> List.map (buildVariableValue getVariableIndex getAttributeIndex file)
+            }
+        (variableAttributeDependencies |> Map.add thisIndex thisAttributeDependencies, variableVariableDependencies |> Map.add thisIndex thisVariableDependencies, Some v)
 
     let private buildAttributeValue getAttributeIndex file (value:ParsedAttributeValue) : AttributeValue =
         {
@@ -345,17 +416,31 @@ module Linker =
             Condition = buildCondition getAttributeIndex file value.Condition
         }
 
-    let private buildAttribute getAttributeIndex file (a:ParsedAttributeDefinition) : AttributeDefinition =
-        {
-            Name = a.Name
-            Text = a.Text
-            Index = getAttributeIndex a.Name
-            File = file
-            StartLine = a.StartLine
-            EndLine = a.EndLine
-            AttributeDependencies = a.Dependencies |> List.ofArray |> List.map (function | ParsedAttributeName a -> getAttributeIndex a | ParsedVariableName v -> failwithf "Unexpected reference to a variable %s in attribute %s" v a.Name)
-            Values = a.Result |> List.ofArray |> List.map (buildAttributeValue getAttributeIndex file)
-        }
+    let private buildAttribute attributeDependencies getAttributeIndex file (a:ParsedAttributeDefinition) =
+        let thisAttributeDependencies =
+            a.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedAttributeName a ->
+                        let index = getAttributeIndex a
+                        index::(attributeDependencies |> Map.find index)
+                    | ParsedVariableName v -> failwithf "Unexpected reference to a variable %s in attribute %s" v a.Name)
+            |> List.distinct
+            |> List.sort
+        let thisIndex = getAttributeIndex a.Name
+        let a : AttributeDefinition=
+            {
+                Name = a.Name
+                Text = a.Text
+                Index = thisIndex
+                File = file
+                StartLine = a.StartLine
+                EndLine = a.EndLine
+                AttributeDependencies = thisAttributeDependencies
+                Values = a.Result |> List.ofArray |> List.map (buildAttributeValue getAttributeIndex file)
+            }
+        (attributeDependencies |> Map.add thisIndex thisAttributeDependencies), Some a
 
     /// Link together a set of compiled modules to make a template ready for passing errors back to the user or generating texts.
     let link file (modules:CompiledModule list) : Template =
@@ -607,10 +692,31 @@ module Linker =
                     let o = m |> Map.tryFind name
                     if o.IsSome then o.Value
                     else failwithf "Could not find attribute %s" name
+            let attributeDependencies, attributes =
+                attributes
+                |> List.scan (fun (attributeDependencies, _) (_, file, a) -> buildAttribute attributeDependencies getAttributeIndex file a) (Map.empty, None)
+                |> fun l ->
+                    let attributeDependencies = l |> List.last |> fst
+                    let attributes = l |> List.choose snd
+                    (attributeDependencies, attributes)
+            let variableAttributeDependencies, variableVariableDependencies, variables =
+                variables
+                |> List.scan (fun (variableAttributeDependencies, variableVariableDependencies, _) (_, file, a) -> buildVariable variableAttributeDependencies variableVariableDependencies attributeDependencies getVariableIndex getAttributeIndex file a) (Map.empty, Map.empty, None)
+                |> fun l ->
+                    let variableAttributeDependencies, variableVariableDependencies = l |> List.last |> fun (a,b,_) -> (a,b)
+                    let variables = l |> List.choose (fun (_,_,a) -> a)
+                    variableAttributeDependencies, variableVariableDependencies, variables
+            let functionAttributeDependencies, functionVariableDependencies, functionFunctionDependencies, functions =
+                functions
+                |> List.scan (fun (functionAttributeDependencies, functionVariableDependencies, functionFunctionDependencies, _) (_, file, a) -> buildFunction functionAttributeDependencies functionVariableDependencies functionFunctionDependencies variableAttributeDependencies variableVariableDependencies attributeDependencies (getFunctionIndex file) getVariableIndex getAttributeIndex file a) (Map.empty, Map.empty, Map.empty, None)
+                |> fun l ->
+                    let functionAttributeDependencies, functionVariableDependencies, functionFunctionDependencies = l |> List.last |> fun (a,b,c,_) -> (a,b,c)
+                    let functions = l |> List.choose (fun (_,_,_,a) -> a)
+                    functionAttributeDependencies, functionVariableDependencies, functionFunctionDependencies, functions
             {
                 Errors = allErrors
                 Warnings = allWarnings
-                Attributes = attributes |> List.map (fun (_, file, a) -> buildAttribute getAttributeIndex file a)
-                Variables = variables |> List.map (fun (_, file, a) -> buildVariable getVariableIndex getAttributeIndex file a)
-                Functions = functions |> List.map (fun (_, file, fn) -> buildFunction (getFunctionIndex file) getVariableIndex getAttributeIndex file fn)
+                Attributes = attributes
+                Variables = variables
+                Functions = functions
             }

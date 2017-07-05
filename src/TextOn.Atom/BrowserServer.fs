@@ -417,6 +417,7 @@ type BrowserServer(file) =
 
                     // Find all references to that function (recursively) and the paths.
                     let refsToFunction = findIndexPathsForFunction fnIndex fnDefs attributeValuesByIndex nodes starterRef
+                    let mainFunction = currentTemplate.Functions |> List.tryFind (fun fn -> fn.Name = "main")
                     let publicFunctions =
                         currentTemplate.Functions
                         |> List.filter (fun fn -> fn.IsPrivate |> not)
