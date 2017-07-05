@@ -229,9 +229,9 @@ let expected =
                     IsPrivate = false;
                     StartLine = 19;
                     EndLine = 31;
-                    FunctionDependencies = [1; 3; 2];
+                    FunctionDependencies = [1; 2; 3];
                     AttributeDependencies = [0];
-                    VariableDependencies = [1; 0];
+                    VariableDependencies = [0; 1];
                     Tree =
                         Seq
                             (exampleFile,19,
