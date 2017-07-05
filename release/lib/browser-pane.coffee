@@ -106,6 +106,7 @@ cycleThroughTextOnBrowser = ->
 
 module.exports =
   activate: ->
+    Logger.logf("BrowserPane", "Activate", [])
     dock = textOnCore.browserDock()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:View-Browser', ->
@@ -128,6 +129,7 @@ module.exports =
         @disp = null
         browser = null
       return
+    Logger.logf("BrowserPane", "ActivateDone", [])
 
   deactivate: ->
     @disp?.dispose()

@@ -606,3 +606,96 @@ let ``Infinite recursion``() =
         |> List.singleton
         |> Linker.link exampleFile
     test <@ template.Errors.Length > 0 @>
+
+[<Test>]
+let ``Circular attribute reference``() =
+    let lines =
+        [
+            "@att %Gender = \"Gender\""
+            "{"
+            "    \"Male\" [%Something = \"Value\"]"
+            "    \"Female\""
+            "}"
+            "@att %Something = \"Something\""
+            "{"
+            "    \"Value\" [%Gender = \"Male\"]"
+            "    \"Meh\""
+            "}"
+        ]
+    let template =
+        lines
+        |> Compiler.compile exampleFile
+        |> List.singleton
+        |> Linker.link exampleFile
+    test <@ template.Errors.Length > 0 @>
+
+[<Test>]
+let ``Circular variable reference``() =
+    let lines =
+        [
+            "@var $Gender = \"Gender\""
+            "{"
+            "    \"Male\" [$Something = \"Value\"]"
+            "    \"Female\""
+            "}"
+            "@var $Something = \"Something\""
+            "{"
+            "    \"Value\" [$Gender = \"Male\"]"
+            "    \"Meh\""
+            "}"
+        ]
+    let template =
+        lines
+        |> Compiler.compile exampleFile
+        |> List.singleton
+        |> Linker.link exampleFile
+    test <@ template.Errors.Length > 0 @>
+
+[<Test>]
+let ``Infinite recursion self reference``() =
+    let lines =
+        [
+            "@func @outer {"
+            "    @outer"
+            "}"
+        ]
+    let template =
+        lines
+        |> Compiler.compile exampleFile
+        |> List.singleton
+        |> Linker.link exampleFile
+    test <@ template.Errors.Length > 0 @>
+
+[<Test>]
+let ``Circular attribute reference self reference``() =
+    let lines =
+        [
+            "@att %Gender = \"Gender\""
+            "{"
+            "    \"Male\" [%Gender = \"Male\"]"
+            "    \"Female\""
+            "}"
+        ]
+    let template =
+        lines
+        |> Compiler.compile exampleFile
+        |> List.singleton
+        |> Linker.link exampleFile
+    test <@ template.Errors.Length > 0 @>
+
+[<Test>]
+let ``Circular variable reference self reference``() =
+    let lines =
+        [
+            "@var $Gender = \"Gender\""
+            "{"
+            "    \"Male\" [$Gender = \"Male\"]"
+            "    \"Female\""
+            "}"
+        ]
+    let template =
+        lines
+        |> Compiler.compile exampleFile
+        |> List.singleton
+        |> Linker.link exampleFile
+    test <@ template.Errors.Length > 0 @>

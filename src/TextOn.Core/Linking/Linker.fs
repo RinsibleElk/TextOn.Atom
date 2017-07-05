@@ -71,6 +71,72 @@ module Linker =
                                 findInfiniteRecursionErrors knownFiles ((currentNormalizedPath, (currentFile.File, currentFunction))::functionReferencePath) file fn)
                     | _ -> [])
 
+    let rec private findVariableDependencyCircularReferencErrors  knownFiles (variableReferencePath:(_ * (_ * ParsedVariableDefinition)) list) (currentFile:CompiledModule) (currentVariable:ParsedVariableDefinition) =
+        let currentNormalizedPath = currentFile.File |> Utils.getNormalizedPath
+        let circularReference = variableReferencePath |> List.tryFind (fun (normFile, (file, fn)) -> normFile = currentNormalizedPath && fn.Name = currentVariable.Name)
+        if circularReference.IsSome then
+            let (file, fn) = circularReference.Value |> snd
+            [makeParseError file fn.StartLine 1 1 (sprintf "Circular reference within variable %s" fn.Name)]
+        else
+            currentVariable.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedVariableName f ->
+                        let v = currentFile.Variables |> List.tryFind (fun fn -> fn.Name = f)
+                        let variables =
+                            if v.IsSome then [(currentNormalizedPath, (currentFile, v.Value))]
+                            else
+                                currentFile.ImportedFiles
+                                |> List.choose
+                                    (fun import ->
+                                        let normFile = Utils.getNormalizedImportPath currentFile.File import.ImportedFileName
+                                        let file = knownFiles |> Map.tryFind normFile
+                                        file
+                                        |> Option.bind
+                                            (fun file ->
+                                                file.Variables
+                                                |> List.tryFind (fun fn -> fn.Name = f)
+                                                |> Option.map (fun fn -> (normFile, (file, fn)))))
+                        variables
+                        |> List.collect
+                            (fun (normFile, (file, fn)) ->
+                                findVariableDependencyCircularReferencErrors knownFiles ((currentNormalizedPath, (currentFile.File, currentVariable))::variableReferencePath) file fn)
+                    | _ -> [])
+
+    let rec private findAttributeDependencyCircularReferencErrors  knownFiles (attributeReferencePath:(_ * (_ * ParsedAttributeDefinition)) list) (currentFile:CompiledModule) (currentAttribute:ParsedAttributeDefinition) =
+        let currentNormalizedPath = currentFile.File |> Utils.getNormalizedPath
+        let circularReference = attributeReferencePath |> List.tryFind (fun (normFile, (file, fn)) -> normFile = currentNormalizedPath && fn.Name = currentAttribute.Name)
+        if circularReference.IsSome then
+            let (file, fn) = circularReference.Value |> snd
+            [makeParseError file fn.StartLine 1 1 (sprintf "Circular reference within attribute %s" fn.Name)]
+        else
+            currentAttribute.Dependencies
+            |> List.ofArray
+            |> List.collect
+                (function
+                    | ParsedAttributeName f ->
+                        let v = currentFile.Attributes |> List.tryFind (fun fn -> fn.Name = f)
+                        let attributes =
+                            if v.IsSome then [(currentNormalizedPath, (currentFile, v.Value))]
+                            else
+                                currentFile.ImportedFiles
+                                |> List.choose
+                                    (fun import ->
+                                        let normFile = Utils.getNormalizedImportPath currentFile.File import.ImportedFileName
+                                        let file = knownFiles |> Map.tryFind normFile
+                                        file
+                                        |> Option.bind
+                                            (fun file ->
+                                                file.Attributes
+                                                |> List.tryFind (fun fn -> fn.Name = f)
+                                                |> Option.map (fun fn -> (normFile, (file, fn)))))
+                        attributes
+                        |> List.collect
+                            (fun (normFile, (file, fn)) ->
+                                findAttributeDependencyCircularReferencErrors knownFiles ((currentNormalizedPath, (currentFile.File, currentAttribute))::attributeReferencePath) file fn)
+                    | _ -> [])
+
     let rec private findImportedModulesInner knownFiles knownImports rootNormalizedPath (currentFile:CompiledModule) =
         currentFile.ImportedFiles
         |> List.fold
@@ -247,9 +313,9 @@ module Linker =
             IsPrivate = fn.IsPrivate
             StartLine = fn.StartLine
             EndLine = fn.EndLine
-            FunctionDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedFunctionRef f -> (Some (getFunctionIndex f)) | _ -> None)
-            AttributeDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedAttributeRef a -> (Some (getAttributeIndex a)) | _ -> None)
-            VariableDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedVariableRef v -> (Some (getVariableIndex v)) | _ -> None)
+            FunctionDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedFunctionRef f -> (Some (getFunctionIndex f)) | _ -> None) |> List.sort
+            AttributeDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedAttributeRef a -> (Some (getAttributeIndex a)) | _ -> None) |> List.sort
+            VariableDependencies = fn.Dependencies |> List.ofArray |> List.choose (function | ParsedAttributeOrVariableOrFunction.ParsedVariableRef v -> (Some (getVariableIndex v)) | _ -> None) |> List.sort
             Tree = buildFunctionNode getFunctionIndex getVariableIndex getAttributeIndex file fn.Tree
         }
 
@@ -390,8 +456,24 @@ module Linker =
             |> Set.ofList
             |> Set.toList
 
+        // Find variable dependency circular reference errors.
+        let variableDependencyCircularReferencErrors =
+            modules
+            |> List.collect
+                (fun m ->
+                    m.Variables
+                    |> List.collect (fun v -> findVariableDependencyCircularReferencErrors knownFiles [] m v))
+
+        // Find variable dependency circular reference errors.
+        let attributeDependencyCircularReferencErrors =
+            modules
+            |> List.collect
+                (fun m ->
+                    m.Attributes
+                    |> List.collect (fun v -> findAttributeDependencyCircularReferencErrors knownFiles [] m v))
+
         // All the errors and warnings.
-        let allErrors = (modules |> List.collect (fun m -> m.Errors)) @ unknownReferenceErrors @ publicFunctionClashErrors @ attributeClashErrors @ variableClashErrors @ circularReferenceErrors @ missingEntityErrors @ infiniteRecursionErrors
+        let allErrors = (modules |> List.collect (fun m -> m.Errors)) @ unknownReferenceErrors @ publicFunctionClashErrors @ attributeClashErrors @ variableClashErrors @ circularReferenceErrors @ missingEntityErrors @ infiniteRecursionErrors @ variableDependencyCircularReferencErrors @ attributeDependencyCircularReferencErrors
         let allWarnings = modules |> List.collect (fun m -> m.Warnings)
 
         // This should be all the errors we can possibly encounter. Report them and bail if there are any.
@@ -410,7 +492,7 @@ module Linker =
                 getImports knownFiles mainModule
                 @
                 [(Utils.getNormalizedPath mainModule.File, mainModule)]
-            let orderedModules =
+            let allModules =
                 imports
                 |> List.scan
                     (fun (_, d) (s, m) ->
@@ -419,36 +501,84 @@ module Linker =
                     (None, Set.empty)
                 |> List.choose fst
 
+            let allFunctions, allVariables, allAttributes =
+                allModules
+                |> List.fold
+                    (fun (f, v, a) m -> (f@((m.PrivateFunctions @ m.PublicFunctions) |> List.map (fun f -> (m.File, f))), v@(m.Variables |> List.map (fun f -> (m.File, f))), a@(m.Attributes |> List.map (fun f -> (m.File, f)))))
+                    ([],[],[])
+
             // Assign an index to everything.
             let functions =
-                orderedModules
-                |> List.collect
-                    (fun m ->
-                        let file = m.File |> Utils.getNormalizedPath
-                        List.append m.PrivateFunctions m.PublicFunctions
-                        |> List.map (fun f -> (file, m.File, f)))
-                |> List.scan (fun (i, _) f -> (i + 1, Some (i, f))) (0, None)
-                |> List.choose snd
+                let mutable fs = allFunctions
+                let mutable functions : (int * string * ParsedFunctionDefinition) list = []
+                let mutable index = 0
+                while fs |> List.isEmpty |> not do
+                    // Find the first function that only depends on the ones we currently have.
+                    let i =
+                        fs
+                        |> List.findIndex
+                            (fun (file, f) ->
+                                f.Dependencies
+                                |> Array.choose (function | ParsedFunctionRef refFunc -> Some refFunc | _ -> None)
+                                |> Array.tryFind
+                                    (fun rf ->
+                                        let inFs = fs |> List.exists (fun (file2, f2) -> f2.Name = rf && (file2 = file || (not f2.IsPrivate)))
+                                        let inFunctions = functions |> List.exists (fun (_, file2, f2) -> f2.Name = rf && (file2 = file || (not f2.IsPrivate)))
+                                        inFs && (not inFunctions))
+                                |> Option.isNone)
+                    let (file, f) = fs |> List.item i
+                    fs <- (fs |> List.take i) @ (fs |> List.skip (min (i + 1) fs.Length))
+                    functions <- (index, file, f)::functions
+                    index <- index + 1
+                functions |> List.rev
             let variables =
-                orderedModules
-                |> List.collect
-                    (fun m ->
-                        let file = m.File |> Utils.getNormalizedPath
-                        m.Variables |> List.map (fun v -> (file, m.File, v)))
-                |> List.scan (fun (i, _) v -> (i + 1, Some (i, v))) (0, None)
-                |> List.choose snd
+                let mutable fs = allVariables
+                let mutable variables : (int * string * ParsedVariableDefinition) list = []
+                let mutable index = 0
+                while fs |> List.isEmpty |> not do
+                    // Find the first variable that only depends on the ones we currently have.
+                    let i =
+                        fs
+                        |> List.findIndex
+                            (fun (file, f) ->
+                                f.Dependencies
+                                |> Array.choose (function | ParsedVariableName refFunc -> Some refFunc | _ -> None)
+                                |> Array.tryFind
+                                    (fun rf ->
+                                        let inFs = fs |> List.exists (fun (file2, f2) -> f2.Name = rf)
+                                        inFs)
+                                |> Option.isNone)
+                    let (file, f) = fs |> List.item i
+                    fs <- (fs |> List.take i) @ (fs |> List.skip (min (i + 1) fs.Length))
+                    variables <- (index, file, f)::variables
+                    index <- index + 1
+                variables |> List.rev
             let attributes =
-                orderedModules
-                |> List.collect
-                    (fun m ->
-                        let file = m.File |> Utils.getNormalizedPath
-                        m.Attributes |> List.map (fun a -> (file, m.File, a)))
-                |> List.scan (fun (i, _) a -> (i + 1, Some (i, a))) (0, None)
-                |> List.choose snd
+                let mutable fs = allAttributes
+                let mutable attributes : (int * string * ParsedAttributeDefinition) list = []
+                let mutable index = 0
+                while fs |> List.isEmpty |> not do
+                    // Find the first attribute that only depends on the ones we currently have.
+                    let i =
+                        fs
+                        |> List.findIndex
+                            (fun (file, f) ->
+                                f.Dependencies
+                                |> Array.choose (function | ParsedAttributeName refFunc -> Some refFunc | _ -> None)
+                                |> Array.tryFind
+                                    (fun rf ->
+                                        let inFs = fs |> List.exists (fun (file2, f2) -> f2.Name = rf)
+                                        inFs)
+                                |> Option.isNone)
+                    let (file, f) = fs |> List.item i
+                    fs <- (fs |> List.take i) @ (fs |> List.skip (min (i + 1) fs.Length))
+                    attributes <- (index, file, f)::attributes
+                    index <- index + 1
+                attributes |> List.rev
             let getFunctionIndex =
                 functions
                 |> List.map
-                    (fun (index, (file, _, fn)) ->
+                    (fun (index, file, fn) ->
                         if fn.IsPrivate then (Private (file, fn.Name), index)
                         else (Public fn.Name), index)
                 |> Map.ofList
@@ -463,7 +593,7 @@ module Linker =
                                 else failwithf "Could not find function %s referenced in file %s" name file)
             let getVariableIndex =
                 variables
-                |> List.map (fun (index, (_, _, v)) -> v.Name, index)
+                |> List.map (fun (index, _, v) -> v.Name, index)
                 |> Map.ofList
                 |> fun m name ->
                     let o = m |> Map.tryFind name
@@ -471,7 +601,7 @@ module Linker =
                     else failwithf "Could not find variable %s" name
             let getAttributeIndex =
                 attributes
-                |> List.map (fun (index, (_, _, a)) -> a.Name, index)
+                |> List.map (fun (index, _, a) -> a.Name, index)
                 |> Map.ofList
                 |> fun m name ->
                     let o = m |> Map.tryFind name
@@ -480,7 +610,7 @@ module Linker =
             {
                 Errors = allErrors
                 Warnings = allWarnings
-                Attributes = attributes |> List.map (fun (_, (normFile, file, a)) -> buildAttribute getAttributeIndex file a)
-                Variables = variables |> List.map (fun (_, (normFile, file, a)) -> buildVariable getVariableIndex getAttributeIndex file a)
-                Functions = functions |> List.map (fun (_, (normFile, file, fn)) -> buildFunction (getFunctionIndex normFile) getVariableIndex getAttributeIndex file fn)
+                Attributes = attributes |> List.map (fun (_, file, a) -> buildAttribute getAttributeIndex file a)
+                Variables = variables |> List.map (fun (_, file, a) -> buildVariable getVariableIndex getAttributeIndex file a)
+                Functions = functions |> List.map (fun (_, file, fn) -> buildFunction (getFunctionIndex file) getVariableIndex getAttributeIndex file fn)
             }

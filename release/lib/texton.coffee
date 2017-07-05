@@ -6,6 +6,7 @@
 textOnCore = require './texton-core'
 generatorPane = require './generator-pane'
 browserPane = require './browser-pane'
+Logger = require './texton-logger'
 
 gotoDefinition = ->
   editor = atom.workspace.getActiveTextEditor()
@@ -25,6 +26,7 @@ gotoDefinition = ->
 
 module.exports =
   activate: ->
+    Logger.logf("TextOn", "Activate", [])
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Go-To-Definition', ->
       gotoDefinition()
@@ -41,9 +43,13 @@ module.exports =
           shouldDisplay: (event) => @shouldDisplayContextMenu(event)
         }
       ]
+    Logger.logf("TextOn", "Generator", [])
     generatorPane.activate()
+    Logger.logf("TextOn", "Browser", [])
     browserPane.activate()
+    Logger.logf("TextOn", "Spawn", [])
     textOnCore.spawn()
+    Logger.logf("TextOn", "ActivateDone", [])
   deactivate: ->
     generatorPane.deactivate()
     browserPane.deactivate()

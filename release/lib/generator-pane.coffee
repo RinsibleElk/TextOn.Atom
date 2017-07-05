@@ -110,6 +110,7 @@ generate = ->
 
 module.exports =
   activate: ->
+    Logger.logf("GeneratorPane", "Activate", [])
     dock = textOnCore.generatorDock()
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-text-editor', 'TextOn:Send-To-Generator', ->
@@ -130,6 +131,7 @@ module.exports =
         @disp = null
         generator = null
       return
+    Logger.logf("GeneratorPane", "ActivateDone", [])
 
   deactivate: ->
     @disp?.dispose()
