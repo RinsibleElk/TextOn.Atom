@@ -42,7 +42,7 @@ module internal RunInteractive =
             let lines = lines.Value
             let template = Builder.build fileResolver file.FullName lines
             if template.Errors.Length > 0 then
-                template.Errors |> List.iter (fun error -> eprintfn "%s at %s line %d (character %d)" error.ErrorText error.File error.LineNumber error.StartLocation)
+                template.Errors |> List.iter (fun error -> eprintfn "%s at %s line %d (character %d)" error.ErrorText error.File error.StartLine error.StartLocation)
                 1
             else
                 let mutable repeat = true

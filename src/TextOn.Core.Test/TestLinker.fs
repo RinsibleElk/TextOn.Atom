@@ -25,7 +25,8 @@ let expected =
                 {
                     File = citiesFile
                     Severity = Warning
-                    LineNumber = 1
+                    StartLine = 1
+                    EndLine = 1
                     StartLocation = 1
                     EndLocation = 8
                     ErrorText = "Deprecated - please use @import"
@@ -33,7 +34,8 @@ let expected =
                 {
                     File = exampleFile
                     Severity = Warning
-                    LineNumber = 1
+                    StartLine = 1
+                    EndLine = 1
                     StartLocation = 1
                     EndLocation = 8
                     ErrorText = "Deprecated - please use @import"
@@ -417,7 +419,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 14;
+                        StartLine = 14;
+                        EndLine = 14;
                         StartLocation = 34;
                         EndLocation = 38;
                         ErrorText = "Unknown variable City"
@@ -425,7 +428,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 21;
+                        StartLine = 21;
+                        EndLine = 21;
                         StartLocation = 23;
                         EndLocation = 29;
                         ErrorText = "Unknown attribute Gender"
@@ -433,7 +437,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 22;
+                        StartLine = 22;
+                        EndLine = 22;
                         StartLocation = 18;
                         EndLocation = 22;
                         ErrorText = "Unknown variable City"
@@ -441,7 +446,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 22;
+                        StartLine = 22;
+                        EndLine = 22;
                         StartLocation = 59;
                         EndLocation = 66;
                         ErrorText = "Unknown variable Country"
@@ -449,7 +455,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 23;
+                        StartLine = 23;
+                        EndLine = 23;
                         StartLocation = 5;
                         EndLocation = 9;
                         ErrorText = "Unknown variable City"
@@ -457,7 +464,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 23;
+                        StartLine = 23;
+                        EndLine = 23;
                         StartLocation = 17;
                         EndLocation = 24;
                         ErrorText = "Unknown variable Country"
@@ -465,7 +473,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 27;
+                        StartLine = 27;
+                        EndLine = 27;
                         StartLocation = 5;
                         EndLocation = 15;
                         ErrorText = "Unknown function cityExport"
@@ -473,7 +482,8 @@ let ``Missing references``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example.texton";
                         Severity = Error;
-                        LineNumber = 28;
+                        StartLine = 28;
+                        EndLine = 28;
                         StartLocation = 16;
                         EndLocation = 22;
                         ErrorText = "Unknown attribute Gender"
@@ -511,7 +521,8 @@ let ``Circular reference in files``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example2.texton"
                         Severity = Error
-                        LineNumber = 1
+                        StartLine = 1
+                        EndLine = 1
                         StartLocation = 1
                         EndLocation = 25
                         ErrorText = "Circular reference - import example4.texton or one of its imports references file D:\NodeJs\TextOn.Atom\examples\example2.texton"
@@ -519,7 +530,8 @@ let ``Circular reference in files``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example2.texton"
                         Severity = Error
-                        LineNumber = 2
+                        StartLine = 2
+                        EndLine = 2
                         StartLocation = 1
                         EndLocation = 25
                         ErrorText = "Circular reference - import example5.texton or one of its imports references file D:\NodeJs\TextOn.Atom\examples\example2.texton"
@@ -527,7 +539,8 @@ let ``Circular reference in files``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example4.texton"
                         Severity = Error
-                        LineNumber = 1
+                        StartLine = 1
+                        EndLine = 1
                         StartLocation = 1
                         EndLocation = 25
                         ErrorText = "Circular reference - import example6.texton or one of its imports references file D:\NodeJs\TextOn.Atom\examples\example4.texton"
@@ -535,7 +548,8 @@ let ``Circular reference in files``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example5.texton"
                         Severity = Error
-                        LineNumber = 1
+                        StartLine = 1
+                        EndLine = 1
                         StartLocation = 1
                         EndLocation = 25
                         ErrorText = "Circular reference - import example6.texton or one of its imports references file D:\NodeJs\TextOn.Atom\examples\example5.texton"
@@ -543,7 +557,8 @@ let ``Circular reference in files``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example6.texton"
                         Severity = Error
-                        LineNumber = 1
+                        StartLine = 1
+                        EndLine = 1
                         StartLocation = 1
                         EndLocation = 25
                         ErrorText = "Circular reference - import example2.texton or one of its imports references file D:\NodeJs\TextOn.Atom\examples\example6.texton"
@@ -576,7 +591,8 @@ let ``Self reference in file``() =
                     {
                         File = "D:\NodeJs\TextOn.Atom\examples\example1.texton"
                         Severity = Error
-                        LineNumber = 1
+                        StartLine = 1
+                        EndLine = 1
                         StartLocation = 1
                         EndLocation = 25
                         ErrorText = "Circular reference - import example1.texton or one of its imports references file D:\NodeJs\TextOn.Atom\examples\example1.texton"

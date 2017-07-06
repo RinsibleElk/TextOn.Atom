@@ -19,7 +19,8 @@ type ParseErrorSeverity =
 type ParseError = {
     File : string
     Severity : ParseErrorSeverity
-    LineNumber : int
+    StartLine : int
+    EndLine : int
     StartLocation : int
     EndLocation : int
     ErrorText : string }
@@ -42,7 +43,8 @@ module ConditionParser =
     let private makeParseError file line s e t =
         {   File = file
             Severity = Error
-            LineNumber = line
+            StartLine = line
+            EndLine = line
             StartLocation = s
             EndLocation = e
             ErrorText = t }

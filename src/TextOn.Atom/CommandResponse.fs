@@ -9,8 +9,8 @@ module TextOnErrorInfo =
         {
             range =
                 [|
-                    [|(float (error.LineNumber - 1));(float (error.StartLocation - 1))|]
-                    [|(float (error.LineNumber - 1));(float (error.EndLocation))|]
+                    [|(float (error.StartLine - 1));(float (error.StartLocation - 1))|]
+                    [|(float (error.EndLine - 1));(float (error.EndLocation))|]
                 |]
             ``type`` = match error.Severity with | Error -> "Error" | Warning -> "Warning"
             text = error.ErrorText

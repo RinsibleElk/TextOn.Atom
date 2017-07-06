@@ -64,18 +64,22 @@ module internal Parser =
                                     Some
                                         {   File = tokenSet.File
                                             Severity = Error
-                                            LineNumber = l.LineNumber
+                                            StartLine = l.LineNumber
+                                            EndLine = l.LineNumber
                                             StartLocation = t.TokenStartLocation
                                             EndLocation = t.TokenEndLocation
                                             ErrorText = "Unrecognised raw text outside of function: " + s }
                                 | _ -> None))
                 |> fun l ->
+                    let t = tokenSet.Tokens.[tokenSet.Tokens.Length - 1]
+                    let lt = t.Tokens.[t.Tokens.Length - 1].TokenEndLocation
                     (   {
                             File = tokenSet.File
                             Severity = Error
-                            LineNumber = tokenSet.StartLine
-                            StartLocation = 1
-                            EndLocation = 1
+                            StartLine = tokenSet.StartLine
+                            EndLine = tokenSet.EndLine
+                            StartLocation = tokenSet.Tokens.[0].Tokens.[0].TokenStartLocation
+                            EndLocation = lt
                             ErrorText = globalError
                         } :: l)
                 |> List.toArray
