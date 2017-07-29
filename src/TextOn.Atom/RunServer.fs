@@ -13,6 +13,7 @@ open Suave.Filters
 open Newtonsoft.Json
 open TextOn.Atom.DTO.DTO
 open TextOn.ArgParser
+open System.Threading
 
 type ServerModeConfig =
     {
@@ -23,10 +24,7 @@ type ServerModeConfig =
 
 [<RequireQualifiedAccess>]
 module internal RunServer =
-    let run serverModeConfig =
-        let mutable client : WebSocket option  = None
-
-        System.Threading.ThreadPool.SetMinThreads(8, 8) |> ignore
+    let makeServerConfig serverModeConfig =
         let commands = Commands(JsonSerializer.writeJson)
 
         let handler f : WebPart = fun (r : HttpContext) -> async {
@@ -64,5 +62,10 @@ module internal RunServer =
         let withPort = { defaultBinding.socketBinding with port = uint16 port }
         let serverConfig =
             { defaultConfig with bindings = [{ defaultBinding with socketBinding = withPort }]}
+        (serverConfig, app)
+    let run serverModeConfig =
+        System.Threading.ThreadPool.SetMinThreads(8, 8) |> ignore
+        let (serverConfig, app) = makeServerConfig serverModeConfig
         startWebServer serverConfig app
         0
+

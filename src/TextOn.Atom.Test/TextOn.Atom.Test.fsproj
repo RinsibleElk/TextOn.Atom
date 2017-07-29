@@ -70,9 +70,17 @@
   <Import Project="..\..\packages\MSBuild.Extension.Pack.1.9.0\build\net40\MSBuild.Extension.Pack.targets" Condition="Exists('..\..\packages\MSBuild.Extension.Pack.1.9.0\build\net40\MSBuild.Extension.Pack.targets')" />
   <ItemGroup>
     <Compile Include="TestGenerator.fs" />
+    <Compile Include="TestTempDirs.fs" />
+    <Compile Include="TestSuave.fs" />
+    <Compile Include="TestRunServer.fs" />
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TextOn.Atom.DTO\TextOn.Atom.DTO.fsproj">
+      <Name>TextOn.Atom.DTO</Name>
+      <Project>{7c8b2d6c-feca-466f-8eff-9a2595fed812}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\TextOn.Core\TextOn.Core.fsproj">
       <Name>TextOn.Core</Name>
       <Project>{d0e36a43-0a66-4ce4-b1f1-e21f44162d80}</Project>
@@ -99,8 +107,12 @@
       <HintPath>..\..\packages\NUnit\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Suave">
+      <HintPath>..\..\packages\Suave\lib\net40\Suave.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="Unquote">
       <HintPath>..\..\packages\Unquote\lib\net45\Unquote.dll</HintPath>

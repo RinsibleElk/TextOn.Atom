@@ -1,7 +1,28 @@
 ﻿#r "bin/Debug/TextOn.Atom.exe"
+#r "bin/Debug/TextOn.Atom.DTO.dll"
+#r "bin/Debug/Newtonsoft.Json.dll"
 open TextOn.Atom
+open TextOn.Atom.DTO.DTO
 open System
 open System.IO
+open Newtonsoft.Json
+
+let o =
+    {
+        Kind = "errors"
+        Data =
+            [|
+                {
+                    range = [|[|0.0;0.0|];[|0.0;1.0|]|]
+                    text = "Unrecognised starting token"
+                    ``type`` = "Error"
+                    filePath = "example.texton"
+                }
+            |]
+    }
+let s = JsonConvert.SerializeObject([|o|])
+printfn "%s" s
+JsonConvert.DeserializeObject<Error Result []> s
 
 type Message<'a,'b> =
     | Quit
